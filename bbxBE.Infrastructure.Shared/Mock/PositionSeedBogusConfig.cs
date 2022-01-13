@@ -11,7 +11,7 @@ namespace bbxBE.Infrastructure.Shared.Mock
         {
             Randomizer.Seed = new Random(8675309);
             var id = 1;
-            RuleFor(m => m.Id, f => Guid.NewGuid());
+            RuleFor(m => m.ID, f => id  );
             RuleFor(o => o.PositionTitle, f => f.Name.JobTitle());
             RuleFor(o => o.PositionNumber, f => f.Commerce.Ean13());
             RuleFor(o => o.PositionDescription, f => f.Name.JobDescriptor());

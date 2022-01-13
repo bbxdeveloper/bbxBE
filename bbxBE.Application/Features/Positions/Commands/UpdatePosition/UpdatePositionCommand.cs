@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace bbxBE.Application.Features.Positions.Commands.UpdatePosition
 {
-    public class UpdatePositionCommand : IRequest<Response<Guid>>
+    public class UpdatePositionCommand : IRequest<Response<long>>
     {
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public decimal Salary { get; set; }
 
-        public class UpdatePositionCommandHandler : IRequestHandler<UpdatePositionCommand, Response<Guid>>
+        public class UpdatePositionCommandHandler : IRequestHandler<UpdatePositionCommand, Response<long>>
         {
             private readonly IPositionRepositoryAsync _positionRepository;
 
@@ -24,7 +24,7 @@ namespace bbxBE.Application.Features.Positions.Commands.UpdatePosition
                 _positionRepository = positionRepository;
             }
 
-            public async Task<Response<Guid>> Handle(UpdatePositionCommand command, CancellationToken cancellationToken)
+            public async Task<Response<long>> Handle(UpdatePositionCommand command, CancellationToken cancellationToken)
             {
                 var position = await _positionRepository.GetByIdAsync(command.Id);
 
@@ -38,7 +38,7 @@ namespace bbxBE.Application.Features.Positions.Commands.UpdatePosition
                     position.PositionSalary = command.Salary;
                     position.PositionDescription = command.Description;
                     await _positionRepository.UpdateAsync(position);
-                    return new Response<Guid>(position.Id);
+                    return new Response<long>(position.ID);
                 }
             }
         }

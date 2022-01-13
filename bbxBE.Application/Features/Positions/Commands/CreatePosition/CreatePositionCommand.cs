@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace bbxBE.Application.Features.Positions.Commands.CreatePosition
 {
-    public partial class CreatePositionCommand : IRequest<Response<Guid>>
+    public partial class CreatePositionCommand : IRequest<Response<long>>
     {
         public string PositionTitle { get; set; }
         public string PositionNumber { get; set; }
@@ -17,7 +17,7 @@ namespace bbxBE.Application.Features.Positions.Commands.CreatePosition
         public decimal PositionSalary { get; set; }
     }
 
-    public class CreatePositionCommandHandler : IRequestHandler<CreatePositionCommand, Response<Guid>>
+    public class CreatePositionCommandHandler : IRequestHandler<CreatePositionCommand, Response<long>>
     {
         private readonly IPositionRepositoryAsync _positionRepository;
         private readonly IMapper _mapper;
@@ -28,11 +28,11 @@ namespace bbxBE.Application.Features.Positions.Commands.CreatePosition
             _mapper = mapper;
         }
 
-        public async Task<Response<Guid>> Handle(CreatePositionCommand request, CancellationToken cancellationToken)
+        public async Task<Response<long>> Handle(CreatePositionCommand request, CancellationToken cancellationToken)
         {
             var position = _mapper.Map<Position>(request);
             await _positionRepository.AddAsync(position);
-            return new Response<Guid>(position.Id);
+            return new Response<long>(position.ID);
         }
     }
 }
