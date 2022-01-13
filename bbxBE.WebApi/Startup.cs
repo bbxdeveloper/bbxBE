@@ -1,4 +1,5 @@
 using bbxBE.Application;
+using bbxBE.Commands;
 using bbxBE.Infrastructure.Persistence;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Shared;
@@ -25,6 +26,9 @@ namespace bbxBE.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationLayer();
+            services.AddCommandInfrastructure(_config);
+
+
             services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
             services.AddSwaggerExtension();
