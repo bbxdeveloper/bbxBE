@@ -1,5 +1,4 @@
 ﻿using bbxBE.Commands.USR_USER;
-using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +8,7 @@ using static bbxBE.Commands.USR_USER.createUSR_USERCommand;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
-    public class USRController : Controller
+    public class USRController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
@@ -27,14 +26,14 @@ namespace bbxBE.WebApi.Controllers.v1
         // GET: USRController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            return Ok();
         }
 
         // GET: USRController/Create
         public ActionResult Create()
         {
 
-            return View();
+            return Ok();
         }
 
         // POST: USRController/Create
@@ -49,7 +48,7 @@ namespace bbxBE.WebApi.Controllers.v1
         // GET: USRController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            return Ok();
         }
 
         // POST: USRController/Edit/5
@@ -63,7 +62,7 @@ namespace bbxBE.WebApi.Controllers.v1
         // GET: USRController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            return Ok();
         }
 
         // POST: USRController/Delete/5

@@ -33,7 +33,7 @@ namespace bbxBE.Commands.USR_USER
 
             public Task<Response<long>> Handle(createUSR_USERCommand request, CancellationToken cancellationToken)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException("Asd");
             }
         }
     }

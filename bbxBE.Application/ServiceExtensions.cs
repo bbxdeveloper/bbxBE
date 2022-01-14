@@ -1,9 +1,4 @@
-﻿using bbxBE.Application.Behaviours;
-using bbxBE.Application.Helpers;
-using bbxBE.Application.Interfaces;
-using bbxBE.Domain.Entities;
-using FluentValidation;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -13,13 +8,13 @@ namespace bbxBE.Application
     {
         public static void AddApplicationLayer(this IServiceCollection services)
         {
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            //services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-            services.AddScoped<IDataShapeHelper<Position>, DataShapeHelper<Position>>();
-            services.AddScoped<IDataShapeHelper<Employee>, DataShapeHelper<Employee>>();
-            services.AddScoped<IModelHelper, ModelHelper>();
+            //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            //services.AddScoped<IDataShapeHelper<Position>, DataShapeHelper<Position>>();
+            //services.AddScoped<IDataShapeHelper<Employee>, DataShapeHelper<Employee>>();
+            //services.AddScoped<IModelHelper, ModelHelper>();
             //services.AddScoped<IMockData, MockData>();
         }
     }

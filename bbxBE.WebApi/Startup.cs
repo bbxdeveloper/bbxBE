@@ -1,7 +1,6 @@
 using bbxBE.Application;
 using bbxBE.Commands;
 using bbxBE.Infrastructure.Persistence;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Shared;
 using bbxBE.WebApi.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -48,7 +47,7 @@ namespace bbxBE.WebApi
             services.AddVersionedApiExplorerExtension();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, ApplicationDbContext dbContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -60,7 +59,7 @@ namespace bbxBE.WebApi
                 app.UseHsts();
             }
 
-            dbContext.Database.EnsureCreated();
+            //dbContext.Database.EnsureCreated();
 
             // Add this line; you'll need `using Serilog;` up the top, too
             app.UseSerilogRequestLogging();
