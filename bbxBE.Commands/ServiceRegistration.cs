@@ -10,24 +10,12 @@ namespace bbxBE.Commands
     {
         public static void AddCommandInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-
             services.AddSingleton<DapperContext>();
 
-            #region Commands
-
-            Assembly.GetEntryAssembly().GetTypes().Where(w => w.Name.EndsWith("CommandHandler")).ToList().ForEach((t) =>
-              {
-                  services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
-              });
-            /*
-            Assembly.GetEntryAssembly().GetTypesAssignableFrom<IRequestHandler>().ForEach((t) =>
+            Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("CommandHandler")).ToList().ForEach((t) =>
             {
-                services.AddTransient(t, t);
+                services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
             });
-            */
-
-
-            #endregion Commands
         }
 
     }
