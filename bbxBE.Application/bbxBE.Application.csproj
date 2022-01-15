@@ -6,15 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Features\Commands\**" />
-    <Compile Remove="Features\Queries\**" />
-    <EmbeddedResource Remove="Features\Commands\**" />
-    <EmbeddedResource Remove="Features\Queries\**" />
-    <None Remove="Features\Commands\**" />
-    <None Remove="Features\Queries\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="FluentValidation" Version="10.3.3" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.3.3" />
@@ -23,13 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\bbxBE.Domain\bbxBE.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\" />
-    <Folder Include="Helpers\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="Mappings\" />
   </ItemGroup>
 
 </Project>
