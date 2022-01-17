@@ -45,6 +45,9 @@ namespace bbxBE.WebApi
                 .AddApiExplorer();
             // API explorer version
             services.AddVersionedApiExplorerExtension();
+
+
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
