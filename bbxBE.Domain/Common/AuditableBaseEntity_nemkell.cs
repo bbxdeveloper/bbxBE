@@ -2,7 +2,7 @@
 
 namespace bbxBE.Domain.Common
 {
-    public abstract class AuditableBaseEntity : BaseEntity
+    public abstract class AuditableBaseEntity_nemkell : BaseEntity
     {
         public string CreatedBy { get; set; }
         public DateTime Created { get; set; }

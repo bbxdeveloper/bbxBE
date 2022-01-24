@@ -5,7 +5,7 @@ using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
-    internal class USR_USER : BaseEntity
+    public class USR_USER : BaseEntity
     {
         public string USR_NAME { get; set; }
         public string USR_EMAIL { get; set; }

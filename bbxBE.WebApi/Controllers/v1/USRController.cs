@@ -1,16 +1,18 @@
 ﻿using bbxBE.Application.Wrappers;
-using bbxBE.Commands.USR_USER;
+using bbxBE.Commands.cmdUSR_USER;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
-using static bbxBE.Commands.USR_USER.createUSR_USERCommand;
+using static bbxBE.Commands.cmdUSR_USER.createUSR_USERCommand;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
+ //   [Authorize]
     public class USRController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
@@ -25,7 +27,19 @@ namespace bbxBE.WebApi.Controllers.v1
             _conf = conf;
             _USRCommandHandler = USRCommandHandler;
     }
-   
+
+
+        /// <summary>
+        /// POST api/controller
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Post(createUSR_USERCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
         // GET: USRController/Details/5
         [HttpGet("details/{id}")]
         public ActionResult Details(int id)

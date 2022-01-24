@@ -6,7 +6,7 @@ namespace bbxBE.Domain.Common
     {
         public virtual long  ID { get; set; }
         public DateTime CreateTime{ get; set; }
-        public DateTime UPpdateTime { get; set; }
+        public DateTime UppdateTime { get; set; }
 
     }
 }

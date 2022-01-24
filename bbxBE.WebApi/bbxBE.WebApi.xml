@@ -4,5 +4,12 @@
         <name>bbxBE.WebApi</name>
     </assembly>
     <members>
+        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Post(bbxBE.Commands.cmdUSR_USER.createUSR_USERCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>
