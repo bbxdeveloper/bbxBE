@@ -24,6 +24,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
             _loggerFactory = loggerFactory;
         }
 
+    //    public DbSet<USR_USER> Users { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -32,7 +33,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreateTime = _dateTime.NowUtc;
+                       entry.Entity.CreateTime = _dateTime.NowUtc;
                         break;
 
                     case EntityState.Modified:

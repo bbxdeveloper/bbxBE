@@ -17,7 +17,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class USR_USERRepositoryAsync : GenericRepositoryAsync<USR_USER>, IUSR_USERRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<USR_USER> _positions;
+        private readonly DbSet<USR_USER> _users;
         private IDataShapeHelper<USR_USER> _dataShaper;
         private readonly IMockService _mockData;
 
@@ -25,7 +25,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IDataShapeHelper<USR_USER> dataShaper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _positions = dbContext.Set<USR_USER>();
+            _users = dbContext.Set<USR_USER>();
             _dataShaper = dataShaper;
             _mockData = mockData;
         }
@@ -33,7 +33,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
  
         public async Task<bool> IsUniqueNameAsync(string USR_NAME)
         {
-            return await _positions
+            return await _users
                .AllAsync(p => p.USR_NAME != USR_NAME);
          }
 

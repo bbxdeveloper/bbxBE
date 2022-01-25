@@ -26,12 +26,12 @@ namespace bbxBE.WebApi
         {
             services.AddApplicationLayer();
             services.AddCommandInfrastructure(_config);
-
-
             services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
             services.AddSwaggerExtension();
             services.AddControllersExtension();
+
+
             // CORS
             services.AddCorsExtension();
             services.AddHealthChecks();

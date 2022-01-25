@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Commands.cmdUSR_USER;
 using bbxBE.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,8 @@ namespace bbxBE.Application.Mappings
     {
         public GeneralProfile()
         {
-//           CreateMap<Position, GetPositionsViewModel>().ReverseMap();
-
-             CreateMap<createUSR_USERCommandHandler, USR_USER>();
+//            CreateMap<USR_USER, GetPositionsViewModel>().ReverseMap();
+            CreateMap<createUSR_USERCommand, USR_USER>();
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces;
+using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Migrations;
 using bbxBE.Infrastructure.Persistence.Repositories;
+using bbxBE.Infrastructure.Persistence.Repository;
 using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -34,6 +36,7 @@ namespace bbxBE.Infrastructure.Persistence
             //Connection DB létrehozásnak
             services.AddSingleton<Database>();
 
+            services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
             services.AddTransient<IUSR_USERRepositoryAsync, USR_USERRepositoryAsync>();
 
             services.AddLogging(c => c.AddFluentMigratorConsole())

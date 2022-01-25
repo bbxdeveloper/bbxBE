@@ -8,6 +8,7 @@ namespace bbxBE.Domain.Entities
     public class USR_USER : BaseEntity
     {
         public string USR_NAME { get; set; }
+        
         public string USR_EMAIL { get; set; }
         public string USR_LOGIN { get; set; }
         public string USR_PASSWDHASH { get; set; }

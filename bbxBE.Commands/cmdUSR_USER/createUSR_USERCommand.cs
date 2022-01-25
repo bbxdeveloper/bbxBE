@@ -22,29 +22,26 @@ namespace bbxBE.Commands.cmdUSR_USER
         public string USR_PASSWDHASH { get; set; }
         public string USR_COMMENT { get; set; }
         public bool USR_ACTIVE { get; set; }
-
-
-
-        public class createUSR_USERCommandHandler : IRequestHandler<createUSR_USERCommand, Response<long>>
-        {
-            private readonly IUSR_USERRepositoryAsync _usrRepository;
-            private readonly IMapper _mapper;
-
-            public createUSR_USERCommandHandler(IUSR_USERRepositoryAsync positionRepository, IMapper mapper)
-            {
-                _usrRepository = positionRepository;
-                _mapper = mapper;
-            }
-
-            public async Task<Response<long>> Handle(createUSR_USERCommand request, CancellationToken cancellationToken)
-            {
-                var usr = _mapper.Map<USR_USER>(request);
-                await _usrRepository.AddAsync(usr);
-                return new Response<long>(usr.ID);
-            }
-
-     
-        }
     }
- 
+
+    public class createUSR_USERCommandHandler : IRequestHandler<createUSR_USERCommand, Response<long>>
+    {
+        private readonly IUSR_USERRepositoryAsync _usrRepository;
+        private readonly IMapper _mapper;
+
+        public createUSR_USERCommandHandler(IUSR_USERRepositoryAsync positionRepository, IMapper mapper)
+        {
+            _usrRepository = positionRepository;
+            _mapper = mapper;
+        }
+
+        public async Task<Response<long>> Handle(createUSR_USERCommand request, CancellationToken cancellationToken)
+        {
+            var usr = _mapper.Map<USR_USER>(request);
+            await _usrRepository.AddAsync(usr);
+            return new Response<long>(0);
+        }
+
+
+    }
 }
