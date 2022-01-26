@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\bbxBE.Application\bbxBE.Application.csproj" />
     <ProjectReference Include="..\bbxBE.Domain\bbxBE.Domain.csproj" />
+    <ProjectReference Include="..\bbxBE.Queires\bbxBE.Queires.csproj" />
   </ItemGroup>
 
 </Project>

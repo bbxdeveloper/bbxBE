@@ -1,4 +1,6 @@
-﻿using bbxBE.Application.Wrappers;
+﻿using bbxBE.Application.Features.Positions.Queries.GetPositions;
+using bbxBE.Application.Interfaces.Queries;
+using bbxBE.Application.Wrappers;
 using bbxBE.Commands.cmdUSR_USER;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +30,17 @@ namespace bbxBE.WebApi.Controllers.v1
             _USRCommandHandler = USRCommandHandler;
     }
 
+
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] IGetUSR_USERQuery filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
 
         /// <summary>
         /// POST api/controller
@@ -65,7 +78,7 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
         // GET: USRController/Delete/5
-        [HttpGet("delete/{id}")]
+        [HttpDelete("delete/{id}")]
         public ActionResult Delete(int id)
         {
             return Ok();

@@ -4,6 +4,13 @@
         <name>bbxBE.WebApi</name>
     </assembly>
     <members>
+        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Get(bbxBE.Application.Interfaces.Queries.IGetUSR_USERQuery)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Post(bbxBE.Commands.cmdUSR_USER.createUSR_USERCommand)">
             <summary>
             POST api/controller

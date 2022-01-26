@@ -2,6 +2,7 @@ using bbxBE.Application;
 using bbxBE.Commands;
 using bbxBE.Infrastructure.Persistence;
 using bbxBE.Infrastructure.Shared;
+using bbxBE.Queries;
 using bbxBE.WebApi.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,6 +27,7 @@ namespace bbxBE.WebApi
         {
             services.AddApplicationLayer();
             services.AddCommandInfrastructure(_config);
+            services.AddQueryInfrastructure(_config);
             services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
             services.AddSwaggerExtension();

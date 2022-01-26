@@ -1,5 +1,6 @@
 ﻿//using bbxBE.Application.Features.Positions.Queries.GetPositions;
 using bbxBE.Application.Interfaces;
+using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Parameters;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;
@@ -13,6 +14,6 @@ namespace bbxBE.Application.Interfaces.Repositories
 
         Task<bool> SeedDataAsync(int rowCount);
 
-     //   Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> GetPagedPositionReponseAsync(GetPositionsQuery requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> GetPagedUSR_USERReponseAsync(IGetUSR_USERQuery requestParameters);
     }
 }

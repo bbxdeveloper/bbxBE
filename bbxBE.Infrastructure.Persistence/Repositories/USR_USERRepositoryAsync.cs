@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using bbxBE.Application.Features.Positions.Queries.GetPositions;
+using bbxBE.Application.Interfaces.Queries;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -47,12 +49,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             return true;
         }
-
-        /*
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> GetPagedPositionReponseAsync(GetPositionsQuery requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> GetPagedUSR_USERReponseAsync(IGetUSR_USERQuery requestParameter)
         {
-            var positionNumber = requestParameter.PositionNumber;
-            var positionTitle = requestParameter.PositionTitle;
+            var loginName = requestParameter.USR_LOGIN;
 
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
@@ -62,7 +61,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _positions
+            var result = _users
                 .AsNoTracking()
                 .AsExpandable();
 
@@ -70,7 +69,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await result.CountAsync();
 
             // filter data
-            FilterByColumn(ref result, positionNumber, positionTitle);
+            FilterByColumn(ref result, loginName);
 
             // Count records after filter
             recordsFiltered = await result.CountAsync();
@@ -91,7 +90,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<Position>("new(" + fields + ")");
+                result = result.Select<USR_USER>("new(" + fields + ")");
             }
             // paging
             result = result
@@ -106,25 +105,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterByColumn(ref IQueryable<Position> positions, string positionNumber, string positionTitle)
+        private void FilterByColumn(ref IQueryable<USR_USER> positions, string USR_LOGIN)
         {
             if (!positions.Any())
                 return;
 
-            if (string.IsNullOrEmpty(positionTitle) && string.IsNullOrEmpty(positionNumber))
+            if (string.IsNullOrEmpty(USR_LOGIN) )
                 return;
 
-            var predicate = PredicateBuilder.New<Position>();
+            var predicate = PredicateBuilder.New<USR_USER>();
 
-            if (!string.IsNullOrEmpty(positionNumber))
-                predicate = predicate.Or(p => p.PositionNumber.Contains(positionNumber.Trim()));
-
-            if (!string.IsNullOrEmpty(positionTitle))
-                predicate = predicate.Or(p => p.PositionTitle.Contains(positionTitle.Trim()));
+            if (!string.IsNullOrEmpty(USR_LOGIN))
+                predicate = predicate.Or(p => p.USR_LOGIN.Contains(USR_LOGIN.Trim()));
 
             positions = positions.Where(predicate);
         }
-        */
 
+    
     }
 }
