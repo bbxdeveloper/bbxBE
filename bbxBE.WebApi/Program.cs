@@ -42,12 +42,10 @@ namespace bbxBE.WebApi
                 }
             }
 
-            CreateHostBuilder(args)
-                .Build()
-                .MigrateDatabase()
+            host
+                .MigrateDatabase()                
                 .Run();
 
-            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

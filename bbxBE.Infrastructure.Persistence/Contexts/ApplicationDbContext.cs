@@ -24,7 +24,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
             _loggerFactory = loggerFactory;
         }
 
-    //    public DbSet<USR_USER> Users { get; set; }
+        public DbSet<USR_USER> USR_USER { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

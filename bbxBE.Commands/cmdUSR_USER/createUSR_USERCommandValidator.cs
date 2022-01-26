@@ -27,8 +27,10 @@ namespace bbxBE.Commands.cmdUSR_USER
                 .NotNull()
                 .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.")
                 .MustAsync(IsUniqueNameAsync).WithMessage("{PropertyName} already exists.");
-        }
-        
+            RuleFor(p => p.USR_LOGIN)
+              .NotEmpty().WithMessage("{PropertyName} is required.");
+      }
+
         private async Task<bool> IsUniqueNameAsync(string p_USR_NAME, CancellationToken cancellationToken)
         {
             return await _usrRepository.IsUniqueNameAsync(p_USR_NAME);
