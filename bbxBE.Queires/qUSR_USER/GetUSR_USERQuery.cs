@@ -17,7 +17,7 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
         public string USR_LOGIN { get; set; }
     }
 
-    public class GetAllUSR_USERQueryHandler : IRequestHandler<IGetUSR_USERQuery, PagedResponse<IEnumerable<Entity>>>
+    public class GetAllUSR_USERQueryHandler : IRequestHandler<GetUSR_USERQuery, PagedResponse<IEnumerable<Entity>>>
     {
         private readonly IUSR_USERRepositoryAsync _positionRepository;
         private readonly IMapper _mapper;
@@ -30,7 +30,7 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
             _modelHelper = modelHelper;
         }
 
-        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(IGetUSR_USERQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(GetUSR_USERQuery request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;

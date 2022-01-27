@@ -4,7 +4,7 @@
         <name>bbxBE.WebApi</name>
     </assembly>
     <members>
-        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Get(bbxBE.Application.Interfaces.Queries.IGetUSR_USERQuery)">
+        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Get(bbxBE.Application.Features.Positions.Queries.GetPositions.GetUSR_USERQuery)">
             <summary>
             GET: api/controller
             </summary>

@@ -49,8 +49,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             return true;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> GetPagedUSR_USERReponseAsync(IGetUSR_USERQuery requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> GetPagedUSR_USERReponseAsync(object requestParameterX)
         {
+
+            var requestParameter = (GetUSR_USERQuery)requestParameterX;
             var loginName = requestParameter.USR_LOGIN;
 
             var pageNumber = requestParameter.PageNumber;
