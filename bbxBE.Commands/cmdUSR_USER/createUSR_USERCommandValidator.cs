@@ -1,9 +1,11 @@
-﻿using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Consts;
+using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -22,19 +24,42 @@ namespace bbxBE.Commands.cmdUSR_USER
         {
             this._usrRepository = usrRepository;
 
-            RuleFor(p => p.USR_NAME)
-                .NotEmpty().WithMessage("{PropertyName} is required.")
-                .NotNull()
-                .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.")
-                .MustAsync(IsUniqueNameAsync).WithMessage("{PropertyName} already exists.");
-            RuleFor(p => p.USR_LOGIN)
-              .NotEmpty().WithMessage("{PropertyName} is required.");
-      }
+            RuleFor(p => p.Name)
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80)
+                .MustAsync(IsUniqueNameAsync).WithMessage(bbxBEConsts.FV_EXISTS);
+
+            RuleFor(p => p.Email)
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80)
+                .MustAsync(IsValidEmailAsync).WithMessage(bbxBEConsts.FV_INVALIDEMAIL);
+
+            RuleFor(p => p.LoginName)
+                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+
+            RuleFor(p => p.Comment)
+                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .MaximumLength(2000).WithMessage(bbxBEConsts.FV_LEN2000);
+        }
 
         private async Task<bool> IsUniqueNameAsync(string p_USR_NAME, CancellationToken cancellationToken)
         {
             return await _usrRepository.IsUniqueNameAsync(p_USR_NAME);
         }
+        private async Task<bool> IsValidEmailAsync(string p_USR_EMAIL, CancellationToken cancellationToken)
+        {
+
+            ParserOptions po = new ParserOptions();
+            po.AllowAddressesWithoutDomain = false;
+            po.AddressParserComplianceMode = RfcComplianceMode.Strict;
+
+            return await Task.FromResult(MailboxAddress.TryParse(po, p_USR_EMAIL, out _)).ConfigureAwait(false);
+        }
     }
- 
+
 }
