@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using bbxBE.Application.Interfaces.Queries;
+using bbxBE.Queries.ViewModels;
+using bbxBE.Domain.Extensions;
 
 namespace bbxBE.Application.Features.Positions.Queries.GetPositions
 {
@@ -34,23 +36,24 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
         {
             var validFilter = request;
             var pagination = request;
-            /*
+            
             //filtered fields security
             if (!string.IsNullOrEmpty(validFilter.Fields))
             {
                 //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetPositionsViewModel>(validFilter.Fields);
+                validFilter.Fields = _modelHelper.ValidateModelFields<GetUSR_USERViewModel>(validFilter.Fields);
             }
             if (string.IsNullOrEmpty(validFilter.Fields))
             {
                 //default fields from view model
-                validFilter.Fields = _modelHelper.GetModelFields<GetPositionsViewModel>();
+                validFilter.Fields = _modelHelper.GetModelFields<GetUSR_USERViewModel>();
             }
-            */
+
             // query based on filter
             var entityPositions = await _positionRepository.GetPagedUSR_USERReponseAsync(validFilter);
-            var data = entityPositions.data;
+            var data = entityPositions.data.MapItemsFieldsByMapToAnnotation<GetUSR_USERViewModel>();
             RecordsCount recordCount = entityPositions.recordsCount;
+
             // response wrapper
             return new PagedResponse<IEnumerable<Entity>>(data, validFilter.PageNumber, validFilter.PageSize, recordCount);
         }

@@ -12,7 +12,6 @@ namespace bbxBE.Application.Mappings
     {
         public GeneralProfile()
         {
-//            CreateMap<USR_USER, GetPositionsViewModel>().ReverseMap();
             CreateMap<createUSR_USERCommand, USR_USER>();
         }
     }
