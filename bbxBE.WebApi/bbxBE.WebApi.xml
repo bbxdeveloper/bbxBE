@@ -4,7 +4,14 @@
         <name>bbxBE.WebApi</name>
     </assembly>
     <members>
-        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Get(bbxBE.Application.Features.Positions.Queries.GetPositions.GetUSR_USERQuery)">
+        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Get(bbxBE.Application.Features.Positions.Queries.GetPositions.GetUSR_USER)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Query(bbxBE.Application.Features.Positions.Queries.GetPositions.QueryUSR_USER)">
             <summary>
             GET: api/controller
             </summary>

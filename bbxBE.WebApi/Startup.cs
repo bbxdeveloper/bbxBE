@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System.Text.Json;
 
 namespace bbxBE.WebApi
 {
@@ -49,7 +50,18 @@ namespace bbxBE.WebApi
             services.AddVersionedApiExplorerExtension();
 
 
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
 
+            // also the following given it's a Web API project
+
+            services.AddControllers().AddJsonOptions(options => {
+                options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
@@ -83,6 +95,7 @@ namespace bbxBE.WebApi
              {
                  endpoints.MapControllers();
              });
+
         }
     }
 }

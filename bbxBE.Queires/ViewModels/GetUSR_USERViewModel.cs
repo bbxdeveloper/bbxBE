@@ -9,8 +9,14 @@ namespace bbxBE.Queries.ViewModels
     /// </summary>
     class GetUSR_USERViewModel
     {
+        [MapTo("ID")]
+        public string ID { get; set; }
+
         [MapTo("Name")]
         public string USR_NAME { get; set; }
+
+        [MapTo("LoginName")]
+        public string USR_LOGIN { get; set; }
 
         [MapTo("Email")]
         public string USR_EMAIL { get; set; }

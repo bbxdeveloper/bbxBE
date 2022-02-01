@@ -14,25 +14,26 @@ using bbxBE.Domain.Extensions;
 
 namespace bbxBE.Application.Features.Positions.Queries.GetPositions
 {
-    public class GetUSR_USERQuery : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
+    public class QueryUSR_USER : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
-        public string USR_LOGIN { get; set; }
+        public string Name { get; set; }
+        public string LoginName { get; set; }
     }
 
-    public class GetAllUSR_USERQueryHandler : IRequestHandler<GetUSR_USERQuery, PagedResponse<IEnumerable<Entity>>>
+    public class QueryUSR_USERHandler : IRequestHandler<QueryUSR_USER, PagedResponse<IEnumerable<Entity>>>
     {
         private readonly IUSR_USERRepositoryAsync _positionRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetAllUSR_USERQueryHandler(IUSR_USERRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryUSR_USERHandler(IUSR_USERRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
         {
             _positionRepository = positionRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(GetUSR_USERQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryUSR_USER request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;
@@ -50,9 +51,9 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
             }
 
             // query based on filter
-            var entityPositions = await _positionRepository.GetPagedUSR_USERReponseAsync(validFilter);
-            var data = entityPositions.data.MapItemsFieldsByMapToAnnotation<GetUSR_USERViewModel>();
-            RecordsCount recordCount = entityPositions.recordsCount;
+            var entitUsers = await _positionRepository.QueryPagedUSR_USERReponseAsync(validFilter);
+            var data = entitUsers.data.MapItemsFieldsByMapToAnnotation<GetUSR_USERViewModel>();
+            RecordsCount recordCount = entitUsers.recordsCount;
 
             // response wrapper
             return new PagedResponse<IEnumerable<Entity>>(data, validFilter.PageNumber, validFilter.PageSize, recordCount);

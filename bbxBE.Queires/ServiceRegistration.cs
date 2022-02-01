@@ -23,7 +23,7 @@ namespace bbxBE.Queries
 
           
 
-            Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("QueryHandler")).ToList().ForEach((t) =>
+            Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>
             {
                 services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
             });

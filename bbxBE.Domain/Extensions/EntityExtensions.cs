@@ -18,7 +18,7 @@ namespace bbxBE.Domain.Extensions
             var mapped = new List<Entity>();
             foreach (Entity m in pData)
             {
-                mapped.Add(m.MapFieldsByMapToAnnotation<TDestination>());
+                mapped.Add(m.MapItemFieldsByMapToAnnotation<TDestination>());
             }
             return mapped;
         }
@@ -28,7 +28,7 @@ namespace bbxBE.Domain.Extensions
         /// <typeparam name="TDestination">Type of eg. viewmodel</typeparam>
         /// <param name="pData">Entity to map</param>
         /// <returns></returns>
-        public static Entity MapFieldsByMapToAnnotation<TDestination>(this Entity pData)
+        public static Entity MapItemFieldsByMapToAnnotation<TDestination>(this Entity pData)
         {
             // Entity for result
             var mapped = new Entity();

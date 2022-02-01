@@ -37,7 +37,18 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetUSR_USERQuery filter)
+        public async Task<IActionResult> Get([FromQuery] GetUSR_USER filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
+
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet("query")]
+        public async Task<IActionResult> Query([FromQuery] QueryUSR_USER filter)
         {
             return Ok(await Mediator.Send(filter));
         }

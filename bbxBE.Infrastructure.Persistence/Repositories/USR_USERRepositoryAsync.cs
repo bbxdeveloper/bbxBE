@@ -49,11 +49,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             return true;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> GetPagedUSR_USERReponseAsync(object requestParameterX)
+
+        public async Task<Entity> GetUSR_USERReponseAsync(object requestParametersX)
+        {
+            var requestParameter = (GetUSR_USER)requestParametersX;
+
+            var ID = requestParameter.ID;
+
+            var user = await GetByIdAsync(ID);
+      
+            var fields = requestParameter.Fields;
+
+            // shape data
+            var shapeData = _dataShaper.ShapeData(user, fields);
+
+            return shapeData;
+        }
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERReponseAsync(object requestParameterX)
         {
 
-            var requestParameter = (GetUSR_USERQuery)requestParameterX;
-            var loginName = requestParameter.USR_LOGIN;
+            var requestParameter = (QueryUSR_USER)requestParameterX;
+
+            var name = requestParameter.Name;
+            var loginName = requestParameter.LoginName;
 
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
@@ -71,7 +89,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await result.CountAsync();
 
             // filter data
-            FilterByColumn(ref result, loginName);
+            FilterByColumns(ref result, name, loginName);
 
             // Count records after filter
             recordsFiltered = await result.CountAsync();
@@ -107,22 +125,26 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterByColumn(ref IQueryable<USR_USER> positions, string USR_LOGIN)
+        private void FilterByColumns(ref IQueryable<USR_USER> p_USR, string USR_NAME, string USR_LOGIN)
         {
-            if (!positions.Any())
+            if (!p_USR.Any())
                 return;
 
-            if (string.IsNullOrEmpty(USR_LOGIN) )
+            if ( string.IsNullOrEmpty(USR_NAME) && string.IsNullOrEmpty(USR_LOGIN))
                 return;
 
             var predicate = PredicateBuilder.New<USR_USER>();
 
-            if (!string.IsNullOrEmpty(USR_LOGIN))
-                predicate = predicate.Or(p => p.USR_LOGIN.Contains(USR_LOGIN.Trim()));
-
-            positions = positions.Where(predicate);
-        }
-
     
+            if (!string.IsNullOrEmpty(USR_NAME))
+                predicate = predicate.And(p => p.USR_NAME.Contains(USR_NAME.Trim()));
+
+
+            if (!string.IsNullOrEmpty(USR_LOGIN))
+                predicate = predicate.And(p => p.USR_LOGIN.Contains(USR_LOGIN.Trim()));
+
+            p_USR = p_USR.Where(predicate);
+        }
+     
     }
 }
