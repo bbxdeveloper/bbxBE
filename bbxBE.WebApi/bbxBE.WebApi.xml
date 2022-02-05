@@ -18,7 +18,7 @@
             <param name="filter"></param>
             <returns></returns>
         </member>
-        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Post(bbxBE.Commands.cmdUSR_USER.createUSR_USERCommand)">
+        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Create(bbxBE.Commands.cmdUSR_USER.CreateUSR_USERCommand)">
             <summary>
             POST api/controller
             </summary>

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
-using static bbxBE.Commands.cmdUSR_USER.createUSR_USERCommand;
+using static bbxBE.Commands.cmdUSR_USER.CreateUSR_USERCommand;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
@@ -19,11 +19,11 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<createUSR_USERCommand, Response<long>> _USRCommandHandler;
+        private readonly IRequestHandler<CreateUSR_USERCommand, Response<long>> _USRCommandHandler;
         public USRController(
            IWebHostEnvironment env,
            IConfiguration conf,
-           IRequestHandler<createUSR_USERCommand, Response<long>> USRCommandHandler)
+           IRequestHandler<CreateUSR_USERCommand, Response<long>> USRCommandHandler)
         {
             _env = env;
             _conf = conf;
@@ -59,40 +59,25 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Post(createUSR_USERCommand command)
+        public async Task<IActionResult> Create(CreateUSR_USERCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
 
-        // GET: USRController/Details/5
-        [HttpGet("details/{id}")]
-        public ActionResult Details(int id)
-        {
-            return Ok();
-        }
-
-        // POST: USRController/Create
-        [HttpPost("create")]
-        public async Task<ActionResult> Create(createUSR_USERCommand req )
-        {
-            
-            return Ok(await Mediator.Send(_USRCommandHandler.Handle(req, default)));
-
-        }
 
         // POST: USRController/Edit/5
-        [HttpPost("edit/{id}")]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [HttpPut]
+ //       [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(UpdateUSR_USERCommand command)
         {
-            return Ok();
+            return Ok(await Mediator.Send(command));
         }
 
         // GET: USRController/Delete/5
-        [HttpDelete("delete/{id}")]
-        public ActionResult Delete(int id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(DeleteUSR_USERCommand command)
         {
-            return Ok();
+            return Ok(await Mediator.Send(command));
         }
     }
 }

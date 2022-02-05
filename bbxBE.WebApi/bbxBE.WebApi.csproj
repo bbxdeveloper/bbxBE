@@ -38,4 +38,10 @@
     <ProjectReference Include="..\bbxBE.Infrastructure.Shared\bbxBE.Infrastructure.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="bbxBE.WebApi.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

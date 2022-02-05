@@ -16,13 +16,18 @@ using System.Threading.Tasks;
 namespace bbxBE.Commands.cmdUSR_USER
 {
 
-    public class createUSR_USERCommandValidator : AbstractValidator<CreateUSR_USERCommand>
+    public class UpdateUSR_USERCommandValidator : AbstractValidator<UpdateUSR_USERCommand>
     {
         private readonly IUSR_USERRepositoryAsync _usrRepository;
 
-        public createUSR_USERCommandValidator(IUSR_USERRepositoryAsync usrRepository)
+        public UpdateUSR_USERCommandValidator(IUSR_USERRepositoryAsync usrRepository)
         {
             this._usrRepository = usrRepository;
+
+            RuleFor(p => p.ID)
+                .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+
 
             RuleFor(p => p.Name)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
@@ -45,6 +50,7 @@ namespace bbxBE.Commands.cmdUSR_USER
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.FV_LEN2000);
+            
         }
 
         private async Task<bool> IsUniqueNameAsync(string p_USR_NAME, CancellationToken cancellationToken)

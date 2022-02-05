@@ -83,13 +83,19 @@ namespace bbxBE.WebApi
             loggerFactory.AddSerilog();
             app.UseHttpsRedirection();
             app.UseRouting();
+
             //Enable CORS
-            app.UseCors("AllowAll");
+            app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+            app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSwaggerExtension();
             app.UseErrorHandlingMiddleware();
             app.UseHealthChecks("/health");
+
 
             app.UseEndpoints(endpoints =>
              {

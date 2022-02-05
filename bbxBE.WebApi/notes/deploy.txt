@@ -1,0 +1,4 @@
+﻿Deploy feljegyzések
+
+1. App Service publis profile-ben van az FTP útvonal + usr+pwd
+2. a bbxBE.WebApi.xml legyen 'Copy always'

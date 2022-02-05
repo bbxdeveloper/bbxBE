@@ -4,7 +4,7 @@ using bbxBE.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static bbxBE.Commands.cmdUSR_USER.createUSR_USERCommand;
+using static bbxBE.Commands.cmdUSR_USER.CreateUSR_USERCommand;
 
 namespace bbxBE.Application.Mappings
 {
@@ -12,7 +12,9 @@ namespace bbxBE.Application.Mappings
     {
         public GeneralProfile()
         {
-            CreateMap<createUSR_USERCommand, USR_USER>();
+            CreateMap<CreateUSR_USERCommand, USR_USER>();
+            CreateMap<UpdateUSR_USERCommand, USR_USER>();
+            CreateMap<DeleteUSR_USERCommand, USR_USER>();
         }
     }
 }
