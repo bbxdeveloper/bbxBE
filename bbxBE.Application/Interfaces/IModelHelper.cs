@@ -1,4 +1,5 @@
-﻿namespace bbxBE.Application.Interfaces
+﻿
+namespace bbxBE.Application.Interfaces
 {
     public interface IModelHelper
     {

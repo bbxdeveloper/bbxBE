@@ -1,6 +1,6 @@
-﻿using bbxBE.Application.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using bbxBE.Application.Interfaces;
 using bbxBE.Infrastructure.Persistence.Contexts;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +18,9 @@ namespace bbxBE.Infrastructure.Persistence.Repository
             _dbContext = dbContext;
         }
 
-        public virtual async Task<T> GetByIdAsync(Guid id)
+        public virtual async Task<T> GetByIdAsync(long ID)
         {
-            return await _dbContext.Set<T>().FindAsync(id);
+            return await _dbContext.Set<T>().FindAsync(ID);
         }
 
         public async Task<IEnumerable<T>> GetPagedReponseAsync(int pageNumber, int pageSize)
@@ -70,5 +70,6 @@ namespace bbxBE.Infrastructure.Persistence.Repository
                  .Set<T>()
                  .ToListAsync();
         }
+
     }
 }

@@ -1,8 +1,10 @@
-﻿namespace bbxBE.Application.Parameters
+﻿using bbxBE.Application.Interfaces.Queries;
+
+namespace bbxBE.Application.Parameters
 {
-    public class QueryParameter : PagingParameter
+    public class QueryParameter : PagingParameter, IQueryParameter
     {
-        public virtual string OrderBy { get; set; }
-        public virtual string Fields { get; set; }
+        public  string OrderBy { get; set; }
+        public  string Fields { get; set; }
     }
 }

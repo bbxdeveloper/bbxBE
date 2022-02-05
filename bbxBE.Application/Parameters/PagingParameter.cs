@@ -1,9 +1,10 @@
-﻿namespace bbxBE.Application.Parameters
+﻿using bbxBE.Application.Interfaces.Queries;
+
+namespace bbxBE.Application.Parameters
 {
-    public class PagingParameter
+    public class PagingParameter : IPagingParameter
     {
         private const int maxPageSize = 200;
-        public int PageNumber { get; set; } = 1;
         private int _pageSize = 10;
 
         public int PageSize
@@ -17,5 +18,7 @@
                 _pageSize = (value > maxPageSize) ? maxPageSize : value;
             }
         }
+
+        public int PageNumber { get; set; } = 1;
     }
 }

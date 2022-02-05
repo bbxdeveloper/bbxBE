@@ -1,12 +1,12 @@
-﻿using bbxBE.Application.DTOs.Email;
-using bbxBE.Application.Exceptions;
-using bbxBE.Application.Interfaces;
-using bbxBE.Domain.Settings;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using bbxBE.Application.DTOs.Email;
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Interfaces;
+using bbxBE.Domain.Settings;
 using System.Threading.Tasks;
 
 namespace bbxBE.Infrastructure.Shared.Services

@@ -1,9 +1,9 @@
-﻿using bbxBE.Application.Interfaces;
-using bbxBE.Domain.Common;
-using bbxBE.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
+using bbxBE.Application.Interfaces;
+using bbxBE.Domain.Common;
+using bbxBE.Domain.Entities;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,20 +24,20 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
             _loggerFactory = loggerFactory;
         }
 
-        public DbSet<Position> Positions { get; set; }
+        public DbSet<USR_USER> USR_USER { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            foreach (var entry in ChangeTracker.Entries<AuditableBaseEntity>())
+            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
             {
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.Created = _dateTime.NowUtc;
+                       entry.Entity.CreateTime = _dateTime.NowUtc;
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.LastModified = _dateTime.NowUtc;
+                        entry.Entity.UppdateTime = _dateTime.NowUtc;
                         break;
                 }
             }
@@ -47,8 +47,10 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         protected override void OnModelCreating(ModelBuilder builder)
         {
             var _mockData = this.Database.GetService<IMockService>();
-            var seedPositions = _mockData.SeedPositions(1000);
-            builder.Entity<Position>().HasData(seedPositions);
+        //    var seedPositions = _mockData.SeedPositions(1000);
+        //    builder.Entity<Position>().HasData(seedPositions);
+
+            //mock adatokkal tölthetünk itt
 
             base.OnModelCreating(builder);
         }

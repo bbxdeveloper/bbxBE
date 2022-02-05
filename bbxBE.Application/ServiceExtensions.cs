@@ -13,12 +13,15 @@ namespace bbxBE.Application
     {
         public static void AddApplicationLayer(this IServiceCollection services)
         {
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-            services.AddScoped<IDataShapeHelper<Position>, DataShapeHelper<Position>>();
-            services.AddScoped<IDataShapeHelper<Employee>, DataShapeHelper<Employee>>();
+      //      services.AddAutoMapper(Assembly.GetExecutingAssembly());
+       //     services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            services.AddMediatR(Assembly.GetExecutingAssembly());                       //Controller  Mediator DI -hez
+            services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();
+
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); //Validáció behúzása?
+
+            //services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<Employee>>();
             services.AddScoped<IModelHelper, ModelHelper>();
             //services.AddScoped<IMockData, MockData>();
         }

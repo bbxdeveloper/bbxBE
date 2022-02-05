@@ -1,17 +1,13 @@
-﻿using bbxBE.Domain.Entities;
-using Bogus;
+﻿using Bogus;
+using bbxBE.Domain.Entities;
 
 namespace bbxBE.Infrastructure.Shared.Mock
 {
-    public class PositionInsertBogusConfig : Faker<Position>
+    public class USR_USERInsertBogusConfig : Faker<USR_USER>
     {
-        public PositionInsertBogusConfig()
+        public USR_USERInsertBogusConfig()
         {
-            RuleFor(o => o.PositionTitle, f => f.Name.JobTitle());
-            RuleFor(o => o.PositionNumber, f => f.Commerce.Ean13());
-            RuleFor(o => o.PositionDescription, f => f.Name.JobDescriptor());
-            RuleFor(o => o.CreatedBy, f => f.Name.FullName());
-            RuleFor(o => o.PositionSalary, f => f.Finance.Amount());
+            RuleFor(o => o.USR_NAME, f => f.Name.FirstName());
         }
     }
 }

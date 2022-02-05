@@ -1,4 +1,5 @@
-﻿namespace bbxBE.Domain.Settings
+﻿
+namespace bbxBE.Domain.Settings
 {
     public class MailSettings
     {

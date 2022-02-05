@@ -1,14 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Version>1.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
     <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="5.0.26" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="6.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.12" />
   </ItemGroup>
@@ -16,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\bbxBE.Application\bbxBE.Application.csproj" />
     <ProjectReference Include="..\bbxBE.Domain\bbxBE.Domain.csproj" />
+    <ProjectReference Include="..\bbxBE.Queires\bbxBE.Queires.csproj" />
   </ItemGroup>
 
 </Project>

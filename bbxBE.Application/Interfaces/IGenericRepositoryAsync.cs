@@ -6,7 +6,7 @@ namespace bbxBE.Application.Interfaces
 {
     public interface IGenericRepositoryAsync<T> where T : class
     {
-        Task<T> GetByIdAsync(Guid id);
+        Task<T> GetByIdAsync(long ID);
 
         Task<IEnumerable<T>> GetAllAsync();
 

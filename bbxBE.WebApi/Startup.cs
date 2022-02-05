@@ -1,7 +1,8 @@
 using bbxBE.Application;
+using bbxBE.Commands;
 using bbxBE.Infrastructure.Persistence;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Shared;
+using bbxBE.Queries;
 using bbxBE.WebApi.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System.Text.Json;
 
 namespace bbxBE.WebApi
 {
@@ -25,10 +27,14 @@ namespace bbxBE.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationLayer();
+            services.AddCommandInfrastructure(_config);
+            services.AddQueryInfrastructure(_config);
             services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
             services.AddSwaggerExtension();
             services.AddControllersExtension();
+
+
             // CORS
             services.AddCorsExtension();
             services.AddHealthChecks();
@@ -42,9 +48,23 @@ namespace bbxBE.WebApi
                 .AddApiExplorer();
             // API explorer version
             services.AddVersionedApiExplorerExtension();
+
+
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
+
+            // also the following given it's a Web API project
+
+            services.AddControllers().AddJsonOptions(options => {
+                options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, ApplicationDbContext dbContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -56,25 +76,32 @@ namespace bbxBE.WebApi
                 app.UseHsts();
             }
 
-            dbContext.Database.EnsureCreated();
+            //dbContext.Database.EnsureCreated();
 
             // Add this line; you'll need `using Serilog;` up the top, too
             app.UseSerilogRequestLogging();
             loggerFactory.AddSerilog();
             app.UseHttpsRedirection();
             app.UseRouting();
+
             //Enable CORS
-            app.UseCors("AllowAll");
+            app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+            app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSwaggerExtension();
             app.UseErrorHandlingMiddleware();
             app.UseHealthChecks("/health");
 
+
             app.UseEndpoints(endpoints =>
              {
                  endpoints.MapControllers();
              });
+
         }
     }
 }
