@@ -13,6 +13,7 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using bbxBE.Application.Features.Positions.Queries.GetPositions;
 using bbxBE.Application.Interfaces.Queries;
+using bbxBE.Application.BLL;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -39,6 +40,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                .AllAsync(p => p.USR_NAME != USR_NAME);
          }
 
+
         public async Task<bool> SeedDataAsync(int rowCount)
         {
             /* MOCK
@@ -49,7 +51,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             return true;
         }
-
+   
         public async Task<Entity> GetUSR_USERReponseAsync(object requestParametersX)
         {
             var requestParameter = (GetUSR_USER)requestParametersX;

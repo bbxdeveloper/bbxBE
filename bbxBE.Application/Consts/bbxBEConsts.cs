@@ -7,6 +7,7 @@ namespace bbxBE.Application.Consts
     public static  class bbxBEConsts
     {
         public static string DB = "bbxdb";
+        public static string PwdSalt = "PwdSalt";
 
         public static string FV_REQUIRED = "{PropertyName}|{PropertyName} is required.";
         public static string FV_LEN80 = "{PropertyName}|{PropertyName} must not exceed 80 characters.";

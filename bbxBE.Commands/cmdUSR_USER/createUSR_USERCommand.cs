@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Conventions;
+using bbxBE.Application.BLL;
+using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
@@ -15,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace bbxBE.Commands.cmdUSR_USER
 {
-    public class CreateUSR_USERCommand : IRequest<Response<long>>
+    public class CreateUSR_USERCommand : IRequest<Response<USR_USER>>
     {
         [MapTo("USR_NAME")]
         public string Name { get; set; }
@@ -29,22 +31,26 @@ namespace bbxBE.Commands.cmdUSR_USER
 
     }
 
-    public class CreateUSR_USERCommandHandler : IRequestHandler<CreateUSR_USERCommand, Response<long>>
+    public class CreateUSR_USERCommandHandler : IRequestHandler<CreateUSR_USERCommand, Response<USR_USER>>
     {
         private readonly IUSR_USERRepositoryAsync _usrRepository;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public CreateUSR_USERCommandHandler(IUSR_USERRepositoryAsync positionRepository, IMapper mapper)
+        public CreateUSR_USERCommandHandler(IUSR_USERRepositoryAsync positionRepository, IMapper mapper, IConfiguration configuration)
         {
             _usrRepository = positionRepository;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
-        public async Task<Response<long>> Handle(CreateUSR_USERCommand request, CancellationToken cancellationToken)
+        public async Task<Response<USR_USER>> Handle(CreateUSR_USERCommand request, CancellationToken cancellationToken)
         {
             var usr = _mapper.Map<USR_USER>(request);
+            usr.USR_PASSWDHASH = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.PwdSalt));
+
             await _usrRepository.AddAsync(usr);
-            return new Response<long>(0);
+            return new Response<USR_USER>(usr);
         }
 
 
