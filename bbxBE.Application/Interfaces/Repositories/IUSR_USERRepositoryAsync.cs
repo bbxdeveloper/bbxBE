@@ -10,7 +10,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 {
     public interface IUSR_USERRepositoryAsync : IGenericRepositoryAsync<USR_USER>
     {
-        Task<bool> IsUniqueNameAsync(string positionNumber);
+        Task<bool> IsUniqueNameAsync(string USR_NAME, long? ID = null);
 
         Task<bool> SeedDataAsync(int rowCount);
 

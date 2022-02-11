@@ -2,6 +2,7 @@
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Wrappers;
 using bbxBE.Commands.cmdUSR_USER;
+using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -19,11 +20,11 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<CreateUSR_USERCommand, Response<long>> _USRCommandHandler;
+        private readonly IRequestHandler<CreateUSR_USERCommand, Response<USR_USER>> _USRCommandHandler;
         public USRController(
            IWebHostEnvironment env,
            IConfiguration conf,
-           IRequestHandler<CreateUSR_USERCommand, Response<long>> USRCommandHandler)
+           IRequestHandler<CreateUSR_USERCommand, Response<USR_USER>> USRCommandHandler)
         {
             _env = env;
             _conf = conf;

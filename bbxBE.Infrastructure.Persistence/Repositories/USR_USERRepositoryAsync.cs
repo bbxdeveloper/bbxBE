@@ -13,6 +13,7 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using bbxBE.Application.Features.Positions.Queries.GetPositions;
 using bbxBE.Application.Interfaces.Queries;
+using bbxBE.Application.BLL;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -33,11 +34,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
  
-        public async Task<bool> IsUniqueNameAsync(string USR_NAME)
+        public async Task<bool> IsUniqueNameAsync(string USR_NAME, long? ID = null)
         {
-            return await _users
-               .AllAsync(p => p.USR_NAME != USR_NAME);
+            return !await _users.AnyAsync(p => p.USR_NAME == USR_NAME && p.USR_ACTIVE && (ID == null || p.ID != ID.Value));
          }
+
 
         public async Task<bool> SeedDataAsync(int rowCount)
         {
@@ -49,7 +50,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             return true;
         }
-
+   
         public async Task<Entity> GetUSR_USERReponseAsync(object requestParametersX)
         {
             var requestParameter = (GetUSR_USER)requestParametersX;
