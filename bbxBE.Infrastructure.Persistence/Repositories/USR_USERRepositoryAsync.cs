@@ -34,10 +34,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
  
-        public async Task<bool> IsUniqueNameAsync(string USR_NAME)
+        public async Task<bool> IsUniqueNameAsync(string USR_NAME, long? ID = null)
         {
-            return await _users
-               .AllAsync(p => p.USR_NAME != USR_NAME);
+            return !await _users.AnyAsync(p => p.USR_NAME == USR_NAME && p.USR_ACTIVE && (ID == null || p.ID != ID.Value));
          }
 
 

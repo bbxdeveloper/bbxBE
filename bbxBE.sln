@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bbxBE.Infrastructure.Shared
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bbxBE.Commands", "bbxBE.Commands\bbxBE.Commands.csproj", "{656BBDCF-E465-4487-A2E6-AF69B2D31E6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bbxBE.Queires", "bbxBE.Queires\bbxBE.Queires.csproj", "{EEA4785B-A53A-40F1-A4C9-802391157DC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bbxBE.Queires", "bbxBE.Queires\bbxBE.Queires.csproj", "{EEA4785B-A53A-40F1-A4C9-802391157DC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bbxBE.Common", "bbxBE.Common\bbxBE.Common.csproj", "{3A99ED9D-3112-41A6-9E8D-A24E7B41FE50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{EEA4785B-A53A-40F1-A4C9-802391157DC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEA4785B-A53A-40F1-A4C9-802391157DC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEA4785B-A53A-40F1-A4C9-802391157DC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A99ED9D-3112-41A6-9E8D-A24E7B41FE50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A99ED9D-3112-41A6-9E8D-A24E7B41FE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A99ED9D-3112-41A6-9E8D-A24E7B41FE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A99ED9D-3112-41A6-9E8D-A24E7B41FE50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{7E18D30F-69BC-4BF5-8640-B425DEB00D0E} = {5AE26AFF-1996-4827-819C-BE113A0C830C}
 		{656BBDCF-E465-4487-A2E6-AF69B2D31E6F} = {D808B9C3-172D-4F1F-8F0A-10E164A3B4FC}
 		{EEA4785B-A53A-40F1-A4C9-802391157DC8} = {D808B9C3-172D-4F1F-8F0A-10E164A3B4FC}
+		{3A99ED9D-3112-41A6-9E8D-A24E7B41FE50} = {D808B9C3-172D-4F1F-8F0A-10E164A3B4FC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C5FF3417-1002-4B88-91C8-67A483BE4E10}

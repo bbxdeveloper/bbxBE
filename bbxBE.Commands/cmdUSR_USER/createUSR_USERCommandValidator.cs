@@ -42,8 +42,6 @@ namespace bbxBE.Commands.cmdUSR_USER
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
 
             RuleFor(p => p.Comment)
-                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.FV_LEN2000);
         }
 

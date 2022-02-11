@@ -31,6 +31,10 @@ namespace bbxBE.Commands.cmdUSR_USER
         public string Password { get; set; }
         [MapTo("USR_LOGIN")]
         public string Comment { get; set; }
+
+        [MapTo("USR_ACTIVE")]
+        public bool Active { get; set; }
+
     }
 
     public class UpdateUSR_USERCommandHandler : IRequestHandler<UpdateUSR_USERCommand, Response<USR_USER>>

@@ -28,6 +28,9 @@ namespace bbxBE.Commands.cmdUSR_USER
         public string Password { get; set; }
         [MapTo("USR_LOGIN")]
         public string Comment { get; set; }
+        
+        [MapTo("USR_ACTIVE")]
+        public string Active { get; set; }
 
     }
 
