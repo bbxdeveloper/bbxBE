@@ -20,9 +20,11 @@ namespace bbxBE.Commands
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); //Validáció behúzása?
+     
             services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();
+            services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
 
-          
+
 
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("CommandHandler")).ToList().ForEach((t) =>
             {

@@ -43,9 +43,9 @@ namespace bbxBE.Commands.cmdUSR_USER
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public UpdateUSR_USERCommandHandler(IUSR_USERRepositoryAsync positionRepository, IMapper mapper, IConfiguration configuration)
+        public UpdateUSR_USERCommandHandler(IUSR_USERRepositoryAsync usrRepository, IMapper mapper, IConfiguration configuration)
         {
-            _usrRepository = positionRepository;
+            _usrRepository = usrRepository;
             _mapper = mapper;
             _configuration = configuration;
         }

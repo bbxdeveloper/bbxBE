@@ -26,9 +26,9 @@ namespace bbxBE.Commands.cmdUSR_USER
         private readonly IUSR_USERRepositoryAsync _usrRepository;
         private readonly IMapper _mapper;
 
-        public DeleteUSR_USERCommandHandler(IUSR_USERRepositoryAsync positionRepository, IMapper mapper)
+        public DeleteUSR_USERCommandHandler(IUSR_USERRepositoryAsync usrRepository, IMapper mapper)
         {
-            _usrRepository = positionRepository;
+            _usrRepository = usrRepository;
             _mapper = mapper;
         }
 

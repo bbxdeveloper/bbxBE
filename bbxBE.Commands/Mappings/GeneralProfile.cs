@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Commands.cmdCustomer;
 using bbxBE.Commands.cmdUSR_USER;
 using bbxBE.Domain.Entities;
 using System;
@@ -15,6 +16,8 @@ namespace bbxBE.Application.Mappings
             CreateMap<CreateUSR_USERCommand, USR_USER>();
             CreateMap<UpdateUSR_USERCommand, USR_USER>();
             CreateMap<DeleteUSR_USERCommand, USR_USER>();
+
+            CreateMap<CreateCustomerCommand, Customer>();
         }
     }
 }

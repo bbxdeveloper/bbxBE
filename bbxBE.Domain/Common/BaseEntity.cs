@@ -12,8 +12,10 @@ namespace bbxBE.Domain.Common
         [DataMember]
         public DateTime CreateTime{ get; set; }
         [DataMember]
-        public DateTime UppdateTime { get; set; }
-        
+        public DateTime UpdateTime { get; set; }
+
+        [DataMember]
+        public bool Deleted { get; set; }
 
     }
 }

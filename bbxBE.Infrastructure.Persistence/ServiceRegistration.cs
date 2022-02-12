@@ -38,6 +38,7 @@ namespace bbxBE.Infrastructure.Persistence
 
             services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
             services.AddTransient<IUSR_USERRepositoryAsync, USR_USERRepositoryAsync>();
+            services.AddTransient<ICustomerRepositoryAsync, CustomerRepositoryAsync>();
 
             services.AddLogging(c => c.AddFluentMigratorConsole())
             .AddFluentMigratorCore()
