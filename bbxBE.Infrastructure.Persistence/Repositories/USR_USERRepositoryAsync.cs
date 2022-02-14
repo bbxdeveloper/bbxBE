@@ -77,7 +77,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
-            var fields = requestParameter.Fields;
+            var fields = requestParameter.ModelFields;
 
             int recordsTotal, recordsFiltered;
 

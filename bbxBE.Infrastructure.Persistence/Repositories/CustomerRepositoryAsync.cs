@@ -61,12 +61,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var requestParameter = (QueryCustomer)requestParameterX;
 
             var customerName = requestParameter.CustomerName;
-            var loginName = requestParameter.CustomerName;
-
+ 
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
-            var fields = requestParameter.Fields;
+            var fields = requestParameter.ModelFields;
 
             int recordsTotal, recordsFiltered;
 
@@ -125,9 +124,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var predicate = PredicateBuilder.New<Customer>();
 
-    
+            var srcFor = CustomerName.ToUpper().Trim();
             if (!string.IsNullOrEmpty(CustomerName))
-                predicate = predicate.And(p => p.CustomerName.Contains(CustomerName.Trim()));
+                predicate = predicate.And(p => p.CustomerName.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }

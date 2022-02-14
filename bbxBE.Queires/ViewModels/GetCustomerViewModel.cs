@@ -1,4 +1,7 @@
 ﻿using AutoMapper.Configuration.Conventions;
+using AxegazMobileSrv.Attrib;
+using System;
+using System.Text.Json.Serialization;
 
 namespace bbxBE.Queries.ViewModels
 {
@@ -16,11 +19,27 @@ namespace bbxBE.Queries.ViewModels
 
         public string CustomerBankAccountNumber { get; set; }
         public string CustomerVatStatus { get; set; }
-        public string TaxpayerId { get; set; }
-        public string VatCode { get; set; }
+        
+        [NotDBField]
+        public string TaxpayerNumber
+        {
+            get
+            {
+                return String.Format("{0,7}-{0,1}-{0,2}", TaxpayerId, VatCode, ThirdStateTaxId);
+            }
+        }
+
+        [JsonIgnore]
+
+        private string TaxpayerId { get; set; }
+        [JsonIgnore]
+
+        private string VatCode { get; set; }
+        [JsonIgnore]
+        private string CountyCode { get; set; }
+        
         public string ThirdStateTaxId { get; set; }
         public string CountryCode { get; set; }
-        public string CountyCode { get; set; }
         public string Region { get; set; }
         public string PostalCode { get; set; }
         public string City { get; set; }

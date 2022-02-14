@@ -30,7 +30,7 @@ namespace bbxBE.Commands.cmdUSR_USER
         public string Comment { get; set; }
         
         [MapTo("USR_ACTIVE")]
-        public string Active { get; set; }
+        public bool Active { get; set; }
 
     }
 

@@ -38,15 +38,15 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
             var pagination = request;
             
             //filtered fields security
-            if (!string.IsNullOrEmpty(validFilter.Fields))
+            if (!string.IsNullOrEmpty(validFilter.ModelFields))
             {
                 //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetCustomerViewModel>(validFilter.Fields);
+                validFilter.ModelFields = _modelHelper.ValidateModelFields<GetCustomerViewModel>(validFilter.ModelFields);
             }
-            if (string.IsNullOrEmpty(validFilter.Fields))
+            if (string.IsNullOrEmpty(validFilter.ModelFields))
             {
                 //default fields from view model
-                validFilter.Fields = _modelHelper.GetModelFields<GetCustomerViewModel>();
+                validFilter.ModelFields = _modelHelper.GetModelFields<GetCustomerViewModel>();
             }
 
             // query based on filter

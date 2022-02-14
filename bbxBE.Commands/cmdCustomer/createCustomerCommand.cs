@@ -24,11 +24,11 @@ namespace bbxBE.Commands.cmdCustomer
         public string CustomerBankAccountNumber { get; set; }
 
         public bool PrivatePerson { get; set; } = false;
-        public string TaxpayerId { get; set; }
-        public string VatCode { get; set; }
+
+        public string TaxpayerNumber { get; set; }          //9999999-9-99
+
         public string ThirdStateTaxId { get; set; }
         public string CountryCode { get; set; }
-        public string CountyCode { get; set; }
         public string Region { get; set; }
         public string PostalCode { get; set; }
         public string City { get; set; }
@@ -55,6 +55,12 @@ namespace bbxBE.Commands.cmdCustomer
         {
             var cust = _mapper.Map<Customer>(request);
 
+
+            var TaxItems = request.TaxpayerNumber.Split('-');
+            cust.TaxpayerId = TaxItems[0];  
+            cust.VatCode  = TaxItems.Length > 0 ? TaxItems[1] : "";
+            cust.CountyCode = TaxItems.Length > 1 ? TaxItems[2] : "";
+    
             cust.CustomerVatStatus = request.PrivatePerson ? CustomerVatStatusType.PRIVATE_PERSON.ToString() :
                                     string.IsNullOrWhiteSpace(request.CountryCode) || request.CountryCode == bbxBEConsts.CNTRY_HU ?
                                             CustomerVatStatusType.DOMESTIC.ToString()

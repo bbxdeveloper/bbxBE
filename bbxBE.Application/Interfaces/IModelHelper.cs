@@ -6,5 +6,6 @@ namespace bbxBE.Application.Interfaces
         string GetModelFields<T>();
 
         string ValidateModelFields<T>(string fields);
+        string GetDtoFields<T>();
     }
 }

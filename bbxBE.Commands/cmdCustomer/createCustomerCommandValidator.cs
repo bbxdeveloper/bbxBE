@@ -35,10 +35,12 @@ namespace bbxBE.Commands.cmdCustomer
 
             RuleFor(p => p.CustomerBankAccountNumber)
                        .MaximumLength(30).WithMessage(bbxBEConsts.FV_LEN30);
-
+/*
             RuleFor(p => p.TaxpayerId)
                  .Length(1,8).When(p => !string.IsNullOrEmpty(p.TaxpayerId)).WithMessage(bbxBEConsts.FV_LEN8)
                 .MustAsync(IsUniqueTaxpayerIdAsync).WithMessage(bbxBEConsts.FV_EXISTS);
+*/
+
 /*
             RuleFor(p => p.TaxpayerId)
                 .Empty()
