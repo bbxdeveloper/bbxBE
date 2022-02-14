@@ -21,13 +21,13 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
 
     public class QueryCustomerHandler : IRequestHandler<QueryCustomer, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly ICustomerRepositoryAsync _positionRepository;
+        private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public QueryCustomerHandler(ICustomerRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryCustomerHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _customerRepository = customerRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -50,9 +50,9 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
             }
 
             // query based on filter
-            var entitUsers = await _positionRepository.QueryPagedCustomerReponseAsync(validFilter);
-            var data = entitUsers.data.MapItemsFieldsByMapToAnnotation<GetCustomerViewModel>();
-            RecordsCount recordCount = entitUsers.recordsCount;
+            var entities = await _customerRepository.QueryPagedCustomerReponseAsync(validFilter);
+            var data = entities.data.MapItemsFieldsByMapToAnnotation<GetCustomerViewModel>();
+            RecordsCount recordCount = entities.recordsCount;
 
             // response wrapper
             return new PagedResponse<IEnumerable<Entity>>(data, validFilter.PageNumber, validFilter.PageSize, recordCount);

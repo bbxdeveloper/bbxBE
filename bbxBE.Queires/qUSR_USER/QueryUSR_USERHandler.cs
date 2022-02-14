@@ -22,13 +22,13 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
 
     public class QueryUSR_USERHandler : IRequestHandler<QueryUSR_USER, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly IUSR_USERRepositoryAsync _positionRepository;
+        private readonly IUSR_USERRepositoryAsync _userRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public QueryUSR_USERHandler(IUSR_USERRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryUSR_USERHandler(IUSR_USERRepositoryAsync userRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _userRepository = userRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -51,7 +51,7 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
             }
 
             // query based on filter
-            var entitUsers = await _positionRepository.QueryPagedUSR_USERReponseAsync(validFilter);
+            var entitUsers = await _userRepository.QueryPagedUSR_USERReponseAsync(validFilter);
             var data = entitUsers.data.MapItemsFieldsByMapToAnnotation<GetUSR_USERViewModel>();
             RecordsCount recordCount = entitUsers.recordsCount;
 
