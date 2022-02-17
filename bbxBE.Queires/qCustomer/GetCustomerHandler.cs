@@ -38,16 +38,16 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
             var validFilter = request;
             var pagination = request;
 
-            //filtered fields security
             if (!string.IsNullOrEmpty(validFilter.Fields))
             {
                 //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetCustomerViewModel>(validFilter.Fields);
+                validFilter.Fields = _modelHelper.ValidateModelFields<GetCustomerViewModel, Customer>(validFilter.Fields);
             }
+
             if (string.IsNullOrEmpty(validFilter.Fields))
             {
                 //default fields from view model
-                validFilter.Fields = _modelHelper.GetModelFields<GetCustomerViewModel>();
+                validFilter.Fields = _modelHelper.GetQueryableFields<GetCustomerViewModel, Customer>();
             }
 
             // query based on filter

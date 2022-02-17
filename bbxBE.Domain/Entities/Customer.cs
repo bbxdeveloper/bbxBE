@@ -25,13 +25,6 @@ namespace bbxBE.Domain.Entities
             }
         }
 
-        public string TaxpayerNumber
-        {
-            get
-            {
-                return String.Format("{0,7}-{0,1}-{0,2}", TaxpayerId, VatCode, ThirdStateTaxId);
-            }
-        }
         public string TaxpayerId { get; set; }
         public string VatCode { get; set; }
         public string ThirdStateTaxId { get; set; }

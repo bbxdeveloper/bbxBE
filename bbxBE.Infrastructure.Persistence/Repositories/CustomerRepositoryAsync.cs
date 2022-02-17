@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using bbxBE.Application.Features.Positions.Queries.GetPositions;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
+using System;
+using AutoMapper;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -22,17 +24,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly DbSet<Customer> _users;
         private IDataShapeHelper<Customer> _dataShaper;
         private readonly IMockService _mockData;
+        private readonly IModelHelper _modelHelper;
+        private readonly IMapper _mapper;
 
         public CustomerRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Customer> dataShaper, IMockService mockData) : base(dbContext)
+            IDataShapeHelper<Customer> dataShaper, IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
             _users = dbContext.Set<Customer>();
             _dataShaper = dataShaper;
+            _modelHelper = modelHelper;
+            _mapper = mapper;
             _mockData = mockData;
         }
 
- 
+
         public async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerId, long? ID = null)
         {
             return !await _users.AnyAsync(p => p.TaxpayerId == TaxpayerId && !p.Deleted && (ID == null || p.ID != ID.Value));
@@ -55,7 +61,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync(object requestParameterX)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync<ModelType>(object requestParameterX)
         {
 
             var requestParameter = (QueryCustomer)requestParameterX;
@@ -65,7 +71,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
-            var fields = requestParameter.ModelFields;
+            var fields = requestParameter.Fields;
 
             int recordsTotal, recordsFiltered;
 
@@ -108,7 +114,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // retrieve data to list
             var resultData = await result.ToListAsync();
+
+
+            var resultDataModel = _mapper.Map<List<ModelType>>(resultData);
+
             // shape data
+         //   var shapeData = _dataShaper.ShapeData(resultDataModel, fields);
             var shapeData = _dataShaper.ShapeData(resultData, fields);
 
             return (shapeData, recordsCount);

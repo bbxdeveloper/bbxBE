@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using static bbxBE.Commands.cmdUSR_USER.CreateUSR_USERCommand;
 
-namespace bbxBE.Application.Mappings
+namespace bbxBE.Command.Mappings
 {
     public class GeneralProfile : Profile
     {

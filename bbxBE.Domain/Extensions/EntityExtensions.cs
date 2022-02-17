@@ -42,16 +42,18 @@ namespace bbxBE.Domain.Extensions
 
             foreach (string propertyName in pData.Keys)
             {
+                var newPropertyName = propertyName;
                 // Get eg. "USR_NAME" property
                 var attrs = typeOfTDestination.GetProperty(propertyName);
-
-                var newPropertyName = propertyName;
-                // Get [MapTo("...")] attribute
-                var mapToAttribute = (MapToAttribute)attrs.GetCustomAttributes(typeOfMapToAttribute, false).FirstOrDefault();
-                if (mapToAttribute != null)
+                if (attrs != null)
                 {
-                    // Get value from attribute
-                    newPropertyName = mapToAttribute.MatchingName;
+                    // Get [MapTo("...")] attribute
+                    var mapToAttribute = (MapToAttribute)attrs.GetCustomAttributes(typeOfMapToAttribute, false).FirstOrDefault();
+                    if (mapToAttribute != null)
+                    {
+                        // Get value from attribute
+                        newPropertyName = mapToAttribute.MatchingName;
+                    }
                 }
                 // Build mapped Entity
                 mapped.Add(newPropertyName, pData[propertyName]);

@@ -20,7 +20,8 @@ namespace bbxBE.Queries
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); //Validáció behúzása?
 
-            services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();    // másutt is létre van hozv. Ez kell ide?
+            services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();    // másutt is létre van hozva. Ez kell ide?
+            services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
             services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
 
 

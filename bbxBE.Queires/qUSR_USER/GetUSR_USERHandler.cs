@@ -42,12 +42,12 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
             if (!string.IsNullOrEmpty(validFilter.Fields))
             {
                 //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetUSR_USERViewModel>(validFilter.Fields);
+                validFilter.Fields = _modelHelper.ValidateModelFields<GetUSR_USERViewModel, USR_USER>(validFilter.Fields);
             }
             if (string.IsNullOrEmpty(validFilter.Fields))
             {
                 //default fields from view model
-                validFilter.Fields = _modelHelper.GetModelFields<GetUSR_USERViewModel>();
+                validFilter.Fields = _modelHelper.GetQueryableFields<GetUSR_USERViewModel, USR_USER>();
             }
 
             // query based on filter

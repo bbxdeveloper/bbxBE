@@ -20,7 +20,7 @@ namespace bbxBE.Queries.ViewModels
         public string CustomerBankAccountNumber { get; set; }
         public string CustomerVatStatus { get; set; }
         
-        [NotDBField]
+   //     [NotDBField]
         public string TaxpayerNumber
         {
             get
@@ -29,13 +29,13 @@ namespace bbxBE.Queries.ViewModels
             }
         }
 
-        [JsonIgnore]
+        [NotModelFieldAttribute]
 
         private string TaxpayerId { get; set; }
-        [JsonIgnore]
+        [NotModelFieldAttribute]
 
         private string VatCode { get; set; }
-        [JsonIgnore]
+        [NotModelFieldAttribute]
         private string CountyCode { get; set; }
         
         public string ThirdStateTaxId { get; set; }

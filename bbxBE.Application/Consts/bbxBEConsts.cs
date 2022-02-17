@@ -6,7 +6,7 @@ namespace bbxBE.Application.Consts
 {
     public static  class bbxBEConsts
     {
-        public static string DB = "bbxdb";
+        public static string DB = "bbx";
 
         public static string CNTRY_HU = "HU";
         public static string PwdSalt = "PwdSalt";

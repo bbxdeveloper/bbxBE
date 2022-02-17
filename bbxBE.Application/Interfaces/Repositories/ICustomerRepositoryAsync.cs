@@ -15,6 +15,6 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> SeedDataAsync(int rowCount);
 
         Task<Entity> GetCustomerReponseAsync(object requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync(object requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync<ModelType>(object requestParameters);
     }
 }

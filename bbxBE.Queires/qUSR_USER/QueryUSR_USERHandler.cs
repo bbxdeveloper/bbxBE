@@ -37,17 +37,17 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
         {
             var validFilter = request;
             var pagination = request;
-            
+
             //filtered fields security
-            if (!string.IsNullOrEmpty(validFilter.ModelFields))
+            if (!string.IsNullOrEmpty(validFilter.Fields))
             {
                 //limit to fields in view model
-                validFilter.ModelFields = _modelHelper.ValidateModelFields<GetUSR_USERViewModel>(validFilter.ModelFields);
+                validFilter.Fields = _modelHelper.ValidateModelFields<GetUSR_USERViewModel, USR_USER>(validFilter.Fields);
             }
-            if (string.IsNullOrEmpty(validFilter.ModelFields))
+            if (string.IsNullOrEmpty(validFilter.Fields))
             {
                 //default fields from view model
-                validFilter.ModelFields = _modelHelper.GetModelFields<GetUSR_USERViewModel>();
+                validFilter.Fields = _modelHelper.GetQueryableFields<GetUSR_USERViewModel, USR_USER>();
             }
 
             // query based on filter

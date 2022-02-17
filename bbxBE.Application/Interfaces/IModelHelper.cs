@@ -1,11 +1,14 @@
 ﻿
+using System.Collections.Generic;
+
 namespace bbxBE.Application.Interfaces
 {
     public interface IModelHelper
     {
-        string GetModelFields<T>();
-
-        string ValidateModelFields<T>(string fields);
-        string GetDtoFields<T>();
+     
+        string ValidateModelFields<TModel, TDto>(string modelFields);
+        public string GetQueryableFields<TModel, TDto>();
+        public List<string> GetModelFields<T>();
+        public List<string> GetDBFields<T>();
     }
 }
