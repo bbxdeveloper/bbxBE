@@ -2,6 +2,7 @@
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 
         Task<bool> SeedDataAsync(int rowCount);
 
-        Task<Entity> GetCustomerReponseAsync(object requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync<ModelType>(object requestParameters);
+        Task<Entity> GetCustomerReponseAsync(GetCustomer requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync(QueryCustomer requestParameters);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Commands.cmdUSR_USER
+namespace bbxBE.Application.Commands.cmdUSR_USER
 {
 
     public class DeleteUSR_USERCommandValidator : AbstractValidator<DeleteUSR_USERCommand>

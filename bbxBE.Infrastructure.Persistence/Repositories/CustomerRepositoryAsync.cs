@@ -10,11 +10,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Features.Positions.Queries.GetPositions;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
 using System;
 using AutoMapper;
+using bbxBE.Application.Queries.qCustomer;
+using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -45,10 +46,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
          }
 
 
-   
-        public async Task<Entity> GetCustomerReponseAsync(object requestParametersX)
+        public async Task<Entity> GetCustomerReponseAsync(GetCustomer requestParameter)
         {
-            var requestParameter = (GetCustomer)requestParametersX;
+           
 
             var ID = requestParameter.ID;
 
@@ -61,10 +61,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync<ModelType>(object requestParameterX)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync(QueryCustomer requestParameter)
         {
-
-            var requestParameter = (QueryCustomer)requestParameterX;
 
             var customerName = requestParameter.CustomerName;
  
@@ -116,7 +114,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultData = await result.ToListAsync();
 
 
-            var resultDataModel = _mapper.Map<List<ModelType>>(resultData);
+            var resultDataModel = _mapper.Map<List<GetCustomerViewModel>>(resultData);
 
             // shape data
          //   var shapeData = _dataShaper.ShapeData(resultDataModel, fields);
@@ -146,5 +144,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
+
+ 
     }
 }

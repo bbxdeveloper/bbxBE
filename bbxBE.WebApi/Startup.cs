@@ -1,5 +1,6 @@
 using bbxBE.Application;
-using bbxBE.Commands;
+using bbxBE.Application.Commands;
+using bbxBE.Application.Queries;
 using bbxBE.Infrastructure.Persistence;
 using bbxBE.Infrastructure.Shared;
 using bbxBE.Queries;

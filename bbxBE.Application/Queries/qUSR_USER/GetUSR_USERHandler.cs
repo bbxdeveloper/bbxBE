@@ -9,10 +9,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Queries.ViewModels;
 using bbxBE.Domain.Extensions;
+using bbxBE.Application.Queries.ViewModels;
 
-namespace bbxBE.Application.Features.Positions.Queries.GetPositions
+namespace bbxBE.Application.Queries.qUSR_USER
 {
     public class GetUSR_USER:  IRequest<Entity>
     {

@@ -1,7 +1,6 @@
 ﻿using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -13,22 +12,32 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Commands.cmdUSR_USER
+namespace bbxBE.Application.Commands.cmdUSR_USER
 {
 
-    public class createUSR_USERCommandValidator : AbstractValidator<CreateUSR_USERCommand>
+    public class UpdateUSR_USERCommandValidator : AbstractValidator<UpdateUSR_USERCommand>
     {
         private readonly IUSR_USERRepositoryAsync _usrRepository;
 
-        public createUSR_USERCommandValidator(IUSR_USERRepositoryAsync usrRepository)
+        public UpdateUSR_USERCommandValidator(IUSR_USERRepositoryAsync usrRepository)
         {
             this._usrRepository = usrRepository;
+
+            RuleFor(p => p.ID)
+                .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+
 
             RuleFor(p => p.Name)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80)
-                .MustAsync(IsUniqueNameAsync).WithMessage(bbxBEConsts.FV_EXISTS);
+                .MustAsync(
+                    async (model,Name, cancellation) =>
+                    {
+                        return await IsUniqueNameAsync(Name, model.ID, cancellation);
+                    }
+                ).WithMessage(bbxBEConsts.FV_EXISTS);
 
             RuleFor(p => p.Email)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
@@ -43,11 +52,13 @@ namespace bbxBE.Commands.cmdUSR_USER
 
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.FV_LEN2000);
+            
         }
 
-        private async Task<bool> IsUniqueNameAsync(string p_USR_NAME, CancellationToken cancellationToken)
+       
+        private async Task<bool> IsUniqueNameAsync(string p_USR_NAME, long p_ID, CancellationToken cancellationToken)
         {
-            return await _usrRepository.IsUniqueNameAsync(p_USR_NAME);
+                return await _usrRepository.IsUniqueNameAsync(p_USR_NAME, p_ID);
         }
         private async Task<bool> IsValidEmailAsync(string p_USR_EMAIL, CancellationToken cancellationToken)
         {

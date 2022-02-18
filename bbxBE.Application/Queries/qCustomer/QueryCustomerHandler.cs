@@ -9,41 +9,41 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Queries.ViewModels;
 using bbxBE.Domain.Extensions;
+using bbxBE.Application.Queries.ViewModels;
 
-namespace bbxBE.Application.Features.Positions.Queries.GetPositions
+namespace bbxBE.Application.Queries.qCustomer
 {
-    public class GetCustomer:  IRequest<Entity>
+    public class QueryCustomer : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
-        public long ID { get; set; }
-        public string Fields { get; set; }
+        public string CustomerName { get; set; }
     }
 
-    public class GetCustomerHandler : IRequestHandler<GetCustomer, Entity>
+    public class QueryCustomerHandler : IRequestHandler<QueryCustomer, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly ICustomerRepositoryAsync _positionRepository;
+        private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetCustomerHandler(ICustomerRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryCustomerHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _customerRepository = customerRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<Entity> Handle(GetCustomer request, CancellationToken cancellationToken)
+        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryCustomer request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;
-
+            
+            //filtered fields security
             if (!string.IsNullOrEmpty(validFilter.Fields))
             {
                 //limit to fields in view model
                 validFilter.Fields = _modelHelper.ValidateModelFields<GetCustomerViewModel, Customer>(validFilter.Fields);
             }
-
+  
             if (string.IsNullOrEmpty(validFilter.Fields))
             {
                 //default fields from view model
@@ -51,13 +51,12 @@ namespace bbxBE.Application.Features.Positions.Queries.GetPositions
             }
 
             // query based on filter
-            var entityPositions = await _positionRepository.GetCustomerReponseAsync(validFilter);
-
-
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetCustomerViewModel>();
+            var entities = await _customerRepository.QueryPagedCustomerReponseAsync(validFilter);
+            var data = entities.data.MapItemsFieldsByMapToAnnotation<GetCustomerViewModel>();
+            RecordsCount recordCount = entities.recordsCount;
 
             // response wrapper
-            return data;
+            return new PagedResponse<IEnumerable<Entity>>(data, validFilter.PageNumber, validFilter.PageSize, recordCount);
         }
     }
 }

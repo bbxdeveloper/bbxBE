@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\bbxBE.Commands\bbxBE.Commands.csproj" />
     <ProjectReference Include="..\bbxBE.Infrastructure.Persistence\bbxBE.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\bbxBE.Infrastructure.Shared\bbxBE.Infrastructure.Shared.csproj" />
   </ItemGroup>

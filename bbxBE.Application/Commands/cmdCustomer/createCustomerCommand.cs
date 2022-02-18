@@ -5,7 +5,6 @@ using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -15,7 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Commands.cmdCustomer
+namespace bxBE.Application.Commands.cmdCustomer
 {
     public class CreateCustomerCommand : IRequest<Response<Customer>>
     {

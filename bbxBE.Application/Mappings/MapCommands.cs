@@ -1,17 +1,16 @@
 ﻿using AutoMapper;
-using bbxBE.Commands.cmdCustomer;
-using bbxBE.Commands.cmdUSR_USER;
+using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Domain.Entities;
+using bxBE.Application.Commands.cmdCustomer;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static bbxBE.Commands.cmdUSR_USER.CreateUSR_USERCommand;
 
 namespace bbxBE.Command.Mappings
 {
-    public class GeneralProfile : Profile
+    public class MapCommands : Profile
     {
-        public GeneralProfile()
+        public MapCommands()
         {
             CreateMap<CreateUSR_USERCommand, USR_USER>();
             CreateMap<UpdateUSR_USERCommand, USR_USER>();

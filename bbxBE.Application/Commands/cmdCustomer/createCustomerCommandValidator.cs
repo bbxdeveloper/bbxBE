@@ -1,8 +1,7 @@
 ﻿using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
-using bbxBE.Commands.cmdCustomer;
-using bbxBE.Infrastructure.Persistence.Contexts;
+using bxBE.Application.Commands.cmdCustomer;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Commands.cmdCustomer
+namespace bbxBE.Application.Commands.cmdCustomer
 {
 
     public class createCustomerCommandValidator : AbstractValidator<CreateCustomerCommand>

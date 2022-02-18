@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Features.Positions.Queries.GetPositions;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
+using bbxBE.Application.Queries.qUSR_USER;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -50,11 +50,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             return true;
         }
-   
-        public async Task<Entity> GetUSR_USERReponseAsync(object requestParametersX)
+     
+        public async Task<Entity> GetUSR_USERReponseAsync(GetUSR_USER requestParameter)
         {
-            var requestParameter = (GetUSR_USER)requestParametersX;
-
+          
             var ID = requestParameter.ID;
 
             var user = await GetByIdAsync(ID);
@@ -66,10 +65,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERReponseAsync(object requestParameterX)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERReponseAsync(QueryUSR_USER requestParameter)
         {
-
-            var requestParameter = (QueryUSR_USER)requestParameterX;
 
             var name = requestParameter.Name;
             var loginName = requestParameter.LoginName;
@@ -146,6 +143,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             p_USR = p_USR.Where(predicate);
         }
-     
+
+       
     }
 }

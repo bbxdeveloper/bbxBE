@@ -1,9 +1,8 @@
-﻿using bbxBE.Application.Features.Positions.Queries.GetPositions;
-using bbxBE.Application.Interfaces.Queries;
+﻿using bbxBE.Application.Interfaces.Queries;
+using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Wrappers;
-using bbxBE.Commands.cmdCustomer;
-using bbxBE.Commands.cmdUSR_USER;
 using bbxBE.Domain.Entities;
+using bxBE.Application.Commands.cmdCustomer;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
-using static bbxBE.Commands.cmdUSR_USER.CreateUSR_USERCommand;
 
 namespace bbxBE.WebApi.Controllers.v1
 {

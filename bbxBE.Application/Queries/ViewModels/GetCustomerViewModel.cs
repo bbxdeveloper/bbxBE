@@ -3,14 +3,14 @@ using AxegazMobileSrv.Attrib;
 using System;
 using System.Text.Json.Serialization;
 
-namespace bbxBE.Queries.ViewModels
+namespace bbxBE.Application.Queries.ViewModels
 {
     /// <summary>
     /// MapTo properties marks the names in the output Entity
     /// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
-    /// In this case, <see cref="GetUSR_USERViewModel"/> will be the value for the TDestination parameter.
+    /// In this case, <see cref="GetCustomerViewModel"/> will be the value for the TDestination parameter.
     /// </summary>
-    class GetCustomerViewModel
+    public class GetCustomerViewModel
     {
         [MapTo("ID")]
         public string ID { get; set; }

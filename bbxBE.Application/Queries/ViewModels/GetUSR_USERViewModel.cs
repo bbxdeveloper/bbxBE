@@ -1,6 +1,6 @@
 ﻿using AutoMapper.Configuration.Conventions;
 
-namespace bbxBE.Queries.ViewModels
+namespace bbxBE.Application.Queries.ViewModels
 {
     /// <summary>
     /// MapTo properties marks the names in the output Entity
