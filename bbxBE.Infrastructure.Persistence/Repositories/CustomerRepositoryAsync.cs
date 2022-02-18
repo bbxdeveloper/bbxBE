@@ -23,17 +23,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<Customer> _users;
-        private IDataShapeHelper<Customer> _dataShaper;
+        private IDataShapeHelper<Customer> _dataShaperCustomer;
+        private IDataShapeHelper<GetCustomerViewModel> _dataShaperGetCustomerViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
 
         public CustomerRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Customer> dataShaper, IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IDataShapeHelper<Customer> dataShaperCustomer, 
+            IDataShapeHelper<GetCustomerViewModel> dataShaperGetCustomerViewModel, 
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
             _users = dbContext.Set<Customer>();
-            _dataShaper = dataShaper;
+            _dataShaperCustomer = dataShaperCustomer;
+            _dataShaperGetCustomerViewModel = dataShaperGetCustomerViewModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
@@ -45,6 +49,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !await _users.AnyAsync(p => p.TaxpayerId == TaxpayerId && !p.Deleted && (ID == null || p.ID != ID.Value));
          }
 
+        public async Task<bool> CheckBankAccountAsync(string bankAccountNumber)
+        {
+            if (string.IsNullOrWhiteSpace(bankAccountNumber))
+                return true;
+
+            return bllCustomer.ValidateBankAccount(bankAccountNumber) || bllCustomer.ValidateIBAN(bankAccountNumber);
+        }
 
         public async Task<Entity> GetCustomerReponseAsync(GetCustomer requestParameter)
         {
@@ -57,7 +68,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var fields = requestParameter.Fields;
 
             // shape data
-            var shapeData = _dataShaper.ShapeData(item, fields);
+            var shapeData = _dataShaperCustomer.ShapeData(item, fields);
 
             return shapeData;
         }
@@ -113,12 +124,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // retrieve data to list
             var resultData = await result.ToListAsync();
 
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetCustomerViewModel>();
+            resultData.ForEach( i => resultDataModel.Add(_mapper.Map<Customer, GetCustomerViewModel>(i)));
 
-            var resultDataModel = _mapper.Map<List<GetCustomerViewModel>>(resultData);
-
-            // shape data
-         //   var shapeData = _dataShaper.ShapeData(resultDataModel, fields);
-            var shapeData = _dataShaper.ShapeData(resultData, fields);
+            var shapeData = _dataShaperGetCustomerViewModel.ShapeData(resultDataModel, fields);
 
             return (shapeData, recordsCount);
         }

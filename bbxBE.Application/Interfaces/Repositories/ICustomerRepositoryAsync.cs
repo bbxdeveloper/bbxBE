@@ -12,7 +12,7 @@ namespace bbxBE.Application.Interfaces.Repositories
     public interface ICustomerRepositoryAsync : IGenericRepositoryAsync<Customer>
     {
         Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerId, long? ID = null);
-
+        Task<bool> CheckBankAccountAsync(string bankAccountNumber);
         Task<bool> SeedDataAsync(int rowCount);
 
         Task<Entity> GetCustomerReponseAsync(GetCustomer requestParameters);

@@ -33,22 +33,23 @@ namespace bbxBE.Application.Commands.cmdCustomer
                      .MaximumLength(30).WithMessage(bbxBEConsts.FV_LEN30);
 
             RuleFor(p => p.CustomerBankAccountNumber)
-                       .MaximumLength(30).WithMessage(bbxBEConsts.FV_LEN30);
-/*
-            RuleFor(p => p.TaxpayerId)
-                 .Length(1,8).When(p => !string.IsNullOrEmpty(p.TaxpayerId)).WithMessage(bbxBEConsts.FV_LEN8)
-                .MustAsync(IsUniqueTaxpayerIdAsync).WithMessage(bbxBEConsts.FV_EXISTS);
-*/
+                       .MaximumLength(30).WithMessage(bbxBEConsts.FV_LEN30)
+                       .MustAsync(IsUniqueTaxpayerIdAsync).WithMessage(bbxBEConsts.FV_EXISTS);
+            /*
+                        RuleFor(p => p.TaxpayerId)
+                             .Length(1,8).When(p => !string.IsNullOrEmpty(p.TaxpayerId)).WithMessage(bbxBEConsts.FV_LEN8)
+                            .MustAsync(IsUniqueTaxpayerIdAsync).WithMessage(bbxBEConsts.FV_EXISTS);
+            */
 
-/*
-            RuleFor(p => p.TaxpayerId)
-                .Empty()
-                .Length(1).WithMessage(bbxBEConsts.FV_LEN1);
+            /*
+                        RuleFor(p => p.TaxpayerId)
+                            .Empty()
+                            .Length(1).WithMessage(bbxBEConsts.FV_LEN1);
 
-            RuleFor(p => p.TaxpayerId)
-                .Empty()
-                .Length(2).WithMessage(bbxBEConsts.FV_LEN2);
-*/
+                        RuleFor(p => p.TaxpayerId)
+                            .Empty()
+                            .Length(2).WithMessage(bbxBEConsts.FV_LEN2);
+            */
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.FV_LEN2000);
         }

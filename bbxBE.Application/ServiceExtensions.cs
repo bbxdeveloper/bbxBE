@@ -1,6 +1,7 @@
 ﻿using bbxBE.Application.Behaviours;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
 using FluentValidation;
 using MediatR;
@@ -18,7 +19,9 @@ namespace bbxBE.Application
 
             services.AddMediatR(Assembly.GetExecutingAssembly());                       //Controller  Mediator DI -hez
             services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();
+
             services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
+            services.AddScoped<IDataShapeHelper<GetCustomerViewModel>, DataShapeHelper<GetCustomerViewModel>>();
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); //Validáció behúzása?
 

@@ -19,8 +19,9 @@ namespace bbxBE.Application.Queries.ViewModels
 
         public string CustomerBankAccountNumber { get; set; }
         public string CustomerVatStatus { get; set; }
-        
-   //     [NotDBField]
+
+        //     [NotDBField]
+        [MapTo("TaxpayerNumber")]
         public string TaxpayerNumber
         {
             get

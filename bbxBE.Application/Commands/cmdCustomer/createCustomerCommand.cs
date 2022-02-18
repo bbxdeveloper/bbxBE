@@ -54,12 +54,13 @@ namespace bxBE.Application.Commands.cmdCustomer
         {
             var cust = _mapper.Map<Customer>(request);
 
-
-            var TaxItems = request.TaxpayerNumber.Split('-');
-            cust.TaxpayerId = TaxItems[0];  
-            cust.VatCode  = TaxItems.Length > 0 ? TaxItems[1] : "";
-            cust.CountyCode = TaxItems.Length > 1 ? TaxItems[2] : "";
-    
+            if (request.TaxpayerNumber != null)
+            {
+                var TaxItems = request.TaxpayerNumber.Split('-');
+                cust.TaxpayerId = TaxItems[0];
+                cust.VatCode = TaxItems.Length > 0 ? TaxItems[1] : "";
+                cust.CountyCode = TaxItems.Length > 1 ? TaxItems[2] : "";
+            }
             cust.CustomerVatStatus = request.PrivatePerson ? CustomerVatStatusType.PRIVATE_PERSON.ToString() :
                                     string.IsNullOrWhiteSpace(request.CountryCode) || request.CountryCode == bbxBEConsts.CNTRY_HU ?
                                             CustomerVatStatusType.DOMESTIC.ToString()

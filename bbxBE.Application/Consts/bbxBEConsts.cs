@@ -20,6 +20,7 @@ namespace bbxBE.Application.Consts
         public static string FV_LEN2000 = "{PropertyName}|{PropertyName} must not exceed 2000 characters.";
         public static string FV_EXISTS = "{PropertyName}|{PropertyName} already exists.";
         public static string FV_INVALIDEMAIL = "{PropertyName}|{PropertyName} email is invalid.";
+        public static string FV_ERBANK = "{PropertyName}|{PropertyName} invalid bank acconunt.";
 
     }
 }
