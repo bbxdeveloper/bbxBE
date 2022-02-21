@@ -38,7 +38,8 @@ namespace bbxBE.Application.Queries.qUSR_USER
             var validFilter = request;
             var pagination = request;
 
-            //filtered fields security
+              /* TODO: törölni
+          //filtered fields security
             if (!string.IsNullOrEmpty(validFilter.Fields))
             {
                 //limit to fields in view model
@@ -49,6 +50,7 @@ namespace bbxBE.Application.Queries.qUSR_USER
                 //default fields from view model
                 validFilter.Fields = _modelHelper.GetQueryableFields<GetUSR_USERViewModel, USR_USER>();
             }
+              */
 
             // query based on filter
             var entitUsers = await _userRepository.QueryPagedUSR_USERReponseAsync(validFilter);

@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Interfaces.Queries;
+﻿using bbxBE.Application.Commands.cmdUSR_USER;
+using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
@@ -64,7 +65,7 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
-/*
+
         // POST: USRController/Edit/5
         [HttpPut]
  //       [ValidateAntiForgeryToken]
@@ -75,10 +76,9 @@ namespace bbxBE.WebApi.Controllers.v1
 
         // GET: USRController/Delete/5
         [HttpDelete]
-        public async Task<IActionResult> Delete(DeleteCustomerCommand command)
+        public async Task<IActionResult> Delete([FromQuery] DeleteCustomerCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
-*/
     }
 }

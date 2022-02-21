@@ -1,29 +1,20 @@
 ﻿using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
 using bxBE.Application.Commands.cmdCustomer;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdCustomer
 {
 
-    public class createCustomerCommandValidator : AbstractValidator<CreateCustomerCommand>
+    public class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCommand>
     {
         private readonly ICustomerRepositoryAsync _customerRepository;
 
-        public createCustomerCommandValidator(ICustomerRepositoryAsync customerRepository)
+        public UpdateCustomerCommandValidator(ICustomerRepositoryAsync customerRepository)
         {
             this._customerRepository = customerRepository;
-
 
             RuleFor(p => p.CustomerName)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
@@ -34,8 +25,13 @@ namespace bbxBE.Application.Commands.cmdCustomer
                      .MaximumLength(30).WithMessage(bbxBEConsts.FV_LEN30);
 
             RuleFor(p => p.TaxpayerNumber)
-                       .MaximumLength(13).WithMessage(bbxBEConsts.FV_LEN30)
-                       .MustAsync(IsUniqueTaxpayerIdAsync).WithMessage(bbxBEConsts.FV_EXISTS);
+                   .MaximumLength(13).WithMessage(bbxBEConsts.FV_LEN13)
+                   .MustAsync(
+                        async (model, Name, cancellation) =>
+                        {
+                            return await IsUniqueTaxpayerIdAsync(Name, model.ID, cancellation);
+                        }
+                    ).WithMessage(bbxBEConsts.FV_EXISTS);
 
             RuleFor(p => p.CustomerBankAccountNumber)
                        .MaximumLength(30).WithMessage(bbxBEConsts.FV_LEN30)
@@ -43,21 +39,21 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.FV_LEN2000);
-
         }
 
-        private async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerNumber, CancellationToken cancellationToken)
+        private async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerNumber, long ID, CancellationToken cancellationToken)
         {
             var TaxItems = TaxpayerNumber.Split('-');
             if (TaxItems.Length != 0)
             {
-                return await _customerRepository.IsUniqueTaxpayerIdAsync(TaxItems[0]);
+                return await _customerRepository.IsUniqueTaxpayerIdAsync(TaxItems[0], ID);
             }
             else
             {
                 return true;
             }
         }
+
         private async Task<bool> CheckBankAccountAsync(string p_CustomerBankAccountNumber, CancellationToken cancellationToken)
         {
             return await _customerRepository.CheckBankAccountAsync(p_CustomerBankAccountNumber);

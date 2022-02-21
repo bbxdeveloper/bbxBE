@@ -16,12 +16,8 @@ namespace bbxBE.Application.Queries
     {
         public static void AddQueryInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); //Validáció behúzása?
 
             services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();    // másutt is létre van hozva. Ez kell ide?
-            services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
             services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
 
 

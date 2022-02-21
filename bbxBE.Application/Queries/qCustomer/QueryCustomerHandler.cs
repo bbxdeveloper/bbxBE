@@ -37,6 +37,7 @@ namespace bbxBE.Application.Queries.qCustomer
             var validFilter = request;
             var pagination = request;
             
+            /* TODO: törölni
             //filtered fields security
             if (!string.IsNullOrEmpty(validFilter.Fields))
             {
@@ -49,6 +50,8 @@ namespace bbxBE.Application.Queries.qCustomer
                 //default fields from view model
                 validFilter.Fields = _modelHelper.GetQueryableFields<GetCustomerViewModel, Customer>();
             }
+            */
+
 
             // query based on filter
             var entities = await _customerRepository.QueryPagedCustomerReponseAsync(validFilter);

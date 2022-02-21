@@ -20,24 +20,25 @@ namespace bbxBE.Application.Queries.ViewModels
         public string CustomerBankAccountNumber { get; set; }
         public string CustomerVatStatus { get; set; }
 
+        
         //     [NotDBField]
         [MapTo("TaxpayerNumber")]
         public string TaxpayerNumber
         {
             get
             {
-                return String.Format("{0,7}-{0,1}-{0,2}", TaxpayerId, VatCode, ThirdStateTaxId);
+               return String.Format("{0,7}-{1,1}-{2,2}", TaxpayerId, VatCode, CountyCode);
             }
         }
-
+        
         [NotModelFieldAttribute]
 
-        private string TaxpayerId { get; set; }
+        public string TaxpayerId { get; set; }
         [NotModelFieldAttribute]
 
-        private string VatCode { get; set; }
+        public string VatCode { get; set; }
         [NotModelFieldAttribute]
-        private string CountyCode { get; set; }
+        public string CountyCode { get; set; }
         
         public string ThirdStateTaxId { get; set; }
         public string CountryCode { get; set; }

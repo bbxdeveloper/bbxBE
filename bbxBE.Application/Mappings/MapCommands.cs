@@ -17,6 +17,8 @@ namespace bbxBE.Command.Mappings
             CreateMap<DeleteUSR_USERCommand, USR_USER>();
 
             CreateMap<CreateCustomerCommand, Customer>();
+            CreateMap<UpdateCustomerCommand, Customer>();
+            CreateMap<DeleteCustomerCommand, Customer>();
         }
     }
 }

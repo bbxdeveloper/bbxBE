@@ -7,7 +7,7 @@ namespace bbxBE.Application.Queries.ViewModels
     /// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
     /// In this case, <see cref="GetUSR_USERViewModel"/> will be the value for the TDestination parameter.
     /// </summary>
-    class GetUSR_USERViewModel
+    public class GetUSR_USERViewModel
     {
         [MapTo("ID")]
         public string ID { get; set; }

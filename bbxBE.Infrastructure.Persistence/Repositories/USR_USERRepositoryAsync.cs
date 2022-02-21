@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Queries.qUSR_USER;
+using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -22,14 +23,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<USR_USER> _users;
         private IDataShapeHelper<USR_USER> _dataShaper;
+        private readonly IModelHelper _modelHelper;
         private readonly IMockService _mockData;
 
         public USR_USERRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<USR_USER> dataShaper, IMockService mockData) : base(dbContext)
+            IDataShapeHelper<USR_USER> dataShaper, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
             _users = dbContext.Set<USR_USER>();
             _dataShaper = dataShaper;
+            _modelHelper = modelHelper;
             _mockData = mockData;
         }
 
@@ -74,8 +77,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
-            var fields = requestParameter.Fields;
-
+            //var fields = requestParameter.Fields;
+            var fields = _modelHelper.GetQueryableFields<GetUSR_USERViewModel, USR_USER>();
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable

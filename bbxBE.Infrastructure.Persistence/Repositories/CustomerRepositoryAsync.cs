@@ -65,10 +65,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var item = await GetByIdAsync(ID);
       
-            var fields = requestParameter.Fields;
+//            var fields = requestParameter.Fields;
+
+            var itemModel = _mapper.Map<Customer, GetCustomerViewModel>(item);
+            var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();
 
             // shape data
-            var shapeData = _dataShaperCustomer.ShapeData(item, fields);
+            var shapeData = _dataShaperGetCustomerViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
             return shapeData;
         }
@@ -80,7 +83,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
-            var fields = requestParameter.Fields;
+            //      var fields = requestParameter.Fields;
+            var fields = _modelHelper.GetQueryableFields<GetCustomerViewModel, Customer>();
+
 
             int recordsTotal, recordsFiltered;
 
@@ -126,9 +131,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetCustomerViewModel>();
-            resultData.ForEach( i => resultDataModel.Add(_mapper.Map<Customer, GetCustomerViewModel>(i)));
+            resultData.ForEach( i => resultDataModel.Add(
+                _mapper.Map<Customer, GetCustomerViewModel>(i))
+            );
 
-            var shapeData = _dataShaperGetCustomerViewModel.ShapeData(resultDataModel, fields);
+
+            var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();
+
+            var shapeData = _dataShaperGetCustomerViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
             return (shapeData, recordsCount);
         }

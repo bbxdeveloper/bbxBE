@@ -16,8 +16,9 @@ using System.Threading.Tasks;
 
 namespace bxBE.Application.Commands.cmdCustomer
 {
-    public class CreateCustomerCommand : IRequest<Response<Customer>>
+    public class UpdateCustomerCommand : IRequest<Response<Customer>>
     {
+        public long ID { get; set; }
         public string CustomerName { get; set; }
 
         public string CustomerBankAccountNumber { get; set; }
@@ -37,20 +38,20 @@ namespace bxBE.Application.Commands.cmdCustomer
 
     }
 
-    public class CreateUSR_USERCommandHandler : IRequestHandler<CreateCustomerCommand, Response<Customer>>
+    public class UpdateUSR_USERCommandHandler : IRequestHandler<UpdateCustomerCommand, Response<Customer>>
     {
         private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateUSR_USERCommandHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IConfiguration configuration)
+        public UpdateUSR_USERCommandHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IConfiguration configuration)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;
             _configuration = configuration;
         }
 
-        public async Task<Response<Customer>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Customer>> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
         {
             var cust = _mapper.Map<Customer>(request);
 
@@ -68,7 +69,7 @@ namespace bxBE.Application.Commands.cmdCustomer
 
             cust.CountryCode = string.IsNullOrWhiteSpace(request.CountryCode) ? bbxBEConsts.CNTRY_HU : cust.CountryCode;
 
-            await _customerRepository.AddAsync(cust);
+            await _customerRepository.UpdateAsync(cust);
             return new Response<Customer>(cust);
         }
 

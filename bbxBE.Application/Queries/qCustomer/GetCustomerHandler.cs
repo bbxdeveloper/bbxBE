@@ -17,7 +17,7 @@ namespace bbxBE.Application.Queries.qCustomer
     public class GetCustomer:  IRequest<Entity>
     {
         public long ID { get; set; }
-        public string Fields { get; set; }
+  //      public string Fields { get; set; }
     }
 
     public class GetCustomerHandler : IRequestHandler<GetCustomer, Entity>
@@ -37,6 +37,8 @@ namespace bbxBE.Application.Queries.qCustomer
         {
             var validFilter = request;
             var pagination = request;
+          
+            /* TODO: törölni
 
             if (!string.IsNullOrEmpty(validFilter.Fields))
             {
@@ -49,6 +51,8 @@ namespace bbxBE.Application.Queries.qCustomer
                 //default fields from view model
                 validFilter.Fields = _modelHelper.GetQueryableFields<GetCustomerViewModel, Customer>();
             }
+
+            */
 
             // query based on filter
             var entityPositions = await _positionRepository.GetCustomerReponseAsync(validFilter);
