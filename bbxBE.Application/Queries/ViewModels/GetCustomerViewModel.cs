@@ -30,7 +30,17 @@ namespace bbxBE.Application.Queries.ViewModels
                return String.Format("{0,7}-{1,1}-{2,2}", TaxpayerId, VatCode, CountyCode);
             }
         }
-        
+
+        [MapTo("FullAddress")]
+        public string FullAddress
+        {
+            get
+            {
+                return String.Format("{0} {1} {2}", PostalCode, City, AdditionalAddressDetail).Trim();
+            }
+        }
+
+
         [NotModelFieldAttribute]
 
         public string TaxpayerId { get; set; }

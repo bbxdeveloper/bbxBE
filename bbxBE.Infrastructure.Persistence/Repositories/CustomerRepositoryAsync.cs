@@ -78,7 +78,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync(QueryCustomer requestParameter)
         {
 
-            var customerName = requestParameter.CustomerName;
+            var searchString = requestParameter.SearchString;
  
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
@@ -98,7 +98,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await result.CountAsync();
 
             // filter data
-            FilterByColumns(ref result, customerName);
+            FilterBySearchString(ref result, searchString);
 
             // Count records after filter
             recordsFiltered = await result.CountAsync();
@@ -143,19 +143,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterByColumns(ref IQueryable<Customer> p_item, string CustomerName)
+        private void FilterBySearchString(ref IQueryable<Customer> p_item, string p_searchString)
         {
             if (!p_item.Any())
                 return;
 
-            if ( string.IsNullOrEmpty(CustomerName))
+            if ( string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
             var predicate = PredicateBuilder.New<Customer>();
 
-            var srcFor = CustomerName.ToUpper().Trim();
-            if (!string.IsNullOrEmpty(CustomerName))
-                predicate = predicate.And(p => p.CustomerName.ToUpper().Contains(srcFor));
+            var srcFor = p_searchString.ToUpper().Trim();
+            predicate = predicate.And(p => p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }

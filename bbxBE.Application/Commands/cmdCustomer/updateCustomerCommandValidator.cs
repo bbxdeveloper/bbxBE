@@ -2,6 +2,7 @@
 using bbxBE.Application.Interfaces.Repositories;
 using bxBE.Application.Commands.cmdCustomer;
 using FluentValidation;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +30,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
                    .MustAsync(
                         async (model, Name, cancellation) =>
                         {
-                            return await IsUniqueTaxpayerIdAsync(Name, model.ID, cancellation);
+                            return await IsUniqueTaxpayerIdAsync(Name, Convert.ToInt64(model.ID), cancellation);
                         }
                     ).WithMessage(bbxBEConsts.FV_EXISTS);
 
