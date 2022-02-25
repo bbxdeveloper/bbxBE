@@ -19,6 +19,7 @@ namespace bbxBE.Application.Queries
 
             services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();    // másutt is létre van hozva. Ez kell ide?
             services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
+            services.AddScoped<IDataShapeHelper<ProductGroup>, DataShapeHelper<ProductGroup>>();
 
 
 
