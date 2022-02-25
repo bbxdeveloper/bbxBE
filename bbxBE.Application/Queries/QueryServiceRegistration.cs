@@ -1,6 +1,7 @@
 ﻿using bbxBE.Application.Behaviours;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
 using FluentValidation;
 using MediatR;
@@ -17,10 +18,15 @@ namespace bbxBE.Application.Queries
         public static void AddQueryInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
 
-            services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();    // másutt is létre van hozva. Ez kell ide?
-            services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
-            services.AddScoped<IDataShapeHelper<ProductGroup>, DataShapeHelper<ProductGroup>>();
+       
+            services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();
 
+            services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
+            services.AddScoped<IDataShapeHelper<GetCustomerViewModel>, DataShapeHelper<GetCustomerViewModel>>();
+
+
+            services.AddScoped<IDataShapeHelper<ProductGroup>, DataShapeHelper<ProductGroup>>();
+            services.AddScoped<IDataShapeHelper<GetProductGroupViewModel>, DataShapeHelper<GetProductGroupViewModel>>();
 
 
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>

@@ -22,17 +22,6 @@ namespace bbxBE.Application
 
             services.AddMediatR(Assembly.GetExecutingAssembly());                       //Controller  Mediator DI -hez
 
-  
-            services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();
-
-            services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
-            services.AddScoped<IDataShapeHelper<GetCustomerViewModel>, DataShapeHelper<GetCustomerViewModel>>();
-
-
-            services.AddScoped<IDataShapeHelper<ProductGroup>, DataShapeHelper<ProductGroup>>();
-            services.AddScoped<IDataShapeHelper<GetProductGroupViewModel>, DataShapeHelper<GetProductGroupViewModel>>();
-  
-
             services.AddScoped<IModelHelper, ModelHelper>();
             //services.AddScoped<IMockData, MockData>();
         }
