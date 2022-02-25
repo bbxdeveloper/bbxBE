@@ -25,6 +25,27 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.OriginController.Get(bbxBE.Application.Queries.qOrigin.GetOrigin)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.OriginController.Query(bbxBE.Application.Queries.qOrigin.QueryOrigin)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.OriginController.Create(bxBE.Application.Commands.cmdOrigin.CreateOriginCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.ProductGroupController.Get(bbxBE.Application.Queries.qProductGroup.GetProductGroup)">
             <summary>
             GET: api/controller

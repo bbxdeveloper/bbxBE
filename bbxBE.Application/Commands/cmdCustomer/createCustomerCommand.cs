@@ -37,13 +37,13 @@ namespace bxBE.Application.Commands.cmdCustomer
 
     }
 
-    public class CreateUSR_USERCommandHandler : IRequestHandler<CreateCustomerCommand, Response<Customer>>
+    public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, Response<Customer>>
     {
         private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateUSR_USERCommandHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IConfiguration configuration)
+        public CreateCustomerCommandHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IConfiguration configuration)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;

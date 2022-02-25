@@ -27,6 +27,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<USR_USER> USR_USER { get; set; }
         public DbSet<Customer> Customer { get; set; }
         public DbSet<ProductGroup> ProductGroup { get; set; }
+        public DbSet<Origin> Origin { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

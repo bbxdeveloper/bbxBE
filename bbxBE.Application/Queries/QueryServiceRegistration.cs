@@ -28,6 +28,8 @@ namespace bbxBE.Application.Queries
             services.AddScoped<IDataShapeHelper<ProductGroup>, DataShapeHelper<ProductGroup>>();
             services.AddScoped<IDataShapeHelper<GetProductGroupViewModel>, DataShapeHelper<GetProductGroupViewModel>>();
 
+            services.AddScoped<IDataShapeHelper<Origin>, DataShapeHelper<Origin>>();
+            services.AddScoped<IDataShapeHelper<GetOriginViewModel>, DataShapeHelper<GetOriginViewModel>>();
 
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>
             {
