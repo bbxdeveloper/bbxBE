@@ -11,9 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Features.Positions.Queries.GetPositions;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
+using bbxBE.Application.Queries.qUSR_USER;
+using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -22,14 +23,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<USR_USER> _users;
         private IDataShapeHelper<USR_USER> _dataShaper;
+        private readonly IModelHelper _modelHelper;
         private readonly IMockService _mockData;
 
         public USR_USERRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<USR_USER> dataShaper, IMockService mockData) : base(dbContext)
+            IDataShapeHelper<USR_USER> dataShaper, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
             _users = dbContext.Set<USR_USER>();
             _dataShaper = dataShaper;
+            _modelHelper = modelHelper;
             _mockData = mockData;
         }
 
@@ -50,11 +53,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             return true;
         }
-   
-        public async Task<Entity> GetUSR_USERReponseAsync(object requestParametersX)
+     
+        public async Task<Entity> GetUSR_USERReponseAsync(GetUSR_USER requestParameter)
         {
-            var requestParameter = (GetUSR_USER)requestParametersX;
-
+          
             var ID = requestParameter.ID;
 
             var user = await GetByIdAsync(ID);
@@ -66,10 +68,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERReponseAsync(object requestParameterX)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERReponseAsync(QueryUSR_USER requestParameter)
         {
-
-            var requestParameter = (QueryUSR_USER)requestParameterX;
 
             var name = requestParameter.Name;
             var loginName = requestParameter.LoginName;
@@ -77,8 +77,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
-            var fields = requestParameter.Fields;
-
+            //var fields = requestParameter.Fields;
+            var fields = _modelHelper.GetQueryableFields<GetUSR_USERViewModel, USR_USER>();
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
@@ -146,6 +146,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             p_USR = p_USR.Where(predicate);
         }
-     
+
+       
     }
 }

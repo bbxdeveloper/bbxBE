@@ -1,5 +1,6 @@
 using bbxBE.Application;
-using bbxBE.Commands;
+using bbxBE.Application.Commands;
+using bbxBE.Application.Queries;
 using bbxBE.Infrastructure.Persistence;
 using bbxBE.Infrastructure.Shared;
 using bbxBE.Queries;
@@ -81,7 +82,6 @@ namespace bbxBE.WebApi
             // Add this line; you'll need `using Serilog;` up the top, too
             app.UseSerilogRequestLogging();
             loggerFactory.AddSerilog();
-            app.UseHttpsRedirection();
             app.UseRouting();
 
             //Enable CORS

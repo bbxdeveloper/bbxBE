@@ -13,14 +13,13 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.12" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\bbxBE.Application\bbxBE.Application.csproj" />
     <ProjectReference Include="..\bbxBE.Domain\bbxBE.Domain.csproj" />
-    <ProjectReference Include="..\bbxBE.Queires\bbxBE.Queires.csproj" />
   </ItemGroup>
 
 </Project>

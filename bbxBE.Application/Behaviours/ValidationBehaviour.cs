@@ -28,7 +28,7 @@ namespace bbxBE.Application.Behaviours
                 if (failures.Count != 0)
                     throw new Exceptions.ValidationException(failures);
             }
-            return await next();
+                return await next();
         }
     }
 }

@@ -25,6 +25,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         }
 
         public DbSet<USR_USER> USR_USER { get; set; }
+        public DbSet<Customer> Customer { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -37,7 +38,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.UppdateTime = _dateTime.NowUtc;
+                        entry.Entity.UpdateTime = _dateTime.NowUtc;
                         break;
                 }
             }

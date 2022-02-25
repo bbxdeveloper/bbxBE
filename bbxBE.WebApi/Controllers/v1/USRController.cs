@@ -1,7 +1,7 @@
-﻿using bbxBE.Application.Features.Positions.Queries.GetPositions;
+﻿using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Interfaces.Queries;
+using bbxBE.Application.Queries.qUSR_USER;
 using bbxBE.Application.Wrappers;
-using bbxBE.Commands.cmdUSR_USER;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
-using static bbxBE.Commands.cmdUSR_USER.CreateUSR_USERCommand;
 
 namespace bbxBE.WebApi.Controllers.v1
 {

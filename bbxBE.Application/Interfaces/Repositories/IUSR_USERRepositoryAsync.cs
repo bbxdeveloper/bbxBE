@@ -2,6 +2,8 @@
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qUSR_USER;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,7 +16,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 
         Task<bool> SeedDataAsync(int rowCount);
 
-        Task<Entity> GetUSR_USERReponseAsync(object requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERReponseAsync(object requestParameters);
+        Task<Entity> GetUSR_USERReponseAsync(GetUSR_USER requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERReponseAsync(QueryUSR_USER requestParameters);
     }
 }

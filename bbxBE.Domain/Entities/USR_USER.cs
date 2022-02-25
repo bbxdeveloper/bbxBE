@@ -24,8 +24,7 @@ namespace bbxBE.Domain.Entities
         public string USR_COMMENT { get; set; }
         [DataMember]
         public bool USR_ACTIVE { get; set; }
-        [DataMember]
-        public bool DELETED { get; set; }
+   
 
     }
 }
