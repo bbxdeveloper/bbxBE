@@ -1,10 +1,10 @@
-﻿using bbxBE.Application.Commands.cmdCustomer;
+﻿using bbxBE.Application.Commands.cmdProductGroup;
 using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Queries.qCustomer;
+using bbxBE.Application.Queries.qProductGroup;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
-using bxBE.Application.Commands.cmdCustomer;
+using bxBE.Application.Commands.cmdProductGroup;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -17,19 +17,19 @@ namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
  //   [Authorize]
-    public class CustomerController : BaseApiController
+    public class ProductGroupController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<CreateCustomerCommand, Response<Customer>> _customerCommandHandler;
-        public CustomerController(
+        private readonly IRequestHandler<CreateProductGroupCommand, Response<ProductGroup>> _ProductGroupCommandHandler;
+        public ProductGroupController(
            IWebHostEnvironment env,
            IConfiguration conf,
-           IRequestHandler<CreateCustomerCommand, Response<Customer>> customerCommandHandler)
+           IRequestHandler<CreateProductGroupCommand, Response<ProductGroup>> ProductGroupCommandHandler)
         {
             _env = env;
             _conf = conf;
-            _customerCommandHandler = customerCommandHandler;
+            _ProductGroupCommandHandler = ProductGroupCommandHandler;
     }
 
 
@@ -39,7 +39,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetCustomer filter)
+        public async Task<IActionResult> Get([FromQuery] GetProductGroup filter)
         {
             return Ok(await Mediator.Send(filter));
         }
@@ -50,7 +50,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryCustomer filter)
+        public async Task<IActionResult> Query([FromQuery] QueryProductGroup filter)
         {
             return Ok(await Mediator.Send(filter));
         }
@@ -61,7 +61,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCustomerCommand command)
+        public async Task<IActionResult> Create(CreateProductGroupCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
@@ -70,14 +70,14 @@ namespace bbxBE.WebApi.Controllers.v1
         // POST: USRController/Edit/5
         [HttpPut]
  //       [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(UpdateCustomerCommand command)
+        public async Task<IActionResult> Update(UpdateProductGroupCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
 
         // GET: USRController/Delete/5
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery] DeleteCustomerCommand command)
+        public async Task<IActionResult> Delete([FromQuery] DeleteProductGroupCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
