@@ -16,8 +16,6 @@ namespace bbxBE.Application.Commands
         public static void AddCommandInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
      
-            services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();
-            services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
 
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("CommandHandler")).ToList().ForEach((t) =>
             {

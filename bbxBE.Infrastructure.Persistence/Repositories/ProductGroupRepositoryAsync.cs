@@ -14,83 +14,76 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
 using System;
 using AutoMapper;
-using bbxBE.Application.Queries.qCustomer;
+using bbxBE.Application.Queries.qProductGroup;
 using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
-    public class CustomerRepositoryAsync : GenericRepositoryAsync<Customer>, ICustomerRepositoryAsync
+    public class ProductGroupRepositoryAsync : GenericRepositoryAsync<ProductGroup>, IProductGroupRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Customer> _customers;
-        private IDataShapeHelper<Customer> _dataShaperCustomer;
-        private IDataShapeHelper<GetCustomerViewModel> _dataShaperGetCustomerViewModel;
+        private readonly DbSet<ProductGroup> _productGroups;
+        private IDataShapeHelper<ProductGroup> _dataShaperProductGroup;
+        private IDataShapeHelper<GetProductGroupViewModel> _dataShaperGetProductGroupViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
 
-        public CustomerRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Customer> dataShaperCustomer, 
-            IDataShapeHelper<GetCustomerViewModel> dataShaperGetCustomerViewModel, 
+        public ProductGroupRepositoryAsync(ApplicationDbContext dbContext,
+            IDataShapeHelper<ProductGroup> dataShaperProductGroup,
+            IDataShapeHelper<GetProductGroupViewModel> dataShaperGetProductGroupViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _customers = dbContext.Set<Customer>();
-            _dataShaperCustomer = dataShaperCustomer;
-            _dataShaperGetCustomerViewModel = dataShaperGetCustomerViewModel;
+            _productGroups = dbContext.Set<ProductGroup>();
+            _dataShaperProductGroup = dataShaperProductGroup;
+            _dataShaperGetProductGroupViewModel = dataShaperGetProductGroupViewModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
         }
 
 
-        public async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerId, long? ID = null)
+        public async Task<bool> IsUniqueProductGroupCodeAsync(string ProductGroupCode, long? ID = null)
         {
-            return !await _customers.AnyAsync(p => p.TaxpayerId == TaxpayerId && !p.Deleted && (ID == null || p.ID != ID.Value));
-         }
-
-        public async Task<bool> CheckBankAccountAsync(string bankAccountNumber)
-        {
-            if (string.IsNullOrWhiteSpace(bankAccountNumber))
-                return true;
-
-            return bllCustomer.ValidateBankAccount(bankAccountNumber) || bllCustomer.ValidateIBAN(bankAccountNumber);
+            return !await _productGroups.AnyAsync(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
-        public async Task<Entity> GetCustomerReponseAsync(GetCustomer requestParameter)
+
+        public async Task<Entity> GetProductGroupReponseAsync(GetProductGroup requestParameter)
         {
-           
+
 
             var ID = requestParameter.ID;
 
             var item = await GetByIdAsync(ID);
-      
-//            var fields = requestParameter.Fields;
 
-            var itemModel = _mapper.Map<Customer, GetCustomerViewModel>(item);
-            var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();
+            //            var fields = requestParameter.Fields;
+
+            var itemModel = _mapper.Map<ProductGroup, GetProductGroupViewModel>(item);
+            var listFieldsModel = _modelHelper.GetModelFields<GetProductGroupViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetCustomerViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetProductGroupViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync(QueryCustomer requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductGroupReponseAsync(QueryProductGroup requestParameter)
         {
 
             var searchString = requestParameter.SearchString;
- 
+
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetCustomerViewModel, Customer>();
+            var fields = _modelHelper.GetQueryableFields<GetProductGroupViewModel, ProductGroup>();
 
 
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _customers
+            var result = _productGroups
                 .AsNoTracking()
                 .AsExpandable();
 
@@ -119,7 +112,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<Customer>("new(" + fields + ")");
+                result = result.Select<ProductGroup>("new(" + fields + ")");
             }
             // paging
             result = result
@@ -130,31 +123,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultData = await result.ToListAsync();
 
             //TODO: szebben megoldani
-            var resultDataModel = new List<GetCustomerViewModel>();
-            resultData.ForEach( i => resultDataModel.Add(
-                _mapper.Map<Customer, GetCustomerViewModel>(i))
+            var resultDataModel = new List<GetProductGroupViewModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+               _mapper.Map<ProductGroup, GetProductGroupViewModel>(i))
             );
 
 
-            var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();
+            var listFieldsModel = _modelHelper.GetModelFields<GetProductGroupViewModel>();
 
-            var shapeData = _dataShaperGetCustomerViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetProductGroupViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Customer> p_item, string p_searchString)
+        private void FilterBySearchString(ref IQueryable<ProductGroup> p_item, string p_searchString)
         {
             if (!p_item.Any())
                 return;
 
-            if ( string.IsNullOrWhiteSpace(p_searchString))
+            if (string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
-            var predicate = PredicateBuilder.New<Customer>();
+            var predicate = PredicateBuilder.New<ProductGroup>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor));
+            predicate = predicate.And(p => p.ProductGroupDescription.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }
@@ -163,7 +156,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
-
- 
     }
 }

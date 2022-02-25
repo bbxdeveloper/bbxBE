@@ -25,6 +25,27 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.ProductGroupController.Get(bbxBE.Application.Queries.qProductGroup.GetProductGroup)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.ProductGroupController.Query(bbxBE.Application.Queries.qProductGroup.QueryProductGroup)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.ProductGroupController.Create(bxBE.Application.Commands.cmdProductGroup.CreateProductGroupCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Get(bbxBE.Application.Queries.qUSR_USER.GetUSR_USER)">
             <summary>
             GET: api/controller

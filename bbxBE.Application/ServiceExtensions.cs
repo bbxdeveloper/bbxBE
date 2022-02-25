@@ -21,10 +21,6 @@ namespace bbxBE.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); //Validáció behúzása?
 
             services.AddMediatR(Assembly.GetExecutingAssembly());                       //Controller  Mediator DI -hez
-            services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();
-
-            services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
-            services.AddScoped<IDataShapeHelper<GetCustomerViewModel>, DataShapeHelper<GetCustomerViewModel>>();
 
             services.AddScoped<IModelHelper, ModelHelper>();
             //services.AddScoped<IMockData, MockData>();
