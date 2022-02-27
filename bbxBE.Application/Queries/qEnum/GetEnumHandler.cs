@@ -14,6 +14,7 @@ using bbxBE.Application.Queries.ViewModels;
 using System;
 using System.Linq;
 using bbxBE.Common;
+using bbxBE.Application.Enums;
 
 namespace bbxBE.Application.Queries.qEnum
 {
@@ -35,18 +36,14 @@ namespace bbxBE.Application.Queries.qEnum
         public async Task<List<GetEnumModel>> Handle(GetEnum request, CancellationToken cancellationToken)
         {
 
-            var e = Enum.GetValues(request.type);
-            /*
-//                                .Cast<enLanguage>()
+            var e = Enum.GetValues(request.type).Cast<Enum>()
                             .Select(v => new GetEnumModel()
                             {
                                 Value = v.ToString(),
                                 Text = Utils.GetEnumDescription(v)
                             })
                             .ToList();
-            */
-            var d = new List<GetEnumModel>();
-            return d;
+            return e;
         }
     }
 }
