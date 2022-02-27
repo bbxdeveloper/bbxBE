@@ -43,6 +43,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                  .WithColumn("MinStock").AsDecimal()
                  .WithColumn("OrdUnit").AsDecimal()
                  .WithColumn("ProductFee").AsCurrency()
+                 .WithColumn("NatureIndicator").AsCurrency()
                  .WithColumn("Active").AsBoolean().NotNullable();
         }
 

@@ -1,6 +1,8 @@
 ﻿using bbxBE.Application.Commands.cmdProduct;
 using bbxBE.Application.Commands.cmdUSR_USER;
+using bbxBE.Application.Enums;
 using bbxBE.Application.Interfaces.Queries;
+using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
@@ -53,6 +55,14 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Query([FromQuery] QueryProduct filter)
         {
             return Ok(await Mediator.Send(filter));
+        }
+
+      
+        [HttpGet("unitofmeasure")]
+        public async Task<IActionResult> GetUnitOfMeasure()
+        {
+            var req = new GetEnum() {  type = typeof(enUnitOfMeasure) };
+            return Ok(await Mediator.Send(req));
         }
 
         /// <summary>

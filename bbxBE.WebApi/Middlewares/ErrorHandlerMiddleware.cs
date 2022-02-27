@@ -54,6 +54,7 @@ namespace bbxBE.WebApi.Middlewares
                         break;
                 }
                 var result = JsonSerializer.Serialize(responseModel);
+                // newtinsoft var result = JsonConvert.SerializeObject(responseModel);
 
                 await response.WriteAsync(result);
             }

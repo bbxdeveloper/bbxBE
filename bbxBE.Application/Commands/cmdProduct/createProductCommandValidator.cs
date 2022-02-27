@@ -23,6 +23,7 @@ namespace bbxBE.Application.Commands.cmdProduct
         public createProductCommandValidator(IProductRepositoryAsync ProductRepository)
         {
             this._ProductRepository = ProductRepository;
+            /*
             RuleFor(p => p.ProductCode)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
@@ -38,6 +39,7 @@ namespace bbxBE.Application.Commands.cmdProduct
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+            */
 
         }
 
