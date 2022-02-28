@@ -13,11 +13,13 @@ using System.Configuration;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bxBE.Application.Commands.cmdProduct
 {
     public class CreateProductCommand : IRequest<Response<Product>>
     {
+        public string ProductCode { get; set; }
         public string Description { get; set; }
         public long ProductGroupID { get; set; }
         public long OriginID { get; set; }
@@ -31,6 +33,8 @@ namespace bxBE.Application.Commands.cmdProduct
         public decimal ProductFee { get; set; }
         public string NatureIndicator { get; set; }
         public bool Active { get; set; }
+        public string VTSZ { get; set; }
+        public string EAN { get; set; }
     }
 
     public class CreateUSR_USERCommandHandler : IRequestHandler<CreateProductCommand, Response<Product>>
@@ -48,10 +52,17 @@ namespace bxBE.Application.Commands.cmdProduct
 
         public async Task<Response<Product>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            var cust = _mapper.Map<Product>(request);
+            var prod = _mapper.Map<Product>(request);
+            var pcCode = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+            var pcVTSZ= new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+            ProductCode pcEAN = null;
+            if( !string.IsNullOrWhiteSpace(request.EAN))
+            {
+                pcEAN = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+            }
 
-            await _ProductRepository.AddAsync(cust);
-            return new Response<Product>(cust);
+            await _ProductRepository.AddProductAsync(prod, pcCode, pcVTSZ, pcEAN);
+            return new Response<Product>(prod);
         }
 
 

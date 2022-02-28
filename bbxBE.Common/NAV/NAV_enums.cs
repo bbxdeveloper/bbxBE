@@ -204,7 +204,9 @@ namespace bbxBE.Common.NAV
             [Description("A vállalkozás által képzett termékkód")]
             OWN,
             [Description("Egyéb")]
-            OTHER
+            OTHER,
+            [Description("EAN")]            //ezt én tettem bele. Az EAN-t nem szabad NAV felé küldeni!
+            EAN
         }
 
         public enum enCustproductFeeOperation

@@ -16,6 +16,7 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Queries.ViewModels;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -23,6 +24,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<Product> _Products;
+        private readonly DbSet<ProductCode> _ProductCodes;
+        private readonly DbSet<Origin> _Origins;
+        private readonly DbSet<ProductGroup> _ProductGroups;
         private IDataShapeHelper<Product> _dataShaperProduct;
         private IDataShapeHelper<GetProductViewModel> _dataShaperGetProductViewModel;
         private readonly IMockService _mockData;
@@ -36,6 +40,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             _dbContext = dbContext;
             _Products = dbContext.Set<Product>();
+            _ProductCodes = dbContext.Set<ProductCode>();
+            _Origins = dbContext.Set<Origin>();
+            _ProductGroups = dbContext.Set<ProductGroup>();
+
+
             _dataShaperProduct = dataShaperProduct;
             _dataShaperGetProductViewModel = dataShaperGetProductViewModel;
             _modelHelper = modelHelper;
@@ -46,10 +55,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsUniqueProductCodeAsync(string ProductCode, long? ID = null)
         {
-            //           return !await _Products.AnyAsync(p => p.ProductCode == ProductCode && !p.Deleted && (ID == null || p.ID != ID.Value));
-            return false;
+           return !await _ProductCodes.AnyAsync(p => p.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()
+               && p.ProductCodeValue.ToUpper() == ProductCode.ToUpper()
+               && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
+        public async Task<bool> CheckProductGroupIDAsync(long ProductGroupID)
+        {
+            return await _ProductGroups.AnyAsync(p => p.ID == ProductGroupID && !p.Deleted );
+        }
+
+        public async Task<bool> CheckOriginIDAsync(long OriginID)
+        {
+            return await _Origins.AnyAsync(p => p.ID == OriginID && !p.Deleted);
+        }
+
+        public async Task<Product> AddProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN)
+        {
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+                _ProductCodes.AddAsync(p_productCode);
+                _ProductCodes.AddAsync(p_VTSZ);
+                if(p_EAN != null)
+                {
+                    _Products.AddAsync(p_product);
+                }
+                await _dbContext.SaveChangesAsync();
+            }
+            return p_product;
+        }
 
         public async Task<Entity> GetProductReponseAsync(GetProduct requestParameter)
         {

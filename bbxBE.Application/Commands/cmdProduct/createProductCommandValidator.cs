@@ -1,4 +1,5 @@
 ﻿using bbxBE.Application.Consts;
+using bbxBE.Application.Enums;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bxBE.Application.Commands.cmdProduct;
@@ -23,7 +24,7 @@ namespace bbxBE.Application.Commands.cmdProduct
         public createProductCommandValidator(IProductRepositoryAsync ProductRepository)
         {
             this._ProductRepository = ProductRepository;
-            /*
+
             RuleFor(p => p.ProductCode)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
@@ -35,26 +36,54 @@ namespace bbxBE.Application.Commands.cmdProduct
                      ).WithMessage(bbxBEConsts.FV_EXISTS)
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
 
-            RuleFor(p => p.ProductDescription)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
-            */
+            RuleFor(p => p.Description)
+                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+
+            RuleFor(p => p.ProductGroupID)
+                 .MustAsync(CheckProductGroupIDAsync).WithMessage(bbxBEConsts.FV_INVPRODUCTCROUPID);
+ 
+            RuleFor(p => p.OriginID)
+                 .MustAsync(CheckOriginIDAsync).WithMessage(bbxBEConsts.FV_INVORIGINID);
+
+
+            RuleFor(p => p.UnitOfMeasure)
+                 .MustAsync(CheckUnitOfMEasureAsync).WithMessage(bbxBEConsts.FV_INVUNITOFMEASURE);
+
+            RuleFor(p => p.VTSZ)
+                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
 
         }
 
         private async Task<bool> IsUniqueProductCodeAsync(string ProductCode, CancellationToken cancellationToken)
         {
-            if (ProductCode.Length != 0)
-            {
                 return await _ProductRepository.IsUniqueProductCodeAsync(ProductCode);
-            }
-            else
-            {
-                return true;
-            }
-
         }
+        private async Task<bool> CheckProductGroupIDAsync(long ProductGroupID, CancellationToken cancellationToken)
+        {
+            if (ProductGroupID != 0)
+            {
+                return await _ProductRepository.CheckProductGroupIDAsync(ProductGroupID);
+            }
+            return true;
+        }
+        private async Task<bool> CheckOriginIDAsync(long OriginID, CancellationToken cancellationToken)
+        {
+            if (OriginID != 0)
+            {
+                return await _ProductRepository.CheckOriginIDAsync(OriginID);
+            }
+            return true;
+        }
+        private async Task<bool> CheckUnitOfMEasureAsync(string UnitOfMeasure, CancellationToken cancellationToken)
+        {
+            enUnitOfMeasure uom;
 
+            var valid = Enum.TryParse(UnitOfMeasure, out uom);
+            return valid;
+        }
     }
 }

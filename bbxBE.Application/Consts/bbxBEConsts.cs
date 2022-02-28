@@ -22,6 +22,9 @@ namespace bbxBE.Application.Consts
         public static string FV_EXISTS = "{PropertyName}|{PropertyName} already exists.";
         public static string FV_INVALIDEMAIL = "{PropertyName}|{PropertyName} email is invalid.";
         public static string FV_ERBANK = "{PropertyName}|{PropertyName} invalid bank acconunt.";
+        public static string FV_INVPRODUCTCROUPID = "{PropertyName}|{PropertyName} invalid product group ID.";
+        public static string FV_INVORIGINID = "{PropertyName}|{PropertyName} invalid origin ID.";
+        public static string FV_INVUNITOFMEASURE = "{PropertyName}|{PropertyName} invalid unit of measure:{PropertyValue} ";
 
     }
 }

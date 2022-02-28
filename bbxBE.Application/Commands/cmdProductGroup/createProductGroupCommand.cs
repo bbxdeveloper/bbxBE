@@ -38,10 +38,10 @@ namespace bxBE.Application.Commands.cmdProductGroup
 
         public async Task<Response<ProductGroup>> Handle(CreateProductGroupCommand request, CancellationToken cancellationToken)
         {
-            var cust = _mapper.Map<ProductGroup>(request);
+            var pg = _mapper.Map<ProductGroup>(request);
 
-            await _ProductGroupRepository.AddAsync(cust);
-            return new Response<ProductGroup>(cust);
+            await _ProductGroupRepository.AddAsync(pg);
+            return new Response<ProductGroup>(pg);
         }
 
 
