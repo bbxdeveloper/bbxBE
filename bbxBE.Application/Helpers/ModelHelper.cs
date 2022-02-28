@@ -3,6 +3,7 @@ using bbxBE.Application.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace bbxBE.Application.Helpers
 {
@@ -57,9 +58,10 @@ namespace bbxBE.Application.Helpers
                                 System.Reflection.BindingFlags.NonPublic |
                                 System.Reflection.BindingFlags.Public;
 
-
+            
+            return typeof(T).GetProperties(bindingFlags).Where(pi => !Attribute.IsDefined(pi, typeof(IgnoreDataMemberAttribute))).Select(f => f.Name).ToList();
   //          return typeof(T).GetProperties(bindingFlags).Where(pi => !Attribute.IsDefined(pi, typeof(NotModelFieldAttribute))).Select(f => f.Name).ToList();
-            return typeof(T).GetProperties(bindingFlags).Select(f => f.Name).ToList();
+//            return typeof(T).GetProperties(bindingFlags).Select(f => f.Name).ToList();
 
         }
 
@@ -77,7 +79,8 @@ namespace bbxBE.Application.Helpers
                                         System.Reflection.BindingFlags.Public;
 
 
-            return typeof(T).GetProperties(bindingFlags).Select(f => f.Name).ToList();
+            return typeof(T).GetProperties(bindingFlags).Where(pi => !Attribute.IsDefined(pi, typeof(IgnoreDataMemberAttribute))).Select(f => f.Name).ToList();
+            //return typeof(T).GetProperties(bindingFlags).Select(f => f.Name).ToList();
 
         }
 

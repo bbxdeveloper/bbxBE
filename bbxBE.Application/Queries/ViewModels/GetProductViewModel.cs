@@ -1,7 +1,9 @@
 ﻿using AutoMapper.Configuration.Conventions;
 using AxegazMobileSrv.Attrib;
+using bbxBE.Application.Enums;
 using System;
-
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -13,10 +15,43 @@ namespace bbxBE.Application.Queries.ViewModels
     public class GetProductViewModel
     {
         [MapTo("ID")]
-        public string ID { get; set; }
-
+        public long ID { get; set; }
         public string ProductCode { get; set; }
+        public string Description { get; set; }
+        public string ProductGroup  { get; set; }
+        public string Origin { get; set; }
+  
+        #region UnitOfMeasure
+        [IgnoreDataMember]
+        private enUnitOfMeasure _UnitOfMeasure { get; set; } = enUnitOfMeasure.PIECE;
 
-        public string ProductDescription { get; set; }
+        [DataMember]
+        public string UnitOfMeasure
+        {
+            get { return Enum.GetName(typeof(enUnitOfMeasure), _UnitOfMeasure); }
+            set
+            {
+                if (value != null)
+                    _UnitOfMeasure = (enUnitOfMeasure)Enum.Parse(typeof(enUnitOfMeasure), value);
+                else
+                    _UnitOfMeasure = enUnitOfMeasure.PIECE;
+            }
+        }
+
+        [IgnoreDataMember]
+        [JsonPropertyNameAttribute("UnitOfMeasureX")]
+        public string UnitOfMeasureX { get { return Common.Utils.GetEnumDescription(_UnitOfMeasure); } }
+        #endregion
+
+        public decimal UnitPrice1 { get; set; }
+        public decimal UnitPrice2 { get; set; }
+        public decimal LatestSupplyPrice { get; set; }
+        public bool IsStock { get; set; }
+        public decimal MinStock { get; set; }
+        public decimal OrdUnit { get; set; }
+        public decimal ProductFee { get; set; }
+        public bool Active { get; set; }
+        public string VTSZ { get; set; }
+        public string EAN { get; set; }
     }
 }

@@ -17,6 +17,8 @@ using AutoMapper;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Queries.ViewModels;
 using static bbxBE.Common.NAV.NAV_enums;
+using bbxBE.Common;
+using bbxBE.Application.Enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -55,14 +57,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsUniqueProductCodeAsync(string ProductCode, long? ID = null)
         {
-           return !await _ProductCodes.AnyAsync(p => p.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()
-               && p.ProductCodeValue.ToUpper() == ProductCode.ToUpper()
-               && !p.Deleted && (ID == null || p.ID != ID.Value));
+            return !await _ProductCodes.AnyAsync(p => p.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()
+                && p.ProductCodeValue.ToUpper() == ProductCode.ToUpper()
+                && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
         public async Task<bool> CheckProductGroupIDAsync(long ProductGroupID)
         {
-            return await _ProductGroups.AnyAsync(p => p.ID == ProductGroupID && !p.Deleted );
+            return await _ProductGroups.AnyAsync(p => p.ID == ProductGroupID && !p.Deleted);
         }
 
         public async Task<bool> CheckOriginIDAsync(long OriginID)
@@ -74,14 +76,55 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
+                _Products.AddAsync(p_product);
+                await _dbContext.SaveChangesAsync();
+                p_productCode.ProductID = p_product.ID;
+                p_VTSZ.ProductID = p_product.ID;
                 _ProductCodes.AddAsync(p_productCode);
                 _ProductCodes.AddAsync(p_VTSZ);
-                if(p_EAN != null)
+                if (p_EAN != null)
                 {
-                    _Products.AddAsync(p_product);
+                    p_EAN.ProductID = p_product.ID;
+                    _ProductCodes.AddAsync(p_EAN);
                 }
                 await _dbContext.SaveChangesAsync();
+                dbContextTransaction.Commit();
+
             }
+            return p_product;
+        }
+        public async Task<Product> UpdateProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN)
+        {
+
+
+            /*
+             var myObjectState=myContext.ObjectStateManager.GetObjectStateEntry(myObject);
+var modifiedProperties=myObjectState.GetModifiedProperties();
+foreach(var propName in modifiedProperties)
+{
+    Console.WriteLine("Property {0} changed from {1} to {2}", 
+         propName,
+         myObjectState.OriginalValues[propName],
+         myObjectState.CurrentValues[propName]);
+}
+             */
+            //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
+
+            /*
+         using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+                _ProductCodes.AddAsync(p_productCode);
+                _ProductCodes.AddAsync(p_VTSZ);
+                if (p_EAN != null)
+                {
+                    _ProductCodes.AddAsync(p_EAN);
+                }
+                _Products.AddAsync(p_product);
+                await _dbContext.SaveChangesAsync();
+                dbContextTransaction.Commit();
+
+            }
+            */
             return p_product;
         }
 
@@ -111,25 +154,57 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
-            //      var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetProductViewModel, Product>();
+
+            //itt csak a modelt vesszük figyelembe
+            var fields = string.Join(",", _modelHelper.GetModelFields<GetProductViewModel>());
 
 
             int recordsTotal, recordsFiltered;
 
-            // Setup IQueryable
-            var result = _Products
-                .AsNoTracking()
-                .AsExpandable();
+
+
+            IQueryable<GetProductViewModel> query = from prod in _Products.AsNoTracking().AsExpandable()
+                                                    join pco in _ProductCodes.DefaultIfEmpty()
+                                                       on prod.ID equals pco.ProductID
+                                                    join pcVTSZ in _ProductCodes.DefaultIfEmpty()
+                                                        on prod.ID equals pcVTSZ.ProductID
+                                                    join pcEAN in _ProductCodes.DefaultIfEmpty()
+                                                        on prod.ID equals pcEAN.ProductID
+                                                    join pg in _ProductGroups.DefaultIfEmpty()
+                                                      on prod.ProductGroupID equals pg.ID
+                                                    join og in _Origins.DefaultIfEmpty()
+                                                      on prod.OriginID equals og.ID
+                                                    where pco.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                                                          pcVTSZ.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString() &&
+                                                          pcEAN.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString()
+                                                    select new GetProductViewModel()
+                                                    {
+                                                        ID = prod.ID,
+                                                        ProductCode = pco.ProductCodeValue,
+                                                        Description = prod.Description,
+                                                        ProductGroup = pg.ProductGroupDescription,
+                                                        Origin = og.OriginDescription,
+                                                        UnitOfMeasure = prod.UnitOfMeasure,
+                                                        UnitPrice1 = prod.UnitPrice1,
+                                                        UnitPrice2 = prod.UnitPrice2,
+                                                        LatestSupplyPrice = prod.LatestSupplyPrice,
+                                                        IsStock = prod.IsStock,
+                                                        MinStock = prod.MinStock,
+                                                        OrdUnit = prod.OrdUnit,
+                                                        ProductFee = prod.ProductFee,
+                                                        Active = prod.Active,
+                                                        VTSZ = pcVTSZ.ProductCodeValue,
+                                                        EAN = pcEAN.ProductCodeValue
+                                                    };
 
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = await query.CountAsync();
 
-            // filter data
-            FilterBySearchString(ref result, searchString);
+            // filter query
+            FilterBySearchString(ref query, searchString);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = await query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -141,37 +216,30 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                query = query.OrderBy(orderBy);
             }
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<Product>("new(" + fields + ")");
+                query = query.Select<GetProductViewModel>("new(" + fields + ")");
             }
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultDataModel = await query.ToListAsync();
 
-            //TODO: szebben megoldani
-            var resultDataModel = new List<GetProductViewModel>();
-            resultData.ForEach(i => resultDataModel.Add(
-               _mapper.Map<Product, GetProductViewModel>(i))
-            );
-
-
-            var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
+               var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
             var shapeData = _dataShaperGetProductViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Product> p_item, string p_searchString)
+        private void FilterBySearchString(ref IQueryable<GetProductViewModel> p_item, string p_searchString)
         {
             if (!p_item.Any())
                 return;
@@ -179,11 +247,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
-            var predicate = PredicateBuilder.New<Product>();
+            var predicate = PredicateBuilder.New<GetProductViewModel>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-//TODO: átírni
-  //          predicate = predicate.And(p => p.ProductDescription.ToUpper().Contains(srcFor));
+
+            predicate = predicate.And(p => p.Description.ToUpper().Contains(srcFor) || 
+                    p.ProductCode.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }

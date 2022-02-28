@@ -31,7 +31,6 @@ namespace bxBE.Application.Commands.cmdProduct
         public decimal MinStock { get; set; }
         public decimal OrdUnit { get; set; }
         public decimal ProductFee { get; set; }
-        public string NatureIndicator { get; set; }
         public bool Active { get; set; }
         public string VTSZ { get; set; }
         public string EAN { get; set; }
@@ -53,6 +52,7 @@ namespace bxBE.Application.Commands.cmdProduct
         public async Task<Response<Product>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
             var prod = _mapper.Map<Product>(request);
+            prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
             var pcCode = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
             var pcVTSZ= new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
             ProductCode pcEAN = null;

@@ -29,9 +29,9 @@ namespace bbxBE.Application.Commands.cmdProduct
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
                     .MustAsync(
-                         async (model, Name, cancellation) =>
+                         async (model, ProductCode, cancellation) =>
                          {
-                             return await IsUniqueProductCodeAsync(Name, cancellation);
+                             return await IsUniqueProductCodeAsync(ProductCode, cancellation);
                          }
                      ).WithMessage(bbxBEConsts.FV_EXISTS)
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
