@@ -54,7 +54,7 @@ namespace bbxBE.Application.Queries.qProductGroup
 
 
             // query based on filter
-            var entities = await _ProductGroupRepository.QueryPagedProductGroupReponseAsync(validFilter);
+            var entities = await _ProductGroupRepository.QueryPagedProductGroupAsync(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetProductGroupViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 

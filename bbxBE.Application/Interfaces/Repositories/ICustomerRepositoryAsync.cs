@@ -15,7 +15,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> CheckBankAccountAsync(string bankAccountNumber);
         Task<bool> SeedDataAsync(int rowCount);
 
-        Task<Entity> GetCustomerReponseAsync(GetCustomer requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync(QueryCustomer requestParameters);
+        Task<Entity> GetCustomerAsync(GetCustomer requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParameters);
     }
 }

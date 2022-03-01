@@ -15,9 +15,10 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> CheckProductGroupIDAsync(long ProductGroupID);
         Task<bool> CheckOriginIDAsync(long OriginID);
         Task<Product> AddProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN);
+        Task<Product> UpdateProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN);
 
         Task<bool> SeedDataAsync(int rowCount);
-        Task<Entity> GetProductReponseAsync(GetProduct requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductReponseAsync(QueryProduct requestParameters);
+        Task<Entity> GetProductAsync(GetProduct requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductAsync(QueryProduct requestParameters);
     }
 }

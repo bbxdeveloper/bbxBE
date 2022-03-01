@@ -17,6 +17,10 @@ namespace bbxBE.Application.Commands.cmdOrigin
         {
             this._OriginRepository = OriginRepository;
 
+            RuleFor(p => p.ID)
+                .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+
             RuleFor(p => p.OriginCode)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)

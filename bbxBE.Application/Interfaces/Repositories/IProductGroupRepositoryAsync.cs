@@ -14,7 +14,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> IsUniqueProductGroupCodeAsync(string ProductGroupCode, long? ID = null);
         Task<bool> SeedDataAsync(int rowCount);
 
-        Task<Entity> GetProductGroupReponseAsync(GetProductGroup requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductGroupReponseAsync(QueryProductGroup requestParameters);
+        Task<Entity> GetProductGroupAsync(GetProductGroup requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductGroupAsync(QueryProductGroup requestParameters);
     }
 }

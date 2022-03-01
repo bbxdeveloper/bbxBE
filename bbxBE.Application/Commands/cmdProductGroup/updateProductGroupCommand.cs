@@ -18,7 +18,7 @@ namespace bxBE.Application.Commands.cmdProductGroup
 {
     public class UpdateProductGroupCommand : IRequest<Response<ProductGroup>>
     {
-        public string ID { get; set; }
+        public long ID { get; set; }
         public string ProductGroupCode { get; set; }
         public string ProductGroupDescription { get; set; }
     }

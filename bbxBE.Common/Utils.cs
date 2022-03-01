@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -7,7 +8,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Text.Json;
 
 namespace bbxBE.Common
 {
@@ -623,13 +623,48 @@ namespace bbxBE.Common
             if ((p_obj1 == null) || (p_obj2 == null)) return false;
             if (p_obj1.GetType() != p_obj2.GetType()) return false;
 
-            var objJson = JsonSerializer.Serialize(p_obj1);
-            var anotherJson = JsonSerializer.Serialize(p_obj2);
+            var objJson = JsonConvert.SerializeObject(p_obj1);
+            var anotherJson = JsonConvert.SerializeObject(p_obj2);
 
             return objJson == anotherJson;
         }
 
+        public static bool EqualByProperties(object original, object altered)
+        {
+            bool result = true;
 
+            //Get the class
+            Type o = original.GetType();
+            Type a = altered.GetType();
+
+            //Cycle through the properties.
+            foreach (PropertyInfo p in o.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+ 
+                if (!p.PropertyType.IsGenericType)
+                {
+                    if (p.GetValue(original, null) != null && p.GetValue(altered, null) != null)
+                    {
+                        if (!p.GetValue(original, null).ToString().Equals(p.GetValue(altered, null).ToString()))
+                        {
+                            result = false;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        //If one is null, the other is not
+                        if ((p.GetValue(original, null) == null && p.GetValue(altered, null) != null) || (p.GetValue(original, null) != null && p.GetValue(altered, null) == null))
+                        {
+                            result = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
 
     }
 

@@ -96,39 +96,46 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Product> UpdateProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN)
         {
 
-
-            /*
-             var myObjectState=myContext.ObjectStateManager.GetObjectStateEntry(myObject);
-var modifiedProperties=myObjectState.GetModifiedProperties();
-foreach(var propName in modifiedProperties)
-{
-    Console.WriteLine("Property {0} changed from {1} to {2}", 
-         propName,
-         myObjectState.OriginalValues[propName],
-         myObjectState.CurrentValues[propName]);
-}
-             */
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
 
-            /*
-         using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+          using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
-                _ProductCodes.AddAsync(p_productCode);
-                _ProductCodes.AddAsync(p_VTSZ);
+                var pc = _ProductCodes
+                .SingleOrDefault(x => x.ProductID == p_product.ID && x.ProductCodeCategory == p_productCode.ProductCodeCategory);
+                if (pc != null)
+                {
+                    p_productCode.ID = pc.ID;
+                    _ProductCodes.Update(p_productCode);
+                }
+
+                var vtsz = _ProductCodes
+                 .SingleOrDefault(x => x.ProductID == p_product.ID && x.ProductCodeCategory == p_VTSZ.ProductCodeCategory);
+                if (p_VTSZ != null)
+                {
+                    p_VTSZ.ID = vtsz.ID;
+                    _ProductCodes.Update(p_VTSZ);
+                }
+
+                //itt tartok
+                _ProductCodes.Update(p_VTSZ);
                 if (p_EAN != null)
                 {
-                    _ProductCodes.AddAsync(p_EAN);
+                    _ProductCodes.Update(p_EAN);
                 }
-                _Products.AddAsync(p_product);
+                else
+                {
+                    _ProductCodes.Remove(p_EAN);
+
+                }
+                _Products.Update(p_product);
                 await _dbContext.SaveChangesAsync();
                 dbContextTransaction.Commit();
 
             }
-            */
             return p_product;
         }
 
-        public async Task<Entity> GetProductReponseAsync(GetProduct requestParameter)
+        public async Task<Entity> GetProductAsync(GetProduct requestParameter)
         {
 
 
@@ -146,7 +153,7 @@ foreach(var propName in modifiedProperties)
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductReponseAsync(QueryProduct requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductAsync(QueryProduct requestParameter)
         {
 
             var searchString = requestParameter.SearchString;
@@ -154,10 +161,6 @@ foreach(var propName in modifiedProperties)
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
-
-            //itt csak a modelt vesszük figyelembe
-            var fields = string.Join(",", _modelHelper.GetModelFields<GetProductViewModel>());
-
 
             int recordsTotal, recordsFiltered;
 
@@ -219,11 +222,7 @@ foreach(var propName in modifiedProperties)
                 query = query.OrderBy(orderBy);
             }
 
-            // select columns
-            if (!string.IsNullOrWhiteSpace(fields))
-            {
-                query = query.Select<GetProductViewModel>("new(" + fields + ")");
-            }
+
             // paging
             query = query
                 .Skip((pageNumber - 1) * pageSize)
@@ -232,7 +231,7 @@ foreach(var propName in modifiedProperties)
             // retrieve data to list
             var resultDataModel = await query.ToListAsync();
 
-               var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
+           var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
             var shapeData = _dataShaperGetProductViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 

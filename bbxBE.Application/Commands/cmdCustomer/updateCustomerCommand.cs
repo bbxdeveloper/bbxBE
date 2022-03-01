@@ -18,7 +18,7 @@ namespace bxBE.Application.Commands.cmdCustomer
 {
     public class UpdateCustomerCommand : IRequest<Response<Customer>>
     {
-        public string ID { get; set; }
+        public long ID { get; set; }
         public string CustomerName { get; set; }
 
         public string CustomerBankAccountNumber { get; set; }

@@ -14,7 +14,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> IsUniqueOriginCodeAsync(string OriginCode, long? ID = null);
         Task<bool> SeedDataAsync(int rowCount);
 
-        Task<Entity> GetOriginReponseAsync(GetOrigin requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOriginReponseAsync(QueryOrigin requestParameters);
+        Task<Entity> GetOriginAsync(GetOrigin requestParameters);
+        Task<List<Entity>> GetOriginListAsync();
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOriginAsync(QueryOrigin requestParameters);
     }
 }

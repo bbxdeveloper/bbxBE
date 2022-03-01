@@ -50,7 +50,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<Entity> GetProductGroupReponseAsync(GetProductGroup requestParameter)
+        public async Task<Entity> GetProductGroupAsync(GetProductGroup requestParameter)
         {
 
 
@@ -68,7 +68,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductGroupReponseAsync(QueryProductGroup requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductGroupAsync(QueryProductGroup requestParameter)
         {
 
             var searchString = requestParameter.SearchString;
@@ -156,5 +156,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
+
+   
     }
 }

@@ -16,7 +16,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 
         Task<bool> SeedDataAsync(int rowCount);
 
-        Task<Entity> GetUSR_USERReponseAsync(GetUSR_USER requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERReponseAsync(QueryUSR_USER requestParameters);
+        Task<Entity> GetUSR_USERAsync(GetUSR_USER requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERAsync(QueryUSR_USER requestParameters);
     }
 }

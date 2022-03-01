@@ -57,7 +57,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return bllCustomer.ValidateBankAccount(bankAccountNumber) || bllCustomer.ValidateIBAN(bankAccountNumber);
         }
 
-        public async Task<Entity> GetCustomerReponseAsync(GetCustomer requestParameter)
+        public async Task<Entity> GetCustomerAsync(GetCustomer requestParameter)
         {
            
 
@@ -75,7 +75,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerReponseAsync(QueryCustomer requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParameter)
         {
 
             var searchString = requestParameter.SearchString;

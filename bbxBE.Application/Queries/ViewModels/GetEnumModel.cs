@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -10,19 +10,19 @@ namespace bbxBE.Application.Queries.ViewModels
     {
 
         [DataMemberAttribute]
-        [JsonPropertyNameAttribute("value")]
+        [JsonProperty("value")]
         public string Value { get; set; }
 
         [DataMemberAttribute]
-        [JsonPropertyNameAttribute("text")]
+        [JsonProperty("text")]
         public string Text { get; set; }
 
         [DataMemberAttribute]
-        [JsonPropertyNameAttribute("icon")]
+        [JsonProperty("icon")]
         public string Icon { get; set; }
 
         [DataMemberAttribute]                   //additional data
-        [JsonPropertyNameAttribute("data")]
+        [JsonProperty("data")]
         public string Data { get; set; }
 
     }

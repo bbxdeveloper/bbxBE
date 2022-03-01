@@ -56,11 +56,11 @@ namespace bbxBE.Application.Helpers
 
             var bindingFlags = System.Reflection.BindingFlags.Instance |
                                 System.Reflection.BindingFlags.NonPublic |
-                                System.Reflection.BindingFlags.Public;
+                                System.Reflection.BindingFlags.Public ;
 
             
-            return typeof(T).GetProperties(bindingFlags).Where(pi => !Attribute.IsDefined(pi, typeof(IgnoreDataMemberAttribute))).Select(f => f.Name).ToList();
-  //          return typeof(T).GetProperties(bindingFlags).Where(pi => !Attribute.IsDefined(pi, typeof(NotModelFieldAttribute))).Select(f => f.Name).ToList();
+ //           return typeof(T).GetProperties(bindingFlags).Where(pi => !Attribute.IsDefined(pi, typeof(IgnoreDataMemberAttribute))).Select(f => f.Name).ToList();
+            return typeof(T).GetProperties(bindingFlags).Where(pi => !Attribute.IsDefined(pi, typeof(NotModelFieldAttribute))).Select(f => f.Name).ToList();
 //            return typeof(T).GetProperties(bindingFlags).Select(f => f.Name).ToList();
 
         }
@@ -79,7 +79,8 @@ namespace bbxBE.Application.Helpers
                                         System.Reflection.BindingFlags.Public;
 
 
-            return typeof(T).GetProperties(bindingFlags).Where(pi => !Attribute.IsDefined(pi, typeof(IgnoreDataMemberAttribute))).Select(f => f.Name).ToList();
+//            return typeof(T).GetProperties(bindingFlags).Where(pi => !Attribute.IsDefined(pi, typeof(IgnoreDataMemberAttribute))).Select(f => f.Name).ToList();
+            return typeof(T).GetProperties(bindingFlags).Where(pi => pi.CanWrite && !Attribute.IsDefined(pi, typeof(NotDBFieldAttribute))).Select(f => f.Name).ToList();
             //return typeof(T).GetProperties(bindingFlags).Select(f => f.Name).ToList();
 
         }

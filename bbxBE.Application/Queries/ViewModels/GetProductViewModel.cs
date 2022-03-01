@@ -1,9 +1,9 @@
 ﻿using AutoMapper.Configuration.Conventions;
 using AxegazMobileSrv.Attrib;
 using bbxBE.Application.Enums;
+using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -23,6 +23,8 @@ namespace bbxBE.Application.Queries.ViewModels
   
         #region UnitOfMeasure
         [IgnoreDataMember]
+        [NotDBField]
+        [NotModelField]
         private enUnitOfMeasure _UnitOfMeasure { get; set; } = enUnitOfMeasure.PIECE;
 
         [DataMember]
@@ -38,8 +40,8 @@ namespace bbxBE.Application.Queries.ViewModels
             }
         }
 
-        [IgnoreDataMember]
-        [JsonPropertyNameAttribute("UnitOfMeasureX")]
+        [DataMember]
+        [NotDBField]
         public string UnitOfMeasureX { get { return Common.Utils.GetEnumDescription(_UnitOfMeasure); } }
         #endregion
 

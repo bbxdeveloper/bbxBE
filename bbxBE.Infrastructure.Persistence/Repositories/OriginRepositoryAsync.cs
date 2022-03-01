@@ -50,25 +50,40 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<Entity> GetOriginReponseAsync(GetOrigin requestParameter)
+        public async Task<Entity> GetOriginAsync(GetOrigin requestParameter)
         {
-
-
             var ID = requestParameter.ID;
 
             var item = await GetByIdAsync(ID);
-
-            //            var fields = requestParameter.Fields;
-
-            var itemModel = _mapper.Map<Origin, GetOriginViewModel>(item);
-            var listFieldsModel = _modelHelper.GetModelFields<GetOriginViewModel>();
-
+            var listFields = _modelHelper.GetDBFields<Origin>();
             // shape data
-            var shapeData = _dataShaperGetOriginViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperOrigin.ShapeData(item, String.Join(",", listFields));
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOriginReponseAsync(QueryOrigin requestParameter)
+
+        public async Task<List<Entity>> GetOriginListAsync()
+        {
+          
+            var items = _Origins
+                .AsNoTracking()
+                .AsExpandable();
+
+            var listFields = _modelHelper.GetDBFields<Origin>();
+
+            // shape data
+            List<Entity> shapeData = new List<Entity>();
+            items.ForEachAsync(i =>
+            {
+                shapeData.Add(_dataShaperOrigin.ShapeData(i, String.Join(",", listFields)));
+
+            });
+
+
+            return shapeData;
+        }
+
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOriginAsync(QueryOrigin requestParameter)
         {
 
             var searchString = requestParameter.SearchString;

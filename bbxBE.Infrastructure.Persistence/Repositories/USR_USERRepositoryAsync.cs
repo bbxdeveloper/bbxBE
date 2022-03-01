@@ -54,7 +54,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return true;
         }
      
-        public async Task<Entity> GetUSR_USERReponseAsync(GetUSR_USER requestParameter)
+        public async Task<Entity> GetUSR_USERAsync(GetUSR_USER requestParameter)
         {
           
             var ID = requestParameter.ID;
@@ -68,7 +68,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERReponseAsync(QueryUSR_USER requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERAsync(QueryUSR_USER requestParameter)
         {
 
             var name = requestParameter.Name;
