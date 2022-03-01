@@ -1,6 +1,7 @@
 ﻿using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace bbxBE.Domain.Entities
@@ -20,5 +21,14 @@ namespace bbxBE.Domain.Entities
         public decimal ProductFee { get; set; }
         public string NatureIndicator { get; set; }
         public bool Active { get; set; }
+
+        [ForeignKey("ProductGroupID")]
+        public ProductGroup ProductGroup { get; set; }
+
+        [ForeignKey("OriginID")]
+        public Origin Origin { get; set; }
+
+        [ForeignKey("ProductID")]
+        public ICollection<ProductCode> ProductCodes { get; set; }
     }
 }

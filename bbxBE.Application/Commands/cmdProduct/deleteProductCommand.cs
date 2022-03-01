@@ -33,9 +33,9 @@ namespace bbxBE.Application.Commands.cmdProduct
 
         public async Task<Response<long>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var cust = _mapper.Map<Product>(request);
-            await _ProductRepository.DeleteAsync(cust);
-            return new Response<long>(cust.ID);
+            var prod = _mapper.Map<Product>(request);
+            await _ProductRepository.DeleteAsync(prod);
+            return new Response<long>(prod.ID);
         }
 
       

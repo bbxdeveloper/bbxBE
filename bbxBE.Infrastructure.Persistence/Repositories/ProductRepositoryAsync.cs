@@ -55,11 +55,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<bool> IsUniqueProductCodeAsync(string ProductCode, long? ID = null)
+        public async Task<bool> IsUniqueProductCodeAsync(string ProductCode, long? ProductID = null)
         {
             return !await _ProductCodes.AnyAsync(p => p.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()
                 && p.ProductCodeValue.ToUpper() == ProductCode.ToUpper()
-                && !p.Deleted && (ID == null || p.ID != ID.Value));
+                && !p.Deleted && (ProductID == null || p.ProductID != ProductID.Value));
         }
 
         public async Task<bool> CheckProductGroupIDAsync(long ProductGroupID)
@@ -76,16 +76,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
-                _Products.AddAsync(p_product);
+                _Products.Add(p_product);
                 await _dbContext.SaveChangesAsync();
                 p_productCode.ProductID = p_product.ID;
                 p_VTSZ.ProductID = p_product.ID;
-                _ProductCodes.AddAsync(p_productCode);
-                _ProductCodes.AddAsync(p_VTSZ);
+                _ProductCodes.Add(p_productCode);
+                _ProductCodes.Add(p_VTSZ);
                 if (p_EAN != null)
                 {
                     p_EAN.ProductID = p_product.ID;
-                    _ProductCodes.AddAsync(p_EAN);
+                    _ProductCodes.Add(p_EAN);
                 }
                 await _dbContext.SaveChangesAsync();
                 dbContextTransaction.Commit();
@@ -110,22 +110,33 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 var vtsz = _ProductCodes
                  .SingleOrDefault(x => x.ProductID == p_product.ID && x.ProductCodeCategory == p_VTSZ.ProductCodeCategory);
-                if (p_VTSZ != null)
+                if (vtsz != null)
                 {
                     p_VTSZ.ID = vtsz.ID;
                     _ProductCodes.Update(p_VTSZ);
                 }
 
-                //itt tartok
-                _ProductCodes.Update(p_VTSZ);
-                if (p_EAN != null)
+                var ean = _ProductCodes
+                 .SingleOrDefault(x => x.ProductID == p_product.ID && x.ProductCodeCategory == p_EAN.ProductCodeCategory);
+                 if (ean != null)
                 {
-                    _ProductCodes.Update(p_EAN);
+                    if (p_EAN != null)
+                    {
+                        p_EAN.ID = ean.ID;
+                        _ProductCodes.Update(p_EAN);
+                    }
+                    else
+                    {
+                        _ProductCodes.Remove(ean);
+                    }
                 }
                 else
                 {
-                    _ProductCodes.Remove(p_EAN);
-
+                    if(p_EAN != null)
+                    {
+                        p_EAN.ProductID = p_product.ID;
+                        _ProductCodes.Add(p_EAN);
+                    }
                 }
                 _Products.Update(p_product);
                 await _dbContext.SaveChangesAsync();
