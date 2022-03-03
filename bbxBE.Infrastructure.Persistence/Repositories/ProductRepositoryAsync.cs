@@ -19,6 +19,8 @@ using bbxBE.Application.Queries.ViewModels;
 using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Common;
 using bbxBE.Application.Enums;
+using bbxBE.Application.Consts;
+using bbxBE.Application.Exceptions;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -100,50 +102,97 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
           using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
-                var pc = _ProductCodes
-                .SingleOrDefault(x => x.ProductID == p_product.ID && x.ProductCodeCategory == p_productCode.ProductCodeCategory);
-                if (pc != null)
-                {
-                    p_productCode.ID = pc.ID;
-                    _ProductCodes.Update(p_productCode);
-                }
 
-                var vtsz = _ProductCodes
-                 .SingleOrDefault(x => x.ProductID == p_product.ID && x.ProductCodeCategory == p_VTSZ.ProductCodeCategory);
-                if (vtsz != null)
-                {
-                    p_VTSZ.ID = vtsz.ID;
-                    _ProductCodes.Update(p_VTSZ);
-                }
+                var prod = _Products.Include(p => p.ProductCodes).Where(x => x.ID == p_product.ID).FirstOrDefault();
 
-                var ean = _ProductCodes
-                 .SingleOrDefault(x => x.ProductID == p_product.ID && x.ProductCodeCategory == p_EAN.ProductCodeCategory);
-                 if (ean != null)
+                if (prod != null)
                 {
-                    if (p_EAN != null)
+
+                    if (prod.ProductCodes != null)
                     {
-                        p_EAN.ID = ean.ID;
-                        _ProductCodes.Update(p_EAN);
+                        var pc = prod.ProductCodes.SingleOrDefault( x=> x.ProductCodeCategory == p_productCode.ProductCodeCategory);
+                        if (pc != null)
+                        {
+                            p_productCode.ID = pc.ID;
+                            _ProductCodes.Update(p_productCode);
+                        }
+
+                        var vtsz = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == p_VTSZ.ProductCodeCategory);
+                        if (vtsz != null)
+                        {
+                            p_VTSZ.ID = vtsz.ID;
+                            _ProductCodes.Update(p_VTSZ);
+                        }
+
+                        var ean = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == p_EAN.ProductCodeCategory);
+                        if (ean != null)
+                        {
+                            if (p_EAN != null)
+                            {
+                                p_EAN.ID = ean.ID;
+                                _ProductCodes.Update(p_EAN);
+                            }
+                            else
+                            {
+                                _ProductCodes.Remove(ean);
+                            }
+                        }
+                        else
+                        {
+                            if (p_EAN != null)
+                            {
+                                p_EAN.ProductID = p_product.ID;
+                                _ProductCodes.Add(p_EAN);
+                            }
+                        }
+
                     }
-                    else
-                    {
-                        _ProductCodes.Remove(ean);
-                    }
+
+
+                    _Products.Update(p_product);
+                    await _dbContext.SaveChangesAsync();
+                    dbContextTransaction.Commit();
+
+
                 }
                 else
                 {
-                    if(p_EAN != null)
-                    {
-                        p_EAN.ProductID = p_product.ID;
-                        _ProductCodes.Add(p_EAN);
-                    }
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, p_product.ID));
                 }
-                _Products.Update(p_product);
-                await _dbContext.SaveChangesAsync();
-                dbContextTransaction.Commit();
-
             }
             return p_product;
+        }
+        public async Task<Product> DeleteProductAsync(long ID)
+        {
+
+            //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
+            Product prod = null;
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+                prod = _Products.Include(p => p.ProductCodes).Where(x => x.ID == ID).FirstOrDefault();
+
+                if (prod != null)
+                {
+
+                   if (prod.ProductCodes !=null)
+                    {
+
+                        _ProductCodes.RemoveRange(prod.ProductCodes.ToList());
+                    }
+                    _Products.Remove(prod);
+
+                    await _dbContext.SaveChangesAsync();
+                    dbContextTransaction.Commit();
+
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, ID));
+                }
+
+
+            }
+            return prod;
         }
 
         public async Task<Entity> GetProductAsync(GetProduct requestParameter)
@@ -271,5 +320,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
+
+
     }
 }

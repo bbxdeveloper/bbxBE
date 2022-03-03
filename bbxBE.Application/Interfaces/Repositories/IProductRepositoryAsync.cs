@@ -16,6 +16,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> CheckOriginIDAsync(long OriginID);
         Task<Product> AddProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN);
         Task<Product> UpdateProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN);
+        Task<Product> DeleteProductAsync(long ID);
 
         Task<bool> SeedDataAsync(int rowCount);
         Task<Entity> GetProductAsync(GetProduct requestParameters);

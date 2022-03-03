@@ -61,7 +61,7 @@ namespace bxBE.Application.Commands.cmdProduct
                 pcEAN = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
             }
 
-            await _ProductRepository.AddProductAsync(prod, pcCode, pcVTSZ, pcEAN);
+            prod =  await _ProductRepository.AddProductAsync(prod, pcCode, pcVTSZ, pcEAN);
             return new Response<Product>(prod);
         }
 

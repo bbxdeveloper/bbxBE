@@ -48,6 +48,11 @@ namespace bbxBE.WebApi.Middlewares
                         response.StatusCode = (int)HttpStatusCode.NotFound;
                         break;
 
+                    case ResourceNotFoundException e:
+                        // not found error
+                        response.StatusCode = (int)HttpStatusCode.NoContent;
+                        break;
+
                     default:
                         // unhandled error
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
