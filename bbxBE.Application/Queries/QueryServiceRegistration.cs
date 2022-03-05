@@ -34,6 +34,9 @@ namespace bbxBE.Application.Queries
             services.AddScoped<IDataShapeHelper<Product>, DataShapeHelper<Product>>();
             services.AddScoped<IDataShapeHelper<GetProductViewModel>, DataShapeHelper<GetProductViewModel>>();
 
+            services.AddScoped<IDataShapeHelper<Warehouse>, DataShapeHelper<Warehouse>>();
+            services.AddScoped<IDataShapeHelper<GetWarehouseViewModel>, DataShapeHelper<GetWarehouseViewModel>>();
+
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>
             {
                 services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);

@@ -23,13 +23,13 @@ namespace bxBE.Application.Commands.cmdWarehouse
 
     }
 
-    public class CreateUSR_USERCommandHandler : IRequestHandler<CreateWarehouseCommand, Response<Warehouse>>
+    public class CreateWarehouseCommandHandler : IRequestHandler<CreateWarehouseCommand, Response<Warehouse>>
     {
         private readonly IWarehouseRepositoryAsync _WarehouseRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateUSR_USERCommandHandler(IWarehouseRepositoryAsync WarehouseRepository, IMapper mapper, IConfiguration configuration)
+        public CreateWarehouseCommandHandler(IWarehouseRepositoryAsync WarehouseRepository, IMapper mapper, IConfiguration configuration)
         {
             _WarehouseRepository = WarehouseRepository;
             _mapper = mapper;

@@ -23,13 +23,13 @@ namespace bxBE.Application.Commands.cmdProductGroup
         public string ProductGroupDescription { get; set; }
     }
 
-    public class UpdateUSR_USERCommandHandler : IRequestHandler<UpdateProductGroupCommand, Response<ProductGroup>>
+    public class UpdateProductGroupCommandHandler : IRequestHandler<UpdateProductGroupCommand, Response<ProductGroup>>
     {
         private readonly IProductGroupRepositoryAsync _ProductGroupRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public UpdateUSR_USERCommandHandler(IProductGroupRepositoryAsync ProductGroupRepository, IMapper mapper, IConfiguration configuration)
+        public UpdateProductGroupCommandHandler(IProductGroupRepositoryAsync ProductGroupRepository, IMapper mapper, IConfiguration configuration)
         {
             _ProductGroupRepository = ProductGroupRepository;
             _mapper = mapper;

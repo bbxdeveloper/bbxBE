@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace bbxBE.Application.Commands.cmdWarehouse
 {
 
-    public class DeleteWarehouseCommandValidator : AbstractValidator<DeleteUSR_USERCommand>
+    public class DeleteWarehouseCommandValidator : AbstractValidator<DeleteWarehouseCommand>
     {
         private readonly IWarehouseRepositoryAsync _WarehouseRepository;
 

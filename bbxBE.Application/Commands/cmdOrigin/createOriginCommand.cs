@@ -23,13 +23,13 @@ namespace bxBE.Application.Commands.cmdOrigin
 
     }
 
-    public class CreateUSR_USERCommandHandler : IRequestHandler<CreateOriginCommand, Response<Origin>>
+    public class CreateOriginCommandHandler : IRequestHandler<CreateOriginCommand, Response<Origin>>
     {
         private readonly IOriginRepositoryAsync _OriginRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateUSR_USERCommandHandler(IOriginRepositoryAsync OriginRepository, IMapper mapper, IConfiguration configuration)
+        public CreateOriginCommandHandler(IOriginRepositoryAsync OriginRepository, IMapper mapper, IConfiguration configuration)
         {
             _OriginRepository = OriginRepository;
             _mapper = mapper;

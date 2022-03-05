@@ -23,13 +23,13 @@ namespace bxBE.Application.Commands.cmdProductGroup
 
     }
 
-    public class CreateUSR_USERCommandHandler : IRequestHandler<CreateProductGroupCommand, Response<ProductGroup>>
+    public class CreateProductGroupCommandHandler : IRequestHandler<CreateProductGroupCommand, Response<ProductGroup>>
     {
         private readonly IProductGroupRepositoryAsync _ProductGroupRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateUSR_USERCommandHandler(IProductGroupRepositoryAsync ProductGroupRepository, IMapper mapper, IConfiguration configuration)
+        public CreateProductGroupCommandHandler(IProductGroupRepositoryAsync ProductGroupRepository, IMapper mapper, IConfiguration configuration)
         {
             _ProductGroupRepository = ProductGroupRepository;
             _mapper = mapper;

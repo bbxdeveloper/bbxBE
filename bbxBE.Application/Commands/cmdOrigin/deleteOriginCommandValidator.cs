@@ -12,10 +12,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdUSR_USER
+namespace bbxBE.Application.Commands.cmdOrigin
 {
 
-    public class DeleteOriginCommandValidator : AbstractValidator<DeleteUSR_USERCommand>
+    public class DeleteOriginCommandValidator : AbstractValidator<DeleteOriginCommand>
     {
         private readonly IOriginRepositoryAsync _OriginRepository;
 
