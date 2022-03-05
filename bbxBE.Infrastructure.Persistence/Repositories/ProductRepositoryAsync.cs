@@ -201,11 +201,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var ID = requestParameter.ID;
 
-            var item = await GetByIdAsync(ID);
+            var item = _Products//.AsNoTracking().AsExpandable()
+                                  .Include(i => i.Origin)
+                                  .Include(i => i.ProductGroup)
+                                  .Include(i => i.ProductCodes)
+                                  .Where(i=>i.ID == ID).FirstOrDefaultAsync();
 
             //            var fields = requestParameter.Fields;
 
-            var itemModel = _mapper.Map<Product, GetProductViewModel>(item);
+            var itemModel = _mapper.Map<Product, GetProductViewModel>(item.Result);
             var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
             // shape data
@@ -224,42 +228,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             int recordsTotal, recordsFiltered;
 
-
-
-            IQueryable<Product> query = _Products.AsNoTracking().AsExpandable()
+ 
+            var query = _Products//.AsNoTracking().AsExpandable()
                                 .Include(i => i.Origin)
                                 .Include(i => i.ProductGroup)
-                                .Include(i => i.ProductCodes);
-/*
-                        join pco in _ProductCodes.DefaultIfEmpty()
-                                                       on prod.ID equals pco.ProductID
-                                                    join pcVTSZ in _ProductCodes.DefaultIfEmpty()
-                                                        on prod.ID equals pcVTSZ.ProductID
-                                                    join pcEAN in _ProductCodes.DefaultIfEmpty()
-                                                        on prod.ID equals pcEAN.ProductID
-                                                    where pco.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
-                                                          pcVTSZ.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString() &&
-                                                          pcEAN.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString()
-                                                    select new GetProductViewModel()
-                                                    {
-                                                        ID = prod.ID,
-                                                        ProductCode = pco.ProductCodeValue,
-                                                        Description = prod.Description,
-                                                        ProductGroup = (prod.ProductGroup !=null ? prod.ProductGroup.ProductGroupDescription: ""),
-                                                        Origin = (prod.Origin != null ? prod.Origin.OriginDescription : ""),
-                                                        UnitOfMeasure = prod.UnitOfMeasure,
-                                                        UnitPrice1 = prod.UnitPrice1,
-                                                        UnitPrice2 = prod.UnitPrice2,
-                                                        LatestSupplyPrice = prod.LatestSupplyPrice,
-                                                        IsStock = prod.IsStock,
-                                                        MinStock = prod.MinStock,
-                                                        OrdUnit = prod.OrdUnit,
-                                                        ProductFee = prod.ProductFee,
-                                                        Active = prod.Active,
-                                                        VTSZ = pcVTSZ.ProductCodeValue,
-                                                        EAN = pcEAN.ProductCodeValue
-                                                    };
-*/
+                                .Include(i => i.ProductCodes).AsQueryable();
 
             // Count records total
             recordsTotal = await query.CountAsync();
@@ -300,9 +273,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 _mapper.Map<Product, GetProductViewModel>(i))
             );
 
-     
-
-
+ 
             var shapeData = _dataShaperGetProductViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
             return (shapeData, recordsCount);

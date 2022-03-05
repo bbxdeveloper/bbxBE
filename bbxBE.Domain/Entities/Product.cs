@@ -9,8 +9,8 @@ namespace bbxBE.Domain.Entities
     public class Product : BaseEntity
     {
         public string Description { get; set; }
-        public long ProductGroupID { get; set; }
-        public long OriginID { get; set; }
+        public long? ProductGroupID { get; set; }
+        public long? OriginID { get; set; }
         public string UnitOfMeasure { get; set; }
         public decimal UnitPrice1 { get; set; }
         public decimal UnitPrice2 { get; set; }

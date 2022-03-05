@@ -2,8 +2,10 @@
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Queries.Mappings
 {
@@ -28,7 +30,14 @@ namespace bbxBE.Queries.Mappings
             CreateMap<Product, GetProductViewModel>();
 
             CreateMap<List<Warehouse>, List<GetWarehouseViewModel>>();
-            CreateMap<Warehouse, GetWarehouseViewModel>();
+            CreateMap<Product, GetProductViewModel>()
+             .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupDescription))
+             .ForMember(dst => dst.Origin, opt => opt.MapFrom(src => src.Origin.OriginDescription))
+             .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
+             .ForMember(dst => dst.VTSZ, opt => opt.MapFrom(src => src.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ProductCodeValue))
+             .ForMember(dst => dst.EAN, opt => opt.MapFrom(src => src.ProductCodes.Any(w => w.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString()) ?
+                                                    src.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString()).ProductCodeValue
+                                                   : ""));
         }
     }
 }
