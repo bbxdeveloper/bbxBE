@@ -54,7 +54,7 @@ namespace bbxBE.Application.Queries.qCustomer
 
 
             // query based on filter
-            var entities = await _customerRepository.QueryPagedCustomerReponseAsync(validFilter);
+            var entities = await _customerRepository.QueryPagedCustomerAsync(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetCustomerViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 

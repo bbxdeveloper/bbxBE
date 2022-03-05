@@ -40,7 +40,7 @@ namespace bbxBE.Application.Queries.qOrigin
       
 
             // query based on filter
-            var entities = await _OriginRepository.QueryPagedOriginReponseAsync(validFilter);
+            var entities = await _OriginRepository.QueryPagedOriginAsync(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetOriginViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 

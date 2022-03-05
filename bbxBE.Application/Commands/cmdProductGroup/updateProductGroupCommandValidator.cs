@@ -17,6 +17,11 @@ namespace bbxBE.Application.Commands.cmdProductGroup
         {
             this._ProductGroupRepository = ProductGroupRepository;
 
+
+            RuleFor(p => p.ID)
+                .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+
             RuleFor(p => p.ProductGroupCode)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)

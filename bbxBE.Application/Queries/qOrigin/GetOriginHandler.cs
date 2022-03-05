@@ -40,8 +40,8 @@ namespace bbxBE.Application.Queries.qOrigin
           
 
             // query based on filter
-            var entityPositions = await _positionRepository.GetOriginReponseAsync(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetOriginViewModel>();
+            var entityPositions = await _positionRepository.GetOriginAsync(validFilter);
+            var data = entityPositions.MapItemFieldsByMapToAnnotation<Origin>();
 
             // response wrapper
             return data;

@@ -1,4 +1,5 @@
-﻿using FluentValidation.Results;
+﻿using bbxBE.Application.Consts;
+using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
 
@@ -6,7 +7,7 @@ namespace bbxBE.Application.Exceptions
 {
     public class ValidationException : Exception
     {
-        public ValidationException() : base("One or more validation failures have occurred.")
+        public ValidationException() : base( bbxBEConsts.FV_BASE)
         {
             Errors = new List<string>();
         }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper.Configuration.Conventions;
 using AxegazMobileSrv.Attrib;
 using System;
-using System.Text.Json.Serialization;
 
 namespace bbxBE.Application.Queries.ViewModels
 {

@@ -46,6 +46,27 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.ProductController.Get(bbxBE.Application.Queries.qProduct.GetProduct)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.ProductController.Query(bbxBE.Application.Queries.qProduct.QueryProduct)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.ProductController.Create(bxBE.Application.Commands.cmdProduct.CreateProductCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.ProductGroupController.Get(bbxBE.Application.Queries.qProductGroup.GetProductGroup)">
             <summary>
             GET: api/controller

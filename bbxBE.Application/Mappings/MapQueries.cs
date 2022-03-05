@@ -23,6 +23,9 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<List<Origin>, List<GetOriginViewModel>>();
             CreateMap<Origin, GetOriginViewModel>();
+
+            CreateMap<List<Product>, List<GetProductViewModel>>();
+            CreateMap<Product, GetProductViewModel>();
         }
     }
 }

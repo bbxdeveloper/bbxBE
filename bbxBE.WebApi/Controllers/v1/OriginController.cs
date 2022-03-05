@@ -44,6 +44,8 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(filter));
         }
 
+    
+
         /// <summary>
         /// GET: api/controller
         /// </summary>

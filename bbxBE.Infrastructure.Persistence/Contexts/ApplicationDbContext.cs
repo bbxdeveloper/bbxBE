@@ -28,6 +28,8 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<Customer> Customer { get; set; }
         public DbSet<ProductGroup> ProductGroup { get; set; }
         public DbSet<Origin> Origin { get; set; }
+        public DbSet<ProductCode> ProductCode { get; set; }
+        public DbSet<Product> Product { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -36,7 +38,8 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                       entry.Entity.CreateTime = _dateTime.NowUtc;
+                        entry.Entity.CreateTime = _dateTime.NowUtc;
+                        entry.Entity.UpdateTime = entry.Entity.CreateTime;
                         break;
 
                     case EntityState.Modified:
@@ -61,6 +64,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseLoggerFactory(_loggerFactory);
+            
         }
     }
 }

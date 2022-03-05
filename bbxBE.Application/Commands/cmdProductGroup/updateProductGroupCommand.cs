@@ -18,7 +18,7 @@ namespace bxBE.Application.Commands.cmdProductGroup
 {
     public class UpdateProductGroupCommand : IRequest<Response<ProductGroup>>
     {
-        public string ID { get; set; }
+        public long ID { get; set; }
         public string ProductGroupCode { get; set; }
         public string ProductGroupDescription { get; set; }
     }
@@ -38,10 +38,10 @@ namespace bxBE.Application.Commands.cmdProductGroup
 
         public async Task<Response<ProductGroup>> Handle(UpdateProductGroupCommand request, CancellationToken cancellationToken)
         {
-            var cust = _mapper.Map<ProductGroup>(request);
+            var pg = _mapper.Map<ProductGroup>(request);
 
-            await _ProductGroupRepository.UpdateAsync(cust);
-            return new Response<ProductGroup>(cust);
+            await _ProductGroupRepository.UpdateAsync(pg);
+            return new Response<ProductGroup>(pg);
         }
 
 

@@ -1,10 +1,10 @@
 ﻿using bbxBE.Application.Exceptions;
 using bbxBE.Application.Wrappers;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Middlewares
@@ -48,12 +48,17 @@ namespace bbxBE.WebApi.Middlewares
                         response.StatusCode = (int)HttpStatusCode.NotFound;
                         break;
 
+                    case ResourceNotFoundException e:
+                        // not found error
+                        response.StatusCode = (int)HttpStatusCode.NoContent;
+                        break;
+
                     default:
                         // unhandled error
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         break;
                 }
-                var result = JsonSerializer.Serialize(responseModel);
+                var result = JsonConvert.SerializeObject(responseModel);
 
                 await response.WriteAsync(result);
             }

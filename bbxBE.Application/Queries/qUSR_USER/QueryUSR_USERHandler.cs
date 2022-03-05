@@ -53,7 +53,7 @@ namespace bbxBE.Application.Queries.qUSR_USER
               */
 
             // query based on filter
-            var entitUsers = await _userRepository.QueryPagedUSR_USERReponseAsync(validFilter);
+            var entitUsers = await _userRepository.QueryPagedUSR_USERAsync(validFilter);
             var data = entitUsers.data.MapItemsFieldsByMapToAnnotation<GetUSR_USERViewModel>();
             RecordsCount recordCount = entitUsers.recordsCount;
 

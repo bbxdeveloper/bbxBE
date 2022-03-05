@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Commands.cmdCustomer;
 using bbxBE.Application.Commands.cmdOrigin;
+using bbxBE.Application.Commands.cmdProduct;
 using bbxBE.Application.Commands.cmdProductGroup;
 using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCustomer;
 using bxBE.Application.Commands.cmdOrigin;
+using bxBE.Application.Commands.cmdProduct;
 using bxBE.Application.Commands.cmdProductGroup;
 using System;
 using System.Collections.Generic;
@@ -32,6 +34,10 @@ namespace bbxBE.Command.Mappings
             CreateMap<CreateOriginCommand, Origin>();
             CreateMap<UpdateOriginCommand, Origin>();
             CreateMap<DeleteOriginCommand, Origin>();
+
+            CreateMap<CreateProductCommand, Product>();
+            CreateMap<UpdateProductCommand, Product>();
+            CreateMap<DeleteProductCommand, Product>();
         }
     }
 }

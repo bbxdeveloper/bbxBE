@@ -18,7 +18,7 @@ namespace bxBE.Application.Commands.cmdOrigin
 {
     public class UpdateOriginCommand : IRequest<Response<Origin>>
     {
-        public string ID { get; set; }
+        public long ID { get; set; }
         public string OriginCode { get; set; }
         public string OriginDescription { get; set; }
     }

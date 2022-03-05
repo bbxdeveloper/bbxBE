@@ -17,6 +17,10 @@ namespace bbxBE.Application.Commands.cmdCustomer
         {
             this._customerRepository = customerRepository;
 
+            RuleFor(p => p.ID)
+               .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
+               .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+
             RuleFor(p => p.CustomerName)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
