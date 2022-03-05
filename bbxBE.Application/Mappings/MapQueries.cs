@@ -26,6 +26,9 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<List<Product>, List<GetProductViewModel>>();
             CreateMap<Product, GetProductViewModel>();
+
+            CreateMap<List<Warehouse>, List<GetWarehouseViewModel>>();
+            CreateMap<Warehouse, GetWarehouseViewModel>();
         }
     }
 }

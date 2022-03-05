@@ -12,16 +12,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdCustomer
+namespace bbxBE.Application.Commands.cmdWarehouse
 {
 
-    public class DeleteCustomerCommandValidator : AbstractValidator<DeleteCustomerCommand>
+    public class DeleteWarehouseCommandValidator : AbstractValidator<DeleteWarehouseCommand>
     {
-        private readonly ICustomerRepositoryAsync _customerRepository;
+        private readonly IWarehouseRepositoryAsync _WarehouseRepository;
 
-        public DeleteCustomerCommandValidator(ICustomerRepositoryAsync customerRepository)
+        public DeleteWarehouseCommandValidator(IWarehouseRepositoryAsync WarehouseRepository)
         {
-            _customerRepository = customerRepository;
+            _WarehouseRepository = WarehouseRepository;
             RuleFor(p => p.ID)
                 .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);

@@ -12,10 +12,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdUSR_USER
+namespace bbxBE.Application.Commands.cmdProductGroup
 {
 
-    public class DeleteProductGroupCommandValidator : AbstractValidator<DeleteUSR_USERCommand>
+    public class DeleteProductGroupCommandValidator : AbstractValidator<DeleteProductGroupCommand>
     {
         private readonly IProductGroupRepositoryAsync _ProductGroupRepository;
 

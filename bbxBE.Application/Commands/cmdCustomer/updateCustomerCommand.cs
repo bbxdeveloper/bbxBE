@@ -38,13 +38,13 @@ namespace bxBE.Application.Commands.cmdCustomer
 
     }
 
-    public class UpdateUSR_USERCommandHandler : IRequestHandler<UpdateCustomerCommand, Response<Customer>>
+    public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommand, Response<Customer>>
     {
         private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public UpdateUSR_USERCommandHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IConfiguration configuration)
+        public UpdateCustomerCommandHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IConfiguration configuration)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;
