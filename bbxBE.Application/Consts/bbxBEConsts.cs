@@ -26,6 +26,7 @@ namespace bbxBE.Application.Consts
         public static string FV_INVORIGINID = "{PropertyName}|{PropertyName} invalid origin ID.";
         public static string FV_INVUNITOFMEASURE = "{PropertyName}|{PropertyName} invalid unit of measure:{PropertyValue} ";
         public static string FV_PRODNOTFOUND = "Product not found$ ID:{0} ";
+        public static string FV_INVALIDFORMAT = "{PropertyName}|{PropertyName} format is invalid.";
 
         public static string FV_BASE = "One or more validation failures have occurred.";
 

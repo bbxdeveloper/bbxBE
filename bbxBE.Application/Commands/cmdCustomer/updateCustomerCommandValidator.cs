@@ -26,8 +26,6 @@ namespace bbxBE.Application.Commands.cmdCustomer
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
 
-            RuleFor(p => p.CustomerBankAccountNumber)
-                     .MaximumLength(30).WithMessage(bbxBEConsts.FV_LEN30);
 
             RuleFor(p => p.TaxpayerNumber)
                    .MaximumLength(13).WithMessage(bbxBEConsts.FV_LEN13)
@@ -40,7 +38,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
             RuleFor(p => p.CustomerBankAccountNumber)
                        .MaximumLength(30).WithMessage(bbxBEConsts.FV_LEN30)
-                       .MustAsync(CheckBankAccountAsync).WithMessage(bbxBEConsts.FV_EXISTS);
+                       .MustAsync(CheckBankAccountAsync).WithMessage(bbxBEConsts.FV_INVALIDFORMAT);
 
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.FV_LEN2000);
@@ -49,7 +47,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
         private async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerNumber, long ID, CancellationToken cancellationToken)
         {
 
-            if (string.IsNullOrWhiteSpace(TaxpayerNumber.Remove('-')))
+            if (TaxpayerNumber == null || string.IsNullOrWhiteSpace(TaxpayerNumber.Remove('-')))
                 return true;
             var TaxItems = TaxpayerNumber.Split('-');
             if (TaxItems.Length != 0)

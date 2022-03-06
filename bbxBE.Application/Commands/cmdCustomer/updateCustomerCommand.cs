@@ -55,7 +55,7 @@ namespace bxBE.Application.Commands.cmdCustomer
         {
             var cust = _mapper.Map<Customer>(request);
 
-            if (request.TaxpayerNumber != null)
+            if (request.TaxpayerNumber != null && !string.IsNullOrWhiteSpace(request.TaxpayerNumber.Remove('-')))
             {
                 var TaxItems = request.TaxpayerNumber.Split('-');
                 cust.TaxpayerId = TaxItems[0];
