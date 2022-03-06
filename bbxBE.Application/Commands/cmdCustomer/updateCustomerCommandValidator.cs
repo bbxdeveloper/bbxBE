@@ -48,6 +48,9 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
         private async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerNumber, long ID, CancellationToken cancellationToken)
         {
+
+            if (string.IsNullOrWhiteSpace(TaxpayerNumber.Remove('-')))
+                return true;
             var TaxItems = TaxpayerNumber.Split('-');
             if (TaxItems.Length != 0)
             {

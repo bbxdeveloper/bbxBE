@@ -30,6 +30,9 @@ namespace bbxBE.Queries.Mappings
             CreateMap<Product, GetProductViewModel>();
 
             CreateMap<List<Warehouse>, List<GetWarehouseViewModel>>();
+            CreateMap<Warehouse, GetWarehouseViewModel>();
+
+
             CreateMap<Product, GetProductViewModel>()
              .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupDescription))
              .ForMember(dst => dst.Origin, opt => opt.MapFrom(src => src.Origin.OriginDescription))
