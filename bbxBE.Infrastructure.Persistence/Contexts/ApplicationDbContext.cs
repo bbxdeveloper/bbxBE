@@ -31,6 +31,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<ProductCode> ProductCode { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<Warehouse> Warehouse { get; set; }
+        public DbSet<Counter> Counter { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

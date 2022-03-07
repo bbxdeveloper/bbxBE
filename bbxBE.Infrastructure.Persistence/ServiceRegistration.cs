@@ -8,6 +8,7 @@ using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 using System.Reflection;
 
 namespace bbxBE.Infrastructure.Persistence
@@ -36,6 +37,7 @@ namespace bbxBE.Infrastructure.Persistence
             //Connection DB létrehozásnak
             services.AddSingleton<Database>();
 
+            /*
             services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
             services.AddTransient<IUSR_USERRepositoryAsync, USR_USERRepositoryAsync>();
             services.AddTransient<ICustomerRepositoryAsync, CustomerRepositoryAsync>();
@@ -43,6 +45,13 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IOriginRepositoryAsync, OriginRepositoryAsync>();
             services.AddTransient<IProductRepositoryAsync, ProductRepositoryAsync>();
             services.AddTransient<IWarehouseRepositoryAsync, WarehouseRepositoryAsync>();
+            */
+
+
+            Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.Contains("Repository")).ToList().ForEach((t) =>
+            {
+                services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
+            });
 
             services.AddLogging(c => c.AddFluentMigratorConsole())
             .AddFluentMigratorCore()
