@@ -33,12 +33,12 @@ namespace bbxBE.Application.Commands.cmdProduct
                              return await IsUniqueProductCodeAsync(ProductCode, model.ID, cancellation);
                          }
                      ).WithMessage(bbxBEConsts.FV_EXISTS)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.Description)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.ProductGroupID)
                  .MustAsync(CheckProductGroupIDAsync).WithMessage(bbxBEConsts.FV_INVPRODUCTCROUPID);
@@ -53,7 +53,7 @@ namespace bbxBE.Application.Commands.cmdProduct
             RuleFor(p => p.VTSZ)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
         }
 
         private async Task<bool> IsUniqueProductCodeAsync(string ProductCode, long ID, CancellationToken cancellationToken)

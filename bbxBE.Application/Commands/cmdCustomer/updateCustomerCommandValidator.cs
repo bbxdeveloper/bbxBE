@@ -24,11 +24,11 @@ namespace bbxBE.Application.Commands.cmdCustomer
             RuleFor(p => p.CustomerName)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
 
             RuleFor(p => p.TaxpayerNumber)
-                   .MaximumLength(13).WithMessage(bbxBEConsts.FV_LEN13)
+                   .MaximumLength(13).WithMessage(bbxBEConsts.FV_MAXLEN)
                    .MustAsync(
                         async (model, Name, cancellation) =>
                         {
@@ -37,11 +37,11 @@ namespace bbxBE.Application.Commands.cmdCustomer
                     ).WithMessage(bbxBEConsts.FV_EXISTS);
 
             RuleFor(p => p.CustomerBankAccountNumber)
-                       .MaximumLength(30).WithMessage(bbxBEConsts.FV_LEN30)
+                       .MaximumLength(30).WithMessage(bbxBEConsts.FV_MAXLEN)
                        .MustAsync(CheckBankAccountAsync).WithMessage(bbxBEConsts.FV_INVALIDFORMAT);
 
             RuleFor(p => p.Comment)
-                 .MaximumLength(2000).WithMessage(bbxBEConsts.FV_LEN2000);
+                 .MaximumLength(2000).WithMessage(bbxBEConsts.FV_MAXLEN);
         }
 
         private async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerNumber, long ID, CancellationToken cancellationToken)

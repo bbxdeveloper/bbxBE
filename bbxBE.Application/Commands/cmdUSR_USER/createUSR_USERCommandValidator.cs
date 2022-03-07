@@ -26,22 +26,22 @@ namespace bbxBE.Application.Commands.cmdUSR_USER
             RuleFor(p => p.Name)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80)
+                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN)
                 .MustAsync(IsUniqueNameAsync).WithMessage(bbxBEConsts.FV_EXISTS);
 
             RuleFor(p => p.Email)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80)
+                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN)
                 .MustAsync(IsValidEmailAsync).WithMessage(bbxBEConsts.FV_INVALIDEMAIL);
 
             RuleFor(p => p.LoginName)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.Comment)
-                 .MaximumLength(2000).WithMessage(bbxBEConsts.FV_LEN2000);
+                 .MaximumLength(2000).WithMessage(bbxBEConsts.FV_MAXLEN);
         }
 
         private async Task<bool> IsUniqueNameAsync(string p_USR_NAME, CancellationToken cancellationToken)

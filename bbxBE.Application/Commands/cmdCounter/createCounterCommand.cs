@@ -20,6 +20,11 @@ namespace bxBE.Application.Commands.cmdCounter
     {
         public string CounterCode { get; set; }
         public string CounterDescription { get; set; }
+        public long WarehouseID { get; set; }
+        public string Prefix { get; set; }
+        public long CurrentNumber { get; set; }
+        public int NumbepartLength { get; set; }
+        public string Suffix { get; set; }
 
     }
 

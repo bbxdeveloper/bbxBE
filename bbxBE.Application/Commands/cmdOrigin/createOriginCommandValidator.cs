@@ -32,12 +32,12 @@ namespace bbxBE.Application.Commands.cmdOrigin
                              return await IsUniqueOriginCodeAsync(Name, cancellation);
                          }
                      ).WithMessage(bbxBEConsts.FV_EXISTS)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.OriginDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
         }
 
