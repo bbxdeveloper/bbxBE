@@ -198,7 +198,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Entity> GetProductAsync(GetProduct requestParameter)
         {
 
-
             var ID = requestParameter.ID;
 
             var item = _Products//.AsNoTracking().AsExpandable()
