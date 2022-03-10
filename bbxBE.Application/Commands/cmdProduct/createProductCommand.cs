@@ -21,8 +21,8 @@ namespace bxBE.Application.Commands.cmdProduct
     {
         public string ProductCode { get; set; }
         public string Description { get; set; }
-        public long ProductGroupID { get; set; }
-        public long OriginID { get; set; }
+        public string ProductGroupCode { get; set; }
+        public string OriginCode { get; set; }
         public string UnitOfMeasure { get; set; }
         public decimal UnitPrice1 { get; set; }
         public decimal UnitPrice2 { get; set; }
@@ -54,7 +54,5 @@ namespace bxBE.Application.Commands.cmdProduct
             var prod = await bllProduct.CreateAsynch(request, _ProductRepository, _mapper, cancellationToken);
             return new Response<Product>(prod);
         }
-
-
     }
 }

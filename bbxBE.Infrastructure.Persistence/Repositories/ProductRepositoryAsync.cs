@@ -64,20 +64,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 && !p.Deleted && (ProductID == null || p.ProductID != ProductID.Value));
         }
 
-        public async Task<bool> CheckProductGroupIDAsync(long ProductGroupID)
+        public async Task<bool> CheckProductGroupCodeAsync(string ProductGroupCode)
         {
-            return await _ProductGroups.AnyAsync(p => p.ID == ProductGroupID && !p.Deleted);
+            return await _ProductGroups.AnyAsync(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted);
         }
 
-        public async Task<bool> CheckOriginIDAsync(long OriginID)
+        public async Task<bool> CheckOriginCodeAsync(string OriginCode)
         {
-            return await _Origins.AnyAsync(p => p.ID == OriginID && !p.Deleted);
+            return await _Origins.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted);
         }
 
-        public async Task<Product> AddProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN)
+        public async Task<Product> AddProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN, string p_ProductGroupCode, string p_OriginCode)
         {
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
+
+                if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
+                {
+                    p_product.ProductGroupID = _ProductGroups.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                }
+
+                if (!string.IsNullOrWhiteSpace(p_OriginCode))
+                {
+                    p_product.OriginID = _Origins.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                }
+
                 _Products.Add(p_product);
                 await _dbContext.SaveChangesAsync();
                 p_productCode.ProductID = p_product.ID;
@@ -95,7 +106,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return p_product;
         }
-        public async Task<Product> UpdateProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN)
+        public async Task<Product> UpdateProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN, string p_ProductGroupCode, string p_OriginCode)
         {
 
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
@@ -107,6 +118,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 if (prod != null)
                 {
+                    if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
+                    {
+                        p_product.ProductGroupID = _ProductGroups.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(p_OriginCode))
+                    {
+                        p_product.OriginID = _Origins.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                    }
 
                     if (prod.ProductCodes != null)
                     {
