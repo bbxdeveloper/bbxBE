@@ -34,18 +34,18 @@ namespace bbxBE.Application.Commands.cmdProduct
                              return await IsUniqueProductCodeAsync(ProductCode, cancellation);
                          }
                      ).WithMessage(bbxBEConsts.FV_EXISTS)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.Description)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
-            RuleFor(p => p.ProductGroupID)
-                 .MustAsync(CheckProductGroupIDAsync).WithMessage(bbxBEConsts.FV_INVPRODUCTCROUPID);
+            RuleFor(p => p.ProductGroupCode)
+                 .MustAsync(CheckProductGroupCodeAsync).WithMessage(bbxBEConsts.FV_INVPRODUCTCROUPID);
  
-            RuleFor(p => p.OriginID)
-                 .MustAsync(CheckOriginIDAsync).WithMessage(bbxBEConsts.FV_INVORIGINID);
+            RuleFor(p => p.OriginCode)
+                 .MustAsync(CheckOriginCodeAsync).WithMessage(bbxBEConsts.FV_INVORIGINID);
 
 
             RuleFor(p => p.UnitOfMeasure)
@@ -54,7 +54,7 @@ namespace bbxBE.Application.Commands.cmdProduct
             RuleFor(p => p.VTSZ)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_LEN80);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
         }
 
@@ -62,19 +62,19 @@ namespace bbxBE.Application.Commands.cmdProduct
         {
                 return await _ProductRepository.IsUniqueProductCodeAsync(ProductCode);
         }
-        private async Task<bool> CheckProductGroupIDAsync(long ProductGroupID, CancellationToken cancellationToken)
+        private async Task<bool> CheckProductGroupCodeAsync(string ProductGroupCode, CancellationToken cancellationToken)
         {
-            if (ProductGroupID != 0)
+            if (!string.IsNullOrWhiteSpace(ProductGroupCode))
             {
-                return await _ProductRepository.CheckProductGroupIDAsync(ProductGroupID);
+                return await _ProductRepository.CheckProductGroupCodeAsync(ProductGroupCode);
             }
             return true;
         }
-        private async Task<bool> CheckOriginIDAsync(long OriginID, CancellationToken cancellationToken)
+        private async Task<bool> CheckOriginCodeAsync(string OriginCode, CancellationToken cancellationToken)
         {
-            if (OriginID != 0)
+            if (!string.IsNullOrWhiteSpace(OriginCode))
             {
-                return await _ProductRepository.CheckOriginIDAsync(OriginID);
+                return await _ProductRepository.CheckOriginCodeAsync(OriginCode);
             }
             return true;
         }

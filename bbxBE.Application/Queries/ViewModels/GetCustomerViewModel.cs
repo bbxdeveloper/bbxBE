@@ -22,38 +22,34 @@ namespace bbxBE.Application.Queries.ViewModels
         
         //     [NotDBField]
         [MapTo("TaxpayerNumber")]
-        public string TaxpayerNumber
-        {
-            get
-            {
-               return String.Format("{0,7}-{1,1}-{2,2}", TaxpayerId, VatCode, CountyCode);
-            }
-        }
+        [NotDBFieldAttribute]
+        public string TaxpayerNumber { get; set; }
+        
 
         [MapTo("FullAddress")]
-        public string FullAddress
-        {
-            get
-            {
-                return String.Format("{0} {1} {2}", PostalCode, City, AdditionalAddressDetail).Trim();
-            }
-        }
+        [NotDBFieldAttribute]
+        public string FullAddress { get; set; }
+      
 
 
-        [NotModelFieldAttribute]
+//        [NotModelFieldAttribute]
 
         public string TaxpayerId { get; set; }
-        [NotModelFieldAttribute]
+ //       [NotModelFieldAttribute]
 
         public string VatCode { get; set; }
-        [NotModelFieldAttribute]
+  //      [NotModelFieldAttribute]
         public string CountyCode { get; set; }
         
         public string ThirdStateTaxId { get; set; }
         public string CountryCode { get; set; }
         public string Region { get; set; }
+
+  //      [NotModelFieldAttribute]
         public string PostalCode { get; set; }
+  //      [NotModelFieldAttribute]
         public string City { get; set; }
+   //     [NotModelFieldAttribute]
         public string AdditionalAddressDetail { get; set; }
     }
 }

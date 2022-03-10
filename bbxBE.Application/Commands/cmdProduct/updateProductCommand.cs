@@ -22,8 +22,8 @@ namespace bxBE.Application.Commands.cmdProduct
         public long ID { get; set; }
         public string ProductCode { get; set; }
         public string Description { get; set; }
-        public long ProductGroupID { get; set; }
-        public long OriginID { get; set; }
+        public string ProductGroupCode { get; set; }
+        public string OriginCode { get; set; }
         public string UnitOfMeasure { get; set; }
         public decimal UnitPrice1 { get; set; }
         public decimal UnitPrice2 { get; set; }
@@ -52,20 +52,9 @@ namespace bxBE.Application.Commands.cmdProduct
 
         public async Task<Response<Product>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            var prod = _mapper.Map<Product>(request);
-            prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
-            var pcCode = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
-            var pcVTSZ = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
-            ProductCode pcEAN = null;
-            if (!string.IsNullOrWhiteSpace(request.EAN))
-            {
-                pcEAN = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
-            }
-
-            await _ProductRepository.UpdateProductAsync(prod, pcCode, pcVTSZ, pcEAN);
+            var prod = await bllProduct.UpdateAsynch(request, _ProductRepository, _mapper, cancellationToken);
             return new Response<Product>(prod);
         }
-
 
     }
 }

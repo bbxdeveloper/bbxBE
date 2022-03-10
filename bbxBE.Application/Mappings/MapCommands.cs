@@ -41,6 +41,7 @@ namespace bbxBE.Command.Mappings
             CreateMap<UpdateProductCommand, Product>();
             CreateMap<DeleteProductCommand, Product>();
 
+
             CreateMap<CreateWarehouseCommand, Warehouse>();
             CreateMap<UpdateWarehouseCommand, Warehouse>();
             CreateMap<DeleteWarehouseCommand, Warehouse>();

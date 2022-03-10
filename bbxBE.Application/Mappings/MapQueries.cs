@@ -17,8 +17,11 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<GetCustomerViewModel, Customer>().ReverseMap();
             CreateMap<List<Customer>, List<GetCustomerViewModel>>().ReverseMap();
-            CreateMap<List<Customer>, List<GetCustomerViewModel>>();
-            CreateMap<Customer, GetCustomerViewModel>();
+
+            CreateMap<Customer, GetCustomerViewModel>()
+                   .ForMember(dst => dst.TaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.TaxpayerId, src.VatCode, src.CountyCode)))
+                   .ForMember(dst => dst.FullAddress, opt => opt.MapFrom(src => String.Format("{0} {1} {2}", src.PostalCode, src.City, src.AdditionalAddressDetail).Trim()));
+
 
             CreateMap<List<ProductGroup>, List<GetProductGroupViewModel>>();
             CreateMap<ProductGroup, GetProductGroupViewModel>();
@@ -30,6 +33,9 @@ namespace bbxBE.Queries.Mappings
             CreateMap<Product, GetProductViewModel>();
 
             CreateMap<List<Warehouse>, List<GetWarehouseViewModel>>();
+            CreateMap<Warehouse, GetWarehouseViewModel>();
+
+
             CreateMap<Product, GetProductViewModel>()
              .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupDescription))
              .ForMember(dst => dst.Origin, opt => opt.MapFrom(src => src.Origin.OriginDescription))

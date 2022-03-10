@@ -8,6 +8,7 @@ using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 using System.Reflection;
 
 namespace bbxBE.Infrastructure.Persistence
@@ -43,7 +44,15 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IOriginRepositoryAsync, OriginRepositoryAsync>();
             services.AddTransient<IProductRepositoryAsync, ProductRepositoryAsync>();
             services.AddTransient<IWarehouseRepositoryAsync, WarehouseRepositoryAsync>();
+            services.AddTransient<ICounterRepositoryAsync, CounterRepositoryAsync>();
+            
+            /*
 
+                                    Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.Contains("Repository")).ToList().ForEach((t) =>
+                                    {
+                                        services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
+                                    });
+                        */
             services.AddLogging(c => c.AddFluentMigratorConsole())
             .AddFluentMigratorCore()
             .ConfigureRunner(c => c.AddSqlServer2012()

@@ -1,49 +1,49 @@
 ﻿using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
-using bxBE.Application.Commands.cmdWarehouse;
+using bxBE.Application.Commands.cmdCounter;
 using FluentValidation;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdWarehouse
+namespace bbxBE.Application.Commands.cmdCounter
 {
 
-    public class UpdateWarehouseCommandValidator : AbstractValidator<UpdateWarehouseCommand>
+    public class UpdateCounterCommandValidator : AbstractValidator<UpdateCounterCommand>
     {
-        private readonly IWarehouseRepositoryAsync _WarehouseRepository;
+        private readonly ICounterRepositoryAsync _CounterRepository;
 
-        public UpdateWarehouseCommandValidator(IWarehouseRepositoryAsync WarehouseRepository)
+        public UpdateCounterCommandValidator(ICounterRepositoryAsync CounterRepository)
         {
-            this._WarehouseRepository = WarehouseRepository;
+            this._CounterRepository = CounterRepository;
 
 
             RuleFor(p => p.ID)
                 .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
 
-            RuleFor(p => p.WarehouseCode)
+            RuleFor(p => p.CounterCode)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
                    .MustAsync(
                         async (model, Name, cancellation) =>
                         {
-                            return await IsUniqueWarehouseCodeAsync(Name, Convert.ToInt64(model.ID), cancellation);
+                            return await IsUniqueCounterCodeAsync(Name, Convert.ToInt64(model.ID), cancellation);
                         }
                     ).WithMessage(bbxBEConsts.FV_EXISTS)
                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
-            RuleFor(p => p.WarehouseDescription)
+            RuleFor(p => p.CounterDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
         }
 
-        private async Task<bool> IsUniqueWarehouseCodeAsync(string WarehouseCode, long ID, CancellationToken cancellationToken)
+        private async Task<bool> IsUniqueCounterCodeAsync(string CounterCode, long ID, CancellationToken cancellationToken)
         {
-            if (WarehouseCode.Length != 0)
+            if (CounterCode.Length != 0)
             {
-                return await _WarehouseRepository.IsUniqueWarehouseCodeAsync(WarehouseCode, ID);
+                return await _CounterRepository.IsUniqueCounterCodeAsync(CounterCode, ID);
             }
             else
             {
