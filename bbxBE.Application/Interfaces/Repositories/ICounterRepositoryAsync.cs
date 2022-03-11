@@ -13,7 +13,8 @@ namespace bbxBE.Application.Interfaces.Repositories
     {
         Task<bool> IsUniqueCounterCodeAsync(string CounterCode, long? ID = null);
         Task<bool> SeedDataAsync(int rowCount);
-
+        Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode);
+        Task<Counter> UpdateCounterAsync(Counter p_Counter, string p_WarehouseCode);
         Task<Entity> GetCounterAsync(GetCounter requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCounterAsync(QueryCounter requestParameters);
     }

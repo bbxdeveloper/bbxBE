@@ -6,6 +6,9 @@ namespace bbxBE.Application.Consts
 {
     public static  class bbxBEConsts
     {
+        public static int CodeLen = 12;
+        public static int DescriptionLen = 12;
+
         public static string DB = "bbx";
 
         public static string CNTRY_HU = "HU";
@@ -29,6 +32,7 @@ namespace bbxBE.Application.Consts
         public static string FV_INVUNITOFMEASURE = "{PropertyName}|{PropertyName} érvénytelen mennyiségi egység:{PropertyValue} ";
         public static string FV_PRODNOTFOUND = "Termék nem található, ID:{0} ";
         public static string FV_INVALIDFORMAT = "{PropertyName}|{PropertyName} érvénytelen formátum.";
+        public static string FV_COUNTERNOTFOUND = "Bizonylati tömb található, ID:{0} ";
 
         public static string FV_BASE = "Egy vagy több validációs hiba történt.";
 /*

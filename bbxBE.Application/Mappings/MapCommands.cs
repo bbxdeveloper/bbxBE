@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Commands.cmdCounter;
 using bbxBE.Application.Commands.cmdCustomer;
 using bbxBE.Application.Commands.cmdOrigin;
 using bbxBE.Application.Commands.cmdProduct;
@@ -6,6 +7,7 @@ using bbxBE.Application.Commands.cmdProductGroup;
 using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Commands.cmdWarehouse;
 using bbxBE.Domain.Entities;
+using bxBE.Application.Commands.cmdCounter;
 using bxBE.Application.Commands.cmdCustomer;
 using bxBE.Application.Commands.cmdOrigin;
 using bxBE.Application.Commands.cmdProduct;
@@ -46,6 +48,9 @@ namespace bbxBE.Command.Mappings
             CreateMap<UpdateWarehouseCommand, Warehouse>();
             CreateMap<DeleteWarehouseCommand, Warehouse>();
 
+            CreateMap<CreateCounterCommand, Counter>();
+            CreateMap<UpdateCounterCommand, Counter>();
+            CreateMap<DeleteCounterCommand, Counter>();
 
         }
     }

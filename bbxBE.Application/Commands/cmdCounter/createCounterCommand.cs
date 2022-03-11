@@ -20,7 +20,7 @@ namespace bxBE.Application.Commands.cmdCounter
     {
         public string CounterCode { get; set; }
         public string CounterDescription { get; set; }
-        public long WarehouseID { get; set; }
+        public string WarehouseCode { get; set; }
         public string Prefix { get; set; }
         public long CurrentNumber { get; set; }
         public int NumbepartLength { get; set; }
@@ -43,10 +43,10 @@ namespace bxBE.Application.Commands.cmdCounter
 
         public async Task<Response<Counter>> Handle(CreateCounterCommand request, CancellationToken cancellationToken)
         {
-            var pg = _mapper.Map<Counter>(request);
+            var cnt = _mapper.Map<Counter>(request);
 
-            await _CounterRepository.AddAsync(pg);
-            return new Response<Counter>(pg);
+            cnt = await _CounterRepository.AddCounterAsync(cnt, request.WarehouseCode);
+            return new Response<Counter>(cnt);
         }
 
 

@@ -31,12 +31,12 @@ namespace bbxBE.Application.Commands.cmdProductGroup
                             return await IsUniqueProductGroupCodeAsync(Name, Convert.ToInt64(model.ID), cancellation);
                         }
                     ).WithMessage(bbxBEConsts.FV_EXISTS)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.ProductGroupDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
         }
 
         private async Task<bool> IsUniqueProductGroupCodeAsync(string ProductGroupCode, long ID, CancellationToken cancellationToken)

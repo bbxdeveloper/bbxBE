@@ -16,8 +16,7 @@ namespace bbxBE.Application.BLL
     {
 
         public static async Task<Product> CreateAsynch(CreateProductCommand request,
-                    IProductRepositoryAsync _ProductRepository,
-              IMapper _mapper, CancellationToken cancellationToken)
+                    IProductRepositoryAsync _ProductRepository, IMapper _mapper, CancellationToken cancellationToken)
         {
             var prod = _mapper.Map<Product>(request);
            

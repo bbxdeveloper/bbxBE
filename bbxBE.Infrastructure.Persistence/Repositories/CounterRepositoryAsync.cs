@@ -16,6 +16,8 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qCounter;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -23,6 +25,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<Counter> _Counters;
+        private readonly DbSet<Warehouse> _Warehouses;
         private IDataShapeHelper<Counter> _dataShaperCounter;
         private IDataShapeHelper<GetCounterViewModel> _dataShaperGetCounterViewModel;
         private readonly IMockService _mockData;
@@ -36,6 +39,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             _dbContext = dbContext;
             _Counters = dbContext.Set<Counter>();
+            _Warehouses = dbContext.Set<Warehouse>();
             _dataShaperCounter = dataShaperCounter;
             _dataShaperGetCounterViewModel = dataShaperGetCounterViewModel;
             _modelHelper = modelHelper;
@@ -49,6 +53,52 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !await _Counters.AnyAsync(p => p.CounterCode == CounterCode && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
+        public async Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode)
+        {
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+
+                if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
+                {
+                    p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
+                }
+
+                _Counters.Add(p_Counter);
+                await _dbContext.SaveChangesAsync();
+                dbContextTransaction.Commit();
+
+            }
+            return p_Counter;
+        }
+
+        public async Task<Counter> UpdateCounterAsync(Counter p_Counter, string p_WarehouseCode)
+        {
+
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+
+                var cnt = _Counters.Where(x => x.ID == p_Counter.ID).FirstOrDefault();
+
+                if (cnt != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
+                    {
+                        p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
+                    }
+
+                    _Counters.Update(p_Counter);
+                    await _dbContext.SaveChangesAsync();
+                    dbContextTransaction.Commit();
+
+
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND, p_Counter.ID));
+                }
+            }
+            return p_Counter;
+        }
 
         public async Task<Entity> GetCounterAsync(GetCounter requestParameter)
         {
