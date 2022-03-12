@@ -281,8 +281,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
-            // retrieve data to list
-            var resultData = await query.ToListAsync();
+                // retrieve data to list
+                var resultData = await query.ToListAsync();
 
             var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 

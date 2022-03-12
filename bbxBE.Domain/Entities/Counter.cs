@@ -1,6 +1,7 @@
 ﻿using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace bbxBE.Domain.Entities
@@ -15,5 +16,7 @@ namespace bbxBE.Domain.Entities
         public long NumbepartLength { get; set; }
         public string Suffix { get; set; }
 
+        [ForeignKey("WarehouseID")]
+        public Warehouse Warehouse { get; set; }
     }
 }

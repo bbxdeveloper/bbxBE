@@ -1,6 +1,7 @@
 ﻿using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace bbxBE.Domain.Entities
@@ -36,5 +37,5 @@ namespace bbxBE.Domain.Entities
         public string AdditionalAddressDetail { get; set; }
         public string Comment { get; set; }
 
-    }
+     }
 }
