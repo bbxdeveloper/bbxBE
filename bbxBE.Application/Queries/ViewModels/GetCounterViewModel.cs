@@ -18,5 +18,13 @@ namespace bbxBE.Application.Queries.ViewModels
         public string CounterCode { get; set; }
 
         public string CounterDescription { get; set; }
+
+        public string Warehouse { get; set; }
+        public string Prefix { get; set; }
+        public long CurrentNumber { get; set; }
+        public int NumbepartLength { get; set; }
+        public string Suffix { get; set; }
+
+
     }
 }

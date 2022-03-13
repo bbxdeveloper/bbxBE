@@ -16,6 +16,8 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qCounter;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -23,6 +25,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<Counter> _Counters;
+        private readonly DbSet<Warehouse> _Warehouses;
         private IDataShapeHelper<Counter> _dataShaperCounter;
         private IDataShapeHelper<GetCounterViewModel> _dataShaperGetCounterViewModel;
         private readonly IMockService _mockData;
@@ -36,6 +39,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             _dbContext = dbContext;
             _Counters = dbContext.Set<Counter>();
+            _Warehouses = dbContext.Set<Warehouse>();
             _dataShaperCounter = dataShaperCounter;
             _dataShaperGetCounterViewModel = dataShaperGetCounterViewModel;
             _modelHelper = modelHelper;
@@ -49,6 +53,52 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !await _Counters.AnyAsync(p => p.CounterCode == CounterCode && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
+        public async Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode)
+        {
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+
+                if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
+                {
+                    p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
+                }
+
+                _Counters.Add(p_Counter);
+                await _dbContext.SaveChangesAsync();
+                dbContextTransaction.Commit();
+
+            }
+            return p_Counter;
+        }
+
+        public async Task<Counter> UpdateCounterAsync(Counter p_Counter, string p_WarehouseCode)
+        {
+
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+
+                var cnt = _Counters.Where(x => x.ID == p_Counter.ID).FirstOrDefault();
+
+                if (cnt != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
+                    {
+                        p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
+                    }
+
+                    _Counters.Update(p_Counter);
+                    await _dbContext.SaveChangesAsync();
+                    dbContextTransaction.Commit();
+
+
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND, p_Counter.ID));
+                }
+            }
+            return p_Counter;
+        }
 
         public async Task<Entity> GetCounterAsync(GetCounter requestParameter)
         {
@@ -82,19 +132,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             int recordsTotal, recordsFiltered;
 
-            // Setup IQueryable
-            var result = _Counters
-                .AsNoTracking()
-                .AsExpandable();
+
+            var query = _Counters//.AsNoTracking().AsExpandable()
+                    .Include(i => i.Warehouse).AsQueryable();
+
 
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterBySearchString(ref result, searchString);
+            FilterBySearchString(ref query, searchString);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = await query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -106,21 +156,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                query = query.OrderBy(orderBy);
             }
 
             // select columns
+            /*
             if (!string.IsNullOrWhiteSpace(fields))
             {
                 result = result.Select<Counter>("new(" + fields + ")");
             }
+            */
+
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = await query.ToListAsync();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetCounterViewModel>();

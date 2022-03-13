@@ -21,6 +21,11 @@ namespace bxBE.Application.Commands.cmdCounter
         public long ID { get; set; }
         public string CounterCode { get; set; }
         public string CounterDescription { get; set; }
+        public string WarehouseCode { get; set; }
+        public string Prefix { get; set; }
+        public long CurrentNumber { get; set; }
+        public int NumbepartLength { get; set; }
+        public string Suffix { get; set; }
     }
 
     public class UpdateCounterCommandHandler : IRequestHandler<UpdateCounterCommand, Response<Counter>>
@@ -38,10 +43,10 @@ namespace bxBE.Application.Commands.cmdCounter
 
         public async Task<Response<Counter>> Handle(UpdateCounterCommand request, CancellationToken cancellationToken)
         {
-            var pg = _mapper.Map<Counter>(request);
+            var cnt  = _mapper.Map<Counter>(request);
 
-            await _CounterRepository.UpdateAsync(pg);
-            return new Response<Counter>(pg);
+            cnt = await _CounterRepository.UpdateCounterAsync(cnt, request.WarehouseCode);
+            return new Response<Counter>(cnt);
         }
 
 

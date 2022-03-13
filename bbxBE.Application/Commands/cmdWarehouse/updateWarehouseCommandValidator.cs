@@ -31,12 +31,12 @@ namespace bbxBE.Application.Commands.cmdWarehouse
                             return await IsUniqueWarehouseCodeAsync(Name, Convert.ToInt64(model.ID), cancellation);
                         }
                     ).WithMessage(bbxBEConsts.FV_EXISTS)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.WarehouseDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
         }
 
         private async Task<bool> IsUniqueWarehouseCodeAsync(string WarehouseCode, long ID, CancellationToken cancellationToken)

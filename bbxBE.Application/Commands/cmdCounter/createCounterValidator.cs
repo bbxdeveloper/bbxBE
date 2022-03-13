@@ -32,17 +32,17 @@ namespace bbxBE.Application.Commands.cmdCounter
                              return await IsUniqueCounterCodeAsync(Name, cancellation);
                          }
                      ).WithMessage(bbxBEConsts.FV_EXISTS)
-                 .MaximumLength(3).WithMessage(bbxBEConsts.FV_MAXLEN);
+                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.CounterDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.Prefix)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(3).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.NumbepartLength)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
