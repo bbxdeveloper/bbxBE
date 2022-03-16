@@ -12,7 +12,7 @@ namespace bbxBE.Application.Queries.ViewModels
     public class GetCustomerViewModel
     {
         [MapTo("ID")]
-        public string ID { get; set; }
+        public long ID { get; set; }
 
         public string CustomerName { get; set; }
 
