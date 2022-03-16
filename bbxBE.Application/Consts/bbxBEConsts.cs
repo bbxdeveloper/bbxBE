@@ -35,26 +35,32 @@ namespace bbxBE.Application.Consts
         public static string FV_COUNTERNOTFOUND = "Bizonylati tömb található, ID:{0} ";
 
         public static string FV_BASE = "Egy vagy több validációs hiba történt.";
-/*
-        public static string FV_REQUIRED = "{PropertyName}|{PropertyName} is required.";
-        public static string FV_LEN1 = "{PropertyName}|{PropertyName} must be one character.";
-        public static string FV_LEN2 = "{PropertyName}|{PropertyName} must be two characters.";
-        public static string FV_LEN8 = "{PropertyName}|{PropertyName} must be 8 characters.";
-        public static string FV_LEN13 = "{PropertyName}|{PropertyName} must not exceed 13 characters.";
-        public static string FV_LEN30 = "{PropertyName}|{PropertyName} must not exceed 30 characters.";
-        public static string FV_LEN80 = "{PropertyName}|{PropertyName} must not exceed 80 characters.";
-        public static string FV_LEN2000 = "{PropertyName}|{PropertyName} must not exceed 2000 characters.";
-        public static string FV_EXISTS = "{PropertyName}|{PropertyName} already exists.";
-        public static string FV_INVALIDEMAIL = "{PropertyName}|{PropertyName} email is invalid.";
-        public static string FV_ERBANK = "{PropertyName}|{PropertyName} invalid bank acconunt.";
-        public static string FV_INVPRODUCTCROUPID = "{PropertyName}|{PropertyName} invalid product group ID.";
-        public static string FV_INVORIGINID = "{PropertyName}|{PropertyName} invalid origin ID.";
-        public static string FV_INVUNITOFMEASURE = "{PropertyName}|{PropertyName} invalid unit of measure:{PropertyValue} ";
-        public static string FV_PRODNOTFOUND = "Product not found$ ID:{0} ";
-        public static string FV_INVALIDFORMAT = "{PropertyName}|{PropertyName} format is invalid.";
 
-        public static string FV_BASE = "One or more validation failures have occurred.";
-*/
+        public static string FV_FILELISTISNULL = "A File lista nem lehet üres!";
+        public static string FV_FILELISTISEMPTY = "A File lista nem lehet NULL!";
+        public static string FV_FILELISTCONUTER = "2 File-t kell feltölteni!";
+        public static string FV_FILESIZE = "Üres file lett feltöltve!";
+
+        /*
+                public static string FV_REQUIRED = "{PropertyName}|{PropertyName} is required.";
+                public static string FV_LEN1 = "{PropertyName}|{PropertyName} must be one character.";
+                public static string FV_LEN2 = "{PropertyName}|{PropertyName} must be two characters.";
+                public static string FV_LEN8 = "{PropertyName}|{PropertyName} must be 8 characters.";
+                public static string FV_LEN13 = "{PropertyName}|{PropertyName} must not exceed 13 characters.";
+                public static string FV_LEN30 = "{PropertyName}|{PropertyName} must not exceed 30 characters.";
+                public static string FV_LEN80 = "{PropertyName}|{PropertyName} must not exceed 80 characters.";
+                public static string FV_LEN2000 = "{PropertyName}|{PropertyName} must not exceed 2000 characters.";
+                public static string FV_EXISTS = "{PropertyName}|{PropertyName} already exists.";
+                public static string FV_INVALIDEMAIL = "{PropertyName}|{PropertyName} email is invalid.";
+                public static string FV_ERBANK = "{PropertyName}|{PropertyName} invalid bank acconunt.";
+                public static string FV_INVPRODUCTCROUPID = "{PropertyName}|{PropertyName} invalid product group ID.";
+                public static string FV_INVORIGINID = "{PropertyName}|{PropertyName} invalid origin ID.";
+                public static string FV_INVUNITOFMEASURE = "{PropertyName}|{PropertyName} invalid unit of measure:{PropertyValue} ";
+                public static string FV_PRODNOTFOUND = "Product not found$ ID:{0} ";
+                public static string FV_INVALIDFORMAT = "{PropertyName}|{PropertyName} format is invalid.";
+
+                public static string FV_BASE = "One or more validation failures have occurred.";
+        */
 
     }
 }

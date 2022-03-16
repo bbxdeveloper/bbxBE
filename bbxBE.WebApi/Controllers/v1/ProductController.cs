@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -96,9 +97,9 @@ namespace bbxBE.WebApi.Controllers.v1
 
 
         [HttpPost("import")]
-        public async Task<IActionResult> Import(IFormFile productFile)
+        public async Task<IActionResult> Import(List<IFormFile> productFiles)
         {
-            var req = new ImportProductCommand() { ProductFile = productFile };
+            var req = new ImportProductCommand() { ProductFiles = productFiles };
             return Ok(await Mediator.Send(req));
         }
     }
