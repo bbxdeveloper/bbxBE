@@ -1,7 +1,9 @@
 ﻿using bbxBE.Application.Commands.cmdCustomer;
 using bbxBE.Application.Commands.cmdUSR_USER;
+using bbxBE.Application.Enums;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qCustomer;
+using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCustomer;
@@ -81,5 +83,15 @@ namespace bbxBE.WebApi.Controllers.v1
         {
             return Ok(await Mediator.Send(command));
         }
+
+
+
+        [HttpGet("countrycode")]
+        public async Task<IActionResult> GetCountryCode()
+        {
+            var req = new GetEnum() { type = typeof(enCountries) };
+            return Ok(await Mediator.Send(req));
+        }
+
     }
 }

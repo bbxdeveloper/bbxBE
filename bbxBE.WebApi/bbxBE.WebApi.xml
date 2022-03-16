@@ -74,6 +74,13 @@
             <param name="filter"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.ProductController.GetProductByProductCode(bbxBE.Application.Queries.qProduct.GetProductByProductCode)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.ProductController.Query(bbxBE.Application.Queries.qProduct.QueryProduct)">
             <summary>
             GET: api/controller

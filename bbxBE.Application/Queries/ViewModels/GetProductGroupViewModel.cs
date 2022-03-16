@@ -13,7 +13,7 @@ namespace bbxBE.Application.Queries.ViewModels
     public class GetProductGroupViewModel
     {
         [MapTo("ID")]
-        public string ID { get; set; }
+        public long ID { get; set; }
 
         public string ProductGroupCode { get; set; }
 

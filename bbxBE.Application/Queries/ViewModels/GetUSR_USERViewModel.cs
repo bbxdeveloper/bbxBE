@@ -10,7 +10,7 @@ namespace bbxBE.Application.Queries.ViewModels
     public class GetUSR_USERViewModel
     {
         [MapTo("ID")]
-        public string ID { get; set; }
+        public long ID { get; set; }
 
         [MapTo("Name")]
         public string USR_NAME { get; set; }
