@@ -102,26 +102,23 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("DataValue").AsString().Nullable();
 
             Create.Table("VatRate")
-             .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
-             .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-             .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-             .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
-             .WithColumn("InvoiceID").AsInt64().NotNullable().ForeignKey()
-             .WithColumn("VatPercentage").AsDecimal().NotNullable()
-             .WithColumn("VatContent").AsDecimal().NotNullable()
-             .WithColumn("vatExemption/case").AsDecimal().NotNullable();
+                    .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
+                    .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
+                    .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
+                    .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
+                    .WithColumn("InvoiceID").AsInt64().NotNullable().ForeignKey()
+                    .WithColumn("VatPercentage").AsDecimal().NotNullable()
+                    .WithColumn("VatContent").AsDecimal().Nullable()
+                    .WithColumn("VatExemptionCase").AsString().Nullable()
+                    .WithColumn("VatExemptionReason").AsString().Nullable()
+                    .WithColumn("VatOutOfScopeCase").AsString().Nullable()
+                    .WithColumn("VatOutOfScopeReason").AsString().Nullable()
+                    .WithColumn("VatDomesticReverseCharge").AsBoolean().WithDefaultValue(false)
+                    .WithColumn("MarginSchemeIndicator").AsString().Nullable()
+                    .WithColumn("vatAmountMismatchVatRate").AsDecimal().NotNullable()
+                    .WithColumn("vatAmountMismatchCase").AsString().NotNullable()
+                    .WithColumn("NoVatCharge").AsBoolean().WithDefaultValue(false);
 
-
-
-            [System.Xml.Serialization.XmlElementAttribute("marginSchemeIndicator", typeof(MarginSchemeType))]
-            [System.Xml.Serialization.XmlElementAttribute("noVatCharge", typeof(bool))]
-            [System.Xml.Serialization.XmlElementAttribute("vatAmountMismatch", typeof(VatAmountMismatchType))]
-            [System.Xml.Serialization.XmlElementAttribute("vatContent", typeof(decimal))]
-            [System.Xml.Serialization.XmlElementAttribute("vatDomesticReverseCharge", typeof(bool))]
-            [System.Xml.Serialization.XmlElementAttribute("vatExemption", typeof(DetailedReasonType))]
-            [System.Xml.Serialization.XmlElementAttribute("vatOutOfScope", typeof(DetailedReasonType))]
-            [System.Xml.Serialization.XmlElementAttribute("vatPercentage", typeof(decimal))]
-            [System.Xml.Serialization.XmlChoiceIdentifierAttribute("ItemElementName")]
 
 
             Create.Table("SummaryByVatRate")
