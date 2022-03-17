@@ -7,8 +7,8 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00009, "v00.00.01")]
-    public class InitialTables_00009 : Migration
+    [Migration(00010, "v00.00.01")]
+    public class InitialTables_00010 : Migration
     {
         public override void Down()
         {
@@ -26,6 +26,8 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
 
 
             Delete.Table("AdditionalInvoiceData");
+
+            Delete.Table("SummaryByVatRate");
         }
         public override void Up()
         {
@@ -101,33 +103,36 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("DataDescription").AsString().Nullable()
                     .WithColumn("DataValue").AsString().Nullable();
 
-            Create.Table("VatRate")
+
+
+
+            Create.Table("SummaryByVatRate")
                     .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
                     .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
                     .WithColumn("InvoiceID").AsInt64().NotNullable().ForeignKey()
-                    .WithColumn("VatPercentage").AsDecimal().NotNullable()
-                    .WithColumn("VatContent").AsDecimal().Nullable()
-                    .WithColumn("VatExemptionCase").AsString().Nullable()
-                    .WithColumn("VatExemptionReason").AsString().Nullable()
-                    .WithColumn("VatOutOfScopeCase").AsString().Nullable()
-                    .WithColumn("VatOutOfScopeReason").AsString().Nullable()
-                    .WithColumn("VatDomesticReverseCharge").AsBoolean().WithDefaultValue(false)
-                    .WithColumn("MarginSchemeIndicator").AsString().Nullable()
-                    .WithColumn("vatAmountMismatchVatRate").AsDecimal().NotNullable()
-                    .WithColumn("vatAmountMismatchCase").AsString().NotNullable()
-                    .WithColumn("NoVatCharge").AsBoolean().WithDefaultValue(false);
-
+                    .WithColumn("VatRateID").AsInt64().NotNullable().ForeignKey()
+                    .WithColumn("VatRateNetAmount").AsCurrency().NotNullable()
+                    .WithColumn("VatRateNetAmountHUF").AsCurrency().NotNullable();
 
 
             Create.Table("SummaryByVatRate")
-           .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
-           .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-           .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-           .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
-           .WithColumn("InvoiceID").AsInt64().NotNullable().ForeignKey()
-           .WithColumn("OrderNumber").AsString().NotNullable();
+                     .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
+                     .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
+                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
+                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
+                     .WithColumn("InvoiceID").AsInt64().NotNullable().ForeignKey()
+                     .WithColumn("LineNumber").AsInt16().NotNullable()
+                    .WithColumn("LineExpressionIndicator").AsBoolean().WithDefaultValue(true)           // Ha a tag értéke true, akkor adott számlasorban kötelező megadni:
+                                                                                                        // a.a termék vagy szolgáltatás nevét
+                                                                                                        // b.mennyiségét
+                                                                                                        // c.mennyiségi egységét
+                                                                                                        // d.egységárát
+
+                    .WithColumn("LineNatureIndicator").AsString().NotNullable()
+                    .WithColumn("LineDescription").AsString().NotNullable()
+
 
 
         }
