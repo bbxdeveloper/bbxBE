@@ -1,5 +1,4 @@
-﻿using bbxBE.Application.Enums;
-using bbxBE.Domain.Entities;
+﻿using bbxBE.Domain.Entities;
 using FluentMigrator;
 using static bbxBE.Common.NAV.NAV_enums;
 

@@ -1,6 +1,6 @@
 ﻿using AutoMapper.Configuration.Conventions;
 using AxegazMobileSrv.Attrib;
-using bbxBE.Application.Enums;
+using bbxBE.Common.Enums;
 using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;

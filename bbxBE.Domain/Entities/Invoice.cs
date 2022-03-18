@@ -1,4 +1,6 @@
-﻿using bbxBE.Domain.Common;
+﻿using bbxBE.Common.Enums;
+using bbxBE.Common.NAV;
+using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,18 +11,16 @@ namespace bbxBE.Domain.Entities
 	public class Invoice : BaseEntity
 	{
 		public bool Incoming { get; set; }
-		private enInvoiceType IivoiceType { get; set; }
-
-		private CustomerVatStatusType customerVatStatus;
-		public string CustomerVatStatus
+		private enInvoiceType invoiceType;
+		public string InvoiceType
 		{
-			get { return Enum.GetName(typeof(CustomerVatStatusType), customerVatStatus); }
+			get { return Enum.GetName(typeof(enInvoiceType), invoiceType); }
 			set
 			{
 				if (value != null)
-					customerVatStatus = (CustomerVatStatusType)Enum.Parse(typeof(CustomerVatStatusType), value);
+					invoiceType = (enInvoiceType)Enum.Parse(typeof(enInvoiceType), value);
 				else
-					customerVatStatus = CustomerVatStatusType.DOMESTIC;
+					invoiceType = enInvoiceType.INV;
 
 			}
 		}
@@ -31,13 +31,69 @@ namespace bbxBE.Domain.Entities
 		public bool CompletenessIndicator { get; set; }
 		public long SupplierID { get; set; }
 		public long CustomerID { get; set; }
-		public string InvoiceCategory { get; set; }
+	
+		private InvoiceCategoryType invoiceCategory;
+		public string InvoiceCategory
+		{
+			get { return Enum.GetName(typeof(InvoiceCategoryType), invoiceType); }
+			set
+			{
+				if (value != null)
+					invoiceCategory = (InvoiceCategoryType)Enum.Parse(typeof(InvoiceCategoryType), value);
+				else
+					invoiceCategory = InvoiceCategoryType.NORMAL;
+
+			}
+		}
+
 		public DateTime InvoiceDeliveryDate { get; set; }
 		public DateTime PaymentDate { get; set; }
-		public string CurrencyCode { get; set; }
+
+	
+		private PaymentMethodType paymentMethod;
+		public string PaymentMethod
+		{
+			get { return Enum.GetName(typeof(PaymentMethodType), invoiceType); }
+			set
+			{
+				if (value != null)
+					paymentMethod = (PaymentMethodType)Enum.Parse(typeof(PaymentMethodType), value);
+				else
+					paymentMethod = PaymentMethodType.OTHER;
+
+			}
+		}
+
+		private enCurrencyCodes currencyCode;
+		public string CurrencyCode
+		{
+			get { return Enum.GetName(typeof(enCurrencyCodes), invoiceType); }
+			set
+			{
+				if (value != null)
+					currencyCode = (enCurrencyCodes)Enum.Parse(typeof(enCurrencyCodes), value);
+				else
+					currencyCode = enCurrencyCodes.HUF;
+
+			}
+		}
+
 		public decimal ExchangeRate { get; set; }
 		public bool UtilitySettlementIndicator { get; set; }
-		public string InvoiceAppearance { get; set; }
+	
+		private InvoiceAppearanceType invoiceAppearance;
+		public string InvoiceAppearance
+		{
+			get { return Enum.GetName(typeof(InvoiceAppearanceType), invoiceType); }
+			set
+			{
+				if (value != null)
+					invoiceAppearance = (InvoiceAppearanceType)Enum.Parse(typeof(InvoiceAppearanceType), value);
+				else
+					invoiceAppearance = InvoiceAppearanceType.PAPER;
+
+			}
+		}
 		public long OriginalInvoiceID { get; set; }
 		public string OriginalInvoiceNumber { get; set; }
 		public bool ModifyWithoutMaster { get; set; }

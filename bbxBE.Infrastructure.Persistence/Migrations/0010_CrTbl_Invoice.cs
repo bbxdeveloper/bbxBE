@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Enums;
+﻿using bbxBE.Common.Enums;
+using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using FluentMigrator;
 using static bbxBE.Common.NAV.NAV_enums;
@@ -52,6 +53,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("InvoiceCategory").AsString().NotNullable().WithDefaultValue(InvoiceCategoryType.NORMAL.ToString())
                     .WithColumn("InvoiceDeliveryDate").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("PaymentDate").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
+                    .WithColumn("PaymentMethod").AsString().NotNullable().WithDefaultValue(PaymentMethodType.OTHER.ToString())
                     .WithColumn("CurrencyCode").AsString().NotNullable().WithDefaultValue(enCurrencyCodes.HUF.ToString())
                     .WithColumn("ExchangeRate").AsDecimal().NotNullable().WithDefaultValue(1)
                     .WithColumn("UtilitySettlementIndicator").AsBoolean().NotNullable().WithDefaultValue(false)

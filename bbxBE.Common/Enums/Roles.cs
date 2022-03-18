@@ -1,4 +1,4 @@
-﻿namespace bbxBE.Application.Enums
+﻿namespace bbxBE.Common.Enums
 {
     public enum Roles
     {

@@ -4,6 +4,7 @@ using bbxBE.Application.BLL;
 using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;

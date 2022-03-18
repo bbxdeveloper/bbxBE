@@ -16,11 +16,10 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Queries.ViewModels;
-using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Common;
-using bbxBE.Application.Enums;
 using bbxBE.Application.Consts;
 using bbxBE.Application.Exceptions;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
