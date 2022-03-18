@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 using System.Xml.Serialization;
-namespace bbxBE.Domain.Entities
+namespace bbxBE.Common.NAV
 {
 
     // 

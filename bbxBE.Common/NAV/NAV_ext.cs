@@ -4,7 +4,7 @@ using System;
 using System.Reflection;
 using System.Xml.Serialization;
 
-namespace bbxBE.Domain.Entities
+namespace bbxBE.Common.NAV
 {
     public partial class CustomerInfoType
     {

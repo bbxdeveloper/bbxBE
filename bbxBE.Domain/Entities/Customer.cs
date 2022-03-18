@@ -1,4 +1,5 @@
-﻿using bbxBE.Domain.Common;
+﻿using bbxBE.Common.NAV;
+using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;

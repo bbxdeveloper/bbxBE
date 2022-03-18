@@ -38,7 +38,9 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
 
+                    .WithColumn("Incoming").AsBoolean().WithDefaultValue(false)
                     .WithColumn("InvoiceType").AsString().NotNullable()
+                    .WithColumn("WarehouseID").AsInt64().ForeignKey()
                     //InvoiceData 
                     .WithColumn("InvoiceNumber").AsString().NotNullable()
                     .WithColumn("InvoiceIssueDate").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
@@ -78,7 +80,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
             Create.Index("INX_InvoiceNumber")
                          .OnTable("Invoice")
                          .OnColumn("InvoiceNumber").Ascending()
-                         .WithOptions().Clustered();
+                         .WithOptions().NonClustered();
 
             Create.Index("INX_InvoiceIssueDate")
                          .OnTable("Invoice")
@@ -167,7 +169,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
-                    .WithColumn("LineID").AsInt64().NotNullable().ForeignKey()
+                    .WithColumn("InvoiceLineID").AsInt64().NotNullable().ForeignKey()
                     .WithColumn("DataName").AsString().NotNullable()
                     .WithColumn("DataDescription").AsString().Nullable()
                     .WithColumn("DataValue").AsString().Nullable();
