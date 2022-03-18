@@ -20,14 +20,14 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                         .OnTable("Invoice");
             Delete.Table("Invoice");
 
-            Delete.Index("INX_InvoiceOrdernumber")
-                        .OnTable("InvoiceOrdernumber");
-            Delete.Table("InvoiceOrdernumber");
-
 
             Delete.Table("AdditionalInvoiceData");
 
             Delete.Table("SummaryByVatRate");
+
+            Delete.Table("InvoiceLine");
+
+            Delete.Table("AdditionalInvoiceLineData");
         }
         public override void Up()
         {
@@ -38,6 +38,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
 
+                    .WithColumn("InvoiceType").AsString().NotNullable()
                     //InvoiceData 
                     .WithColumn("InvoiceNumber").AsString().NotNullable()
                     .WithColumn("InvoiceIssueDate").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
@@ -53,6 +54,17 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("ExchangeRate").AsDecimal().NotNullable().WithDefaultValue(1)
                     .WithColumn("UtilitySettlementIndicator").AsBoolean().NotNullable().WithDefaultValue(false)
                     .WithColumn("InvoiceAppearance").AsString().NotNullable().WithDefaultValue(InvoiceCategoryType.NORMAL.ToString())
+
+                    //invoiceReference (javítószámla)
+                    .WithColumn("OriginalInvoiceID").AsInt64().NotNullable().ForeignKey()
+                    .WithColumn("OriginalInvoiceNumber").AsString().NotNullable()
+                    .WithColumn("ModifyWithoutMaster").AsBoolean().NotNullable().WithDefaultValue(false)
+                    .WithColumn("ModificationIndex").AsInt16().NotNullable().WithDefaultValue(0)
+
+
+                    //InvoiceOrdernumber
+                    .WithColumn("OrderNumber").AsString().Nullable()
+
 
                     //invoiceSummary
                     .WithColumn("InvoiceNetAmount").AsCurrency().NotNullable()
@@ -80,18 +92,6 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
 
 
 
-            Create.Table("InvoiceOrdernumber")
-                    .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
-                    .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-                    .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-                    .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
-                    .WithColumn("InvoiceID").AsInt64().NotNullable().ForeignKey()
-                    .WithColumn("OrderNumber").AsString().NotNullable();
-
-            Create.Index("INX_InvoiceOrdernumber")
-                         .OnTable("InvoiceOrdernumber")
-                         .OnColumn("OrderNumber").Ascending()
-                         .WithOptions().NonClustered();
 
             Create.Table("AdditionalInvoiceData")
                     .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
@@ -102,9 +102,6 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("DataName").AsString().NotNullable()
                     .WithColumn("DataDescription").AsString().Nullable()
                     .WithColumn("DataValue").AsString().Nullable();
-
-
-
 
             Create.Table("SummaryByVatRate")
                     .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
@@ -117,26 +114,63 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("VatRateNetAmountHUF").AsCurrency().NotNullable();
 
 
-            Create.Table("SummaryByVatRate")
+            Create.Table("InvoiceLine")
                      .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
                      .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                      .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                      .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
                      .WithColumn("InvoiceID").AsInt64().NotNullable().ForeignKey()
+                     .WithColumn("ProductID").AsInt64().NotNullable().ForeignKey()
+                     .WithColumn("VatRateID").AsInt64().NotNullable().ForeignKey()
                      .WithColumn("LineNumber").AsInt16().NotNullable()
-                    .WithColumn("LineExpressionIndicator").AsBoolean().WithDefaultValue(true)           // Ha a tag értéke true, akkor adott számlasorban kötelező megadni:
-                                                                                                        // a.a termék vagy szolgáltatás nevét
-                                                                                                        // b.mennyiségét
-                                                                                                        // c.mennyiségi egységét
-                                                                                                        // d.egységárát
+                     .WithColumn("LineExpressionIndicator").AsBoolean().WithDefaultValue(true)           // Ha a tag értéke true, akkor adott számlasorban kötelező megadni:
+                                                                                                         // a.a termék vagy szolgáltatás nevét
+                                                                                                         // b.mennyiségét
+                                                                                                         // c.mennyiségi egységét
+                                                                                                         // d.egységárát
 
                     .WithColumn("LineNatureIndicator").AsString().NotNullable()
                     .WithColumn("LineDescription").AsString().NotNullable()
+                    .WithColumn("Quantity").AsDecimal().NotNullable().WithDefaultValue(0)
+                    .WithColumn("UnitOfMeasure").AsString().NotNullable().WithDefaultValue("")
+                    .WithColumn("UnitPrice").AsCurrency().NotNullable().WithDefaultValue(0)
+                    .WithColumn("UnitPriceHUF").AsCurrency().NotNullable().WithDefaultValue(0)
+                    .WithColumn("LineNetAmount").AsCurrency().NotNullable().WithDefaultValue(0)
+                    .WithColumn("LineNetAmountHUF").AsCurrency().NotNullable().WithDefaultValue(0)
+                    .WithColumn("lineVatAmount").AsCurrency().NotNullable().WithDefaultValue(0)
+                    .WithColumn("lineVatAmountHUF").AsCurrency().NotNullable().WithDefaultValue(0)
+                    .WithColumn("lineGrossAmountNormal").AsCurrency().NotNullable().WithDefaultValue(0)
+                    .WithColumn("lineGrossAmountNormalHUF").AsCurrency().NotNullable().WithDefaultValue(0)
+
+                    //lineModificationReference, javítószámla
+                    .WithColumn("LineNumberReference").AsInt16().Nullable()
+                    .WithColumn("LineOperation").AsString().Nullable()
+
+                    // aggregateInvoiceLineData, gyűjtőszámla
+                    .WithColumn("LineExchangeRate").AsDecimal().Nullable()
+                    .WithColumn("LineDeliveryDate").AsDateTime2().Nullable()
+                    .WithColumn("DeliveryNote").AsString().Nullable()
+
+                    //productFeeClause, termékdíj
+                    .WithColumn("TakeoverReason").AsString().Nullable()
+                    .WithColumn("TakeoverAmount").AsDecimal().Nullable()
+                    .WithColumn("TakeoverproductCodeCategory").AsString().Nullable()
+                    .WithColumn("TakeoverproductCodeValue").AsString().Nullable()
+                    .WithColumn("ProductFeeQuantity").AsDecimal().Nullable()
+                    .WithColumn("ProductFeeMeasuringUnit").AsString().Nullable()
+                    .WithColumn("ProductFeeRate").AsDecimal().Nullable()
+                    .WithColumn("ProductFeeAmount").AsDecimal().Nullable();
 
 
-
+               Create.Table("AdditionalInvoiceLineData")
+                    .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
+                    .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
+                    .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
+                    .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
+                    .WithColumn("LineID").AsInt64().NotNullable().ForeignKey()
+                    .WithColumn("DataName").AsString().NotNullable()
+                    .WithColumn("DataDescription").AsString().Nullable()
+                    .WithColumn("DataValue").AsString().Nullable();
         }
-
     }
-
 }

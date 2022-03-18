@@ -1,12 +1,9 @@
-﻿using bbxBE.Application.Commands.cmdInvoice;
-using bbxBE.Application.Commands.cmdUSR_USER;
+﻿using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Enums;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
-using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
-using bxBE.Application.Commands.cmdInvoice;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -21,6 +18,7 @@ namespace bbxBE.WebApi.Controllers.v1
  //   [Authorize]
     public class InvoiceController : BaseApiController
     {
+        /*
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
         private readonly IRequestHandler<CreateInvoiceCommand, Response<Invoice>> _InvoiceCommandHandler;
@@ -75,6 +73,6 @@ namespace bbxBE.WebApi.Controllers.v1
         {
             return Ok(await Mediator.Send(command));
         }
-
+        */
     }
 }
