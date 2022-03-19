@@ -153,13 +153,19 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     // aggregateInvoiceLineData, gyűjtőszámla
                     .WithColumn("LineExchangeRate").AsDecimal().Nullable()
                     .WithColumn("LineDeliveryDate").AsDateTime2().Nullable()
-                    .WithColumn("DeliveryNote").AsString().Nullable()
+                    .WithColumn("DeliveryNote").AsString().Nullable()                   //Szállítólevél-szám
+                    .WithColumn("DeliveryNoteInvoiceID").AsInt64().Nullable()           //Szállítólevél ID
+                    .WithColumn("DeliveryNoteLineNumber").AsInt16().NotNullable()       //Kapcsolódó szállítólevél sor
 
-                    //productFeeClause, termékdíj
+                    //Termékdíj - A környezetvédelmi termékdíj-kötelezettség átvállalása
                     .WithColumn("TakeoverReason").AsString().Nullable()
                     .WithColumn("TakeoverAmount").AsDecimal().Nullable()
-                    .WithColumn("TakeoverproductCodeCategory").AsString().Nullable()
-                    .WithColumn("TakeoverproductCodeValue").AsString().Nullable()
+                    .WithColumn("TakeoverProductCodeCategory").AsString().Nullable()
+                    .WithColumn("TakeoverProductCodeValue").AsString().Nullable()
+
+                    //Termékdíj
+                    .WithColumn("ProductFeeProductCodeCategory").AsString().Nullable()
+                    .WithColumn("ProductFeeProductCodeValue").AsString().Nullable()
                     .WithColumn("ProductFeeQuantity").AsDecimal().Nullable()
                     .WithColumn("ProductFeeMeasuringUnit").AsString().Nullable()
                     .WithColumn("ProductFeeRate").AsDecimal().Nullable()

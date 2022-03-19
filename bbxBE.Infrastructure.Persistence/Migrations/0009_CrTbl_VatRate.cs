@@ -22,7 +22,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
-                    .WithColumn("VatCode").AsString().NotNullable().Indexed()
+                    .WithColumn("VatRateCode").AsString().NotNullable().Indexed()
                     .WithColumn("VatPercentage").AsDecimal().Nullable()
                     .WithColumn("VatContent").AsDecimal().Nullable()
                     .WithColumn("VatExemptionCase").AsString().Nullable()
@@ -35,15 +35,15 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("vatAmountMismatchCase").AsString().Nullable()
                     .WithColumn("NoVatCharge").AsBoolean().WithDefaultValue(false);
 
-            Insert.IntoTable("VatRate").Row(new { VatCode = "27%", VatPercentage = 0.27 });
-            Insert.IntoTable("VatRate").Row(new { VatCode = "KBAET", VatPercentage = 0, VatExemptionCase = "KBAET", VatExemptionReason = "Áfa tv. 89. §" });
-            Insert.IntoTable("VatRate").Row(new { VatCode = "FA", VatPercentage = 0, VatDomesticReverseCharge = true });
-/*
-            Insert.IntoTable("VatRate").Row(new { VatCode = "5%", VatPercentage = 0.05 });
-            Insert.IntoTable("VatRate").Row(new { VatCode = "TAM", VatPercentage = 0, VatExemptionCase = "TAM", VatExemptionReason = "Mentes ÁFA tv. 85.§ (1) i)" });   //Tárgyi adómentes
-            Insert.IntoTable("VatRate").Row(new { VatCode = "AAM", VatPercentage = 0, VatExemptionCase = "AAM", VatExemptionReason = "Alanyi adómentes" });         //alanyi adómentes
-            Insert.IntoTable("VatRate").Row(new { VatCode = "ATK", VatPercentage = 0, VatOutOfScopeCase = "ATK", VatOutOfScopeReason = "ÁFA hatályán kívül" });
-*/
+            Insert.IntoTable("VatRate").Row(new { VatRateCode = "27%", VatPercentage = 0.27 });
+            Insert.IntoTable("VatRate").Row(new { VatRateCode = "KBAET", VatPercentage = 0, VatExemptionCase = "KBAET", VatExemptionReason = "Áfa tv. 89. §" });
+            Insert.IntoTable("VatRate").Row(new { VatRateCode = "FA", VatPercentage = 0, VatDomesticReverseCharge = true });
+            /*
+                        Insert.IntoTable("VatRate").Row(new { VatRateCode = "5%", VatPercentage = 0.05 });
+                        Insert.IntoTable("VatRate").Row(new { VatRateCode = "TAM", VatPercentage = 0, VatExemptionCase = "TAM", VatExemptionReason = "Mentes ÁFA tv. 85.§ (1) i)" });   //Tárgyi adómentes
+                        Insert.IntoTable("VatRate").Row(new { VatRateCode = "AAM", VatPercentage = 0, VatExemptionCase = "AAM", VatExemptionReason = "Alanyi adómentes" });         //alanyi adómentes
+                        Insert.IntoTable("VatRate").Row(new { VatRateCode = "ATK", VatPercentage = 0, VatOutOfScopeCase = "ATK", VatOutOfScopeReason = "ÁFA hatályán kívül" });
+            */
 
         }
 

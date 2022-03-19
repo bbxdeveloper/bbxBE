@@ -1,5 +1,5 @@
 ﻿using AutoMapper.Configuration.Conventions;
-using AxegazMobileSrv.Attrib;
+using bbxBE.Common.Attributes;
 using bbxBE.Common.Enums;
 using Newtonsoft.Json;
 using System;

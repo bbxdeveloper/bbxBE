@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
 namespace bbxBE.Domain.Common
@@ -10,6 +11,7 @@ namespace bbxBE.Domain.Common
 
         [Key]
         [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [DataMember]
         public long  ID { get; set; }
         [DataMember]
