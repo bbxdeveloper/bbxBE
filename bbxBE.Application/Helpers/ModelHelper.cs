@@ -1,5 +1,5 @@
-﻿using AxegazMobileSrv.Attrib;
-using bbxBE.Application.Interfaces;
+﻿using bbxBE.Application.Interfaces;
+using bbxBE.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

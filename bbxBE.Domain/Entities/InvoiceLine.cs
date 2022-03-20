@@ -29,7 +29,7 @@ namespace bbxBE.Domain.Entities
 		[Description("Számlasor kötelező tartalmi elemeinek meghatározása (értéke minden esetben true)")]
 		public bool LineExpressionIndicator { get; set; }
 		[ColumnLabel("Termékértékesítés/szolgáltatásnyújtás")]
-		[Description("Termékértékesítés vagy szolgáltatásnyújtás jelölése")]
+		[Description("Termékértékesítés vagy szolgáltatásnyújtás jelölése (egyelőre csak PRODUCT)")]
 		public string LineNatureIndicator { get; set; }
 		[ColumnLabel("Megnevezés")]
 		[Description("A termék vagy szolgáltatás megnevezése")]
@@ -87,10 +87,10 @@ namespace bbxBE.Domain.Entities
 
 		[ColumnLabel("Szállítólevél ID")]
 		[Description("Kapcsolt szállítólevél ID")]
-		public long DeliveryNoteInvoiceID { get; set; }
+		public long? DeliveryNoteInvoiceID { get; set; }
 		[ColumnLabel("Szállítólevél sor")]
 		[Description("Kapcsolt szállítólevél sor")]
-		public short DeliveryNoteLineNumber { get; set; }
+		public short? DeliveryNoteLineNumber { get; set; }
 
 		//Termékdíj - deklaráció
 		[ColumnLabel("Átvállalás irány")]

@@ -10,7 +10,7 @@ using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
-	[Description("Számla fej")]
+  	[Description("Számla fej")]
 	public class Invoice : BaseEntity
 	{
 
@@ -146,7 +146,7 @@ namespace bbxBE.Domain.Entities
 		// Javítószámla
 		[ColumnLabel("Eredeti számla ID")]
 		[Description("Az eredeti számla ID,amelyre a módosítás vonatkozik")]
-		public long OriginalInvoiceID { get; set; }
+		public long? OriginalInvoiceID { get; set; }
 
 		[ColumnLabel("Eredeti számla sorszám")]
 		[Description("Az eredeti számla sorszáma,amelyre a módosítás vonatkozik")]

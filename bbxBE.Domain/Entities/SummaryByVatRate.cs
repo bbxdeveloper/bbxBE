@@ -8,6 +8,7 @@ using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
+	[Description("Számla áfánkénti összesítő")]
 	public class SummaryByVatRate : BaseEntity
 	{
 		[ColumnLabel("Számla ID")]
