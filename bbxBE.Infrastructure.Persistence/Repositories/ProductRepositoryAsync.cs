@@ -224,7 +224,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                   .Include(i => i.Origin)
                                   .Include(i => i.ProductGroup)
                                   .Include(i => i.ProductCodes)
-                                  .Where(i=>i.ID == ID).FirstOrDefaultAsync();
+                                  .Where(i => i.ID == ID).FirstOrDefaultAsync();
+
+            //            var fields = requestParameter.Fields;
+
+            var itemModel = _mapper.Map<Product, GetProductViewModel>(item.Result);
+            var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
+
+            // shape data
+            var shapeData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+
+            return shapeData;
+        }
+        public async Task<Entity> GetProductByProductCodeAsync(GetProductByProductCode requestParameter)
+        {
+
+            var item = _Products//.AsNoTracking().AsExpandable()
+                                  .Include(i => i.Origin)
+                                  .Include(i => i.ProductGroup)
+                                  .Include(i => i.ProductCodes)
+                                  .Where(i => i.ProductCodes.Any( c => c.ProductCodeValue.ToUpper() == requestParameter.ProductCode.ToUpper()
+                                                                    && c.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).FirstOrDefaultAsync();
 
             //            var fields = requestParameter.Fields;
 

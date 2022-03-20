@@ -20,6 +20,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 
         Task<bool> SeedDataAsync(int rowCount);
         Task<Entity> GetProductAsync(GetProduct requestParameters);
+        Task<Entity> GetProductByProductCodeAsync(GetProductByProductCode requestParameter);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductAsync(QueryProduct requestParameters);
     }
 }
