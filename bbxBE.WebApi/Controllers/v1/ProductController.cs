@@ -57,7 +57,18 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(filter));
         }
 
-      
+
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet("getproductbyproductcode")]
+        public async Task<IActionResult> Query([FromQuery] Getpruduct filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
+
         [HttpGet("unitofmeasure")]
         public async Task<IActionResult> GetUnitOfMeasure()
         {

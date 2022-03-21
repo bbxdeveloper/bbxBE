@@ -52,8 +52,9 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[ColumnLabel("Áfa érték")]
 			[Description("Áfa a számla pénznemében")]
 			public decimal lineVatAmount { get; set; }
-		}
 
+		}
+/*
 		[Description("Számla áfánkénti összesítő")]
 		public class SummaryByVatRate 
 		{
@@ -64,9 +65,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[ColumnLabel("Áfa értéke")]
 			[Description("Áfa értéke a számla pénznemében")]
 			public decimal VatRateNetAmount { get; set; }
-
 		}
-
+*/
 		[ColumnLabel("Raktár")]
 		[Description("Raktár")]
 		public long WarehouseCode { get; set; }
@@ -107,18 +107,16 @@ namespace bxBE.Application.Commands.cmdInvoice
 		[ColumnLabel("Áfa")]
 		[Description("A számla áfa összege a számla pénznemében")]
 		public decimal InvoiceVatAmount { get; set; }
-		[ColumnLabel("Bruttó")]
-		[Description("A számla végösszege a számla pénznemében")]
-		public decimal InvoiceGrossAmount { get; set; }
 
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
 		public List<InvoiceLine> InvoiceLines { get; set; } = new List<InvoiceLine>();
 
+		/*
 		[ColumnLabel("Áfaösszesítők")]
 		[Description("Áfaösszesítők")]
 		public List<SummaryByVatRate> SummaryByVatRates { get; set; } = new List<SummaryByVatRate>();
-
+		*/
 	}
 
 	public class CreateInvoiceCommandHandler : IRequestHandler<CreateIncomingInvoiceCommand, Response<Invoice>>

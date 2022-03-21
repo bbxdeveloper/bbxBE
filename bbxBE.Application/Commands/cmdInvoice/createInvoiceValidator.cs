@@ -39,93 +39,30 @@ namespace bbxBE.Application.Commands.cmdInvoice
             RuleFor(p => p.PaymentDate)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
-itt tartok
-            RuleFor(p => new { p.InvoiceIssueDate, p.InvoiceDeliveryDate }).Must(x => ValidZipCounty(x.Zip, x.CountyId))
-                                      .WithMessage("Wrong Zip County");
 
-            [ColumnLabel("Kelt")]
-            [Description("Kiállítás dátuma")]
-            public DateTime InvoiceIssueDate { get; set; }
+            RuleFor(p => new { p.InvoiceIssueDate, p.InvoiceDeliveryDate }).Must(m => m.InvoiceIssueDate >= m.InvoiceDeliveryDate)
+                .WithMessage(bbxBEConsts.INV_DATE1);
+            RuleFor(p => new { p.InvoiceIssueDate, p.PaymentDate }).Must(m => m.InvoiceIssueDate <= m.PaymentDate)
+                .WithMessage(bbxBEConsts.INV_DATE2);
 
-            [ColumnLabel("Teljesítés")]
-            [Description("Teljesítés dátuma")]
-            public DateTime InvoiceDeliveryDate { get; set; }
-
-            [ColumnLabel("Fiz.hat")]
-            [Description("Fizetési határidő dátuma")]
-            public DateTime PaymentDate { get; set; }
-
-
-            [ColumnLabel("Ügyfél ID")]
-            [Description("Ügyfél ID")]
-            public long CustomerID { get; set; }
-
-            [ColumnLabel("Bevétel biz.")]
-            [Description("Bevétel alapjául szolgáló bizonylat")]
-            public string IncomingInvReference { get; set; }
-
-            [ColumnLabel("Fiz.mód")]
-            [Description("Fizetési mód")]
-            public string PaymentMethod { get; set; }
-
-            [ColumnLabel("Megjegyzés")]
-            [Description("Megjegyzés")]
-            public string Notice { get; set; }  //AdditionalInvoiceData-ban tároljuk!
-
-            [ColumnLabel("Nettó")]
-            [Description("A számla nettó összege a számla pénznemében")]
-            public decimal InvoiceNetAmount { get; set; }
-
-            [ColumnLabel("Áfa")]
-            [Description("A számla áfa összege a számla pénznemében")]
-            public decimal InvoiceVatAmount { get; set; }
-            [ColumnLabel("Bruttó")]
-            [Description("A számla végösszege a számla pénznemében")]
-            public decimal InvoiceGrossAmount { get; set; }
-
-            [ColumnLabel("Számlasorok")]
-            [Description("Számlasorok")]
-            public List<InvoiceLine> InvoiceLines { get; set; } = new List<InvoiceLine>();
-
-            [ColumnLabel("Áfaösszesítők")]
-            [Description("Áfaösszesítők")]
-            public List<SummaryByVatRate> SummaryByVatRates { get; set; } = new List<SummaryByVatRate>();
-
-
-
-
-
-            RuleFor(p => p.InvoiceCode)
-                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                    .MustAsync(
-                         async (model, Name, cancellation) =>
-                         {
-                             return await IsUniqueInvoiceNumberAsync(Name, cancellation);
-                         }
-                     ).WithMessage(bbxBEConsts.FV_EXISTS)
-                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
-
-            RuleFor(p => p.InvoiceDescription)
+            RuleFor(p => p.CustomerID)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
 
-            RuleFor(p => p.Prefix)
+            RuleFor(p => p.PaymentMethod)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
 
-            RuleFor(p => p.NumbepartLength)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .InclusiveBetween(1, 10).WithMessage(bbxBEConsts.FV_RANGE);
+            RuleFor(p => new { p.InvoiceLines }).Must(m => m.InvoiceLines.Count > 0)
+                .WithMessage(bbxBEConsts.INV_LINES);
+
+            RuleFor(p => new { p.SummaryByVatRates }).Must(m => m.SummaryByVatRates.Count > 0)
+                .WithMessage(bbxBEConsts.INV_VATSUMS);
+
+
+
         }
-        /*
-                    .WithColumn("NumbepartLength").AsInt64().NotNullable()
-                    .WithColumn("Suffix").AsString().NotNullable();
 
-        */
         private async Task<bool> IsUniqueInvoiceNumberAsync(string InvoiceCode, CancellationToken cancellationToken)
         {
             if (InvoiceCode.Length != 0)
