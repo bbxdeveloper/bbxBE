@@ -44,7 +44,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[ColumnLabel("Ár")]
 			[Description("Ár")]
 			public decimal Price { get; set; }
-			0
+			
 			[ColumnLabel("Nettó érték")]
 			[Description("Ár a számla pénznemében")]
 			public decimal LineNetAmount { get; set; }
@@ -52,11 +52,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[ColumnLabel("Áfa érték")]
 			[Description("Áfa a számla pénznemében")]
 			public decimal lineVatAmount { get; set; }
-
-			[ColumnLabel("Bruttó érték")]
-			[Description("Bruttó a számla pénznemében")]
-			public decimal lineGrossAmountNormal { get; set; }
-
 		}
 
 		[Description("Számla áfánkénti összesítő")]
@@ -69,11 +64,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[ColumnLabel("Áfa értéke")]
 			[Description("Áfa értéke a számla pénznemében")]
 			public decimal VatRateNetAmount { get; set; }
-			[ColumnLabel("Áfa HUF")]
-			[Description("Áfa értéke forintban")]
-			public decimal VatRateNetAmountHUF { get; set; }
-
-
 
 		}
 
@@ -125,8 +115,9 @@ namespace bxBE.Application.Commands.cmdInvoice
 		[Description("Számlasorok")]
 		public List<InvoiceLine> InvoiceLines { get; set; } = new List<InvoiceLine>();
 
-
-
+		[ColumnLabel("Áfaösszesítők")]
+		[Description("Áfaösszesítők")]
+		public List<SummaryByVatRate> SummaryByVatRates { get; set; } = new List<SummaryByVatRate>();
 
 	}
 
@@ -145,10 +136,16 @@ namespace bxBE.Application.Commands.cmdInvoice
 
         public async Task<Response<Invoice>> Handle(CreateIncomingInvoiceCommand request, CancellationToken cancellationToken)
         {
-            var cnt = _mapper.Map<Invoice>(request);
+			//   var cnt = _mapper.Map<Invoice>(request);
 
-            cnt = await _InvoiceRepository.AddInvoiceAsync(cnt, request.WarehouseCode);
-            return new Response<Invoice>(cnt);
+			Invoice invoice = null;
+			List<InvoiceLine> invoiceLines = null;
+			List<SummaryByVatRate> summaryByVatRate = null;
+			List<AdditionalInvoiceData> additionalInvoiceData = null;
+			List<AdditionalInvoiceLineData> additionalInvoiceLineData = null;
+
+			invoice = await _InvoiceRepository.AddInvoiceAsync(invoice, invoiceLines, summaryByVatRate, additionalInvoiceData, additionalInvoiceLineData);
+            return new Response<Invoice>(invoice);
         }
 
 

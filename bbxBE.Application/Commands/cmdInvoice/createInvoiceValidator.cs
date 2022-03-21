@@ -23,6 +23,78 @@ namespace bbxBE.Application.Commands.cmdInvoice
         public createInvoiceCommandValidator(IInvoiceRepositoryAsync InvoiceRepository)
         {
             this._InvoiceRepository = InvoiceRepository;
+
+            RuleFor(p => p.WarehouseCode)
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+
+            RuleFor(p => p.InvoiceIssueDate)
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+            
+            RuleFor(p => p.InvoiceDeliveryDate)
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+
+            RuleFor(p => p.PaymentDate)
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+itt tartok
+            RuleFor(p => new { p.InvoiceIssueDate, p.InvoiceDeliveryDate }).Must(x => ValidZipCounty(x.Zip, x.CountyId))
+                                      .WithMessage("Wrong Zip County");
+
+            [ColumnLabel("Kelt")]
+            [Description("Kiállítás dátuma")]
+            public DateTime InvoiceIssueDate { get; set; }
+
+            [ColumnLabel("Teljesítés")]
+            [Description("Teljesítés dátuma")]
+            public DateTime InvoiceDeliveryDate { get; set; }
+
+            [ColumnLabel("Fiz.hat")]
+            [Description("Fizetési határidő dátuma")]
+            public DateTime PaymentDate { get; set; }
+
+
+            [ColumnLabel("Ügyfél ID")]
+            [Description("Ügyfél ID")]
+            public long CustomerID { get; set; }
+
+            [ColumnLabel("Bevétel biz.")]
+            [Description("Bevétel alapjául szolgáló bizonylat")]
+            public string IncomingInvReference { get; set; }
+
+            [ColumnLabel("Fiz.mód")]
+            [Description("Fizetési mód")]
+            public string PaymentMethod { get; set; }
+
+            [ColumnLabel("Megjegyzés")]
+            [Description("Megjegyzés")]
+            public string Notice { get; set; }  //AdditionalInvoiceData-ban tároljuk!
+
+            [ColumnLabel("Nettó")]
+            [Description("A számla nettó összege a számla pénznemében")]
+            public decimal InvoiceNetAmount { get; set; }
+
+            [ColumnLabel("Áfa")]
+            [Description("A számla áfa összege a számla pénznemében")]
+            public decimal InvoiceVatAmount { get; set; }
+            [ColumnLabel("Bruttó")]
+            [Description("A számla végösszege a számla pénznemében")]
+            public decimal InvoiceGrossAmount { get; set; }
+
+            [ColumnLabel("Számlasorok")]
+            [Description("Számlasorok")]
+            public List<InvoiceLine> InvoiceLines { get; set; } = new List<InvoiceLine>();
+
+            [ColumnLabel("Áfaösszesítők")]
+            [Description("Áfaösszesítők")]
+            public List<SummaryByVatRate> SummaryByVatRates { get; set; } = new List<SummaryByVatRate>();
+
+
+
+
+
             RuleFor(p => p.InvoiceCode)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)

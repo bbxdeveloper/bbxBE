@@ -53,7 +53,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !await _Invoices.AnyAsync(p => p.InvoiceNumber == InvoiceNumber && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
-        public async Task<Invoice> AddInvoiceAsync(Invoice p_Invoice, string p_WarehouseCode)
+
+        
+
+
+        public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate , List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
         {
             /*
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
@@ -70,10 +74,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             }
             */
-            return p_Invoice;
+            return p_invoice;
         }
 
-        public async Task<Invoice> UpdateInvoiceAsync(Invoice p_Invoice, string p_WarehouseCode)
+        public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
         {
             /*
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
@@ -100,7 +104,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
             */
-            return p_Invoice;
+            return p_invoice;
         }
 
         public async Task<Entity> GetInvoiceAsync(GetInvoice requestParameter)

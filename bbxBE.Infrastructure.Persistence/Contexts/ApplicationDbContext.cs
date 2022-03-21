@@ -32,12 +32,12 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<Product> Product { get; set; }
         public DbSet<Warehouse> Warehouse { get; set; }
         public DbSet<Counter> Counter { get; set; }
-        public DbSet<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
-        public DbSet<AdditionalInvoiceLineData> AdditionalInvoiceLineData { get; set; }
+        public DbSet<VatRate> VatRate { get; set; }
         public DbSet<Invoice> Invoice { get; set; }
         public DbSet<InvoiceLine> InvoiceLine { get; set; }
         public DbSet<SummaryByVatRate> SummaryByVatRate { get; set; }
-        public DbSet<VatRate> VatRate { get; set; }
+        public DbSet<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
+        public DbSet<AdditionalInvoiceLineData> AdditionalInvoiceLineData { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
