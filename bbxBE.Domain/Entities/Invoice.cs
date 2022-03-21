@@ -124,7 +124,7 @@ namespace bbxBE.Domain.Entities
 
 		[ColumnLabel("Közmű elszámolószámla")]
 		[Description("Közmű elszámolószámla  ? (értéke false)")]
-		public bool UtilitySettlementIndicator { get; set; }
+		public bool UtilitySettlementIndicator { get; set; } = false;
 
 		private InvoiceAppearanceType invoiceAppearance;
 
@@ -142,6 +142,10 @@ namespace bbxBE.Domain.Entities
 
 			}
 		}
+
+		[ColumnLabel("Bevétel biz.")]
+		[Description("Bevétel alapjául szolgáló bizonylat")]
+		public string IncomingInvReference { get; set; }
 
 		// Javítószámla
 		[ColumnLabel("Eredeti számla ID")]

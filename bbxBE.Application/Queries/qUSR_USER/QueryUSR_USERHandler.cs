@@ -16,8 +16,7 @@ namespace bbxBE.Application.Queries.qUSR_USER
 {
     public class QueryUSR_USER : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
-        public string Name { get; set; }
-        public string LoginName { get; set; }
+        public string SearchString { get; set; }
     }
 
     public class QueryUSR_USERHandler : IRequestHandler<QueryUSR_USER, PagedResponse<IEnumerable<Entity>>>

@@ -59,6 +59,9 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("UtilitySettlementIndicator").AsBoolean().NotNullable().WithDefaultValue(false)
                     .WithColumn("InvoiceAppearance").AsString().NotNullable().WithDefaultValue(InvoiceCategoryType.NORMAL.ToString())
 
+                    //Incoming (bevételezés)
+                    .WithColumn("IncomingInvReference").AsString().Nullable()
+
                     //invoiceReference (javítószámla)
                     .WithColumn("OriginalInvoiceID").AsInt64().NotNullable().ForeignKey()
                     .WithColumn("OriginalInvoiceNumber").AsString().NotNullable()
