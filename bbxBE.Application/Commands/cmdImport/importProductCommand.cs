@@ -25,8 +25,8 @@ namespace bbxBE.Application.Commands.cmdImport
     public class ImportProductCommandHandler : IRequestHandler<ImportProductCommand, Response<ImportProduct>>
     {
         private const string DescriptionFieldName = "Description";
-        private const string ProducGroupFieldName = "ProductGroupID";
-        private const string OriginIdFieldName = "OriginID";
+        private const string ProductGroupCodeFieldName = "ProductGroupCode";
+        private const string OriginCodeFieldName = "OriginCode";
         private const string UnitOfMeasureFieldName = "UnitOfMeasure";
         private const string UnitPrice1FieldName = "UnitPrice1";
         private const string UnitPrice2FieldName = "UnitPrice2";
@@ -36,12 +36,13 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string OrdUnitFieldName = "OrdUnit";
         private const string ProductFeeFieldName = "ProductFee";
         private const string ActiveFieldName = "Active";
-        private const string IDFieldName = "ID";
-        private const string NatureIndicatorFieldName = "NatureIndicator";
         private const string ProductCodeFieldName = "ProductCode";
-        private readonly IProductRepositoryAsync _ProductRepository;
+        private const string EANFieldName = "EAN";
+        private const string VTSZFieldName = "VTSZ";
 
+        private readonly IProductRepositoryAsync _ProductRepository;
         private readonly IMapper _mapper;
+        
 
         public ImportProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper)
         {
@@ -54,39 +55,34 @@ namespace bbxBE.Application.Commands.cmdImport
             var productMapping = await GetProductMappingAsync(request.ProductFiles[0]);
             var producItems = await GetProductItemsAsync(request, productMapping);
 
+            var importProduct = new ImportProduct();
+            importProduct.AllItemsCount = producItems.Count;
+
             foreach (var item in producItems)
             {
-
                 var getProductByProductCode = new GetProductByProductCode() { ProductCode = item.Key };
 
                 var prod = await _ProductRepository.GetProductByProductCodeAsync(getProductByProductCode);
 
-                //var product = await productHandler.Handle();
-                //TODO: check item is existing or not
                 if (prod.Keys.Count == 0)
                 {
-                    //TODO: if item is new then create with default data
-                    var createProductCommand = new CreateProductCommand();
-                    var productCreateResponse = await bllProduct.CreateAsynch(createProductCommand, _ProductRepository, _mapper, cancellationToken);
+                    var productCreateResponse = await bllProduct.CreateAsynch(item.Value, _ProductRepository, _mapper, cancellationToken);
+                    importProduct.CreatedItemsCount += 1;
                 }
                 else
                 {
-                    //TODO: if existing: update
-                    var updateProductCommand = new UpdateProductCommand();
+                    var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
                     var productUpdateResponse = await bllProduct.UpdateAsynch(updateProductCommand, _ProductRepository, _mapper, cancellationToken);
+                    importProduct.UpdatedItemsCount += 1;
                 }
-
-                //TODO: calculate statistical data
             }
 
-
-            var importProduct = new ImportProduct();
             return new Response<ImportProduct>(importProduct);
         }
 
-        private static async Task<Dictionary<string, Product>> GetProductItemsAsync(ImportProductCommand request, Dictionary<string, int> productMapping)
+        private static async Task<Dictionary<string, CreateProductCommand>> GetProductItemsAsync(ImportProductCommand request, Dictionary<string, int> productMapping)
         {
-            var producItems = new Dictionary<string, Product>();
+            var producItems = new Dictionary<string, CreateProductCommand>();
             using (var reader = new StreamReader(request.ProductFiles[1].OpenReadStream()))
             {
                 string currentLine;
@@ -103,20 +99,20 @@ namespace bbxBE.Application.Commands.cmdImport
             return producItems;
         }
 
-        private static Dictionary<string, Product> GetProductFromCSV(string currentLine, Dictionary<string, int> productMapper)
+        private static Dictionary<string, CreateProductCommand> GetProductFromCSV(string currentLine, Dictionary<string, int> productMapper)
         {
             string[] currentFieldsArray = currentLine.Split(';');
 
             try
             {
-                return new Dictionary<string, Product> {
+                return new Dictionary<string, CreateProductCommand> {
                     {
                         productMapper.ContainsKey(ProductCodeFieldName) ? currentFieldsArray[productMapper[ProductCodeFieldName]] : null,
-                        new Product
+                        new CreateProductCommand
                         {
                             Description = productMapper.ContainsKey(DescriptionFieldName) ? currentFieldsArray[productMapper[DescriptionFieldName]] : null,
-                            ProductGroupID = productMapper.ContainsKey(ProducGroupFieldName) ? long.Parse(currentFieldsArray[productMapper[ProducGroupFieldName]]) : 0,
-                            OriginID = productMapper.ContainsKey(OriginIdFieldName) ? long.Parse(currentFieldsArray[productMapper[OriginIdFieldName]]) : 0,
+                            ProductCode = productMapper.ContainsKey(ProductCodeFieldName) ? currentFieldsArray[productMapper[ProductCodeFieldName]] : null,
+                            OriginCode = productMapper.ContainsKey(OriginCodeFieldName) ? currentFieldsArray[productMapper[OriginCodeFieldName]] : null,
                             UnitOfMeasure = productMapper.ContainsKey(UnitOfMeasureFieldName) ? currentFieldsArray[productMapper[UnitOfMeasureFieldName]] : null,
                             UnitPrice1 = productMapper.ContainsKey(UnitPrice1FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice1FieldName]]) : 0,
                             UnitPrice2 = productMapper.ContainsKey(UnitPrice2FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice2FieldName]]) : 0,
@@ -126,34 +122,17 @@ namespace bbxBE.Application.Commands.cmdImport
                             OrdUnit = productMapper.ContainsKey(OrdUnitFieldName) ? decimal.Parse(currentFieldsArray[productMapper[OrdUnitFieldName]]) : 0,
                             ProductFee = productMapper.ContainsKey(ProductFeeFieldName) ? decimal.Parse(currentFieldsArray[productMapper[ProductFeeFieldName]]) : 0,
                             Active = productMapper.ContainsKey(ActiveFieldName) ? bool.Parse(currentFieldsArray[productMapper[ActiveFieldName]]) : false,
-                            ID = productMapper.ContainsKey(IDFieldName) ? long.Parse(currentFieldsArray[productMapper[IDFieldName]]) : 0,
-                            NatureIndicator = productMapper.ContainsKey(NatureIndicatorFieldName) ? currentFieldsArray[productMapper[NatureIndicatorFieldName]] : null
+                            EAN = productMapper.ContainsKey(EANFieldName) ? currentFieldsArray[productMapper[EANFieldName]] : null,
+                            VTSZ = productMapper.ContainsKey(VTSZFieldName) ? currentFieldsArray[productMapper[VTSZFieldName]] : null,
+                            ProductGroupCode = productMapper.ContainsKey(ProductGroupCodeFieldName) ? currentFieldsArray[productMapper[ProductGroupCodeFieldName]] : null
                         }
                     }
                 };
-
-                //    public string ProductCode { get; set; }
-                //public string Description { get; set; }
-                //public string ProductGroupCode { get; set; }
-                //public string OriginCode { get; set; }
-                //public string UnitOfMeasure { get; set; }
-                //public decimal UnitPrice1 { get; set; }
-                //public decimal UnitPrice2 { get; set; }
-                //public decimal LatestSupplyPrice { get; set; }
-                //public bool IsStock { get; set; }
-                //public decimal MinStock { get; set; }
-                //public decimal OrdUnit { get; set; }
-                //public decimal ProductFee { get; set; }
-                //public bool Active { get; set; }
-                //public string VTSZ { get; set; }
-                //public string EAN { get; set; }
-
             }
             catch (System.Exception ex)
             {
                 throw ex;
             }
-
         }
 
         private static async Task<Dictionary<string, int>> GetProductMappingAsync(IFormFile mappingFile)
