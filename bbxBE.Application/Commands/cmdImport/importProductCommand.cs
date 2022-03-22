@@ -1,4 +1,6 @@
-﻿using bbxBE.Application.BLL;
+﻿using AutoMapper;
+using AutoMapper.Configuration;
+using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Wrappers;
@@ -39,9 +41,12 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string ProductCodeFieldName = "ProductCode";
         private readonly IProductRepositoryAsync _ProductRepository;
 
-        public ImportProductCommandHandler(IProductRepositoryAsync ProductRepository)
+        private readonly IMapper _mapper;
+
+        public ImportProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper)
         {
             _ProductRepository = ProductRepository;
+            _mapper = mapper;
         }
 
         public async Task<Response<ImportProduct>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
@@ -51,20 +56,24 @@ namespace bbxBE.Application.Commands.cmdImport
 
             foreach (var item in producItems)
             {
-                var productHandler = await new GetProductByProductCodeHandler(_ProductRepository, null, null).Handle(new GetProductByProductCode() { ProductCode = item.Key }, cancellationToken);
+
+                var getProductByProductCode = new GetProductByProductCode() { ProductCode = item.Key };
+
+                var prod = await _ProductRepository.GetProductByProductCodeAsync(getProductByProductCode);
+
                 //var product = await productHandler.Handle();
                 //TODO: check item is existing or not
-                if (productHandler.Equals(null))
+                if (prod.Keys.Count == 0)
                 {
                     //TODO: if item is new then create with default data
                     var createProductCommand = new CreateProductCommand();
-                    var productCreateResponse = await bllProduct.CreateAsynch(createProductCommand, _ProductRepository, null, cancellationToken);
+                    var productCreateResponse = await bllProduct.CreateAsynch(createProductCommand, _ProductRepository, _mapper, cancellationToken);
                 }
                 else
                 {
                     //TODO: if existing: update
                     var updateProductCommand = new UpdateProductCommand();
-                    var productUpdateResponse = await bllProduct.UpdateAsynch(updateProductCommand, _ProductRepository, null, cancellationToken);
+                    var productUpdateResponse = await bllProduct.UpdateAsynch(updateProductCommand, _ProductRepository, _mapper, cancellationToken);
                 }
 
                 //TODO: calculate statistical data

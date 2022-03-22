@@ -247,14 +247,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                                                     && c.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).FirstOrDefaultAsync();
 
             //            var fields = requestParameter.Fields;
+            if (item.Result != null)
+            {
+                var itemModel = _mapper.Map<Product, GetProductViewModel>(item.Result);
+                var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
-            var itemModel = _mapper.Map<Product, GetProductViewModel>(item.Result);
-            var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
+                // shape data
+                var shapeData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            // shape data
-            var shapeData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
-
-            return shapeData;
+                return shapeData;
+            }
+            else
+            {
+                return new Entity();
+            }
         }
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductAsync(QueryProduct requestParameter)
         {
