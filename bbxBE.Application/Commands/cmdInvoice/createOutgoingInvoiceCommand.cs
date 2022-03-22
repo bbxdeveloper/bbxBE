@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace bxBE.Application.Commands.cmdInvoice
 {
-    public class CreateIncomingInvoiceCommand : IRequest<Response<Invoice>>
+    public class createOutgoingInvoiceCommand : IRequest<Response<Invoice>>
     {
 
 		[Description("Számlasor")]
@@ -88,9 +88,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 		[Description("Ügyfél ID")]
 		public long CustomerID { get; set; }
 
-		[ColumnLabel("Bevétel biz.")]
-		[Description("Bevétel alapjául szolgáló bizonylat")]
-		public string IncomingInvReference { get; set; }
 
 		[ColumnLabel("Fiz.mód")]
 		[Description("Fizetési mód")]
@@ -119,7 +116,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 		*/
 	}
 
-	public class CreateInvoiceCommandHandler : IRequestHandler<CreateIncomingInvoiceCommand, Response<Invoice>>
+	public class CreateInvoiceCommandHandler : IRequestHandler<createOutgoingInvoiceCommand, Response<Invoice>>
     {
         private readonly IInvoiceRepositoryAsync _InvoiceRepository;
         private readonly IMapper _mapper;
@@ -132,7 +129,7 @@ namespace bxBE.Application.Commands.cmdInvoice
             _configuration = configuration;
         }
 
-        public async Task<Response<Invoice>> Handle(CreateIncomingInvoiceCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Invoice>> Handle(createOutgoingInvoiceCommand request, CancellationToken cancellationToken)
         {
 			//   var cnt = _mapper.Map<Invoice>(request);
 
