@@ -1,7 +1,7 @@
 ﻿using bbxBE.Application.Consts;
-using bbxBE.Application.Enums;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdProduct;
 using FluentValidation;
 using MediatR;

@@ -1,5 +1,4 @@
 ﻿using AutoMapper.Configuration.Conventions;
-using AxegazMobileSrv.Attrib;
 using System;
 
 namespace bbxBE.Application.Queries.ViewModels

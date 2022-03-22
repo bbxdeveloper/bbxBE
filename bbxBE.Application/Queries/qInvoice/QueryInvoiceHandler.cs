@@ -12,49 +12,51 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
 
-namespace bbxBE.Application.Queries.qUSR_USER
+namespace bbxBE.Application.Queries.qInvoice
 {
-    public class QueryUSR_USER : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
+    public class QueryInvoice : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
         public string SearchString { get; set; }
     }
 
-    public class QueryUSR_USERHandler : IRequestHandler<QueryUSR_USER, PagedResponse<IEnumerable<Entity>>>
+    public class QueryInvoiceHandler : IRequestHandler<QueryInvoice, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly IUSR_USERRepositoryAsync _userRepository;
+        private readonly IInvoiceRepositoryAsync _InvoiceRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public QueryUSR_USERHandler(IUSR_USERRepositoryAsync userRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryInvoiceHandler(IInvoiceRepositoryAsync InvoiceRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _userRepository = userRepository;
+            _InvoiceRepository = InvoiceRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryUSR_USER request, CancellationToken cancellationToken)
+        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryInvoice request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;
-
-              /* TODO: törölni
-          //filtered fields security
+            
+            /* TODO: törölni
+            //filtered fields security
             if (!string.IsNullOrEmpty(validFilter.Fields))
             {
                 //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetUSR_USERViewModel, USR_USER>(validFilter.Fields);
+                validFilter.Fields = _modelHelper.ValidateModelFields<GetInvoiceViewModel, Invoice>(validFilter.Fields);
             }
+  
             if (string.IsNullOrEmpty(validFilter.Fields))
             {
                 //default fields from view model
-                validFilter.Fields = _modelHelper.GetQueryableFields<GetUSR_USERViewModel, USR_USER>();
+                validFilter.Fields = _modelHelper.GetQueryableFields<GetInvoiceViewModel, Invoice>();
             }
-              */
+            */
+
 
             // query based on filter
-            var entitUsers = await _userRepository.QueryPagedUSR_USERAsync(validFilter);
-            var data = entitUsers.data.MapItemsFieldsByMapToAnnotation<GetUSR_USERViewModel>();
-            RecordsCount recordCount = entitUsers.recordsCount;
+            var entities = await _InvoiceRepository.QueryPagedInvoiceAsync(validFilter);
+            var data = entities.data.MapItemsFieldsByMapToAnnotation<GetInvoiceViewModel>();
+            RecordsCount recordCount = entities.recordsCount;
 
             // response wrapper
             return new PagedResponse<IEnumerable<Entity>>(data, validFilter.PageNumber, validFilter.PageSize, recordCount);

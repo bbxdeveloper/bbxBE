@@ -1,10 +1,10 @@
 ﻿using bbxBE.Application.Commands.cmdProduct;
 using bbxBE.Application.Commands.cmdUSR_USER;
-using bbxBE.Application.Enums;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdProduct;
 using MediatR;
@@ -68,7 +68,7 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(filter));
         }
 
-      
+
         [HttpGet("unitofmeasure")]
         public async Task<IActionResult> GetUnitOfMeasure()
         {

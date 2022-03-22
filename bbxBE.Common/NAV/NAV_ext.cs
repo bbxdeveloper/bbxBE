@@ -1,10 +1,9 @@
 ﻿using bbxBE.Common.NAV;
-using bbxBE.Domain.Extensions;
 using System;
 using System.Reflection;
 using System.Xml.Serialization;
 
-namespace bbxBE.Domain.Entities
+namespace bbxBE.Common.NAV
 {
     public partial class CustomerInfoType
     {

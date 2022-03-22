@@ -40,6 +40,9 @@ namespace bbxBE.Application.Queries
             services.AddScoped<IDataShapeHelper<Counter>, DataShapeHelper<Counter>>();
             services.AddScoped<IDataShapeHelper<GetCounterViewModel>, DataShapeHelper<GetCounterViewModel>>();
 
+            services.AddScoped<IDataShapeHelper<Invoice>, DataShapeHelper<Invoice>>();
+            services.AddScoped<IDataShapeHelper<GetInvoiceViewModel>, DataShapeHelper<GetInvoiceViewModel>>();
+
 
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>
             {
