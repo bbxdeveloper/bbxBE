@@ -56,9 +56,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
             RuleFor(p => new { p.InvoiceLines }).Must(m => m.InvoiceLines.Count > 0)
                 .WithMessage(bbxBEConsts.INV_LINES);
 
-            RuleFor(p => new { p.SummaryByVatRates }).Must(m => m.SummaryByVatRates.Count > 0)
-                .WithMessage(bbxBEConsts.INV_VATSUMS);
-
+ 
 
 
         }
