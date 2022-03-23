@@ -210,17 +210,14 @@ namespace bbxBE.Domain.Entities
 		[Description("Eredeti számla")]
 		public Invoice OriginalInvoice { get; set; }
 
-		[ForeignKey("InvoiceID")]
 		[ColumnLabel("Egyéb adat")]
 		[Description("A számlára vonatkozó egyéb adat")]
 		public ICollection<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
 
-		[ForeignKey("InvoiceID")]
 		[ColumnLabel("Áfa összesítő")]
 		[Description("Összesítés áfa-mérték szerint")]
 		public ICollection<SummaryByVatRate> SummaryByVatRates { get; set; }
 
-		[ForeignKey("InvoiceID")]
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
 		public ICollection<InvoiceLine> InvoiceLines { get; set; }

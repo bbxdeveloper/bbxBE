@@ -72,7 +72,6 @@ namespace bbxBE.Domain.Entities
         [Description("Áfa leíró")]
         public VatRate VatRate { get; set; }
 
-        [ForeignKey("ProductID")]
         [ColumnLabel("Termékkódok")]
         [Description("Termékkódok")]
         public ICollection<ProductCode> ProductCodes { get; set; }

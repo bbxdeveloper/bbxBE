@@ -144,6 +144,20 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.VatRateController.Get(bbxBE.Application.Queries.qVatRate.GetVatRate)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.VatRateController.Query(bbxBE.Application.Queries.qVatRate.QueryVatRate)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.WarehouseController.Get(bbxBE.Application.Queries.qWarehouse.GetWarehouse)">
             <summary>
             GET: api/controller

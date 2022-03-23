@@ -1,6 +1,7 @@
 ﻿using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
+using bbxBE.Application.Queries.qVatRate;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
@@ -26,7 +27,7 @@ namespace bbxBE.WebApi.Controllers.v1
             _conf = conf;
         }
 
-        /*
+        
         /// <summary>
         /// GET: api/controller
         /// </summary>
@@ -43,22 +44,25 @@ namespace bbxBE.WebApi.Controllers.v1
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
+        [HttpGet("query")]
+        public async Task<IActionResult> Query([FromQuery] QueryVatRate filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
+
+        /*
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         [HttpGet("VatRatebycode")]
         public async Task<IActionResult> GetVatRateByVatRateCode([FromQuery] GetVatRateByVatRateCode filter)
         {
             return Ok(await Mediator.Send(filter));
         }
 
-        /// <summary>
-        /// GET: api/controller
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryVatRate filter)
-        {
-            return Ok(await Mediator.Send(filter));
-        }
+      
 
 
         [HttpGet("unitofmeasure")]
