@@ -30,6 +30,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly DbSet<ProductCode> _ProductCodes;
         private readonly DbSet<Origin> _Origins;
         private readonly DbSet<ProductGroup> _ProductGroups;
+        private readonly DbSet<VatRate> _VatRates;
         private IDataShapeHelper<Product> _dataShaperProduct;
         private IDataShapeHelper<GetProductViewModel> _dataShaperGetProductViewModel;
         private readonly IMockService _mockData;
@@ -46,6 +47,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _ProductCodes = dbContext.Set<ProductCode>();
             _Origins = dbContext.Set<Origin>();
             _ProductGroups = dbContext.Set<ProductGroup>();
+            _VatRates = dbContext.Set<VatRate>();
 
 
             _dataShaperProduct = dataShaperProduct;
@@ -73,7 +75,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return await _Origins.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted);
         }
 
-        public async Task<Product> AddProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN, string p_ProductGroupCode, string p_OriginCode)
+        public async Task<Product> AddProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
@@ -86,6 +88,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (!string.IsNullOrWhiteSpace(p_OriginCode))
                 {
                     p_product.OriginID = _Origins.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                }
+
+                if (!string.IsNullOrWhiteSpace(p_VatRateCode))
+                {
+                    p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                }
+                else
+                {
+                    p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27).ID;
                 }
 
                 _Products.Add(p_product);
@@ -105,7 +116,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return p_product;
         }
-        public async Task<Product> UpdateProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN, string p_ProductGroupCode, string p_OriginCode)
+        public async Task<Product> UpdateProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
 
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
@@ -167,6 +178,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     }
 
+                    if( !string.IsNullOrWhiteSpace( p_VatRateCode))
+                    {
+                        p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+
+                    }
+                    else
+                    {
+                        p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27).ID;
+                    }
 
                     _Products.Update(p_product);
                     await _dbContext.SaveChangesAsync();
