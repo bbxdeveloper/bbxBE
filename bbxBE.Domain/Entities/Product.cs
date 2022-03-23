@@ -21,6 +21,9 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Termékcsoport ID")]
         [Description("Termékcsoport ID")]
         public long? OriginID { get; set; }
+        [ColumnLabel("Áfa ID")]
+        [Description("Áfa ID")]
+        public long VatRateID { get; set; }
         [ColumnLabel("Me.e")]
         [Description("Mennyiségi egység")]
         public string UnitOfMeasure { get; set; }
@@ -63,6 +66,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Származási hely")]
         [Description("Származási hely")]
         public Origin Origin { get; set; }
+
+        [ForeignKey("VatRateID")]
+        [ColumnLabel("Áfa leíró")]
+        [Description("Áfa leíró")]
+        public VatRate VatRate { get; set; }
 
         [ForeignKey("ProductID")]
         [ColumnLabel("Termékkódok")]
