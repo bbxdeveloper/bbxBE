@@ -42,6 +42,11 @@ namespace bxBE.Application.Commands.cmdProduct
         [ColumnLabel("Ár2")]
         [Description("Eladási ár2")]
         public decimal UnitPrice2 { get; set; }
+
+        [ColumnLabel("Áfaleíró-kód")]
+        [Description("Áfaleíró-kód")]
+        public string VatRateCode { get; set; }
+
         [ColumnLabel("Utolsó beszerzés")]
         [Description("Utolsó beszerzés dátuma")]
         public decimal LatestSupplyPrice { get; set; }

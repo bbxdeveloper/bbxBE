@@ -30,7 +30,9 @@ namespace bbxBE.Application.BLL
                 pcEAN = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
             }
 
-            prod = await _ProductRepository.AddProductAsync(prod, pcCode, pcVTSZ, pcEAN, request.ProductGroupCode, request.OriginCode);
+
+
+            prod = await _ProductRepository.AddProductAsync(prod, pcCode, pcVTSZ, pcEAN, request.ProductGroupCode, request.OriginCode, request.VatRateCode);
             return prod;
         }
 
@@ -48,7 +50,7 @@ namespace bbxBE.Application.BLL
                 pcEAN = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
             }
 
-            await _ProductRepository.UpdateProductAsync(prod, pcCode, pcVTSZ, pcEAN, request.ProductGroupCode, request.OriginCode);
+            await _ProductRepository.UpdateProductAsync(prod, pcCode, pcVTSZ, pcEAN, request.ProductGroupCode, request.OriginCode, request.VatRateCode);
             return prod;
         }
     }

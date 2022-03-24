@@ -48,6 +48,8 @@ namespace bbxBE.Queries.Mappings
             CreateMap<Counter, GetCounterViewModel>()
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription));
 
+            CreateMap<List<VatRate>, List<GetVatRateViewModel>>();
+            CreateMap<VatRate, GetVatRateViewModel>();
         }
     }
 }

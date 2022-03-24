@@ -12,36 +12,36 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
 
-namespace bbxBE.Application.Queries.qProductGroup
+namespace bbxBE.Application.Queries.qVatRate
 {
-    public class GetProductGroup:  IRequest<Entity>
+    public class GetVatRate:  IRequest<Entity>
     {
         public long ID { get; set; }
   //      public string Fields { get; set; }
     }
 
-    public class GetProductGroupHandler : IRequestHandler<GetProductGroup, Entity>
+    public class GetVatRateHandler : IRequestHandler<GetVatRate, Entity>
     {
-        private readonly IProductGroupRepositoryAsync _productGroupRepository;
+        private readonly IVatRateRepositoryAsync _vatRateRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetProductGroupHandler(IProductGroupRepositoryAsync productGroupRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetVatRateHandler(IVatRateRepositoryAsync vatRateRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _productGroupRepository = productGroupRepository;
+            _vatRateRepository = vatRateRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<Entity> Handle(GetProductGroup request, CancellationToken cancellationToken)
+        public async Task<Entity> Handle(GetVatRate request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;
           
 
             // query based on filter
-            var entityPositions = await _productGroupRepository.GetProductGroupAsync(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetProductGroupViewModel>();
+            var entityPositions = await _vatRateRepository.GetVatRateAsync(validFilter);
+            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetVatRateViewModel>();
 
             // response wrapper
             return data;

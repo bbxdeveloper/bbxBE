@@ -21,15 +21,12 @@ namespace bbxBE.WebApi.Controllers.v1
 
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<createOutgoingInvoiceCommand, Response<Invoice>> _createOutgoingInvoiceCommand;
         public InvoiceController(
            IWebHostEnvironment env,
-           IConfiguration conf,
-           IRequestHandler<createOutgoingInvoiceCommand, Response<Invoice>> _createOutgoingInvoiceCommand)
+           IConfiguration conf)
         {
             _env = env;
             _conf = conf;
-            _createOutgoingInvoiceCommand = _createOutgoingInvoiceCommand;
         }
 
 

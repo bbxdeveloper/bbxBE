@@ -21,16 +21,11 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<CreateCounterCommand, Response<Counter>> _CounterCommandHandler;
-        public CounterController(
-           IWebHostEnvironment env,
-           IConfiguration conf,
-           IRequestHandler<CreateCounterCommand, Response<Counter>> CounterCommandHandler)
+        public CounterController( IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
-            _CounterCommandHandler = CounterCommandHandler;
-    }
+        }
 
 
         /// <summary>
