@@ -4,12 +4,14 @@ using bbxBE.Application.BLL;
 using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Text;
 using System.Threading;
@@ -35,6 +37,9 @@ namespace bxBE.Application.Commands.cmdCustomer
         public string AdditionalAddressDetail { get; set; }
         public string Comment { get; set; }
 
+        [ColumnLabel("Saját adat?")]
+        [Description("Saját adat? (csak egy ilyen rekord lehet)")]
+        public bool IsOwnData { get; set; }
 
     }
 

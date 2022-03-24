@@ -1,6 +1,7 @@
 ﻿using AutoMapper.Configuration.Conventions;
 using bbxBE.Common.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -51,5 +52,9 @@ namespace bbxBE.Application.Queries.ViewModels
         public string City { get; set; }
    //     [NotModelFieldAttribute]
         public string AdditionalAddressDetail { get; set; }
+        [ColumnLabel("Saját adat?")]
+        [Description("Saját adat? (csak egy ilyen rekord lehet)")]
+        public bool IsOwnData { get; set; }
+
     }
 }
