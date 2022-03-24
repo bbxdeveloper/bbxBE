@@ -18,7 +18,7 @@ namespace bbxBE.Domain.Entities
 		public decimal VatPercentage { get; set; }
 		[ColumnLabel("Áfatartalom egyszerűsített számla esetén")]
 		[Description("Áfatartalom egyszerűsített számla esetén - NEM HASZNÁLJUK")]
-		public decimal VatContent { get; set; }
+		public decimal? VatContent { get; set; }
 		[ColumnLabel("Adómentesség jelölés")]
 		[Description("Az adómentesség jelölés kódja")]
 		public string VatExemptionCase { get; set; }
@@ -39,7 +39,7 @@ namespace bbxBE.Domain.Entities
 		public string MarginSchemeIndicator { get; set; }
 		[ColumnLabel("Adómérték, adótartalom")]
 		[Description("Adómérték, adótartalom - NEM HASZNÁLJUK")]
-		public decimal vatAmountMismatchVatRate { get; set; }
+		public decimal? vatAmountMismatchVatRate { get; set; }
 		[ColumnLabel("Adóalap és felszámított adó eltérésének kódja")]
 		[Description("Adóalap és felszámított adó eltérésének kódja - NEM HASZNÁLJUK")]
 		public string vatAmountMismatchCase { get; set; }

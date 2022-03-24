@@ -18,8 +18,8 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Termékcsoport ID")]
         [Description("Termékcsoport ID")]
         public long? ProductGroupID { get; set; }
-        [ColumnLabel("Termékcsoport ID")]
-        [Description("Termékcsoport ID")]
+        [ColumnLabel("Származási hely ID")]
+        [Description("Származási hely ID")]
         public long? OriginID { get; set; }
         [ColumnLabel("Áfa ID")]
         [Description("Áfa ID")]
@@ -27,11 +27,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Me.e")]
         [Description("Mennyiségi egység")]
         public string UnitOfMeasure { get; set; }
-        [ColumnLabel("Ár1")]
-        [Description("Ár1")]
+        [ColumnLabel("Elad. ár1")]
+        [Description("Eladási ár1")]
         public decimal UnitPrice1 { get; set; }
-        [ColumnLabel("Ár2")]
-        [Description("Ár2")]
+        [ColumnLabel("Elad. ár2")]
+        [Description("Eladási ár2")]
         public decimal UnitPrice2 { get; set; }
         [ColumnLabel("Legutolsó besz.ár")]
         [Description("Legutolsó beszerzési ár")]
