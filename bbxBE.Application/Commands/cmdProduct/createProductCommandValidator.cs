@@ -80,9 +80,7 @@ namespace bbxBE.Application.Commands.cmdProduct
         }
         private async Task<bool> CheckUnitOfMEasureAsync(string UnitOfMeasure, CancellationToken cancellationToken)
         {
-            enUnitOfMeasure uom;
-
-            var valid = Enum.TryParse(UnitOfMeasure, out uom);
+            var valid = Enum.TryParse(UnitOfMeasure, out enUnitOfMeasure uom);
             return valid;
         }
     }

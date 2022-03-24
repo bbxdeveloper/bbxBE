@@ -100,15 +100,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
 
                 _Products.Add(p_product);
-                try
-                {
-                    await _dbContext.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-
-                    throw ex;
-                }
+                await _dbContext.SaveChangesAsync();
                 
                 p_productCode.ProductID = p_product.ID;
                 p_VTSZ.ProductID = p_product.ID;

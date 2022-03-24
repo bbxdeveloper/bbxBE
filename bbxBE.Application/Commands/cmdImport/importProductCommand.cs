@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
 using bbxBE.Application.BLL;
+using bbxBE.Application.Commands.cmdProduct;
+using bbxBE.Application.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Wrappers;
@@ -8,6 +10,7 @@ using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdProduct;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
@@ -42,16 +45,19 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private readonly IProductRepositoryAsync _ProductRepository;
         private readonly IMapper _mapper;
-        
+        private readonly ILogger _logger;
 
-        public ImportProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper)
+
+        public ImportProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper, ILogger logger)
         {
             _ProductRepository = ProductRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<Response<ImportProduct>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
         {
+            var hasErrorUnderImport = false;
             var productMapping = await GetProductMappingAsync(request.ProductFiles[0]);
             var producItems = await GetProductItemsAsync(request, productMapping);
 
@@ -66,8 +72,18 @@ namespace bbxBE.Application.Commands.cmdImport
 
                 if (prod.Keys.Count == 0)
                 {
-                    var productCreateResponse = await bllProduct.CreateAsynch(item.Value, _ProductRepository, _mapper, cancellationToken);
-                    importProduct.CreatedItemsCount += 1;
+                    var validator = new createProductCommandValidator(_ProductRepository);
+                    var result = validator.Validate(item.Value);
+                    if (!result.IsValid)
+                    {
+                        hasErrorUnderImport = true;
+                        LogToErrors(result);
+                    }
+                    else
+                    {
+                        var productCreateResponse = await bllProduct.CreateAsynch(item.Value, _ProductRepository, _mapper, cancellationToken);
+                        importProduct.CreatedItemsCount += 1;
+                    }
                 }
                 else
                 {
@@ -77,7 +93,20 @@ namespace bbxBE.Application.Commands.cmdImport
                 }
             }
 
+            if (hasErrorUnderImport)
+            {
+                throw new ImportParseException("Hiba az importálás közben. További infkért nézze meg a log-ot!");
+            }
+
             return new Response<ImportProduct>(importProduct);
+        }
+
+        private void LogToErrors(FluentValidation.Results.ValidationResult result)
+        {
+            foreach (var failure in result.Errors)
+            {
+                _logger.LogError("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
+            }
         }
 
         private static async Task<Dictionary<string, CreateProductCommand>> GetProductItemsAsync(ImportProductCommand request, Dictionary<string, int> productMapping)
