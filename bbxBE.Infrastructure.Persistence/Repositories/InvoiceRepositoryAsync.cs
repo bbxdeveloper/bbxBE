@@ -14,79 +14,85 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
 using System;
 using AutoMapper;
-using bbxBE.Application.Queries.qCounter;
+using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Exceptions;
 using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
-    public class CounterRepositoryAsync : GenericRepositoryAsync<Counter>, ICounterRepositoryAsync
+    public class InvoiceRepositoryAsync : GenericRepositoryAsync<Invoice>, IInvoiceRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Counter> _Counters;
+        private readonly DbSet<Invoice> _Invoices;
         private readonly DbSet<Warehouse> _Warehouses;
-        private IDataShapeHelper<Counter> _dataShaperCounter;
-        private IDataShapeHelper<GetCounterViewModel> _dataShaperGetCounterViewModel;
+        private IDataShapeHelper<Invoice> _dataShaperInvoice;
+        private IDataShapeHelper<GetInvoiceViewModel> _dataShaperGetInvoiceViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
 
-        public CounterRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Counter> dataShaperCounter,
-            IDataShapeHelper<GetCounterViewModel> dataShaperGetCounterViewModel,
+        public InvoiceRepositoryAsync(ApplicationDbContext dbContext,
+            IDataShapeHelper<Invoice> dataShaperInvoice,
+            IDataShapeHelper<GetInvoiceViewModel> dataShaperGetInvoiceViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _Counters = dbContext.Set<Counter>();
+            _Invoices = dbContext.Set<Invoice>();
             _Warehouses = dbContext.Set<Warehouse>();
-            _dataShaperCounter = dataShaperCounter;
-            _dataShaperGetCounterViewModel = dataShaperGetCounterViewModel;
+            _dataShaperInvoice = dataShaperInvoice;
+            _dataShaperGetInvoiceViewModel = dataShaperGetInvoiceViewModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
         }
 
 
-        public async Task<bool> IsUniqueCounterCodeAsync(string CounterCode, long? ID = null)
+        public async Task<bool> IsUniqueInvoiceNumberAsync(string InvoiceNumber, long? ID = null)
         {
-            return !await _Counters.AnyAsync(p => p.CounterCode == CounterCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+            return !await _Invoices.AnyAsync(p => p.InvoiceNumber == InvoiceNumber && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
-        public async Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode)
+
+        
+
+
+        public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate , List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
         {
+            /*
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
 
                 if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
                 {
-                    p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode).ID;
+                    p_Invoice.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
                 }
 
-                _Counters.Add(p_Counter);
+                _Invoices.Add(p_Invoice);
                 await _dbContext.SaveChangesAsync();
                 dbContextTransaction.Commit();
 
             }
-            return p_Counter;
+            */
+            return p_invoice;
         }
 
-        public async Task<Counter> UpdateCounterAsync(Counter p_Counter, string p_WarehouseCode)
+        public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
         {
-
+            /*
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
 
-                var cnt = _Counters.Where(x => x.ID == p_Counter.ID).FirstOrDefault();
+                var cnt = _Invoices.Where(x => x.ID == p_Invoice.ID).FirstOrDefault();
 
                 if (cnt != null)
                 {
                     if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
                     {
-                        p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode).ID;
+                        p_Invoice.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
                     }
 
-                    _Counters.Update(p_Counter);
+                    _Invoices.Update(p_Invoice);
                     await _dbContext.SaveChangesAsync();
                     dbContextTransaction.Commit();
 
@@ -94,13 +100,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND, p_Counter.ID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_InvoiceNOTFOUND, p_Invoice.ID));
                 }
             }
-            return p_Counter;
+            */
+            return p_invoice;
         }
 
-        public async Task<Entity> GetCounterAsync(GetCounter requestParameter)
+        public async Task<Entity> GetInvoiceAsync(GetInvoice requestParameter)
         {
 
 
@@ -110,15 +117,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //            var fields = requestParameter.Fields;
 
-            var itemModel = _mapper.Map<Counter, GetCounterViewModel>(item);
-            var listFieldsModel = _modelHelper.GetModelFields<GetCounterViewModel>();
+            var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);
+            var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetCounterViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCounterAsync(QueryCounter requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
         {
 
             var searchString = requestParameter.SearchString;
@@ -127,13 +134,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetCounterViewModel, Counter>();
+            var fields = _modelHelper.GetQueryableFields<GetInvoiceViewModel, Invoice>();
 
 
             int recordsTotal, recordsFiltered;
 
 
-            var query = _Counters//.AsNoTracking().AsExpandable()
+            var query = _Invoices//.AsNoTracking().AsExpandable()
                     .Include(i => i.Warehouse).AsQueryable();
 
 
@@ -163,7 +170,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             /*
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<Counter>("new(" + fields + ")");
+                result = result.Select<Invoice>("new(" + fields + ")");
             }
             */
 
@@ -176,20 +183,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultData = await query.ToListAsync();
 
             //TODO: szebben megoldani
-            var resultDataModel = new List<GetCounterViewModel>();
+            var resultDataModel = new List<GetInvoiceViewModel>();
             resultData.ForEach(i => resultDataModel.Add(
-               _mapper.Map<Counter, GetCounterViewModel>(i))
+               _mapper.Map<Invoice, GetInvoiceViewModel>(i))
             );
 
 
-            var listFieldsModel = _modelHelper.GetModelFields<GetCounterViewModel>();
+            var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 
-            var shapeData = _dataShaperGetCounterViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetInvoiceViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Counter> p_item, string p_searchString)
+        private void FilterBySearchString(ref IQueryable<Invoice> p_item, string p_searchString)
         {
             if (!p_item.Any())
                 return;
@@ -197,10 +204,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
-            var predicate = PredicateBuilder.New<Counter>();
+            var predicate = PredicateBuilder.New<Invoice>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.CounterDescription.ToUpper().Contains(srcFor));
+           predicate = predicate.And(p => p.InvoiceNumber.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }

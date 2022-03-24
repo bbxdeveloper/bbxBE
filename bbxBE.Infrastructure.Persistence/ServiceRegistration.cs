@@ -45,7 +45,8 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IProductRepositoryAsync, ProductRepositoryAsync>();
             services.AddTransient<IWarehouseRepositoryAsync, WarehouseRepositoryAsync>();
             services.AddTransient<ICounterRepositoryAsync, CounterRepositoryAsync>();
-            
+            services.AddTransient<IInvoiceRepositoryAsync, InvoiceRepositoryAsync>();
+
             /*
 
                                     Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.Contains("Repository")).ToList().ForEach((t) =>

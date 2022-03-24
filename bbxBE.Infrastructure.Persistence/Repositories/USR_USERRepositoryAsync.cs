@@ -71,8 +71,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERAsync(QueryUSR_USER requestParameter)
         {
 
-            var name = requestParameter.Name;
-            var loginName = requestParameter.LoginName;
+            var SearchString = requestParameter.SearchString;
 
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
@@ -90,7 +89,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await result.CountAsync();
 
             // filter data
-            FilterByColumns(ref result, name, loginName);
+            FilterByColumns(ref result, SearchString);
 
             // Count records after filter
             recordsFiltered = await result.CountAsync();
@@ -126,23 +125,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterByColumns(ref IQueryable<USR_USER> p_USR, string USR_NAME, string USR_LOGIN)
+        private void FilterByColumns(ref IQueryable<USR_USER> p_USR, string SearchString)
         {
             if (!p_USR.Any())
                 return;
 
-            if ( string.IsNullOrEmpty(USR_NAME) && string.IsNullOrEmpty(USR_LOGIN))
+            if ( string.IsNullOrEmpty(SearchString) )
                 return;
 
             var predicate = PredicateBuilder.New<USR_USER>();
 
     
-            if (!string.IsNullOrEmpty(USR_NAME))
-                predicate = predicate.And(p => p.USR_NAME.Contains(USR_NAME.Trim()));
-
-
-            if (!string.IsNullOrEmpty(USR_LOGIN))
-                predicate = predicate.And(p => p.USR_LOGIN.Contains(USR_LOGIN.Trim()));
+            predicate = predicate.And(p => p.USR_NAME.Contains(SearchString.Trim())|| p.USR_LOGIN.Contains(SearchString.Trim()));
 
             p_USR = p_USR.Where(predicate);
         }
