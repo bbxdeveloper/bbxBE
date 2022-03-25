@@ -48,7 +48,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private readonly ILogger _logger;
 
 
-        public ImportProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper, ILogger logger)
+        public ImportProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper, ILogger<ImportProductCommandHandler> logger)
         {
             _ProductRepository = ProductRepository;
             _mapper = mapper;
@@ -59,7 +59,9 @@ namespace bbxBE.Application.Commands.cmdImport
         {
             var hasErrorUnderImport = false;
             var productMapping = await GetProductMappingAsync(request.ProductFiles[0]);
-            var producItems = await GetProductItemsAsync(request, productMapping);
+            productMapping = CalculateIndexValues(productMapping);
+
+            var producItems = await GetProductItemsAsync(request.ProductFiles[1], productMapping);
 
             var importProduct = new ImportProduct();
             importProduct.AllItemsCount = producItems.Count;
@@ -95,10 +97,21 @@ namespace bbxBE.Application.Commands.cmdImport
 
             if (hasErrorUnderImport)
             {
-                throw new ImportParseException("Hiba az importálás közben. További infkért nézze meg a log-ot!");
+                throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
             }
 
             return new Response<ImportProduct>(importProduct);
+        }
+
+        private static Dictionary<string, int> CalculateIndexValues(Dictionary<string, int> productMapping)
+        {
+            var productMapping_temp = new Dictionary<string, int>();
+            foreach (var item in productMapping)
+            {
+                productMapping_temp.Add(item.Key, item.Value - 1);
+            }
+
+            return productMapping_temp;
         }
 
         private void LogToErrors(FluentValidation.Results.ValidationResult result)
@@ -109,10 +122,11 @@ namespace bbxBE.Application.Commands.cmdImport
             }
         }
 
-        private static async Task<Dictionary<string, CreateProductCommand>> GetProductItemsAsync(ImportProductCommand request, Dictionary<string, int> productMapping)
+        private static async Task<Dictionary<string, CreateProductCommand>> GetProductItemsAsync(IFormFile request, Dictionary<string, int> productMapping)
         {
+            // TODO: indexek athelyezese!
             var producItems = new Dictionary<string, CreateProductCommand>();
-            using (var reader = new StreamReader(request.ProductFiles[1].OpenReadStream()))
+            using (var reader = new StreamReader(request.OpenReadStream()))
             {
                 string currentLine;
                 while ((currentLine = await reader.ReadLineAsync()) != null)

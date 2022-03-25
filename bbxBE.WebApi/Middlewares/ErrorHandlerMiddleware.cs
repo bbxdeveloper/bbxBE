@@ -55,7 +55,8 @@ namespace bbxBE.WebApi.Middlewares
                     case ImportParseException e:
                         // parsing problem
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        responseModel.Errors.Add(e.Error);
+                        responseModel.Errors = new List<string>();
+                        responseModel.Errors.Add(e.Message);  
                         break;
 
                     default:

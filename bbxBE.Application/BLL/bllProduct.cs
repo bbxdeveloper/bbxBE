@@ -31,7 +31,6 @@ namespace bbxBE.Application.BLL
             }
 
 
-
             prod = await _ProductRepository.AddProductAsync(prod, pcCode, pcVTSZ, pcEAN, request.ProductGroupCode, request.OriginCode, request.VatRateCode);
             return prod;
         }
