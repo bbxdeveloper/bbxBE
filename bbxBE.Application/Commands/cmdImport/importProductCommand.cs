@@ -25,7 +25,7 @@ namespace bbxBE.Application.Commands.cmdImport
         public List<IFormFile> ProductFiles { get; set; }
     }
 
-    public class ImportProductCommandHandler : IRequestHandler<ImportProductCommand, Response<ImportProduct>>
+    public class ImportProductCommandHandler : ProductMappingParser, IRequestHandler<ImportProductCommand, Response<ImportProduct>>
     {
         private const string DescriptionFieldName = "Description";
         private const string ProductGroupCodeFieldName = "ProductGroupCode";
@@ -48,7 +48,8 @@ namespace bbxBE.Application.Commands.cmdImport
         private readonly ILogger _logger;
 
 
-        public ImportProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper, ILogger<ImportProductCommandHandler> logger)
+        public ImportProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper,
+                                           ILogger<ImportProductCommandHandler> logger)
         {
             _ProductRepository = ProductRepository;
             _mapper = mapper;
@@ -57,45 +58,26 @@ namespace bbxBE.Application.Commands.cmdImport
 
         public async Task<Response<ImportProduct>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
         {
-            var hasErrorUnderImport = false;
-            var productMapping = await GetProductMappingAsync(request.ProductFiles[0]);
-            productMapping = CalculateIndexValues(productMapping);
-
-            var producItems = await GetProductItemsAsync(request.ProductFiles[1], productMapping);
-
-            var importProduct = new ImportProduct();
-            importProduct.AllItemsCount = producItems.Count;
+            var mappedProducts = new ProductMappingParser().GetProductMapping(request.ProductFiles[0]).ReCalculateIndexValues();
+            var producItems = await GetProductItemsAsync(request.ProductFiles[1], mappedProducts.productMap);
+            var importProduct = new ImportProduct { AllItemsCount = producItems.Count };
 
             foreach (var item in producItems)
             {
-                var getProductByProductCode = new GetProductByProductCode() { ProductCode = item.Key };
-
-                var prod = await _ProductRepository.GetProductByProductCodeAsync(getProductByProductCode);
+                var prod = await _ProductRepository.GetProductByProductCodeAsync(new GetProductByProductCode() { ProductCode = item.Key });
 
                 if (prod.Keys.Count == 0)
                 {
-                    var validator = new createProductCommandValidator(_ProductRepository);
-                    var result = validator.Validate(item.Value);
-                    if (!result.IsValid)
-                    {
-                        hasErrorUnderImport = true;
-                        LogToErrors(result);
-                    }
-                    else
-                    {
-                        var productCreateResponse = await bllProduct.CreateAsynch(item.Value, _ProductRepository, _mapper, cancellationToken);
-                        importProduct.CreatedItemsCount += 1;
-                    }
+                    await CreateProduction(importProduct, item.Value, cancellationToken);
                 }
                 else
                 {
                     var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
-                    var productUpdateResponse = await bllProduct.UpdateAsynch(updateProductCommand, _ProductRepository, _mapper, cancellationToken);
-                    importProduct.UpdatedItemsCount += 1;
+                    await CreateProduction(importProduct, updateProductCommand, cancellationToken);
                 }
             }
 
-            if (hasErrorUnderImport)
+            if (importProduct.HasErrorDuringImport)
             {
                 throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
             }
@@ -103,15 +85,52 @@ namespace bbxBE.Application.Commands.cmdImport
             return new Response<ImportProduct>(importProduct);
         }
 
-        private static Dictionary<string, int> CalculateIndexValues(Dictionary<string, int> productMapping)
+        private async Task CreateProduction(ImportProduct importProduct, object item, CancellationToken cancellationToken)
         {
-            var productMapping_temp = new Dictionary<string, int>();
-            foreach (var item in productMapping)
+            switch (item.GetType().Name)
             {
-                productMapping_temp.Add(item.Key, item.Value - 1);
+                case "CreateProductCommand":
+                    {
+                        var validator = new createProductCommandValidator(_ProductRepository);
+                        var result = await validator.ValidateAsync(item as CreateProductCommand);
+                        if (!result.IsValid)
+                        {
+                            LogToErrorHandler(importProduct, result);
+                        }
+                        else
+                        {
+                            await bllProduct.CreateAsynch(item as CreateProductCommand, _ProductRepository, _mapper, cancellationToken);
+                            importProduct.CreatedItemsCount += 1;
+                        }
+                        break;
+                    }
+                case "UpdateProductCommand":
+                    {
+                        var validator = new UpdateProductCommandValidator(_ProductRepository);
+                        var result = await validator.ValidateAsync(item as UpdateProductCommand);
+                        if (!result.IsValid)
+                        {
+                            LogToErrorHandler(importProduct, result);
+                        }
+                        else
+                        {
+                            await bllProduct.UpdateAsynch(item as UpdateProductCommand, _ProductRepository, _mapper, cancellationToken);
+                            importProduct.UpdatedItemsCount += 1;
+                        }
+                        break;
+                    }
+                default:
+                    break;
             }
 
-            return productMapping_temp;
+
+            return;
+        }
+
+        private void LogToErrorHandler(ImportProduct importProduct, FluentValidation.Results.ValidationResult result)
+        {
+            importProduct.HasErrorDuringImport = true;
+            LogToErrors(result);
         }
 
         private void LogToErrors(FluentValidation.Results.ValidationResult result)
@@ -124,7 +143,6 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private static async Task<Dictionary<string, CreateProductCommand>> GetProductItemsAsync(IFormFile request, Dictionary<string, int> productMapping)
         {
-            // TODO: indexek athelyezese!
             var producItems = new Dictionary<string, CreateProductCommand>();
             using (var reader = new StreamReader(request.OpenReadStream()))
             {
@@ -176,16 +194,6 @@ namespace bbxBE.Application.Commands.cmdImport
             {
                 throw ex;
             }
-        }
-
-        private static async Task<Dictionary<string, int>> GetProductMappingAsync(IFormFile mappingFile)
-        {
-            string s;
-            using (var reader = new StreamReader(mappingFile.OpenReadStream()))
-            {
-                s = await reader.ReadToEndAsync();
-            }
-            return JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
         }
     }
 }
