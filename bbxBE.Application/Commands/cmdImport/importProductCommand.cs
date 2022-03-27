@@ -68,12 +68,12 @@ namespace bbxBE.Application.Commands.cmdImport
 
                 if (prod.Keys.Count == 0)
                 {
-                    await CreateProduction(importProduct, item.Value, cancellationToken);
+                    await CreateOrUpdateProduction(importProduct, item.Value, cancellationToken);
                 }
                 else
                 {
                     var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
-                    await CreateProduction(importProduct, updateProductCommand, cancellationToken);
+                    await CreateOrUpdateProduction(importProduct, updateProductCommand, cancellationToken);
                 }
             }
 
@@ -85,7 +85,7 @@ namespace bbxBE.Application.Commands.cmdImport
             return new Response<ImportProduct>(importProduct);
         }
 
-        private async Task CreateProduction(ImportProduct importProduct, object item, CancellationToken cancellationToken)
+        private async Task CreateOrUpdateProduction(ImportProduct importProduct, object item, CancellationToken cancellationToken)
         {
             switch (item.GetType().Name)
             {
