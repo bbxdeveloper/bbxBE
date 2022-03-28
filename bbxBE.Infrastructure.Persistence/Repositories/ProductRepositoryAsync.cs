@@ -155,28 +155,30 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             _ProductCodes.Update(p_VTSZ);
                         }
 
-                        var ean = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == p_EAN.ProductCodeCategory);
-                        if (ean != null)
+                        if (p_EAN != null)
                         {
-                            if (p_EAN != null)
+                            var ean = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == p_EAN.ProductCodeCategory);
+                            if (ean != null)
                             {
-                                p_EAN.ID = ean.ID;
-                                _ProductCodes.Update(p_EAN);
+                                if (p_EAN != null)
+                                {
+                                    p_EAN.ID = ean.ID;
+                                    _ProductCodes.Update(p_EAN);
+                                }
+                                else
+                                {
+                                    _ProductCodes.Remove(ean);
+                                }
                             }
                             else
                             {
-                                _ProductCodes.Remove(ean);
+                                if (p_EAN != null)
+                                {
+                                    p_EAN.ProductID = p_product.ID;
+                                    _ProductCodes.Add(p_EAN);
+                                }
                             }
                         }
-                        else
-                        {
-                            if (p_EAN != null)
-                            {
-                                p_EAN.ProductID = p_product.ID;
-                                _ProductCodes.Add(p_EAN);
-                            }
-                        }
-
                     }
 
                     if( !string.IsNullOrWhiteSpace( p_VatRateCode))
