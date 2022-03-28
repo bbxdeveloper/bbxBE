@@ -1,4 +1,5 @@
 ﻿using FluentMigrator;
+using static bbxBE.Common.NAV.NAV_enums;
 
 //https://code-maze.com/dapper-migrations-fluentmigrator-aspnetcore/
 
@@ -33,18 +34,18 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                  .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                  .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
                  .WithColumn("Description").AsString().NotNullable()
-                 .WithColumn("ProductGroupID").AsInt64().NotNullable().ForeignKey()
-                 .WithColumn("OriginID").AsInt64().NotNullable().ForeignKey()
+                 .WithColumn("ProductGroupID").AsInt64().Nullable().ForeignKey()
+                 .WithColumn("OriginID").AsInt64().Nullable().ForeignKey()
                  .WithColumn("UnitOfMeasure").AsString().NotNullable()
                  .WithColumn("UnitPrice1").AsCurrency().NotNullable()
-                 .WithColumn("UnitPrice2").AsCurrency()
+                 .WithColumn("UnitPrice2").AsCurrency().Nullable()
                  .WithColumn("LatestSupplyPrice").AsCurrency()
-                 .WithColumn("IsStock").AsBoolean().NotNullable()
-                 .WithColumn("MinStock").AsDecimal()
-                 .WithColumn("OrdUnit").AsDecimal()
-                 .WithColumn("ProductFee").AsCurrency()
-                 .WithColumn("NatureIndicator").AsString()
-                 .WithColumn("Active").AsBoolean().NotNullable();
+                 .WithColumn("IsStock").AsBoolean().NotNullable().WithDefaultValue(true)
+                 .WithColumn("MinStock").AsDecimal().WithDefaultValue(0)
+                 .WithColumn("OrdUnit").AsDecimal().WithDefaultValue(1)
+                 .WithColumn("ProductFee").AsCurrency().WithDefaultValue(0)
+                 .WithColumn("NatureIndicator").AsString().Nullable().WithDefaultValue(enCustlineNatureIndicatorType.PRODUCT.ToString())
+                 .WithColumn("Active").AsBoolean().NotNullable().WithDefaultValue(true);
         }
 
     }

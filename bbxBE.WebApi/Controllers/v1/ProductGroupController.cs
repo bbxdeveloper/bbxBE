@@ -21,16 +21,11 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<CreateProductGroupCommand, Response<ProductGroup>> _ProductGroupCommandHandler;
-        public ProductGroupController(
-           IWebHostEnvironment env,
-           IConfiguration conf,
-           IRequestHandler<CreateProductGroupCommand, Response<ProductGroup>> ProductGroupCommandHandler)
+        public ProductGroupController( IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
-            _ProductGroupCommandHandler = ProductGroupCommandHandler;
-    }
+        }
 
 
         /// <summary>

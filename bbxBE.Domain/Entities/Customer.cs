@@ -65,5 +65,8 @@ namespace bbxBE.Domain.Entities
         [Description("Megjegyzés")]
         public string Comment { get; set; }
 
-     }
+        [ColumnLabel("Saját adat?")]
+        [Description("Saját adat? (csak egy ilyen rekord lehet)")]
+        public bool IsOwnData { get; set; }
+    }
 }

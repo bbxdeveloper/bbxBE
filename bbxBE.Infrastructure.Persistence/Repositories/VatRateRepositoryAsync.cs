@@ -14,88 +14,72 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
 using System;
 using AutoMapper;
-using bbxBE.Application.Queries.qCustomer;
+using bbxBE.Application.Queries.qVatRate;
 using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
-    public class CustomerRepositoryAsync : GenericRepositoryAsync<Customer>, ICustomerRepositoryAsync
+    public class VatRateRepositoryAsync : GenericRepositoryAsync<VatRate>, IVatRateRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Customer> _customers;
-        private IDataShapeHelper<Customer> _dataShaperCustomer;
-        private IDataShapeHelper<GetCustomerViewModel> _dataShaperGetCustomerViewModel;
+        private readonly DbSet<VatRate> _VatRates;
+        private IDataShapeHelper<VatRate> _dataShaperVatRate;
+        private IDataShapeHelper<GetVatRateViewModel> _dataShaperGetVatRateViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
 
-        public CustomerRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Customer> dataShaperCustomer, 
-            IDataShapeHelper<GetCustomerViewModel> dataShaperGetCustomerViewModel, 
+        public VatRateRepositoryAsync(ApplicationDbContext dbContext,
+            IDataShapeHelper<VatRate> dataShaperVatRate,
+            IDataShapeHelper<GetVatRateViewModel> dataShaperGetVatRateViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _customers = dbContext.Set<Customer>();
-            _dataShaperCustomer = dataShaperCustomer;
-            _dataShaperGetCustomerViewModel = dataShaperGetCustomerViewModel;
+            _VatRates = dbContext.Set<VatRate>();
+            _dataShaperVatRate = dataShaperVatRate;
+            _dataShaperGetVatRateViewModel = dataShaperGetVatRateViewModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
         }
 
 
-        public async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerId, long? ID = null)
-        {
-            return !await _customers.AnyAsync(p => p.TaxpayerId == TaxpayerId && !p.Deleted && (ID == null || p.ID != ID.Value));
-         }
+     
 
-        public async Task<bool> IsUniqueIsOwnDataAsync(long? ID = null)
+        public async Task<Entity> GetVatRateAsync(GetVatRate requestParameter)
         {
-            return !await _customers.AnyAsync(p => p.IsOwnData  && !p.Deleted && (ID == null || p.ID != ID.Value));
-        }
 
-        public async Task<bool> CheckBankAccountAsync(string bankAccountNumber)
-        {
-            if (string.IsNullOrWhiteSpace(bankAccountNumber))
-                return true;
-
-            return bllCustomer.ValidateBankAccount(bankAccountNumber) || bllCustomer.ValidateIBAN(bankAccountNumber);
-        }
-
-        public async Task<Entity> GetCustomerAsync(GetCustomer requestParameter)
-        {
-           
 
             var ID = requestParameter.ID;
 
             var item = await GetByIdAsync(ID);
-      
-//            var fields = requestParameter.Fields;
 
-            var itemModel = _mapper.Map<Customer, GetCustomerViewModel>(item);
-            var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();
+            //            var fields = requestParameter.Fields;
+
+            var itemModel = _mapper.Map<VatRate, GetVatRateViewModel>(item);
+            var listFieldsModel = _modelHelper.GetModelFields<GetVatRateViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetCustomerViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetVatRateViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedVatRateAsync(QueryVatRate requestParameter)
         {
 
             var searchString = requestParameter.SearchString;
- 
+
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetCustomerViewModel, Customer>();
+            var fields = _modelHelper.GetQueryableFields<GetVatRateViewModel, VatRate>();
 
 
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _customers
+            var result = _VatRates
                 .AsNoTracking()
                 .AsExpandable();
 
@@ -124,7 +108,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<Customer>("new(" + fields + ")");
+                result = result.Select<VatRate>("new(" + fields + ")");
             }
             // paging
             result = result
@@ -135,31 +119,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultData = await result.ToListAsync();
 
             //TODO: szebben megoldani
-            var resultDataModel = new List<GetCustomerViewModel>();
-            resultData.ForEach( i => resultDataModel.Add(
-                _mapper.Map<Customer, GetCustomerViewModel>(i))
+            var resultDataModel = new List<GetVatRateViewModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+               _mapper.Map<VatRate, GetVatRateViewModel>(i))
             );
 
 
-            var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();
+            var listFieldsModel = _modelHelper.GetModelFields<GetVatRateViewModel>();
 
-            var shapeData = _dataShaperGetCustomerViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetVatRateViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Customer> p_item, string p_searchString)
+        private void FilterBySearchString(ref IQueryable<VatRate> p_item, string p_searchString)
         {
             if (!p_item.Any())
                 return;
 
-            if ( string.IsNullOrWhiteSpace(p_searchString))
+            if (string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
-            var predicate = PredicateBuilder.New<Customer>();
+            var predicate = PredicateBuilder.New<VatRate>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor));
+            predicate = predicate.And(p => p.VatRateCode.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }
@@ -169,6 +153,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
- 
+   
     }
 }

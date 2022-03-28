@@ -19,17 +19,11 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<CreateUSR_USERCommand, Response<USR_USER>> _USRCommandHandler;
-        public USRController(
-           IWebHostEnvironment env,
-           IConfiguration conf,
-           IRequestHandler<CreateUSR_USERCommand, Response<USR_USER>> USRCommandHandler)
+        public USRController( IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
-            _USRCommandHandler = USRCommandHandler;
-    }
-
+        }
 
         /// <summary>
         /// GET: api/controller

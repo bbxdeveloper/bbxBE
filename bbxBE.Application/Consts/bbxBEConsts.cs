@@ -41,6 +41,12 @@ namespace bbxBE.Application.Consts
         public static string INV_LINES = "{PropertyName}| A számlán nincs tételsor";
         public static string INV_VATSUMS = "{PropertyName}| A számlán nincs áfánkénti összesítő";
 
+        public static string CST_OWNEXISTS = "{PropertyName}|{PropertyName} Saját adat már létezik.";
+
+
+        public static string VATCODE_27 = "27%";
+        public static string VATCODE_KBAET = "KBAET";
+        public static string VATCODE_FA = "FA";
         /*
                 public static string FV_REQUIRED = "{PropertyName}|{PropertyName} is required.";
                 public static string FV_LEN1 = "{PropertyName}|{PropertyName} must be one character.";

@@ -1,4 +1,5 @@
-﻿using bbxBE.Domain.Entities;
+﻿using bbxBE.Application.Consts;
+using bbxBE.Domain.Entities;
 using FluentMigrator;
 using static bbxBE.Common.NAV.NAV_enums;
 
@@ -35,9 +36,9 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("vatAmountMismatchCase").AsString().Nullable()
                     .WithColumn("NoVatCharge").AsBoolean().WithDefaultValue(false);
 
-            Insert.IntoTable("VatRate").Row(new { VatRateCode = "27%", VatPercentage = 0.27 });
-            Insert.IntoTable("VatRate").Row(new { VatRateCode = "KBAET", VatPercentage = 0, VatExemptionCase = "KBAET", VatExemptionReason = "Áfa tv. 89. §" });
-            Insert.IntoTable("VatRate").Row(new { VatRateCode = "FA", VatPercentage = 0, VatDomesticReverseCharge = true });
+            Insert.IntoTable("VatRate").Row(new { VatRateCode = bbxBEConsts.VATCODE_27, VatPercentage = 0.27 });
+            Insert.IntoTable("VatRate").Row(new { VatRateCode = bbxBEConsts.VATCODE_KBAET, VatPercentage = 0, VatExemptionCase = "KBAET", VatExemptionReason = "Áfa tv. 89. §" });
+            Insert.IntoTable("VatRate").Row(new { VatRateCode = bbxBEConsts.VATCODE_FA, VatPercentage = 0, VatDomesticReverseCharge = true });
             /*
                         Insert.IntoTable("VatRate").Row(new { VatRateCode = "5%", VatPercentage = 0.05 });
                         Insert.IntoTable("VatRate").Row(new { VatRateCode = "TAM", VatPercentage = 0, VatExemptionCase = "TAM", VatExemptionReason = "Mentes ÁFA tv. 85.§ (1) i)" });   //Tárgyi adómentes

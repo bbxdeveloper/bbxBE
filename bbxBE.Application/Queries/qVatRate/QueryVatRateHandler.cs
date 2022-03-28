@@ -12,27 +12,27 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
 
-namespace bbxBE.Application.Queries.qProductGroup
+namespace bbxBE.Application.Queries.qVatRate
 {
-    public class QueryProductGroup : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
+    public class QueryVatRate : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
         public string SearchString { get; set; }
     }
 
-    public class QueryProductGroupHandler : IRequestHandler<QueryProductGroup, PagedResponse<IEnumerable<Entity>>>
+    public class QueryVatRateHandler : IRequestHandler<QueryVatRate, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly IProductGroupRepositoryAsync _productGroupRepository;
+        private readonly IVatRateRepositoryAsync _VatRateRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public QueryProductGroupHandler(IProductGroupRepositoryAsync ProductGroupRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryVatRateHandler(IVatRateRepositoryAsync VatRateRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _productGroupRepository = ProductGroupRepository;
+            _VatRateRepository = VatRateRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryProductGroup request, CancellationToken cancellationToken)
+        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryVatRate request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;
@@ -42,20 +42,20 @@ namespace bbxBE.Application.Queries.qProductGroup
             if (!string.IsNullOrEmpty(validFilter.Fields))
             {
                 //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetProductGroupViewModel, ProductGroup>(validFilter.Fields);
+                validFilter.Fields = _modelHelper.ValidateModelFields<GetVatRateViewModel, VatRate>(validFilter.Fields);
             }
   
             if (string.IsNullOrEmpty(validFilter.Fields))
             {
                 //default fields from view model
-                validFilter.Fields = _modelHelper.GetQueryableFields<GetProductGroupViewModel, ProductGroup>();
+                validFilter.Fields = _modelHelper.GetQueryableFields<GetVatRateViewModel, VatRate>();
             }
             */
 
 
             // query based on filter
-            var entities = await _productGroupRepository.QueryPagedProductGroupAsync(validFilter);
-            var data = entities.data.MapItemsFieldsByMapToAnnotation<GetProductGroupViewModel>();
+            var entities = await _VatRateRepository.QueryPagedVatRateAsync(validFilter);
+            var data = entities.data.MapItemsFieldsByMapToAnnotation<GetVatRateViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 
             // response wrapper

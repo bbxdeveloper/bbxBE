@@ -8,20 +8,20 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00011, "v00.00.01")]
-    public class InitialTables_00011 : Migration
+    [Migration(00012, "v00.00.01")]
+    public class InitialTables_00012 : Migration
     {
         public override void Down()
         {
-            Delete.Column("VatRateID").FromTable("Product");
+            Delete.Column("IsOwnData").FromTable("Customer");
         }
         public override void Up()
         {
 
 
-            Alter.Table("Product")
-                .AddColumn("VatRateID").AsInt64().NotNullable().ForeignKey().WithDefaultValue(1);
-            Update.Table("Product").Set(new { VatRateID = 1 }).AllRows();
+            Alter.Table("Customer")
+                .AddColumn("IsOwnData").AsBoolean().NotNullable().WithDefaultValue(false);
+            Update.Table("Customer").Set(new { IsOwnData = false }).AllRows();
         }
     }
 }
