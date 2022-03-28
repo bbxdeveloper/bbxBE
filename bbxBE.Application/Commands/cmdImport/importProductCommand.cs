@@ -73,6 +73,9 @@ namespace bbxBE.Application.Commands.cmdImport
                 else
                 {
                     var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
+                    object _i;
+                    prod.TryGetValue("ID", out _i);
+                    updateProductCommand.ID = long.Parse(_i.ToString());
                     await CreateOrUpdateProduction(importProduct, updateProductCommand, cancellationToken);
                 }
             }
