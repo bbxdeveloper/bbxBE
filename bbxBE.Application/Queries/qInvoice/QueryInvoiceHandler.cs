@@ -21,13 +21,13 @@ namespace bbxBE.Application.Queries.qInvoice
 
     public class QueryInvoiceHandler : IRequestHandler<QueryInvoice, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly IInvoiceRepositoryAsync _InvoiceRepository;
+        private readonly IInvoiceRepositoryAsync _invoiceRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public QueryInvoiceHandler(IInvoiceRepositoryAsync InvoiceRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryInvoiceHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _InvoiceRepository = InvoiceRepository;
+            _invoiceRepository = invoiceRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -54,7 +54,7 @@ namespace bbxBE.Application.Queries.qInvoice
 
 
             // query based on filter
-            var entities = await _InvoiceRepository.QueryPagedInvoiceAsync(validFilter);
+            var entities = await _invoiceRepository.QueryPagedInvoiceAsync(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetInvoiceViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 

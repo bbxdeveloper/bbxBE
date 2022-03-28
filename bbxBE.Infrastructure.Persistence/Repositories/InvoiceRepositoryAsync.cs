@@ -24,8 +24,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class InvoiceRepositoryAsync : GenericRepositoryAsync<Invoice>, IInvoiceRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Invoice> _Invoices;
-        private readonly DbSet<Warehouse> _Warehouses;
+        private readonly DbSet<Invoice> _invoices;
+        private readonly DbSet<InvoiceLine> _invoiceLines;
+        private readonly DbSet<SummaryByVatRate> _summaryByVatRates;
+        private readonly DbSet<AdditionalInvoiceData> _additionalInvoiceData;
+        private readonly DbSet<AdditionalInvoiceLineData> _additionalInvoiceLineData;
+
+        private readonly DbSet<Customer> _customers;
+        private readonly DbSet<VatRate> _vatRates;
+        private readonly DbSet<Warehouse> _warehouses;
+
         private IDataShapeHelper<Invoice> _dataShaperInvoice;
         private IDataShapeHelper<GetInvoiceViewModel> _dataShaperGetInvoiceViewModel;
         private readonly IMockService _mockData;
@@ -38,8 +46,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _Invoices = dbContext.Set<Invoice>();
-            _Warehouses = dbContext.Set<Warehouse>();
+    
+            _invoices = dbContext.Set<Invoice>();
+            _invoiceLines = dbContext.Set<InvoiceLine>();
+            _summaryByVatRates = dbContext.Set<SummaryByVatRate>();
+            _additionalInvoiceData = dbContext.Set<AdditionalInvoiceData>();
+            _additionalInvoiceLineData = dbContext.Set<AdditionalInvoiceLineData>();
+            _customers = dbContext.Set<Customer>();
+            _vatRates = dbContext.Set<VatRate>();
+            _warehouses = dbContext.Set<Warehouse>();
+
             _dataShaperInvoice = dataShaperInvoice;
             _dataShaperGetInvoiceViewModel = dataShaperGetInvoiceViewModel;
             _modelHelper = modelHelper;
@@ -50,30 +66,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsUniqueInvoiceNumberAsync(string InvoiceNumber, long? ID = null)
         {
-            return !await _Invoices.AnyAsync(p => p.InvoiceNumber == InvoiceNumber && !p.Deleted && (ID == null || p.ID != ID.Value));
+            return !await _invoices.AnyAsync(p => p.InvoiceNumber == InvoiceNumber && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
-
-
-        
 
 
         public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate , List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
         {
-            /*
+            
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
-
-                if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
-                {
-                    p_Invoice.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
-                }
-
-                _Invoices.Add(p_Invoice);
+                _invoices.Add(p_invoice);
+                _ = _invoiceLines.AddRangeAsync(p_invoiceLines);
+                _ = _summaryByVatRates.AddRangeAsync(p_summaryByVatRate);
+                _ = _additionalInvoiceData.AddRangeAsync(p_additionalInvoiceData);
+                _ = _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
                 await _dbContext.SaveChangesAsync();
                 dbContextTransaction.Commit();
-
             }
-            */
+            
             return p_invoice;
         }
 
@@ -140,7 +150,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
 
-            var query = _Invoices//.AsNoTracking().AsExpandable()
+            var query = _invoices//.AsNoTracking().AsExpandable()
                     .Include(i => i.Warehouse).AsQueryable();
 
 
