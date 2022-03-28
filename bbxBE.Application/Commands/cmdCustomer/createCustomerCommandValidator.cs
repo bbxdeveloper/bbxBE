@@ -41,6 +41,10 @@ namespace bbxBE.Application.Commands.cmdCustomer
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.FV_MAXLEN);
 
+
+            RuleFor(p => p.IsOwnData)
+                       .MustAsync(IsUniqueIsOwnDataAsync).WithMessage(bbxBEConsts.CST_OWNEXISTS);
+
         }
 
         private async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerNumber, CancellationToken cancellationToken)
@@ -59,6 +63,18 @@ namespace bbxBE.Application.Commands.cmdCustomer
                 return true;
             }
         }
+        private async Task<bool> IsUniqueIsOwnDataAsync(bool IsOwnData, CancellationToken cancellationToken)
+        {
+
+            if (!IsOwnData)
+                return true;
+
+
+            return await _customerRepository.IsUniqueIsOwnDataAsync();
+        }
+
+
+
         private async Task<bool> CheckBankAccountAsync(string p_CustomerBankAccountNumber, CancellationToken cancellationToken)
         {
             return await _customerRepository.CheckBankAccountAsync(p_CustomerBankAccountNumber);

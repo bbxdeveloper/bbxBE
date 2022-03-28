@@ -21,20 +21,42 @@ namespace bxBE.Application.Commands.cmdCustomer
 {
     public class CreateCustomerCommand : IRequest<Response<Customer>>
     {
+        [ColumnLabel("Név")]
+        [Description("Ügyfélnév/saját név")]
         public string CustomerName { get; set; }
 
+        [ColumnLabel("Bankszámlaszám")]
+        [Description("Bankszámlaszám")]
         public string CustomerBankAccountNumber { get; set; }
 
+        [ColumnLabel("Magánszemély?")]
+        [Description("Magánszemély?")]
         public bool PrivatePerson { get; set; } = false;
 
+        [ColumnLabel("Adóalany adószám")]
+        [Description("Adóalany adószám")]
         public string TaxpayerNumber { get; set; }          //9999999-9-99
 
+        [ColumnLabel("Külföldi adószám")]
+        [Description("Külföldi adószám")]
         public string ThirdStateTaxId { get; set; }
+        [ColumnLabel("Országkód")]
+        [Description("Országkód")]
         public string CountryCode { get; set; }
+        [ColumnLabel("Régiókód")]
+        [Description("Régiókód")]
         public string Region { get; set; }
+        [ColumnLabel("IRSZ")]
+        [Description("Irányítószám")]
         public string PostalCode { get; set; }
+        [ColumnLabel("Város")]
+        [Description("Város")]
         public string City { get; set; }
+        [ColumnLabel("Cím")]
+        [Description("Cím")]
         public string AdditionalAddressDetail { get; set; }
+        [ColumnLabel("Megjegyzés")]
+        [Description("Megjegyzés")]
         public string Comment { get; set; }
 
         [ColumnLabel("Saját adat?")]
