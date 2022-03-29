@@ -49,6 +49,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !await _customers.AnyAsync(p => p.TaxpayerId == TaxpayerId && !p.Deleted && (ID == null || p.ID != ID.Value));
          }
 
+        public async Task<bool> IsUniqueIsOwnDataAsync(long? ID = null)
+        {
+            return !await _customers.AnyAsync(p => p.IsOwnData  && !p.Deleted && (ID == null || p.ID != ID.Value));
+        }
+
         public async Task<bool> CheckBankAccountAsync(string bankAccountNumber)
         {
             if (string.IsNullOrWhiteSpace(bankAccountNumber))

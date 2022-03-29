@@ -245,7 +245,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var item = _Products//.AsNoTracking().AsExpandable()
                                   .Include(i => i.Origin)
                                   .Include(i => i.ProductGroup)
-                                .Include(i => i.VatRate)
+                                   .Include(i => i.VatRate)
                                   .Include(i => i.ProductCodes)
                                   .Where(i => i.ID == ID).FirstOrDefaultAsync();
 
