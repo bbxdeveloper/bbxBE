@@ -22,10 +22,10 @@ namespace bbxBE.Application.Commands.cmdImport
             return this;
         }
 
-        public ProductMappingParser GetProductMapping(IFormFile mappingFile)
+        public ProductMappingParser GetProductMapping(ImportProductCommand mappingFile)
         {
             string s;
-            using (var reader = new StreamReader(mappingFile.OpenReadStream()))
+            using (var reader = new StreamReader(mappingFile.ProductFiles[0].OpenReadStream()))
             {
                 s = reader.ReadToEnd();
             }

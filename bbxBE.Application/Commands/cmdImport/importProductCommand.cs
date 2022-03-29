@@ -23,6 +23,7 @@ namespace bbxBE.Application.Commands.cmdImport
     public class ImportProductCommand : IRequest<Response<ImportProduct>>
     {
         public List<IFormFile> ProductFiles { get; set; }
+        public string FieldSeparator { get; set; } = ";";
     }
 
     public class ImportProductCommandHandler : ProductMappingParser, IRequestHandler<ImportProductCommand, Response<ImportProduct>>
@@ -58,8 +59,8 @@ namespace bbxBE.Application.Commands.cmdImport
 
         public async Task<Response<ImportProduct>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
         {
-            var mappedProducts = new ProductMappingParser().GetProductMapping(request.ProductFiles[0]).ReCalculateIndexValues();
-            var producItems = await GetProductItemsAsync(request.ProductFiles[1], mappedProducts.productMap);
+            var mappedProducts = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
+            var producItems = await GetProductItemsAsync(request, mappedProducts.productMap);
             var importProduct = new ImportProduct { AllItemsCount = producItems.Count };
 
             foreach (var item in producItems)
@@ -144,15 +145,15 @@ namespace bbxBE.Application.Commands.cmdImport
             }
         }
 
-        private static async Task<Dictionary<string, CreateProductCommand>> GetProductItemsAsync(IFormFile request, Dictionary<string, int> productMapping)
+        private static async Task<Dictionary<string, CreateProductCommand>> GetProductItemsAsync(ImportProductCommand request, Dictionary<string, int> productMapping)
         {
             var producItems = new Dictionary<string, CreateProductCommand>();
-            using (var reader = new StreamReader(request.OpenReadStream()))
+            using (var reader = new StreamReader(request.ProductFiles[1].OpenReadStream()))
             {
                 string currentLine;
                 while ((currentLine = await reader.ReadLineAsync()) != null)
                 {
-                    var p = GetProductFromCSV(currentLine, productMapping);
+                    var p = GetProductFromCSV(currentLine, productMapping, request.FieldSeparator);
                     foreach (var item in p)
                     {
                         producItems.Add(item.Key, item.Value);
@@ -163,9 +164,9 @@ namespace bbxBE.Application.Commands.cmdImport
             return producItems;
         }
 
-        private static Dictionary<string, CreateProductCommand> GetProductFromCSV(string currentLine, Dictionary<string, int> productMapper)
+        private static Dictionary<string, CreateProductCommand> GetProductFromCSV(string currentLine, Dictionary<string, int> productMapper, string fieldSeparator)
         {
-            string[] currentFieldsArray = currentLine.Split(';');
+            string[] currentFieldsArray = currentLine.Split(fieldSeparator);
 
             try
             {

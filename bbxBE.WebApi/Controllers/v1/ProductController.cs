@@ -102,9 +102,9 @@ namespace bbxBE.WebApi.Controllers.v1
 
 
         [HttpPost("import")]
-        public async Task<IActionResult> Import(List<IFormFile> productFiles)
+        public async Task<IActionResult> Import(List<IFormFile> productFiles, string fieldSeparator)
         {
-            var productRequest = new ImportProductCommand() { ProductFiles = productFiles };
+            var productRequest = new ImportProductCommand() { ProductFiles = productFiles, FieldSeparator = fieldSeparator };
             return Ok(await Mediator.Send(productRequest));
         }
     }
