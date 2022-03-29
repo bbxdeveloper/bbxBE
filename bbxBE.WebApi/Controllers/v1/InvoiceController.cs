@@ -2,6 +2,8 @@
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Enums;
+using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdInvoice;
 using MediatR;
@@ -39,6 +41,15 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Create(createOutgoingInvoiceCommand command)
         {
             return Ok(await Mediator.Send(command));
+        }
+
+
+
+        [HttpGet("paymentmethod")]
+        public async Task<IActionResult> GetPaymentMethod()
+        {
+            var req = new GetEnum() { type = typeof(PaymentMethodType) };
+            return Ok(await Mediator.Send(req));
         }
 
         /*

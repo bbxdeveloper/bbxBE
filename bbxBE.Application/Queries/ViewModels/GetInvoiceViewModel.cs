@@ -1,8 +1,11 @@
 ﻿using AutoMapper.Configuration.Conventions;
 using bbxBE.Common.Attributes;
+using bbxBE.Common.Enums;
+using bbxBE.Common.NAV;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -40,6 +43,34 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Mennyiség")]
 			public decimal Quantity { get; set; }
 
+			#region UnitOfMeasure
+			[IgnoreDataMember]
+			[NotDBField]
+			[NotModelField]
+			private enUnitOfMeasure _UnitOfMeasure { get; set; }
+
+			[DataMember]
+			[ColumnLabel("Me.e")]
+			[Description("Mennyiségi egység")]
+			public string UnitOfMeasure
+			{
+				get { return Enum.GetName(typeof(enUnitOfMeasure), _UnitOfMeasure); }
+				set
+				{
+					if (value != null)
+						_UnitOfMeasure = (enUnitOfMeasure)Enum.Parse(typeof(enUnitOfMeasure), value);
+					else
+						_UnitOfMeasure = enUnitOfMeasure.PIECE;
+				}
+			}
+
+			[ColumnLabel("Me.e név")]
+			[Description("Mennyiségi egység megnevezés")]
+			[DataMember]
+			[NotDBField]
+			public string UnitOfMeasureX { get { return Common.Utils.GetEnumDescription(_UnitOfMeasure); } }
+			#endregion
+
 			[ColumnLabel("Ár")]
 			[Description("Ár")]
 			public decimal Price { get; set; }
@@ -74,14 +105,42 @@ namespace bbxBE.Application.Queries.ViewModels
 		public DateTime PaymentDate { get; set; }
 
 
+
+
 		[ColumnLabel("Ügyfél ID")]
 		[Description("Ügyfél ID")]
 		public long CustomerID { get; set; }
 
 
+		#region PaymentMethod
+		[IgnoreDataMember]
+		[NotDBField]
+		[NotModelField]
+		private PaymentMethodType _PaymentMethod { get; set; }
+
+		[DataMember]
 		[ColumnLabel("Fiz.mód")]
 		[Description("Fizetési mód")]
-		public string PaymentMethod { get; set; }
+		public string PaymentMethod
+		{
+			get { return Enum.GetName(typeof(PaymentMethodType), _PaymentMethod); }
+			set
+			{
+				if (value != null)
+					_PaymentMethod = (PaymentMethodType)Enum.Parse(typeof(PaymentMethodType), value);
+				else
+					_PaymentMethod = PaymentMethodType.CASH;
+			}
+		}
+
+		[ColumnLabel("Fiz.mód")]
+		[Description("Fizetési mód megnevezés")]
+		[DataMember]
+		[NotDBField]
+		public string PaymentMethodX { get { return Common.Utils.GetEnumDescription(_PaymentMethod); } }
+		#endregion
+
+
 
 		[ColumnLabel("Megjegyzés")]
 		[Description("Megjegyzés")]
@@ -97,7 +156,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
-		public List<IGetInvoiceViewModel.InvoiceLine> InvoiceLines { get; set; } = new List<GetInvoiceViewModel.InvoiceLine>();
+		public List<GetInvoiceViewModel.InvoiceLine> InvoiceLines { get; set; } = new List<GetInvoiceViewModel.InvoiceLine>();
 
 
 

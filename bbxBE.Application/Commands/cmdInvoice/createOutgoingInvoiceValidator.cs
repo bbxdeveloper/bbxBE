@@ -56,8 +56,11 @@ namespace bbxBE.Application.Commands.cmdInvoice
             RuleFor(p => new { p.InvoiceLines }).Must(m => m.InvoiceLines.Count > 0)
                 .WithMessage(bbxBEConsts.INV_LINES);
 
- 
-
+           //invoiceline-ekre is validálást!!
+           /*
+            RuleFor(p => p.UnitOfMeasure)
+                 .MustAsync(CheckUnitOfMEasureAsync).WithMessage(bbxBEConsts.FV_INVUNITOFMEASURE);
+           */
 
         }
 

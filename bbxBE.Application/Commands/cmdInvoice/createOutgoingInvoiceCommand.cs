@@ -37,6 +37,9 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[Description("Mennyiség")]
 			public decimal Quantity { get; set; }
 
+			[ColumnLabel("Me.e.")]
+			[Description("Mennyiségi egység kód")]
+			public string UnitOfMeasure { get; set; }
 			[ColumnLabel("Ár")]
 			[Description("Ár")]
 			public decimal Price { get; set; }
