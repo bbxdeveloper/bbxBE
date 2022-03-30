@@ -86,11 +86,15 @@ namespace bbxBE.Application.Queries.ViewModels
 		}
 
 		[MapTo("ID")]
-		public string ID { get; set; }
+		public long ID { get; set; }
 
 		[ColumnLabel("Raktár")]
 		[Description("Raktár")]
-		public long WarehouseCode { get; set; }
+		public string WarehouseCode { get; set; }
+
+		[ColumnLabel("Számlaszám")]
+		[Description("Számla sorszáma")]
+		public string InvoiceNumber { get; set; }
 
 		[ColumnLabel("Kelt")]
 		[Description("Kiállítás dátuma")]

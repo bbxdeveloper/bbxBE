@@ -138,7 +138,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
         {
 
-            var searchString = requestParameter.SearchString;
 
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
@@ -158,7 +157,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterBySearchString(ref query, searchString);
+            FilterBy(ref query, requestParameter.WarehouseCode, requestParameter.InvoiceNumber, 
+                    requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
+                    requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo);
 
             // Count records after filter
             recordsFiltered = await query.CountAsync();
@@ -206,18 +207,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Invoice> p_item, string p_searchString)
+        private void FilterBy(ref IQueryable<Invoice> p_item, string WarehouseCode, string InvoiceNumber, 
+                                DateTime? InvoiceIssueDateFrom, DateTime? InvoiceIssueDateTo, 
+                                DateTime? InvoiceDeliveryDateFrom, DateTime? InvoiceDeliveryDateTo)
         {
             if (!p_item.Any())
                 return;
 
-            if (string.IsNullOrWhiteSpace(p_searchString))
+                    
+            if (string.IsNullOrWhiteSpace(WarehouseCode) && string.IsNullOrWhiteSpace(InvoiceNumber) &&
+                        !InvoiceIssueDateFrom.HasValue && !InvoiceIssueDateTo.HasValue &&
+                        !InvoiceDeliveryDateFrom.HasValue && !InvoiceDeliveryDateTo.HasValue)
                 return;
 
             var predicate = PredicateBuilder.New<Invoice>();
 
-            var srcFor = p_searchString.ToUpper().Trim();
-           predicate = predicate.And(p => p.InvoiceNumber.ToUpper().Contains(srcFor));
+           predicate = predicate.And(p =>
+                            (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
+                           && (InvoiceNumber == null || p.InvoiceNumber.Contains(InvoiceNumber))
+                           && (!InvoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= InvoiceIssueDateFrom.Value)
+                           && (!InvoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= InvoiceIssueDateFrom.Value)
+                           && (!InvoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= InvoiceDeliveryDateFrom.Value)
+                           && (!InvoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= InvoiceDeliveryDateTo.Value)
+                           );
 
             p_item = p_item.Where(predicate);
         }

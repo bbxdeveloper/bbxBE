@@ -1,6 +1,7 @@
 ﻿using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
+using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
@@ -53,6 +54,17 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(req));
         }
 
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet("query")]
+        public async Task<IActionResult> Query([FromQuery] QueryInvoice filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
+
         /*
 
                 /// <summary>
@@ -66,17 +78,7 @@ namespace bbxBE.WebApi.Controllers.v1
                     return Ok(await Mediator.Send(filter));
                 }
 
-                /// <summary>
-                /// GET: api/controller
-                /// </summary>
-                /// <param name="filter"></param>
-                /// <returns></returns>
-                [HttpGet("query")]
-                public async Task<IActionResult> Query([FromQuery] QueryInvoice filter)
-                {
-                    return Ok(await Mediator.Send(filter));
-                }
-
+ 
 
                 [HttpGet("currencycode")]
                 public async Task<IActionResult> GetCurrencyCode()

@@ -11,12 +11,37 @@ using System.Threading.Tasks;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Attributes;
+using System.ComponentModel;
+using System;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
     public class QueryInvoice : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
-        public string SearchString { get; set; }
+        [ColumnLabel("Raktár")]
+        [Description("Raktár")]
+        public string WarehouseCode { get; set; }
+
+        [ColumnLabel("Számlaszám")]
+        [Description("Számla sorszáma")]
+        public string InvoiceNumber { get; set; }
+
+        [ColumnLabel("Kelt.tól")]
+        [Description("Kiállítás dátumától")]
+        public DateTime? InvoiceIssueDateFrom { get; set; }
+
+        [ColumnLabel("Kelt.ig")]
+        [Description("Kiállítás dátumáig")]
+        public DateTime? InvoiceIssueDateTo { get; set; }
+
+        [ColumnLabel("Teljesítés tól")]
+        [Description("Teljesítés dátumától")]
+        public DateTime? InvoiceDeliveryDateFrom { get; set; }
+
+        [ColumnLabel("Teljesítés ig")]
+        [Description("Teljesítés dátumig")]
+        public DateTime? InvoiceDeliveryDateTo { get; set; }
     }
 
     public class QueryInvoiceHandler : IRequestHandler<QueryInvoice, PagedResponse<IEnumerable<Entity>>>
