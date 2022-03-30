@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
@@ -48,7 +49,7 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpGet("paymentmethod")]
         public async Task<IActionResult> GetPaymentMethod()
         {
-            var req = new GetEnum() { type = typeof(PaymentMethodType) };
+            var req = new GetEnum() { type = typeof(enCustpaymentMethod) };
             return Ok(await Mediator.Send(req));
         }
 
