@@ -9,8 +9,8 @@ namespace bbxBE.Common.Enums
     {
         [Description("DB")]
         PIECE,
-//        [Description("Kilogram")]
-//        KILOGRAM,
+        [Description("Kilogram")]
+        KILOGRAM,
 //        [Description("Tonna")]
 //        TON,
 //        [Description("KWH")]

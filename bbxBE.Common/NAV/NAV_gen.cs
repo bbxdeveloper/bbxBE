@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.ComponentModel;
 using System.Xml.Serialization;
 namespace bbxBE.Common.NAV
 {
@@ -2062,18 +2063,23 @@ namespace bbxBE.Common.NAV
     {
 
         /// <remarks/>
+        [Description("Átutalás")]
         TRANSFER,
 
         /// <remarks/>
+        [Description("Kp")]
         CASH,
 
         /// <remarks/>
+        [Description("Kártya")]
         CARD,
 
         /// <remarks/>
+        [Description("Utalvány")]
         VOUCHER,
 
         /// <remarks/>
+        [Description("Egyéb")]
         OTHER,
     }
 

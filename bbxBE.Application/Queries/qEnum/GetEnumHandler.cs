@@ -40,7 +40,8 @@ namespace bbxBE.Application.Queries.qEnum
                             .Select(v => new GetEnumModel()
                             {
                                 Value = v.ToString(),
-                                Text = v.ToString() + "-" + Utils.GetEnumDescription(v)
+                                //Text = v.ToString() + "-" + Utils.GetEnumDescription(v)
+                                Text = Utils.GetEnumDescription(v)
                             })
                             .ToList();
             return e;
