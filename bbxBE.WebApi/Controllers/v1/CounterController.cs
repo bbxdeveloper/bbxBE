@@ -70,6 +70,15 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
+
+        // POST: USRController/Edit/5
+        [HttpPatch]
+        //       [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GetNextNumber(GetNextNumberCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
         // GET: USRController/Delete/5
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] DeleteCounterCommand command)

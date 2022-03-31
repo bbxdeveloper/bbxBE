@@ -16,6 +16,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode);
         Task<Counter> UpdateCounterAsync(Counter p_Counter, string p_WarehouseCode);
         Task<Entity> GetCounterAsync(GetCounter requestParameters);
+        Task<string> GetNextAsync(string CounterCode, string WarehouseCode);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCounterAsync(QueryCounter requestParameters);
     }
 }

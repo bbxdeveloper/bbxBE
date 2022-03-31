@@ -118,6 +118,36 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
+
+        public async Task<string> GetNextAsync(string CounterCode, string WarehouseCode)
+        {
+            var NextNumber = "";
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+                var counter = _Counters
+                    .Include( i=>i.Warehouse)
+                    .Where(x => x.CounterCode == CounterCode && x.Warehouse.WarehouseCode == WarehouseCode).FirstOrDefault();
+
+                if (counter != null)
+                {
+
+                    counter.CurrentNumber++;
+                    _Counters.Update(counter);
+                    await _dbContext.SaveChangesAsync();
+                    dbContextTransaction.Commit();
+
+                    NextNumber = $"{counter.Prefix}{counter.CurrentNumber.ToString().PadLeft(counter.NumbepartLength, '0')}{counter.Suffix}{DateTime.UtcNow.Year.ToString().Substring(2, 2)}";
+
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseCode));
+                }
+            }
+            return NextNumber;
+        }
+
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCounterAsync(QueryCounter requestParameter)
         {
 

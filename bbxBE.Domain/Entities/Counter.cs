@@ -28,10 +28,15 @@ namespace bbxBE.Domain.Entities
         public long CurrentNumber { get; set; }
         [ColumnLabel("Számláló mérete")]
         [Description("Számláló helyiértékének mérete")]
-        public long NumbepartLength { get; set; }
+        public int NumbepartLength { get; set; }
         [ColumnLabel("Lezáró")]
         [Description("Lezáró karakter")]
         public string Suffix { get; set; }
+
+        [ColumnLabel("Lezáratlan bizonylatok")]
+        [Description("Lezáratlan bizonylatok")]
+        public string CounterPool { get; set; }
+
 
         //relációk
         [ForeignKey("WarehouseID")]

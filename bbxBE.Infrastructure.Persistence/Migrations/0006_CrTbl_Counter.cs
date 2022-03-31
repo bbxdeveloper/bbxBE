@@ -24,7 +24,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("CounterDescription").AsString()
                     .WithColumn("Prefix").AsString().NotNullable()
                     .WithColumn("CurrentNumber").AsInt64().NotNullable()
-                    .WithColumn("NumbepartLength").AsInt64().NotNullable()
+                    .WithColumn("NumbepartLength").AsInt32().NotNullable()
                     .WithColumn("Suffix").AsString().NotNullable();
 
         }
