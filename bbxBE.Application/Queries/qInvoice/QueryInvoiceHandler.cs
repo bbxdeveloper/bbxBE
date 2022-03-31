@@ -19,6 +19,11 @@ namespace bbxBE.Application.Queries.qInvoice
 {
     public class QueryInvoice : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
+
+        [ColumnLabel("B/K")]
+        [Description("Bejővő/Kimenő")]
+        public bool Incoming { get; set; }
+
         [ColumnLabel("Raktár")]
         [Description("Raktár")]
         public string WarehouseCode { get; set; }

@@ -157,7 +157,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterBy(ref query, requestParameter.WarehouseCode, requestParameter.InvoiceNumber, 
+            FilterBy(ref query, requestParameter.Incoming, requestParameter.WarehouseCode, requestParameter.InvoiceNumber, 
                     requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
                     requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo);
 
@@ -207,23 +207,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBy(ref IQueryable<Invoice> p_item, string WarehouseCode, string InvoiceNumber, 
+        private void FilterBy(ref IQueryable<Invoice> p_item, bool Incoming,  string WarehouseCode, string InvoiceNumber, 
                                 DateTime? InvoiceIssueDateFrom, DateTime? InvoiceIssueDateTo, 
                                 DateTime? InvoiceDeliveryDateFrom, DateTime? InvoiceDeliveryDateTo)
         {
             if (!p_item.Any())
                 return;
 
-                    
+            /*
             if (string.IsNullOrWhiteSpace(WarehouseCode) && string.IsNullOrWhiteSpace(InvoiceNumber) &&
                         !InvoiceIssueDateFrom.HasValue && !InvoiceIssueDateTo.HasValue &&
                         !InvoiceDeliveryDateFrom.HasValue && !InvoiceDeliveryDateTo.HasValue)
                 return;
-
+            */
             var predicate = PredicateBuilder.New<Invoice>();
 
-           predicate = predicate.And(p =>
-                            (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
+           predicate = predicate.And(p => p.Incoming == Incoming
+                           && (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
                            && (InvoiceNumber == null || p.InvoiceNumber.Contains(InvoiceNumber))
                            && (!InvoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= InvoiceIssueDateFrom.Value)
                            && (!InvoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= InvoiceIssueDateFrom.Value)

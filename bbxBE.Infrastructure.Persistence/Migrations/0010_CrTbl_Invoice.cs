@@ -89,12 +89,16 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
 
             Create.Index("INX_InvoiceIssueDate")
                          .OnTable("Invoice")
+                         .OnColumn("Incoming").Ascending()
                          .OnColumn("InvoiceIssueDate").Ascending()
+                         .OnColumn("WarehouseID").Ascending()
                          .WithOptions().NonClustered();
 
             Create.Index("INX_InvoiceDeliveryDate")
                          .OnTable("Invoice")
+                         .OnColumn("Incoming").Ascending()
                          .OnColumn("InvoiceDeliveryDate").Ascending()
+                         .OnColumn("WarehouseID").Ascending()
                          .WithOptions().NonClustered();
 
 
