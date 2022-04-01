@@ -25,6 +25,10 @@ namespace bxBE.Application.Commands.cmdInvoice
 		public class InvoiceLine
 		{ 
 
+			[ColumnLabel("#")]
+			[Description("Sor száma")]
+			public short LineNumber { get; set; }
+
 			[ColumnLabel("Termékkód")]
 			[Description("Termékkód")]
 			public string ProductCode { get; set; }
@@ -53,7 +57,19 @@ namespace bxBE.Application.Commands.cmdInvoice
 			public decimal lineVatAmount { get; set; }
 
 		}
+/*
+		[Description("Számla áfánkénti összesítő")]
+		public class SummaryByVatRate 
+		{
+			[ColumnLabel("Áfakód")]
+			[Description("Áfakód")]
+			public string VatRateCode { get; set; }
 
+			[ColumnLabel("Áfa értéke")]
+			[Description("Áfa értéke a számla pénznemében")]
+			public decimal VatRateNetAmount { get; set; }
+		}
+*/
 		[ColumnLabel("Raktár")]
 		[Description("Raktár")]
 		public long WarehouseCode { get; set; }
