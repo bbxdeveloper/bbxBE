@@ -11,23 +11,53 @@ using System.Threading.Tasks;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Attributes;
+using System.ComponentModel;
+using System;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
     public class QueryInvoice : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
-        public string SearchString { get; set; }
+
+        [ColumnLabel("B/K")]
+        [Description("Bejővő/Kimenő")]
+        public bool Incoming { get; set; }
+
+        [ColumnLabel("Raktár")]
+        [Description("Raktár")]
+        public string WarehouseCode { get; set; }
+
+        [ColumnLabel("Számlaszám")]
+        [Description("Számla sorszáma")]
+        public string InvoiceNumber { get; set; }
+
+        [ColumnLabel("Kelt.tól")]
+        [Description("Kiállítás dátumától")]
+        public DateTime? InvoiceIssueDateFrom { get; set; }
+
+        [ColumnLabel("Kelt.ig")]
+        [Description("Kiállítás dátumáig")]
+        public DateTime? InvoiceIssueDateTo { get; set; }
+
+        [ColumnLabel("Teljesítés tól")]
+        [Description("Teljesítés dátumától")]
+        public DateTime? InvoiceDeliveryDateFrom { get; set; }
+
+        [ColumnLabel("Teljesítés ig")]
+        [Description("Teljesítés dátumig")]
+        public DateTime? InvoiceDeliveryDateTo { get; set; }
     }
 
     public class QueryInvoiceHandler : IRequestHandler<QueryInvoice, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly IInvoiceRepositoryAsync _InvoiceRepository;
+        private readonly IInvoiceRepositoryAsync _invoiceRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public QueryInvoiceHandler(IInvoiceRepositoryAsync InvoiceRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryInvoiceHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _InvoiceRepository = InvoiceRepository;
+            _invoiceRepository = invoiceRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -54,7 +84,7 @@ namespace bbxBE.Application.Queries.qInvoice
 
 
             // query based on filter
-            var entities = await _InvoiceRepository.QueryPagedInvoiceAsync(validFilter);
+            var entities = await _invoiceRepository.QueryPagedInvoiceAsync(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetInvoiceViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 

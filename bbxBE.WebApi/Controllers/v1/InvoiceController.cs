@@ -1,7 +1,10 @@
 ﻿using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
+using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Enums;
+using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdInvoice;
 using MediatR;
@@ -11,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
@@ -41,6 +45,26 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
+
+
+        [HttpGet("paymentmethod")]
+        public async Task<IActionResult> GetPaymentMethod()
+        {
+            var req = new GetEnum() { type = typeof(enCustpaymentMethod) };
+            return Ok(await Mediator.Send(req));
+        }
+
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet("query")]
+        public async Task<IActionResult> Query([FromQuery] QueryInvoice filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
+
         /*
 
                 /// <summary>
@@ -54,17 +78,7 @@ namespace bbxBE.WebApi.Controllers.v1
                     return Ok(await Mediator.Send(filter));
                 }
 
-                /// <summary>
-                /// GET: api/controller
-                /// </summary>
-                /// <param name="filter"></param>
-                /// <returns></returns>
-                [HttpGet("query")]
-                public async Task<IActionResult> Query([FromQuery] QueryInvoice filter)
-                {
-                    return Ok(await Mediator.Send(filter));
-                }
-
+ 
 
                 [HttpGet("currencycode")]
                 public async Task<IActionResult> GetCurrencyCode()

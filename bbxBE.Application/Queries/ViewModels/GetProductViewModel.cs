@@ -85,8 +85,14 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Termékdíj")]
         [Description("Termékdíj")]
         public decimal ProductFee { get; set; }
+        [ColumnLabel("Aktív?")]
+        [Description("Aktív?")]
         public bool Active { get; set; }
+        [ColumnLabel("VTSZ")]
+        [Description("Vámtarifa szám")]
         public string VTSZ { get; set; }
+        [ColumnLabel("EAN")]
+        [Description("Vonalkód")]
         public string EAN { get; set; }
     }
 }

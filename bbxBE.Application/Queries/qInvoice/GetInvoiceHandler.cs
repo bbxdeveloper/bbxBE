@@ -22,13 +22,13 @@ namespace bbxBE.Application.Queries.qInvoice
 
     public class GetInvoiceHandler : IRequestHandler<GetInvoice, Entity>
     {
-        private readonly IInvoiceRepositoryAsync _positionRepository;
+        private readonly IInvoiceRepositoryAsync _invoiceRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetInvoiceHandler(IInvoiceRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetInvoiceHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _invoiceRepository = invoiceRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -40,8 +40,8 @@ namespace bbxBE.Application.Queries.qInvoice
           
 
             // query based on filter
-            var entityPositions = await _positionRepository.GetInvoiceAsync(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetInvoiceViewModel>();
+            var entityInvoices = await _invoiceRepository.GetInvoiceAsync(validFilter);
+            var data = entityInvoices.MapItemFieldsByMapToAnnotation<GetInvoiceViewModel>();
 
             // response wrapper
             return data;
