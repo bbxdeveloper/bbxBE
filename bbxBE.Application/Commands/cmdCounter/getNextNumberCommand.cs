@@ -44,7 +44,7 @@ namespace bxBE.Application.Commands.cmdCounter
 
         public async Task<Response<string>> Handle(GetNextNumberCommand request, CancellationToken cancellationToken)
         {
-            var next = await _CounterRepository.GetNextAsync(request.CounterCode, request.WarehouseCode);
+            var next = await _CounterRepository.GetNextValueAsync(request.CounterCode, request.WarehouseCode);
             return new Response<string>(next);
         }
 

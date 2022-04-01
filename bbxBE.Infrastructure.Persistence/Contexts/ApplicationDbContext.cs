@@ -6,6 +6,7 @@ using bbxBE.Domain.Common;
 using bbxBE.Domain.Entities;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace bbxBE.Infrastructure.Persistence.Contexts
 {
@@ -61,11 +62,11 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         protected override void OnModelCreating(ModelBuilder builder)
         {
             var _mockData = this.Database.GetService<IMockService>();
-        //    var seedPositions = _mockData.SeedPositions(1000);
-        //    builder.Entity<Position>().HasData(seedPositions);
+            //    var seedPositions = _mockData.SeedPositions(1000);
+            //    builder.Entity<Position>().HasData(seedPositions);
 
-            //mock adatokkal tölthetünk itt
-
+           
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             base.OnModelCreating(builder);
         }
 

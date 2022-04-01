@@ -35,7 +35,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Lezáratlan bizonylatok")]
         [Description("Lezáratlan bizonylatok")]
-        public string CounterPool { get; set; }
+        public IList<CounterPoolItem> CounterPool { get; set; }
 
 
         //relációk
@@ -43,5 +43,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Raktár")]
         [Description("Raktár")]
         public Warehouse Warehouse { get; set; }
+    }
+
+    public class CounterPoolItem
+    {
+        public string CounterValue { get; set; } 
+        public long Ticks { get; set; }
     }
 }
