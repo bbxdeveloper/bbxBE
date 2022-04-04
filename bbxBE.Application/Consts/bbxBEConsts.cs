@@ -33,6 +33,7 @@ namespace bbxBE.Application.Consts
         public static string FV_PRODNOTFOUND = "Termék nem található, ID:{0} ";
         public static string FV_INVALIDFORMAT = "{PropertyName}|{PropertyName} érvénytelen formátum.";
         public static string FV_COUNTERNOTFOUND = "Bizonylati tömb található, ID:{0} ";
+        public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb található, Kód:{0}, Raktár:{1} ";
 
         public static string FV_BASE = "Egy vagy több validációs hiba történt.";
 

@@ -66,7 +66,7 @@ namespace bbxBE.Application.Queries.qInvoice
         {
             var validFilter = request;
             var pagination = request;
-            
+
             /* TODO: törölni
             //filtered fields security
             if (!string.IsNullOrEmpty(validFilter.Fields))
