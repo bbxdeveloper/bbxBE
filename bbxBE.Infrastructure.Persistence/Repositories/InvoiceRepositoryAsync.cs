@@ -75,11 +75,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
+//                p_invoice = bllCounter.SafeGetNextAsync()
+
                 _invoices.Add(p_invoice);
+                await _dbContext.SaveChangesAsync();
+                p_invoiceLines.ForEach(i => i.InvoiceID = p_invoice.ID);
                 _ = _invoiceLines.AddRangeAsync(p_invoiceLines);
+
+                p_summaryByVatRate.ForEach(i => i.InvoiceID = p_invoice.ID);
                 _ = _summaryByVatRates.AddRangeAsync(p_summaryByVatRate);
-                _ = _additionalInvoiceData.AddRangeAsync(p_additionalInvoiceData);
-                _ = _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
+
+                if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
+                {
+                    p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
+                    _ = _additionalInvoiceData.AddRangeAsync(p_additionalInvoiceData);
+                }
+
+                if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
+                {
+                    p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
+                    _ = _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
+                }
                 await _dbContext.SaveChangesAsync();
                 dbContextTransaction.Commit();
             }
