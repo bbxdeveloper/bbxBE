@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,6 +55,9 @@ namespace bxBE.Application.Commands.cmdInvoice
 
     public async Task<Response<long>> Handle(importFromNAVCommand request, CancellationToken cancellationToken)
         {
+
+            QueryInvoiceDigest(request);
+
             return new Response<long>(1);
         }
 
@@ -73,14 +77,14 @@ namespace bxBE.Application.Commands.cmdInvoice
                 var page = 1;
 
                 var dig = new QueryInvoiceDigestRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey,
-                                page, Enum.Parse<InvoiceDirectionType>( request.InvoiceDirection), true, request.DateFromUTC, request.DateFromUTC);
+                                page, Enum.Parse<InvoiceDirectionType>( request.InvoiceDirection), true, request.IssueDateFrom, request.IssueDateTo);
 
-                var digTer = XMLUtil.Object2XMLString<QueryInvoiceDigestRequest>(dig);
+                var digTer = NAVUtil.Object2XMLString<QueryInvoiceDigestRequest>(dig);
 
-                if (bllNAV.NAVPost(NAVConsts.NAV_QUERYINVOICEDIGEST_TEST, dig.header.requestId, digTer, procName, out response))
+                if (bllNAV.NAVPost(NAVGlobal.NAV_QUERYINVOICEDIGEST_TEST, dig.header.requestId, digTer, _NAVSettings.SoftwareId, out response))
                 {
 
-                    QueryInvoiceDigestResponse respDigest = XMLUtil.XMLStringToObject<QueryInvoiceDigestResponse>(response);
+                    QueryInvoiceDigestResponse respDigest = NAVUtil.XMLStringToObject<QueryInvoiceDigestResponse>(response);
                     if (respDigest.result.funcCode == FunctionCodeType.OK)
                     {
                         if (respDigest.invoiceDigestResult.availablePage > 0)
@@ -90,13 +94,13 @@ namespace bxBE.Application.Commands.cmdInvoice
                             while (page++ < availablePage)
                             {
                                 var digPg = new QueryInvoiceDigestRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey,
-                                    page, p_invoiceDirection, p_issue, p_dateFromUTC, p_dateToUTC);
+                                     page, Enum.Parse<InvoiceDirectionType>(request.InvoiceDirection), true, request.IssueDateFrom, request.IssueDateTo);
 
-                                var digTerPg = XMLUtil.Object2XMLString<QueryInvoiceDigestRequest>(digPg);
+                                var digTerPg = NAVUtil.Object2XMLString<QueryInvoiceDigestRequest>(digPg);
 
-                                if (NAVLogic.Post(NAVConsts.NAV_QUERYINVOICEDIGEST_TEST, digPg.header.requestId, digTerPg, procName, out response))
+                                if (bllNAV.NAVPost(NAVGlobal.NAV_QUERYINVOICEDIGEST_TEST, digPg.header.requestId, digTerPg, _NAVSettings.SoftwareId, out response))
                                 {
-                                    QueryInvoiceDigestResponse respDigestPg = XMLUtil.XMLStringToObject<QueryInvoiceDigestResponse>(response);
+                                    QueryInvoiceDigestResponse respDigestPg = NAVUtil.XMLStringToObject<QueryInvoiceDigestResponse>(response);
                                     if (respDigestPg.result.funcCode == FunctionCodeType.OK)
                                     {
                                         invoiceDigestRes.AddRange(respDigestPg.invoiceDigestResult.invoiceDigest.ToList());
@@ -104,18 +108,18 @@ namespace bxBE.Application.Commands.cmdInvoice
                                 }
                                 else
                                 {
-                                    throw new Exception(String.Format("{0} NAV queryInvoiceDigest nextpage error result:{1}", procName, response));
+                                    throw new Exception(String.Format("{0} NAV queryInvoiceDigest nextpage error result:{1}", _NAVSettings.SoftwareId, response));
                                 }
                             }
                         }
                     }
                     else
                     {
-                        throw new Exception(String.Format("{0} NAV queryInvoiceDigest firstpage error result:{1}", procName, response));
+                        throw new Exception(String.Format("{0} NAV queryInvoiceDigest firstpage error result:{1}", _NAVSettings.SoftwareId, response));
                     }
 
-                    Console.WriteLine(String.Format("{0} NAV queryInvoiceDigest OK, invoiceDirection:{1}, issue:{2}, dateFromUTC:{3}, dateToUTC:{4}", procName,
-                        p_invoiceDirection, p_issue, p_dateFromUTC, p_dateToUTC));
+                    Console.WriteLine(String.Format("{0} NAV queryInvoiceDigest OK, invoiceDirection:{1}, issue:{2}, dateFromUTC:{3}, dateToUTC:{4}", _NAVSettings.SoftwareId,
+                        request.InvoiceDirection, true, request.IssueDateFrom, request.IssueDateTo));
                 }
             }
 
@@ -128,7 +132,7 @@ namespace bxBE.Application.Commands.cmdInvoice
             InvoiceData result = null;
 
             var ter = new TokenExchangeRequest(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey);
-            var reqTer = XMLUtil.Object2XMLString<TokenExchangeRequest>(ter);
+            var reqTer = NAVUtil.Object2XMLString<TokenExchangeRequest>(ter);
             string response = "";
             if (NAVLogic.Post(NAVConsts.NAV_TOKENEXCHANGE_TEST, ter.header.requestId, reqTer, procName, out response))
             {

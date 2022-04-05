@@ -486,5 +486,87 @@ namespace bbxBE.Common.NAV
         }
     }
 
+   
+    public partial class QueryInvoiceDigestRequestType : BasicOnlineInvoiceRequestType
+    {
+        public QueryInvoiceDigestRequestType() { }
+        public QueryInvoiceDigestRequestType(string p_taxnum, string p_techUserLogin, string p_techUserPwd, string p_XMLSignKey,
+                 int p_page, InvoiceDirectionType p_invoiceDirection, bool p_issue, DateTime p_dateFromUTC, DateTime p_dateToUTC)
+               : base(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey)
+        {
+        }
+    }
+    public partial class QueryInvoiceDigestRequest : QueryInvoiceDigestRequestType
+    {
+        public QueryInvoiceDigestRequest() { }
+
+
+        public QueryInvoiceDigestRequest(string p_taxnum, string p_techUserLogin, string p_techUserPwd, string p_XMLSignKey,
+            int p_page, InvoiceDirectionType p_invoiceDirection, bool p_issue, DateTime p_dateFromUTC, DateTime p_dateToUTC)
+          : base(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey, p_page, p_invoiceDirection,
+                p_issue, p_dateFromUTC, p_dateToUTC)
+        {
+            this.page = p_page;
+            this.invoiceDirection = p_invoiceDirection;
+            var mandatoryparams = new MandatoryQueryParamsType();
+
+            if (p_issue)        //Számla dátumára lekérdezés
+            {
+                DateIntervalParamType invoiceIssueDate = new DateIntervalParamType() { dateFrom = p_dateFromUTC, dateTo = p_dateToUTC };
+                mandatoryparams.Item = invoiceIssueDate;
+            }
+            else
+            {   // adatszolgáltatás időpontjára lekérdezés
+                DateTimeIntervalParamType insDate = new DateTimeIntervalParamType() { dateTimeFrom = p_dateFromUTC, dateTimeTo = p_dateToUTC };
+                mandatoryparams.Item = insDate;
+            }
+
+            this.invoiceQueryParams = new InvoiceQueryParamsType() { mandatoryQueryParams = mandatoryparams };
+
+        }
+    }
+
+    public partial class QueryInvoiceDataRequestType : BasicOnlineInvoiceRequestType
+    {
+        public QueryInvoiceDataRequestType() { }
+        public QueryInvoiceDataRequestType(string p_taxnum, string p_techUserLogin, string p_techUserPwd, string p_XMLSignKey,
+                 string p_invoiceNumber, InvoiceDirectionType p_invoiceDirection)
+               : base(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey)
+        {
+        }
+    }
+    public partial class QueryInvoiceDataRequest : QueryInvoiceDataRequestType
+    {
+        public QueryInvoiceDataRequest() { }
+
+
+        public QueryInvoiceDataRequest(string p_taxnum, string p_techUserLogin, string p_techUserPwd, string p_XMLSignKey,
+           string p_invoiceNumber, InvoiceDirectionType p_invoiceDirection)
+          : base(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey, p_invoiceNumber, p_invoiceDirection)
+        {
+            this.invoiceNumberQuery = new InvoiceNumberQueryType() { invoiceNumber = p_invoiceNumber, invoiceDirection = p_invoiceDirection };
+        }
+    }
+   public partial class QueryTaxpayerRequestType : BasicOnlineInvoiceRequestType
+    {
+        public QueryTaxpayerRequestType() { }
+        public QueryTaxpayerRequestType(string p_taxnum, string p_techUserLogin, string p_techUserPwd, string p_XMLSignKey,
+                 string p_taxNumber)
+               : base(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey)
+        {
+        }
+    }
+    public partial class QueryTaxpayerRequest : QueryTaxpayerRequestType
+    {
+        public QueryTaxpayerRequest() { }
+
+
+        public QueryTaxpayerRequest(string p_taxnum, string p_techUserLogin, string p_techUserPwd, string p_XMLSignKey,
+           string p_taxNumber)
+          : base(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey, p_taxNumber)
+        {
+            this.taxNumber = p_taxNumber;
+        }
+    }
 
 }
