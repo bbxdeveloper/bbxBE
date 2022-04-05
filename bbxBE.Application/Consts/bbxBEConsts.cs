@@ -44,6 +44,7 @@ namespace bbxBE.Application.Consts
 
         public static string CST_OWNEXISTS = "{PropertyName}|{PropertyName} Saját adat már létezik.";
 
+        public static string NAV_INVDIRECTION = "{PropertyName}|{PropertyName} érvénytelen biyonylatirány:{PropertyValue} ";
 
         public static string VATCODE_27 = "27%";
         public static string VATCODE_KBAET = "KBAET";
