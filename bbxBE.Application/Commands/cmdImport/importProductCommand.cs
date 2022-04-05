@@ -154,18 +154,14 @@ namespace bbxBE.Application.Commands.cmdImport
             {
                 case "CreateProductCommand":
                     {
-                        if (!Enum.TryParse((item as CreateProductCommand).UnitOfMeasure.ToUpper(), out enUnitOfMeasure uom))
-                        {
-                            (item as CreateProductCommand).UnitOfMeasure = Enum.GetName(typeof(enUnitOfMeasure), enUnitOfMeasure.OWN);
-                        }
+                        (item as CreateProductCommand).UnitOfMeasure = Enum.GetName(typeof(enUnitOfMeasure),
+                            GetUnitOfMeasureValueByEnum((item as CreateProductCommand).UnitOfMeasure.ToUpper()));
                         break;
                     }
                 case "UpdateProductCommand":
                     {
-                        if (!Enum.TryParse((item as UpdateProductCommand).UnitOfMeasure.ToUpper(), out enUnitOfMeasure uom))
-                        {
-                            (item as UpdateProductCommand).UnitOfMeasure = Enum.GetName(typeof(enUnitOfMeasure), enUnitOfMeasure.OWN);
-                        }
+                        (item as UpdateProductCommand).UnitOfMeasure = Enum.GetName(typeof(enUnitOfMeasure),
+                            GetUnitOfMeasureValueByEnum((item as UpdateProductCommand).UnitOfMeasure.ToUpper()));
                         break;
                     }
                 default:
@@ -173,12 +169,31 @@ namespace bbxBE.Application.Commands.cmdImport
             }
         }
 
+        private static enUnitOfMeasure GetUnitOfMeasureValueByEnum(string unitOfMeasureValue)
+        {
+            if ((unitOfMeasureValue == "DB") || (unitOfMeasureValue == "DB."))
+                return enUnitOfMeasure.PIECE;
+            if ((unitOfMeasureValue == "KG") || ((unitOfMeasureValue == "KILOGRAM")))
+                return enUnitOfMeasure.KILOGRAM;
+            if ((unitOfMeasureValue == "CSOM") || (unitOfMeasureValue == "CSOM.") || (unitOfMeasureValue == "CS"))
+                return enUnitOfMeasure.PACK;
+            if ((unitOfMeasureValue == "FM") || ((unitOfMeasureValue == "FM.")))
+                return enUnitOfMeasure.LINEAR_METER;
+            if ((unitOfMeasureValue == "M") || (unitOfMeasureValue == "M.") || (unitOfMeasureValue == "METER"))
+                return enUnitOfMeasure.METER;
+            return enUnitOfMeasure.OWN;
+
+        }
+
         private async Task CreateOriginCodeIfNotExists(object item, CancellationToken cancellationToken)
         {
-            var IsUniqueOriginCode = await _originRepository.IsUniqueOriginCodeAsync((item as CreateProductCommand).OriginCode);
-            if (IsUniqueOriginCode)
+            if (!String.IsNullOrEmpty((item as CreateProductCommand).OriginCode))
             {
-                await bllOrigin.CreateAsync((item as CreateProductCommand).OriginCode, (item as CreateProductCommand).OriginCode, _originRepository, cancellationToken);
+                var IsUniqueOriginCode = await _originRepository.IsUniqueOriginCodeAsync((item as CreateProductCommand).OriginCode);
+                if (IsUniqueOriginCode)
+                {
+                    await bllOrigin.CreateAsync((item as CreateProductCommand).OriginCode, (item as CreateProductCommand).OriginCode, _originRepository, cancellationToken);
+                }
             }
         }
 
@@ -216,8 +231,10 @@ namespace bbxBE.Application.Commands.cmdImport
                     var p = GetProductFromCSV(currentLine, productMapping, request.FieldSeparator);
                     foreach (var item in p)
                     {
-                        if (item.Value.Active)
+                        if ((item.Value.Active) && (!producItems.ContainsKey(item.Key)))
+                        {
                             producItems.Add(item.Key, item.Value);
+                        }
                     }
                 }
             }
