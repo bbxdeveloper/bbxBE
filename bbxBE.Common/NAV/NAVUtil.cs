@@ -153,7 +153,7 @@ namespace bbxBE.Common.NAV
         #region Comm
         public static string GetRequestID(DateTime src)
         {
-            return src.ToString();
+                return "BBX" + src.Ticks.ToString();
         }
         #endregion Comm
 

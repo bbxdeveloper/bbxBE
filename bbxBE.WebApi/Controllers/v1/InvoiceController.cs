@@ -71,7 +71,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("importfromnav")]
         public async Task<IActionResult> ImportFromNAV(importFromNAVCommand command)
         {
             return Ok(await Mediator.Send(command));

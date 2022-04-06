@@ -126,7 +126,7 @@ namespace bxBE.Application.Commands.cmdInvoice
             return invoiceDigestRes;
         }
 
-        static InvoiceData QueryInvoiceData(string p_taxnum, string p_techUserLogin, string p_techUserPwd, string p_XMLSignKey,
+        public InvoiceData QueryInvoiceData(string p_taxnum, string p_techUserLogin, string p_techUserPwd, string p_XMLSignKey,
             string p_invoiceNumber, InvoiceDirectionType p_invoiceDirection)
         {
             InvoiceData result = null;
@@ -134,50 +134,50 @@ namespace bxBE.Application.Commands.cmdInvoice
             var ter = new TokenExchangeRequest(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey);
             var reqTer = NAVUtil.Object2XMLString<TokenExchangeRequest>(ter);
             string response = "";
-            if (NAVLogic.Post(NAVConsts.NAV_TOKENEXCHANGE_TEST, ter.header.requestId, reqTer, procName, out response))
+            if (bllNAV.NAVPost(NAVGlobal.NAV_TOKENEXCHANGE_TEST, ter.header.requestId, reqTer, _NAVSettings.SoftwareId, out response))
             {
-                TokenExchangeResponse resp = XMLUtil.XMLStringToObject<TokenExchangeResponse>(response);
+                TokenExchangeResponse resp = NAVUtil.XMLStringToObject<TokenExchangeResponse>(response);
 
                 var invData = new QueryInvoiceDataRequest(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey,
                                 p_invoiceNumber, p_invoiceDirection);
 
-                var invDataReq = XMLUtil.Object2XMLString<QueryInvoiceDataRequest>(invData);
+                var invDataReq = NAVUtil.Object2XMLString<QueryInvoiceDataRequest>(invData);
 
-                if (NAVLogic.Post(NAVConsts.NAV_QUERYINVOICEDATA_TEST, invData.header.requestId, invDataReq, procName, out response))
+                if (bllNAV.NAVPost(NAVGlobal.NAV_QUERYINVOICEDATA_TEST, invData.header.requestId, invDataReq, _NAVSettings.SoftwareId, out response))
                 {
 
-                    QueryInvoiceDataResponse respInvData = XMLUtil.XMLStringToObject<QueryInvoiceDataResponse>(response);
+                    QueryInvoiceDataResponse respInvData = NAVUtil.XMLStringToObject<QueryInvoiceDataResponse>(response);
                     if (respInvData.result.funcCode == FunctionCodeType.OK)
                     {
-                        var respInvoiceData = XMLUtil.XMLStringToObject<QueryInvoiceDataResponse>(response);
+                        var respInvoiceData = NAVUtil.XMLStringToObject<QueryInvoiceDataResponse>(response);
                         if (respInvoiceData.invoiceDataResult != null && respInvoiceData.invoiceDataResult != null)
                         {
                             string InvoiceDataStr = "";
                             if (respInvoiceData.invoiceDataResult.compressedContentIndicator)
                             {
                                 //TODO: Tömörített számlám még nincs, tesztelni !!! a megoldás elvileg jó.
-                                InvoiceDataStr = XMLUtil.Unzip(respInvoiceData.invoiceDataResult.invoiceData);
+                                InvoiceDataStr = Utils.Unzip(respInvoiceData.invoiceDataResult.invoiceData);
                                 throw new NotImplementedException("Tömörített számlát tesztelni !!! (compressedContentIndicator)");
                             }
                             else
                             {
                                 InvoiceDataStr = Encoding.UTF8.GetString(respInvoiceData.invoiceDataResult.invoiceData);
                             }
-                            result = XMLUtil.XMLStringToObject<InvoiceData>(InvoiceDataStr);
+                            result = NAVUtil.XMLStringToObject<InvoiceData>(InvoiceDataStr);
                         }
                         else
                         {
-                            throw new Exception(String.Format("{0} invoice not found:{1}", procName, p_invoiceNumber));
+                            throw new Exception(String.Format("{0} invoice not found:{1}", _NAVSettings.SoftwareId, p_invoiceNumber));
 
                         }
 
                     }
                     else
                     {
-                        throw new Exception(String.Format("{0} NAV queryInvoiceData error result:{1}", procName, response));
+                        throw new Exception(String.Format("{0} NAV queryInvoiceData error result:{1}", _NAVSettings.SoftwareId, response));
                     }
 
-                    Console.WriteLine(String.Format("{0} NAV test result: funcCode:{1}, errorCode:{2}, message:{3}", procName, resp.result.funcCode,
+                    Console.WriteLine(String.Format("{0} NAV test result: funcCode:{1}, errorCode:{2}, message:{3}", _NAVSettings.SoftwareId, resp.result.funcCode,
                                    (resp.result.errorCode != null ? resp.result.errorCode : ""), (resp.result.message != null ? resp.result.message : "")));
                 }
             }
