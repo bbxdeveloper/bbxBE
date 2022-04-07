@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -244,7 +245,12 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private static Dictionary<string, CreateProductCommand> GetProductFromCSV(string currentLine, Dictionary<string, int> productMapper, string fieldSeparator)
         {
-            string[] currentFieldsArray = currentLine.Replace("\"", "").Trim().Split(fieldSeparator);
+            string regExpPattern = $"{fieldSeparator}(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
+            Regex regexp = new Regex(regExpPattern);
+            //currentLine = currentLine.Replace("\"", "\'");
+            //string[] currentFieldsArray = currentLine.Replace("\"", "").Trim().Split(fieldSeparator);
+            string[] currentFieldsArray = regexp.Split(currentLine); // currentLine.Replace("\"", "").Trim().Split(fieldSeparator);
+
             var createPRoductCommand = new CreateProductCommand();
 
             try
