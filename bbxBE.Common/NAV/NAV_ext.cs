@@ -249,7 +249,7 @@ namespace bbxBE.Common.NAV
         {
             software = new SoftwareType()
             {
-                softwareId = NAVGlobal.DEF_softwareId_Prefix + Assembly.GetEntryAssembly().GetName().Version.ToString().Replace(".", "X"),         //A számlázó program azonosítója
+                softwareId = NAVGlobal.DEF_softwareId + "-" + Assembly.GetEntryAssembly().GetName().Version.ToString().Replace(".", "-"),         //A számlázó program azonosítója
                 softwareName = Assembly.GetEntryAssembly().GetName().Name,                                  //A számlázó program neve
                 softwareOperation = SoftwareOperationType.LOCAL_SOFTWARE,                                   //A számlázó program működési típusa
                 softwareMainVersion = Assembly.GetEntryAssembly().GetName().Version.Major.ToString(),       //A számlázó program fő verziója

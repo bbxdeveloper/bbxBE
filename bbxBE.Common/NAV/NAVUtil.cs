@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.ExceptionServices;
@@ -157,98 +158,6 @@ namespace bbxBE.Common.NAV
         }
         #endregion Comm
 
-
-        #region XML
-        public class Utf8StringWriter : StringWriter
-        {
-
-
-            public override Encoding Encoding
-            {
-                get { return Encoding.UTF8; }
-            }
-
-            public override IFormatProvider FormatProvider => base.FormatProvider;
-        }
-        public static string Object2XMLString<T>(this T value)
-        {
-            if (value == null)
-            {
-                return string.Empty;
-            }
-
-            DateTimeFormatInfo dtfi = CultureInfo.CurrentCulture.DateTimeFormat;
-
-            try
-            {
-                XmlWriterSettings settings = new XmlWriterSettings()
-                {
-                    Encoding = Encoding.UTF8,
-                    CloseOutput = false,
-                    OmitXmlDeclaration = false,
-                    Indent = true
-                };
-
-                var xmlserializer = new XmlSerializer(typeof(T), headerOverrideAttributes());
-
-                var stringWriter = new Utf8StringWriter();
-                using (var writer = XmlWriter.Create(stringWriter, settings))
-                {
-                    xmlserializer.Serialize(writer, value);
-                    return stringWriter.ToString();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                ExceptionDispatchInfo.Capture(ex).Throw();
-            }
-            return string.Empty;
-        }
-        public static T XMLStringToObject<T>(string p_xmlString)
-        {
-
-            XmlSerializer serializer = new XmlSerializer(typeof(T), headerOverrideAttributes());
-            StringReader rdr = new StringReader(p_xmlString);
-            T res = (T)serializer.Deserialize(rdr);
-
-
-            XmlDocument xd = new XmlDocument();
-            xd.LoadXml(p_xmlString);
-            return res;
-        }
-
-        private static XmlAttributeOverrides headerOverrideAttributes()
-        {
-            XmlAttributeOverrides headerOverride = new XmlAttributeOverrides();
-
-            XmlAttributes requestId = new XmlAttributes();
-            XmlElementAttribute xrequestId = new XmlElementAttribute();
-            xrequestId.Order = 1;
-            requestId.XmlElements.Add(xrequestId);
-            headerOverride.Add(typeof(BasicHeaderType), "requestId", requestId);
-
-            XmlAttributes timestamp = new XmlAttributes();
-            timestamp.XmlIgnore = true;
-            headerOverride.Add(typeof(BasicHeaderType), "timestamp", timestamp);
-
-            XmlAttributes requestVersion = new XmlAttributes();
-            XmlElementAttribute xrequestVersion = new XmlElementAttribute();
-            xrequestVersion.Order = 3;
-            requestVersion.XmlElements.Add(xrequestVersion);
-            headerOverride.Add(typeof(BasicHeaderType), "requestVersion", requestVersion);
-
-            XmlAttributes headerVersion = new XmlAttributes();
-            XmlElementAttribute xheaderVersion = new XmlElementAttribute();
-            xheaderVersion.Order = 4;
-            headerVersion.XmlElements.Add(xheaderVersion);
-            headerOverride.Add(typeof(BasicHeaderType), "headerVersion", headerVersion);
-
-            return headerOverride;
-
-        }
-
-        #endregion
 
     }
 }

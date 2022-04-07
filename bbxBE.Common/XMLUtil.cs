@@ -15,7 +15,71 @@ namespace bbxBE.Common
     {
 
 
- 
+        #region XML
+        public class Utf8StringWriter : StringWriter
+        {
+            public override Encoding Encoding
+            {
+                get { return Encoding.UTF8; }
+            }
+        }
+        public static string Object2XMLString<T>(this T value, Encoding p_encoding, XmlSerializerNamespaces p_namespaces)
+        {
+            if (value == null)
+            {
+                return string.Empty;
+            }
+            try
+            {
+                XmlWriterSettings settings = new XmlWriterSettings()
+                {
+                    Encoding = p_encoding,
+                    CloseOutput = false,
+                    OmitXmlDeclaration = false,
+                    Indent = true,
+                    NamespaceHandling = NamespaceHandling.OmitDuplicates
+                };
+
+                var xmlserializer = new XmlSerializer(typeof(T));
+                var stringWriter = new Utf8StringWriter();
+                using (var writer = XmlWriter.Create(stringWriter, settings))
+                {
+                    if (p_namespaces != null)
+                    {
+                        xmlserializer.Serialize(writer, value, p_namespaces);
+                    }
+                    else
+                    {
+                        xmlserializer.Serialize(writer, value);
+                    }
+                    return stringWriter.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ExceptionDispatchInfo.Capture(ex).Throw();
+            }
+            return string.Empty;
+        }
+
+        public static T XMLStringToObject<T>(string p_xmlString)
+        {
+
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            StringReader rdr = new StringReader(p_xmlString);
+            T res = (T)serializer.Deserialize(rdr);
+
+
+            XmlDocument xd = new XmlDocument();
+            xd.LoadXml(p_xmlString);
+            /*
+                        XmlSerializer serializer = new XmlSerializer(typeof(T));
+                        MemoryStream memStream = new MemoryStream(Encoding.UTF8.GetBytes(p_xmlString));
+                        T res = (T)serializer.Deserialize(memStream);
+                        */
+            return res;
+        }
 
         /// <summary>
         /// Egy XmlNode-ban lévő elérési út értékével tér vissza. Ez lehet XmlAttribute és XmlElement is
@@ -163,6 +227,12 @@ namespace bbxBE.Common
                     yield return xmlNode;
             }
         }
+
+
+
+        #endregion
+
+
 
     }
 }
