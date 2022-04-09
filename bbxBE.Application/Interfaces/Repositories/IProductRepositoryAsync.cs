@@ -14,8 +14,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> IsUniqueProductCodeAsync(string ProductCode, long? ID = null);
         Task<bool> CheckProductGroupCodeAsync(string ProductGroupCode);
         Task<bool> CheckOriginCodeAsync(string OriginCode);
-        Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode);
-        Task<Product> UpdateProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode);
+        Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode);
+        Task<Product> UpdateProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode);
         Task<Product> DeleteProductAsync(long ID);
 
         Task<bool> SeedDataAsync(int rowCount);

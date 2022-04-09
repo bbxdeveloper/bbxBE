@@ -75,7 +75,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return await _Origins.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted);
         }
 
-        public async Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode)
+        public async Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
@@ -135,12 +135,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         */
 
 
-        public async Task<Product> UpdateProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode)
+        public async Task<Product> UpdateProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
 
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
 
-          using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
 
                 var prod = _Products.Include(p => p.ProductCodes).Where(x => x.ID == p_product.ID).FirstOrDefault();
@@ -160,12 +160,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     if (prod.ProductCodes != null)
                     {
-                        
 
-                        var pc = prod.ProductCodes.SingleOrDefault( x=> x.ProductCodeCategory== enCustproductCodeCategory.OWN.ToString());
+
+                        var pc = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString());
                         if (pc != null)
                         {
-                            p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ID= pc.ID;
+                            p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ID = pc.ID;
                         }
 
                         var vtsz = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString());
@@ -178,33 +178,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         if (ean != null)
                         {
                             var e = p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
-                            if( e != null)
+                            if (e != null)
                                 e.ID = ean.ID;
                             else
                                 _ProductCodes.Remove(ean);
 
                         }
 
-                    if( !string.IsNullOrWhiteSpace( p_VatRateCode))
-                    {
-                        p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                        if (!string.IsNullOrWhiteSpace(p_VatRateCode))
+                        {
+                            p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+
+                        }
+
+
+                        _Products.Update(p_product);
+                        await _dbContext.SaveChangesAsync();
+                        dbContextTransaction.Commit();
+
 
                     }
-              
-
-                    _Products.Update(p_product);
-                    await _dbContext.SaveChangesAsync();
-                    dbContextTransaction.Commit();
-
-
+                    else
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, p_product.ID));
+                    }
                 }
-                else
-                {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, p_product.ID));
-                }
+                return p_product;
             }
-            return p_product;
         }
+
         public async Task<Product> DeleteProductAsync(long ID)
         {
 
