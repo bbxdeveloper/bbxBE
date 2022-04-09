@@ -44,6 +44,20 @@ namespace bbxBE.Application.Consts
 
         public static string CST_OWNEXISTS = "{PropertyName}|{PropertyName} Saját adat már létezik.";
 
+        public static string NAV_INVDIRECTION = "{PropertyName}|{PropertyName} érvénytelen biyonylatirány:{PropertyValue} ";
+
+  
+        public static string NAV_TOKENEXCHANGE_ERR = "{0} NAV tokenExchange error result:{1}";
+
+        public static string NAV_QINVDIGEST_OK = "{0} NAV queryInvoiceDigest OK, invoiceDirection:{1}, issue:{2}, dateFromUTC:{3}, dateToUTC:{4}";
+        public static string NAV_QINVDIGEST_FIRSTPG_ERR = "{0} NAV queryInvoiceDigest firstpage error result:{1}";
+        public static string NAV_QINVDIGEST_NEXTPG_ERR = "{0} NAV queryInvoiceDigest nextpage error result:{1}";
+
+        public static string NAV_QINVDATA_OK = "{0} NAV test result: funcCode:{1}, errorCode:{2}, message:{3}";
+        public static string NAV_QINVDATA_ERR = "{0} NAV queryInvoiceData error result:{1}";
+        public static string NAV_QINVDATA_NOTFND_ERR = "{0} invoice not found:{1}";
+
+
 
         public static string VATCODE_27 = "27%";
         public static string VATCODE_KBAET = "KBAET";

@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace bbxBE.Common.NAV
 {
@@ -149,8 +154,10 @@ namespace bbxBE.Common.NAV
         #region Comm
         public static string GetRequestID(DateTime src)
         {
-            return src.ToString();
+                return "BBX" + src.Ticks.ToString();
         }
         #endregion Comm
+
+
     }
 }

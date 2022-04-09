@@ -73,13 +73,13 @@ namespace bxBE.Application.Commands.cmdProduct
         public string EAN { get; set; }
     }
 
-    public class CreateUSR_USERCommandHandler : IRequestHandler<CreateProductCommand, Response<Product>>
+    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Response<Product>>
     {
         private readonly IProductRepositoryAsync _ProductRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateUSR_USERCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper, IConfiguration configuration)
+        public CreateProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper, IConfiguration configuration)
         {
             _ProductRepository = ProductRepository;
             _mapper = mapper;
