@@ -15,7 +15,7 @@ namespace bbxBE.Application.Consts
         public static string PwdSalt = "PwdSalt";
 
 
-        public static string FV_REQUIRED = "{PropertyName}|{PropertyName} mező kitöltése kötelezp.";
+        public static string FV_REQUIRED = "{PropertyName}|{PropertyName} mező kitöltése kötelező.";
         public static string FV_LEN1 = "{PropertyName}|{PropertyName} mező karakterek száma:1.";
         public static string FV_LEN2 = "{PropertyName}|{PropertyName} mező karakterek száma:2.";
         public static string FV_LEN8 = "{PropertyName}|{PropertyName} mező karakterek száma:8.";
@@ -33,6 +33,7 @@ namespace bbxBE.Application.Consts
         public static string FV_PRODNOTFOUND = "Termék nem található, ID:{0} ";
         public static string FV_INVALIDFORMAT = "{PropertyName}|{PropertyName} érvénytelen formátum.";
         public static string FV_COUNTERNOTFOUND = "Bizonylati tömb található, ID:{0} ";
+        public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb található, Kód:{0}, Raktár:{1} ";
 
         public static string FV_BASE = "Egy vagy több validációs hiba történt.";
 
@@ -40,6 +41,18 @@ namespace bbxBE.Application.Consts
         public static string FV_FILELISTISEMPTY = "A File lista nem lehet NULL!";
         public static string FV_FILELISTCONUTER = "2 File-t kell feltölteni!";
         public static string FV_FILESIZE = "Üres file lett feltöltve!";
+
+        public static string INV_DATE1 = "{PropertyName}| A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
+        public static string INV_DATE2 = "{PropertyName}| A számla dátuma nem lehet későbbi, mint a fizetési határidő";
+        public static string INV_LINES = "{PropertyName}| A számlán nincs tételsor";
+        public static string INV_VATSUMS = "{PropertyName}| A számlán nincs áfánkénti összesítő";
+
+        public static string CST_OWNEXISTS = "{PropertyName}|{PropertyName} Saját adat már létezik.";
+
+
+        public static string VATCODE_27 = "27%";
+        public static string VATCODE_KBAET = "KBAET";
+        public static string VATCODE_FA = "FA";
 
         /*
                 public static string FV_REQUIRED = "{PropertyName}|{PropertyName} is required.";

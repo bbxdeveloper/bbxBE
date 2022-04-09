@@ -35,7 +35,6 @@ namespace bbxBE.WebApi
             services.AddSwaggerExtension();
             services.AddControllersExtension();
 
-
             // CORS
             services.AddCorsExtension();
             services.AddHealthChecks();

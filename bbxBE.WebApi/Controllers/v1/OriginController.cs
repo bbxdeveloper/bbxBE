@@ -21,16 +21,11 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<CreateOriginCommand, Response<Origin>> _OriginCommandHandler;
-        public OriginController(
-           IWebHostEnvironment env,
-           IConfiguration conf,
-           IRequestHandler<CreateOriginCommand, Response<Origin>> OriginCommandHandler)
+        public OriginController( IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
-            _OriginCommandHandler = OriginCommandHandler;
-    }
+        }
 
 
         /// <summary>

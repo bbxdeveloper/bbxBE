@@ -22,13 +22,13 @@ namespace bbxBE.Application.Queries.qProductGroup
 
     public class GetProductGroupHandler : IRequestHandler<GetProductGroup, Entity>
     {
-        private readonly IProductGroupRepositoryAsync _positionRepository;
+        private readonly IProductGroupRepositoryAsync _productGroupRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetProductGroupHandler(IProductGroupRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetProductGroupHandler(IProductGroupRepositoryAsync productGroupRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _productGroupRepository = productGroupRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -40,7 +40,7 @@ namespace bbxBE.Application.Queries.qProductGroup
           
 
             // query based on filter
-            var entityPositions = await _positionRepository.GetProductGroupAsync(validFilter);
+            var entityPositions = await _productGroupRepository.GetProductGroupAsync(validFilter);
             var data = entityPositions.MapItemFieldsByMapToAnnotation<GetProductGroupViewModel>();
 
             // response wrapper

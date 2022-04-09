@@ -21,16 +21,11 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<CreateCounterCommand, Response<Counter>> _CounterCommandHandler;
-        public CounterController(
-           IWebHostEnvironment env,
-           IConfiguration conf,
-           IRequestHandler<CreateCounterCommand, Response<Counter>> CounterCommandHandler)
+        public CounterController( IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
-            _CounterCommandHandler = CounterCommandHandler;
-    }
+        }
 
 
         /// <summary>
@@ -71,6 +66,15 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPut]
  //       [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UpdateCounterCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+
+        // POST: USRController/Edit/5
+        [HttpPatch]
+        //       [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GetNextNumber(GetNextNumberCommand command)
         {
             return Ok(await Mediator.Send(command));
         }

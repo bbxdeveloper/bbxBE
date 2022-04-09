@@ -5,7 +5,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace bbxBE.Domain.Extensions
+namespace bbxBE.Common.NAV
 {
     #region AES_128_ECB
     public static class NAVExtensions

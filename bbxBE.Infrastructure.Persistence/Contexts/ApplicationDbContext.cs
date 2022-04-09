@@ -6,6 +6,7 @@ using bbxBE.Domain.Common;
 using bbxBE.Domain.Entities;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace bbxBE.Infrastructure.Persistence.Contexts
 {
@@ -32,6 +33,12 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<Product> Product { get; set; }
         public DbSet<Warehouse> Warehouse { get; set; }
         public DbSet<Counter> Counter { get; set; }
+        public DbSet<VatRate> VatRate { get; set; }
+        public DbSet<Invoice> Invoice { get; set; }
+        public DbSet<InvoiceLine> InvoiceLine { get; set; }
+        public DbSet<SummaryByVatRate> SummaryByVatRate { get; set; }
+        public DbSet<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
+        public DbSet<AdditionalInvoiceLineData> AdditionalInvoiceLineData { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -55,11 +62,11 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         protected override void OnModelCreating(ModelBuilder builder)
         {
             var _mockData = this.Database.GetService<IMockService>();
-        //    var seedPositions = _mockData.SeedPositions(1000);
-        //    builder.Entity<Position>().HasData(seedPositions);
+            //    var seedPositions = _mockData.SeedPositions(1000);
+            //    builder.Entity<Position>().HasData(seedPositions);
 
-            //mock adatokkal tölthetünk itt
-
+           
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             base.OnModelCreating(builder);
         }
 

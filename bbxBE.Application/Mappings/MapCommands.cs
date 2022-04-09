@@ -39,10 +39,10 @@ namespace bbxBE.Command.Mappings
             CreateMap<UpdateOriginCommand, Origin>();
             CreateMap<DeleteOriginCommand, Origin>();
 
-            CreateMap<CreateProductCommand, Product>();
-            CreateMap<UpdateProductCommand, Product>();
+            CreateMap<CreateProductCommand, Product>().ReverseMap();
+            CreateMap<UpdateProductCommand, Product>().ReverseMap();
             CreateMap<DeleteProductCommand, Product>();
-
+            CreateMap<CreateProductCommand, UpdateProductCommand>().ReverseMap();
 
             CreateMap<CreateWarehouseCommand, Warehouse>();
             CreateMap<UpdateWarehouseCommand, Warehouse>();

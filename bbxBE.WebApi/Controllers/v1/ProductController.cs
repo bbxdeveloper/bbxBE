@@ -1,11 +1,11 @@
 ﻿using bbxBE.Application.Commands.cmdImport;
 using bbxBE.Application.Commands.cmdProduct;
 using bbxBE.Application.Commands.cmdUSR_USER;
-using bbxBE.Application.Enums;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdProduct;
 using MediatR;
@@ -26,17 +26,11 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<CreateProductCommand, Response<Product>> _ProductCommandHandler;
-        public ProductController(
-           IWebHostEnvironment env,
-           IConfiguration conf,
-           IRequestHandler<CreateProductCommand, Response<Product>> ProductCommandHandler)
+        public ProductController( IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
-            _ProductCommandHandler = ProductCommandHandler;
-    }
-
+        }
 
         /// <summary>
         /// GET: api/controller
@@ -71,7 +65,7 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(filter));
         }
 
-      
+
         [HttpGet("unitofmeasure")]
         public async Task<IActionResult> GetUnitOfMeasure()
         {
@@ -108,10 +102,10 @@ namespace bbxBE.WebApi.Controllers.v1
 
 
         [HttpPost("import")]
-        public async Task<IActionResult> Import(List<IFormFile> productFiles)
+        public async Task<IActionResult> Import(List<IFormFile> productFiles, string fieldSeparator)
         {
-            var req = new ImportProductCommand() { ProductFiles = productFiles };
-            return Ok(await Mediator.Send(req));
+            var productRequest = new ImportProductCommand() { ProductFiles = productFiles, FieldSeparator = fieldSeparator };
+            return Ok(await Mediator.Send(productRequest));
         }
     }
 }

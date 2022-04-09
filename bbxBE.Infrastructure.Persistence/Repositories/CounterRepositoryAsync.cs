@@ -60,7 +60,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
                 {
-                    p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
+                    p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode).ID;
                 }
 
                 _Counters.Add(p_Counter);
@@ -83,7 +83,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
                     {
-                        p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
+                        p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode).ID;
                     }
 
                     _Counters.Update(p_Counter);
@@ -118,6 +118,126 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
+
+        private const int ExpiredInMinutes = 30;
+        public async Task<string> GetNextValueAsync(string CounterCode, string WarehouseCode, bool useCounterPool = false)
+        {
+            var NextValue = "";
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+                var counter = _Counters
+                    .Include( i=>i.Warehouse)
+                    .Where(x => x.CounterCode == CounterCode && x.Warehouse.WarehouseCode == WarehouseCode).FirstOrDefault();
+
+                if (counter != null)
+                {
+
+                    if (useCounterPool && counter.CounterPool != null)
+                    {
+                        var expiredCounter = counter.CounterPool.Where(w => DateTime.UtcNow.Ticks - w.Ticks > TimeSpan.TicksPerMinute * ExpiredInMinutes)
+                                        .OrderBy(o => o.Ticks).FirstOrDefault();
+                        if (expiredCounter != null)
+                        {
+                            NextValue = expiredCounter.CounterValue;
+                            expiredCounter.Ticks = DateTime.UtcNow.Ticks;
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(NextValue))
+                    {
+                        counter.CurrentNumber++;
+
+
+                        NextValue = $"{counter.Prefix}{counter.CurrentNumber.ToString().PadLeft(counter.NumbepartLength, '0')}{counter.Suffix}{DateTime.UtcNow.Year.ToString().Substring(2, 2)}";
+
+                        if (useCounterPool)
+                        {
+                            if (counter.CounterPool == null)
+                            {
+                                counter.CounterPool = new List<CounterPoolItem>();
+                            }
+                            counter.CounterPool.Add(new CounterPoolItem() { CounterValue = NextValue, Ticks = DateTime.UtcNow.Ticks });
+                        }
+                    }
+                    _Counters.Update(counter);
+
+                    await _dbContext.SaveChangesAsync();
+                    dbContextTransaction.Commit();
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseCode));
+                }
+            }
+            return NextValue;
+        }
+
+        public async Task<bool> FinalizeValueAsync(string CounterCode, string WarehouseCode, string counterValue)
+        {
+            var result = false;
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+                var counter = _Counters
+                    .Include(i => i.Warehouse)
+                    .Where(x => x.CounterCode == CounterCode && x.Warehouse.WarehouseCode == WarehouseCode).FirstOrDefault();
+
+                if (counter != null)
+                {
+
+                    if (counter.CounterPool != null)
+                    {
+                        counter.CounterPool = counter.CounterPool.Where(w => w .CounterValue != counterValue).ToList();
+                        _Counters.Update(counter);
+
+                        await _dbContext.SaveChangesAsync();
+                        dbContextTransaction.Commit();
+                        result = true;
+                    }
+
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseCode));
+                }
+            }
+            return result;
+        }
+
+        public async Task<bool> RollbackValueAsync(string CounterCode, string WarehouseCode, string counterValue)
+        {
+            var result = false;
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+                var counter = _Counters
+                    .Include(i => i.Warehouse)
+                    .Where(x => x.CounterCode == CounterCode && x.Warehouse.WarehouseCode == WarehouseCode).FirstOrDefault();
+
+                if (counter != null)
+                {
+
+                    if (counter.CounterPool != null)
+                    {
+                        var c = counter.CounterPool.Where(w => w.CounterValue == counterValue).FirstOrDefault();
+                        if( c != null)
+                        {
+                            c.Ticks = 0;
+                            _Counters.Update(counter);
+                            await _dbContext.SaveChangesAsync();
+                            dbContextTransaction.Commit();
+                            result = true;
+                        }
+                        result = false;
+                    }
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseCode));
+                }
+            }
+            return result;
+        }
+
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCounterAsync(QueryCounter requestParameter)
         {
 

@@ -4,11 +4,13 @@ using bbxBE.Application.BLL;
 using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Text;
 using System.Threading;
@@ -18,7 +20,11 @@ namespace bxBE.Application.Commands.cmdOrigin
 {
     public class CreateOriginCommand : IRequest<Response<Origin>>
     {
+        [ColumnLabel("Kód")]
+        [Description("Kód")]
         public string OriginCode { get; set; }
+        [ColumnLabel("Leírás")]
+        [Description("Leírás")]
         public string OriginDescription { get; set; }
 
     }

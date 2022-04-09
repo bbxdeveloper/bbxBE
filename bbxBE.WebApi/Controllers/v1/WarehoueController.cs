@@ -21,16 +21,11 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IRequestHandler<CreateWarehouseCommand, Response<Warehouse>> _WarehouseCommandHandler;
-        public WarehouseController(
-           IWebHostEnvironment env,
-           IConfiguration conf,
-           IRequestHandler<CreateWarehouseCommand, Response<Warehouse>> WarehouseCommandHandler)
+        public WarehouseController( IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
-            _WarehouseCommandHandler = WarehouseCommandHandler;
-    }
+        }
 
 
         /// <summary>

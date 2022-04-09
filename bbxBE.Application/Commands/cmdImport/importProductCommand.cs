@@ -1,17 +1,23 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
 using bbxBE.Application.BLL;
+using bbxBE.Application.Commands.cmdProduct;
+using bbxBE.Application.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdProduct;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,13 +26,14 @@ namespace bbxBE.Application.Commands.cmdImport
     public class ImportProductCommand : IRequest<Response<ImportProduct>>
     {
         public List<IFormFile> ProductFiles { get; set; }
+        public string FieldSeparator { get; set; } = ";";
     }
 
-    public class ImportProductCommandHandler : IRequestHandler<ImportProductCommand, Response<ImportProduct>>
+    public class ImportProductCommandHandler : ProductMappingParser, IRequestHandler<ImportProductCommand, Response<ImportProduct>>
     {
         private const string DescriptionFieldName = "Description";
-        private const string ProducGroupFieldName = "ProductGroupID";
-        private const string OriginIdFieldName = "OriginID";
+        private const string ProductGroupCodeFieldName = "ProductGroupCode";
+        private const string OriginCodeFieldName = "OriginCode";
         private const string UnitOfMeasureFieldName = "UnitOfMeasure";
         private const string UnitPrice1FieldName = "UnitPrice1";
         private const string UnitPrice2FieldName = "UnitPrice2";
@@ -36,66 +43,199 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string OrdUnitFieldName = "OrdUnit";
         private const string ProductFeeFieldName = "ProductFee";
         private const string ActiveFieldName = "Active";
-        private const string IDFieldName = "ID";
-        private const string NatureIndicatorFieldName = "NatureIndicator";
         private const string ProductCodeFieldName = "ProductCode";
-        private readonly IProductRepositoryAsync _ProductRepository;
+        private const string EANFieldName = "EAN";
+        private const string VTSZFieldName = "VTSZ";
 
+        private readonly IProductRepositoryAsync _productRepository;
+        private readonly IProductGroupRepositoryAsync _productGroupRepository;
+        private readonly IOriginRepositoryAsync _originRepository;
+        //private readonly IUnitOfMEasure
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
 
-        public ImportProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper)
+
+        public ImportProductCommandHandler(IProductRepositoryAsync productRepository,
+                                            IProductGroupRepositoryAsync productGroupCodeRepository,
+                                            IOriginRepositoryAsync originRepository,
+                                            IMapper mapper,
+                                            ILogger<ImportProductCommandHandler> logger)
         {
-            _ProductRepository = ProductRepository;
+            _productRepository = productRepository;
+            _productGroupRepository = productGroupCodeRepository;
+            _originRepository = originRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<Response<ImportProduct>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
         {
-            var productMapping = await GetProductMappingAsync(request.ProductFiles[0]);
-            var producItems = await GetProductItemsAsync(request, productMapping);
+            var mappedProducts = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
+            var producItems = await GetProductItemsAsync(request, mappedProducts.productMap);
+            var importProduct = new ImportProduct { AllItemsCount = producItems.Count };
 
             foreach (var item in producItems)
             {
+                var prod = await _productRepository.GetProductByProductCodeAsync(new GetProductByProductCode() { ProductCode = item.Key });
 
-                var getProductByProductCode = new GetProductByProductCode() { ProductCode = item.Key };
-
-                var prod = await _ProductRepository.GetProductByProductCodeAsync(getProductByProductCode);
-
-                //var product = await productHandler.Handle();
-                //TODO: check item is existing or not
                 if (prod.Keys.Count == 0)
                 {
-                    //TODO: if item is new then create with default data
-                    var createProductCommand = new CreateProductCommand();
-                    var productCreateResponse = await bllProduct.CreateAsynch(createProductCommand, _ProductRepository, _mapper, cancellationToken);
+                    await CreateOrUpdateProductionAsync(importProduct, item.Value, cancellationToken);
                 }
                 else
                 {
-                    //TODO: if existing: update
-                    var updateProductCommand = new UpdateProductCommand();
-                    var productUpdateResponse = await bllProduct.UpdateAsynch(updateProductCommand, _ProductRepository, _mapper, cancellationToken);
+                    var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
+                    prod.TryGetValue("ID", out object _i);
+                    updateProductCommand.ID = long.Parse(_i.ToString());
+                    await CreateOrUpdateProductionAsync(importProduct, updateProductCommand, cancellationToken);
                 }
-
-                //TODO: calculate statistical data
             }
 
+            if (importProduct.HasErrorDuringImport)
+            {
+                throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
+            }
 
-            var importProduct = new ImportProduct();
             return new Response<ImportProduct>(importProduct);
         }
 
-        private static async Task<Dictionary<string, Product>> GetProductItemsAsync(ImportProductCommand request, Dictionary<string, int> productMapping)
+        private async Task CreateOrUpdateProductionAsync(ImportProduct importProduct, object item, CancellationToken cancellationToken)
         {
-            var producItems = new Dictionary<string, Product>();
+            switch (item.GetType().Name)
+            {
+                case "CreateProductCommand":
+                    {
+                        await CreateProductGroupCodeIfNotExists(item, cancellationToken);
+
+                        await CreateOriginCodeIfNotExists(item, cancellationToken);
+
+                        UpdateUnitOfMeasureIfNotExists(item);
+
+                        var validator = new createProductCommandValidator(_productRepository);
+                        var result = await validator.ValidateAsync(item as CreateProductCommand);
+                        if (!result.IsValid)
+                        {
+                            LogToErrorHandler(importProduct, result);
+                        }
+                        else
+                        {
+                            await bllProduct.CreateAsynch(item as CreateProductCommand, _productRepository, _mapper, cancellationToken);
+                            importProduct.CreatedItemsCount += 1;
+                        }
+                        break;
+                    }
+                case "UpdateProductCommand":
+                    {
+                        UpdateUnitOfMeasureIfNotExists(item);
+
+                        var validator = new UpdateProductCommandValidator(_productRepository);
+                        var result = await validator.ValidateAsync(item as UpdateProductCommand);
+                        if (!result.IsValid)
+                        {
+                            LogToErrorHandler(importProduct, result);
+                        }
+                        else
+                        {
+                            await bllProduct.UpdateAsynch(item as UpdateProductCommand, _productRepository, _mapper, cancellationToken);
+                            importProduct.UpdatedItemsCount += 1;
+                        }
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+
+            return;
+        }
+
+        private static void UpdateUnitOfMeasureIfNotExists(object item)
+        {
+            switch (item.GetType().Name)
+            {
+                case "CreateProductCommand":
+                    {
+                        (item as CreateProductCommand).UnitOfMeasure = Enum.GetName(typeof(enUnitOfMeasure),
+                            GetUnitOfMeasureValueByEnum((item as CreateProductCommand).UnitOfMeasure.ToUpper()));
+                        break;
+                    }
+                case "UpdateProductCommand":
+                    {
+                        (item as UpdateProductCommand).UnitOfMeasure = Enum.GetName(typeof(enUnitOfMeasure),
+                            GetUnitOfMeasureValueByEnum((item as UpdateProductCommand).UnitOfMeasure.ToUpper()));
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        private static enUnitOfMeasure GetUnitOfMeasureValueByEnum(string unitOfMeasureValue)
+        {
+            if ((unitOfMeasureValue == "DB") || (unitOfMeasureValue == "DB."))
+                return enUnitOfMeasure.PIECE;
+            if ((unitOfMeasureValue == "KG") || ((unitOfMeasureValue == "KILOGRAM")))
+                return enUnitOfMeasure.KILOGRAM;
+            if ((unitOfMeasureValue == "CSOM") || (unitOfMeasureValue == "CSOM.") || (unitOfMeasureValue == "CS"))
+                return enUnitOfMeasure.PACK;
+            if ((unitOfMeasureValue == "FM") || ((unitOfMeasureValue == "FM.")))
+                return enUnitOfMeasure.LINEAR_METER;
+            if ((unitOfMeasureValue == "M") || (unitOfMeasureValue == "M.") || (unitOfMeasureValue == "METER"))
+                return enUnitOfMeasure.METER;
+            return enUnitOfMeasure.OWN;
+
+        }
+
+        private async Task CreateOriginCodeIfNotExists(object item, CancellationToken cancellationToken)
+        {
+            if (!String.IsNullOrEmpty((item as CreateProductCommand).OriginCode))
+            {
+                var IsUniqueOriginCode = await _originRepository.IsUniqueOriginCodeAsync((item as CreateProductCommand).OriginCode);
+                if (IsUniqueOriginCode)
+                {
+                    await bllOrigin.CreateAsync((item as CreateProductCommand).OriginCode, (item as CreateProductCommand).OriginCode, _originRepository, cancellationToken);
+                }
+            }
+        }
+
+        private async Task CreateProductGroupCodeIfNotExists(object item, CancellationToken cancellationToken)
+        {
+            var IsUniqueProductGroupCode = await _productGroupRepository.IsUniqueProductGroupCodeAsync((item as CreateProductCommand).ProductGroupCode);
+            if (IsUniqueProductGroupCode)
+            {
+                await bllProductGroup.CreateAsync((item as CreateProductCommand).ProductGroupCode, (item as CreateProductCommand).ProductGroupCode, _productGroupRepository, cancellationToken);
+            }
+        }
+
+        private void LogToErrorHandler(ImportProduct importProduct, FluentValidation.Results.ValidationResult result)
+        {
+            importProduct.HasErrorDuringImport = true;
+            LogToErrors(result);
+        }
+
+        private void LogToErrors(FluentValidation.Results.ValidationResult result)
+        {
+            foreach (var failure in result.Errors)
+            {
+                _logger.LogError("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
+            }
+        }
+
+        private static async Task<Dictionary<string, CreateProductCommand>> GetProductItemsAsync(ImportProductCommand request, Dictionary<string, int> productMapping)
+        {
+            var producItems = new Dictionary<string, CreateProductCommand>();
             using (var reader = new StreamReader(request.ProductFiles[1].OpenReadStream()))
             {
                 string currentLine;
                 while ((currentLine = await reader.ReadLineAsync()) != null)
                 {
-                    var p = GetProductFromCSV(currentLine, productMapping);
+                    var p = GetProductFromCSV(currentLine, productMapping, request.FieldSeparator);
                     foreach (var item in p)
                     {
-                        producItems.Add(item.Key, item.Value);
+                        if ((item.Value.Active) && (!producItems.ContainsKey(item.Key)))
+                        {
+                            producItems.Add(item.Key, item.Value);
+                        }
                     }
                 }
             }
@@ -103,67 +243,46 @@ namespace bbxBE.Application.Commands.cmdImport
             return producItems;
         }
 
-        private static Dictionary<string, Product> GetProductFromCSV(string currentLine, Dictionary<string, int> productMapper)
+        private static Dictionary<string, CreateProductCommand> GetProductFromCSV(string currentLine, Dictionary<string, int> productMapper, string fieldSeparator)
         {
-            string[] currentFieldsArray = currentLine.Split(';');
+            string regExpPattern = $"{fieldSeparator}(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
+            Regex regexp = new Regex(regExpPattern);
+            //currentLine = currentLine.Replace("\"", "\'");
+            //string[] currentFieldsArray = currentLine.Replace("\"", "").Trim().Split(fieldSeparator);
+            string[] currentFieldsArray = regexp.Split(currentLine); // currentLine.Replace("\"", "").Trim().Split(fieldSeparator);
+
+            var createPRoductCommand = new CreateProductCommand();
 
             try
-            {
-                return new Dictionary<string, Product> {
+            {    
+                createPRoductCommand.Description = productMapper.ContainsKey(DescriptionFieldName) ? currentFieldsArray[productMapper[DescriptionFieldName]].Trim() : null;
+                createPRoductCommand.ProductCode = productMapper.ContainsKey(ProductCodeFieldName) ? currentFieldsArray[productMapper[ProductCodeFieldName]].Trim() : null;
+                createPRoductCommand.OriginCode = productMapper.ContainsKey(OriginCodeFieldName) ? currentFieldsArray[productMapper[OriginCodeFieldName]].Trim() : null;
+                createPRoductCommand.UnitOfMeasure = productMapper.ContainsKey(UnitOfMeasureFieldName) ? currentFieldsArray[productMapper[UnitOfMeasureFieldName]].Trim() : null;
+                createPRoductCommand.UnitPrice1 = productMapper.ContainsKey(UnitPrice1FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice1FieldName]]) : 0;
+                createPRoductCommand.UnitPrice2 = productMapper.ContainsKey(UnitPrice2FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice2FieldName]]) : 0;
+                createPRoductCommand.IsStock = productMapper.ContainsKey(IsStockFieldName) ? bool.Parse(currentFieldsArray[productMapper[IsStockFieldName]]) : true;
+                createPRoductCommand.MinStock = productMapper.ContainsKey(MinStockFieldName) ? decimal.Parse(currentFieldsArray[productMapper[MinStockFieldName]]) : 0;
+                createPRoductCommand.OrdUnit = productMapper.ContainsKey(OrdUnitFieldName) ? decimal.Parse(currentFieldsArray[productMapper[OrdUnitFieldName]]) : 0;
+                createPRoductCommand.ProductFee = productMapper.ContainsKey(ProductFeeFieldName) ? decimal.Parse(currentFieldsArray[productMapper[ProductFeeFieldName]]) : 0;
+                createPRoductCommand.Active = productMapper.ContainsKey(ActiveFieldName) ? (currentFieldsArray[productMapper[ActiveFieldName]] == "1" ? true : false) : false;
+                createPRoductCommand.EAN = productMapper.ContainsKey(EANFieldName) ? currentFieldsArray[productMapper[EANFieldName]].Trim() : null;
+                createPRoductCommand.VTSZ = productMapper.ContainsKey(VTSZFieldName) ? currentFieldsArray[productMapper[VTSZFieldName]].Trim() : null;
+                createPRoductCommand.ProductGroupCode = productMapper.ContainsKey(ProductGroupCodeFieldName) ? currentFieldsArray[productMapper[ProductGroupCodeFieldName]].Trim() : null;
+                createPRoductCommand.VatRateCode = "27%";
+                //createPRoductCommand.LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]]) : 0;
+
+                return new Dictionary<string, CreateProductCommand> {
                     {
                         productMapper.ContainsKey(ProductCodeFieldName) ? currentFieldsArray[productMapper[ProductCodeFieldName]] : null,
-                        new Product
-                        {
-                            Description = productMapper.ContainsKey(DescriptionFieldName) ? currentFieldsArray[productMapper[DescriptionFieldName]] : null,
-                            ProductGroupID = productMapper.ContainsKey(ProducGroupFieldName) ? long.Parse(currentFieldsArray[productMapper[ProducGroupFieldName]]) : 0,
-                            OriginID = productMapper.ContainsKey(OriginIdFieldName) ? long.Parse(currentFieldsArray[productMapper[OriginIdFieldName]]) : 0,
-                            UnitOfMeasure = productMapper.ContainsKey(UnitOfMeasureFieldName) ? currentFieldsArray[productMapper[UnitOfMeasureFieldName]] : null,
-                            UnitPrice1 = productMapper.ContainsKey(UnitPrice1FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice1FieldName]]) : 0,
-                            UnitPrice2 = productMapper.ContainsKey(UnitPrice2FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice2FieldName]]) : 0,
-                            LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]]) : 0,
-                            IsStock = productMapper.ContainsKey(IsStockFieldName) ? bool.Parse(currentFieldsArray[productMapper[IsStockFieldName]]) : false,
-                            MinStock = productMapper.ContainsKey(MinStockFieldName) ? decimal.Parse(currentFieldsArray[productMapper[MinStockFieldName]]) : 0,
-                            OrdUnit = productMapper.ContainsKey(OrdUnitFieldName) ? decimal.Parse(currentFieldsArray[productMapper[OrdUnitFieldName]]) : 0,
-                            ProductFee = productMapper.ContainsKey(ProductFeeFieldName) ? decimal.Parse(currentFieldsArray[productMapper[ProductFeeFieldName]]) : 0,
-                            Active = productMapper.ContainsKey(ActiveFieldName) ? bool.Parse(currentFieldsArray[productMapper[ActiveFieldName]]) : false,
-                            ID = productMapper.ContainsKey(IDFieldName) ? long.Parse(currentFieldsArray[productMapper[IDFieldName]]) : 0,
-                            NatureIndicator = productMapper.ContainsKey(NatureIndicatorFieldName) ? currentFieldsArray[productMapper[NatureIndicatorFieldName]] : null
-                        }
+                        createPRoductCommand
                     }
                 };
-
-                //    public string ProductCode { get; set; }
-                //public string Description { get; set; }
-                //public string ProductGroupCode { get; set; }
-                //public string OriginCode { get; set; }
-                //public string UnitOfMeasure { get; set; }
-                //public decimal UnitPrice1 { get; set; }
-                //public decimal UnitPrice2 { get; set; }
-                //public decimal LatestSupplyPrice { get; set; }
-                //public bool IsStock { get; set; }
-                //public decimal MinStock { get; set; }
-                //public decimal OrdUnit { get; set; }
-                //public decimal ProductFee { get; set; }
-                //public bool Active { get; set; }
-                //public string VTSZ { get; set; }
-                //public string EAN { get; set; }
-
             }
             catch (System.Exception ex)
             {
-                throw ex;
+                throw new Exception($"{ex.Message} - ProductCode: {currentFieldsArray[productMapper[ProductCodeFieldName]]}");
             }
-
-        }
-
-        private static async Task<Dictionary<string, int>> GetProductMappingAsync(IFormFile mappingFile)
-        {
-            string s;
-            using (var reader = new StreamReader(mappingFile.OpenReadStream()))
-            {
-                s = await reader.ReadToEndAsync();
-            }
-            return JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
         }
     }
 }

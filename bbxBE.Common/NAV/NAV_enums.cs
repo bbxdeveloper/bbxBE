@@ -154,14 +154,14 @@ namespace bbxBE.Common.NAV
 
         public enum enCustpaymentMethod
         {
-            [Description("Átutalás")]
-            TRANSFER,
             [Description("Készpénz")]
             CASH,
+            [Description("Átutalás")]
+            TRANSFER,
             [Description("Bankkártya")]
             CARD,
-            [Description("Utalvány")]
-            VOUCHER,
+ //           [Description("Utalvány")]
+ //           VOUCHER,
             [Description("Egyéb")]
             OTHER
         }

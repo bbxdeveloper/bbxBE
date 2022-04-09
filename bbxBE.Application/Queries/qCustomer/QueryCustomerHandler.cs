@@ -17,6 +17,8 @@ namespace bbxBE.Application.Queries.qCustomer
     public class QueryCustomer : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
         public string SearchString { get; set; }
+
+        public bool? IsOwnData { get; set; }
     }
 
     public class QueryCustomerHandler : IRequestHandler<QueryCustomer, PagedResponse<IEnumerable<Entity>>>

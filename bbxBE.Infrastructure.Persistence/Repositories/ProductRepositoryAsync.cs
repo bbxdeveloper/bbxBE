@@ -16,11 +16,10 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Queries.ViewModels;
-using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Common;
-using bbxBE.Application.Enums;
 using bbxBE.Application.Consts;
 using bbxBE.Application.Exceptions;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -31,6 +30,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly DbSet<ProductCode> _ProductCodes;
         private readonly DbSet<Origin> _Origins;
         private readonly DbSet<ProductGroup> _ProductGroups;
+        private readonly DbSet<VatRate> _VatRates;
         private IDataShapeHelper<Product> _dataShaperProduct;
         private IDataShapeHelper<GetProductViewModel> _dataShaperGetProductViewModel;
         private readonly IMockService _mockData;
@@ -47,6 +47,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _ProductCodes = dbContext.Set<ProductCode>();
             _Origins = dbContext.Set<Origin>();
             _ProductGroups = dbContext.Set<ProductGroup>();
+            _VatRates = dbContext.Set<VatRate>();
 
 
             _dataShaperProduct = dataShaperProduct;
@@ -87,6 +88,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (!string.IsNullOrWhiteSpace(p_OriginCode))
                 {
                     p_product.OriginID = _Origins.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                }
+
+                if (!string.IsNullOrWhiteSpace(p_VatRateCode))
+                {
+                    p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                }
+                else
+                {
+                    p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27).ID;
                 }
 
                 _Products.Add(p_product);
@@ -175,6 +185,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                         }
 
+                    if( !string.IsNullOrWhiteSpace( p_VatRateCode))
+                    {
+                        p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+
                     }
               
 
@@ -232,6 +246,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var item = _Products//.AsNoTracking().AsExpandable()
                                   .Include(i => i.Origin)
                                   .Include(i => i.ProductGroup)
+                                   .Include(i => i.VatRate)
                                   .Include(i => i.ProductCodes)
                                   .Where(i => i.ID == ID).FirstOrDefaultAsync();
 
@@ -286,7 +301,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var query = _Products//.AsNoTracking().AsExpandable()
                                 .Include(i => i.Origin)
                                 .Include(i => i.ProductGroup)
-                                .Include(i => i.ProductCodes).AsQueryable();
+                                .Include(i => i.VatRate)
+                               .Include(i => i.ProductCodes).AsQueryable();
 
             // Count records total
             recordsTotal = await query.CountAsync();

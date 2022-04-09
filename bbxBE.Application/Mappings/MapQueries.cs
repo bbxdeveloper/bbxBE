@@ -39,6 +39,8 @@ namespace bbxBE.Queries.Mappings
             CreateMap<Product, GetProductViewModel>()
              .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode +"-"+src.ProductGroup.ProductGroupDescription))
              .ForMember(dst => dst.Origin, opt => opt.MapFrom(src => src.Origin.OriginCode + "-" + src.Origin.OriginDescription))
+             .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode))
+             .ForMember(dst => dst.VatPercentage, opt => opt.MapFrom(src => src.VatRate.VatPercentage))
              .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
              .ForMember(dst => dst.VTSZ, opt => opt.MapFrom(src => src.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ProductCodeValue))
              .ForMember(dst => dst.EAN, opt => opt.MapFrom(src => src.ProductCodes.Any(w => w.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString()) ?
@@ -48,6 +50,8 @@ namespace bbxBE.Queries.Mappings
             CreateMap<Counter, GetCounterViewModel>()
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription));
 
+            CreateMap<List<VatRate>, List<GetVatRateViewModel>>();
+            CreateMap<VatRate, GetVatRateViewModel>();
         }
     }
 }

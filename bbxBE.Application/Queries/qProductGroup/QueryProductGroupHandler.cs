@@ -21,13 +21,13 @@ namespace bbxBE.Application.Queries.qProductGroup
 
     public class QueryProductGroupHandler : IRequestHandler<QueryProductGroup, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly IProductGroupRepositoryAsync _ProductGroupRepository;
+        private readonly IProductGroupRepositoryAsync _productGroupRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
         public QueryProductGroupHandler(IProductGroupRepositoryAsync ProductGroupRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _ProductGroupRepository = ProductGroupRepository;
+            _productGroupRepository = ProductGroupRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -54,7 +54,7 @@ namespace bbxBE.Application.Queries.qProductGroup
 
 
             // query based on filter
-            var entities = await _ProductGroupRepository.QueryPagedProductGroupAsync(validFilter);
+            var entities = await _productGroupRepository.QueryPagedProductGroupAsync(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetProductGroupViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 
