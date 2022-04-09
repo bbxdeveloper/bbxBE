@@ -21,16 +21,21 @@ namespace bbxBE.Application.BLL
             var prod = _mapper.Map<Product>(request);
            
             prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
+            
+            prod.ProductCodes = new List<ProductCode>(); 
 
             var pcCode = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+            prod.ProductCodes.Add(pcCode);
             var pcVTSZ = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+            prod.ProductCodes.Add(pcVTSZ);
             ProductCode pcEAN = null;
             if (!string.IsNullOrWhiteSpace(request.EAN))
             {
                 pcEAN = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+                prod.ProductCodes.Add(pcEAN);
             }
 
-            prod = await _ProductRepository.AddProductAsync(prod, pcCode, pcVTSZ, pcEAN, request.ProductGroupCode, request.OriginCode);
+            prod = await _ProductRepository.AddProductAsync(prod,request.ProductGroupCode, request.OriginCode);
             return prod;
         }
 
@@ -41,14 +46,18 @@ namespace bbxBE.Application.BLL
             var prod = _mapper.Map<Product>(request);
             prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
             var pcCode = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+            prod.ProductCodes = new List<ProductCode>();
+            prod.ProductCodes.Add(pcCode);
             var pcVTSZ = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+            prod.ProductCodes.Add(pcVTSZ);
+
             ProductCode pcEAN = null;
             if (!string.IsNullOrWhiteSpace(request.EAN))
             {
                 pcEAN = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+                prod.ProductCodes.Add(pcEAN);
             }
-
-            await _ProductRepository.UpdateProductAsync(prod, pcCode, pcVTSZ, pcEAN, request.ProductGroupCode, request.OriginCode);
+            await _ProductRepository.UpdateProductAsync(prod, request.ProductGroupCode, request.OriginCode);
             return prod;
         }
     }

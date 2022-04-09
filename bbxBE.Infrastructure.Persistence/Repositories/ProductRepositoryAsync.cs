@@ -74,7 +74,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return await _Origins.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted);
         }
 
-        public async Task<Product> AddProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN, string p_ProductGroupCode, string p_OriginCode)
+        public async Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode)
         {
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
@@ -91,22 +91,41 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 _Products.Add(p_product);
                 await _dbContext.SaveChangesAsync();
-                p_productCode.ProductID = p_product.ID;
-                p_VTSZ.ProductID = p_product.ID;
-                _ProductCodes.Add(p_productCode);
-                _ProductCodes.Add(p_VTSZ);
-                if (p_EAN != null)
-                {
-                    p_EAN.ProductID = p_product.ID;
-                    _ProductCodes.Add(p_EAN);
-                }
-                await _dbContext.SaveChangesAsync();
+               
                 dbContextTransaction.Commit();
 
             }
             return p_product;
         }
-        public async Task<Product> UpdateProductAsync(Product p_product, ProductCode p_productCode, ProductCode p_VTSZ, ProductCode p_EAN, string p_ProductGroupCode, string p_OriginCode)
+
+        /*
+        public async Task<Product> AddProductRangeAsync(List<Product> p_productList, string p_ProductGroupCode, string p_OriginCode)
+        {
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+
+                if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
+                {
+                    p_product.ProductGroupID = _ProductGroups.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                }
+
+                if (!string.IsNullOrWhiteSpace(p_OriginCode))
+                {
+                    p_product.OriginID = _Origins.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                }
+
+                _Products.Add(p_product);
+                await _dbContext.SaveChangesAsync();
+
+                dbContextTransaction.Commit();
+
+            }
+            return p_product;
+        }
+        */
+
+
+        public async Task<Product> UpdateProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode)
         {
 
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
@@ -128,46 +147,36 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         p_product.OriginID = _Origins.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
                     }
 
+
                     if (prod.ProductCodes != null)
                     {
-                        var pc = prod.ProductCodes.SingleOrDefault( x=> x.ProductCodeCategory == p_productCode.ProductCodeCategory);
+                        
+
+                        var pc = prod.ProductCodes.SingleOrDefault( x=> x.ProductCodeCategory== enCustproductCodeCategory.OWN.ToString());
                         if (pc != null)
                         {
-                            p_productCode.ID = pc.ID;
-                            _ProductCodes.Update(p_productCode);
+                            p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ID= pc.ID;
                         }
 
-                        var vtsz = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == p_VTSZ.ProductCodeCategory);
+                        var vtsz = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString());
                         if (vtsz != null)
                         {
-                            p_VTSZ.ID = vtsz.ID;
-                            _ProductCodes.Update(p_VTSZ);
+                            p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ID = vtsz.ID;
                         }
 
-                        var ean = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == p_EAN.ProductCodeCategory);
+                        var ean = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
                         if (ean != null)
                         {
-                            if (p_EAN != null)
-                            {
-                                p_EAN.ID = ean.ID;
-                                _ProductCodes.Update(p_EAN);
-                            }
+                            var e = p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
+                            if( e != null)
+                                e.ID = ean.ID;
                             else
-                            {
                                 _ProductCodes.Remove(ean);
-                            }
-                        }
-                        else
-                        {
-                            if (p_EAN != null)
-                            {
-                                p_EAN.ProductID = p_product.ID;
-                                _ProductCodes.Add(p_EAN);
-                            }
+
                         }
 
                     }
-
+              
 
                     _Products.Update(p_product);
                     await _dbContext.SaveChangesAsync();
