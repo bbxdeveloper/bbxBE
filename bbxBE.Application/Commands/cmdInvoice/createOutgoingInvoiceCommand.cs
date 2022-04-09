@@ -51,28 +51,32 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[ColumnLabel("Nettó érték")]
 			[Description("Ár a számla pénznemében")]
 			public decimal LineNetAmount { get; set; }
-
+			
 			[ColumnLabel("Áfa érték")]
 			[Description("Áfa a számla pénznemében")]
 			public decimal lineVatAmount { get; set; }
 
-		}
-/*
-		[Description("Számla áfánkénti összesítő")]
-		public class SummaryByVatRate 
-		{
-			[ColumnLabel("Áfakód")]
-			[Description("Áfakód")]
-			public string VatRateCode { get; set; }
+			[ColumnLabel("Bruttó érték")]
+			[Description("Bruttó értéka számla pénznemében")]
+			public decimal lineGrossAmount { get; set; }
 
-			[ColumnLabel("Áfa értéke")]
-			[Description("Áfa értéke a számla pénznemében")]
-			public decimal VatRateNetAmount { get; set; }
 		}
-*/
+		/*
+				[Description("Számla áfánkénti összesítő")]
+				public class SummaryByVatRate 
+				{
+					[ColumnLabel("Áfakód")]
+					[Description("Áfakód")]
+					public string VatRateCode { get; set; }
+
+					[ColumnLabel("Áfa értéke")]
+					[Description("Áfa értéke a számla pénznemében")]
+					public decimal VatRateNetAmount { get; set; }
+				}
+		*/
 		[ColumnLabel("Raktár")]
 		[Description("Raktár")]
-		public long WarehouseCode { get; set; }
+		public string WarehouseCode { get; set; }
 
 		[ColumnLabel("Kelt")]
 		[Description("Kiállítás dátuma")]

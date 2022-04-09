@@ -14,8 +14,7 @@ namespace bbxBE.Application
     {
         public static void AddApplicationLayer(this IServiceCollection services)
         {
-      
-            
+
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); //Validáció behúzása?
