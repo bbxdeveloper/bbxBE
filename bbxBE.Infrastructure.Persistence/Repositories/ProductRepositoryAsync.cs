@@ -37,6 +37,26 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
 
+
+        /*
+           "id": 2272,
+   "productCode": "QQQ-RANGEX",
+  "description": "QQQ range teszt átírás",
+  "productGroupCode": null,
+  "originCode": null,
+  "unitOfMeasure": "PIECE",
+  "unitPrice1": 10,
+  "unitPrice2": 20,
+  "latestSupplyPrice": 30,
+  "isStock": true,
+  "minStock": 10,
+  "ordUnit":20,
+  "productFee": 0,
+  "active": true,
+  "vtsz": "12121211",
+  "ean": null,
+"vatRateCode" : "27%"
+        */
         public ProductRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Product> dataShaperProduct,
             IDataShapeHelper<GetProductViewModel> dataShaperGetProductViewModel,
@@ -55,6 +75,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+
+
         }
 
 
@@ -106,6 +128,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
 
                 await _Products.AddAsync(p_product);
+                _dbContext.ChangeTracker.AcceptAllChanges();
                 await _dbContext.SaveChangesAsync();
 
                 await dbContextTransaction.CommitAsync();
@@ -139,20 +162,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         private Product PrepareUpdateProduct(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
-            var prod = _Products.Include(p => p.ProductCodes).Where(x => x.ID == p_product.ID).FirstOrDefault();
+            var prod = _Products.AsNoTracking().Include(p => p.ProductCodes).Where(x => x.ID == p_product.ID).FirstOrDefault();
 
             if (prod != null)
             {
                 if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
                 {
-                    p_product.ProductGroupID = _ProductGroups.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                    p_product.ProductGroupID = _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
                 }
 
                 if (!string.IsNullOrWhiteSpace(p_OriginCode))
                 {
-                    p_product.OriginID = _Origins.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                    p_product.OriginID = _Origins.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
                 }
 
+                if (!string.IsNullOrWhiteSpace(p_VatRateCode))
+                {
+                    p_product.VatRateID = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                }
 
                 if (prod.ProductCodes != null)
                 {
@@ -179,12 +206,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             _ProductCodes.Remove(ean);
 
                     }
-
-                    if (!string.IsNullOrWhiteSpace(p_VatRateCode))
-                    {
-                        p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
-
-                    }
+          
                 }
             }
             else
@@ -228,7 +250,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     PrepareUpdateProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
                     item++;
                 }
-  
+                _dbContext.ChangeTracker.AcceptAllChanges();
+
                 _Products.UpdateRange(p_productList);
                 await _dbContext.SaveChangesAsync();
                 dbContextTransaction.Commit();
