@@ -89,7 +89,7 @@ namespace bxBE.Application.Commands.cmdProduct
 
         public async Task<Response<Product>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            //var prod = await bllProduct.UpdateAsynch(request, _ProductRepository, _mapper, cancellationToken);
+   //         var prod = await bllProduct.UpdateAsynch(request, _ProductRepository, _mapper, cancellationToken);
             var prod = await bllProduct.UpdateRangeAsynch(new List<UpdateProductCommand>() {  request}, _ProductRepository, _mapper, cancellationToken);
             return new Response<Product>(null);
         }

@@ -162,10 +162,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         private Product PrepareUpdateProduct(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
-            var prod = _Products.AsNoTracking().Include(p => p.ProductCodes).Where(x => x.ID == p_product.ID).FirstOrDefault();
+            var prod = _Products.AsNoTracking()
+                        .Include(p => p.ProductCodes).AsNoTracking()
+                        .Include(pg => pg.ProductGroup).AsNoTracking()
+                        .Include(o => o.Origin).AsNoTracking()
+                        .Include(v => v.VatRate).AsNoTracking()
+                         .Where(x => x.ID == p_product.ID).FirstOrDefault();
 
             if (prod != null)
             {
+                
                 if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
                 {
                     p_product.ProductGroupID = _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
@@ -196,14 +202,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ID = vtsz.ID;
                     }
 
-                    var ean = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
+                    //A changetracking mechanizmus miatt nem a produc-ból kérdezzük ki
+//                    var ean = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
+                    var ean = _ProductCodes .SingleOrDefault(x => 
+                                x.ProductID == p_product.ID &&
+                                x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
                     if (ean != null)
                     {
-                        var e = p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
-                        if (e != null)
-                            e.ID = ean.ID;
+                        var eanOrig = p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
+                        if (eanOrig != null)
+                            eanOrig.ID = ean.ID;
                         else
+                        {
+
                             _ProductCodes.Remove(ean);
+                        }
 
                     }
           
@@ -248,9 +261,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 foreach (var prod in p_productList)
                 {
                     PrepareUpdateProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
+                    
                     item++;
                 }
                 _dbContext.ChangeTracker.AcceptAllChanges();
+              //  _dbContext.ChangeTracker.Clear();
 
                 _Products.UpdateRange(p_productList);
                 await _dbContext.SaveChangesAsync();
