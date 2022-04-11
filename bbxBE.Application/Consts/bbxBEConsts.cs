@@ -37,6 +37,11 @@ namespace bbxBE.Application.Consts
 
         public static string FV_BASE = "Egy vagy több validációs hiba történt.";
 
+        public static string FV_FILELISTISNULL = "A File lista nem lehet üres!";
+        public static string FV_FILELISTISEMPTY = "A File lista nem lehet NULL!";
+        public static string FV_FILELISTCONUTER = "2 File-t kell feltölteni!";
+        public static string FV_FILESIZE = "Üres file lett feltöltve!";
+
         public static string INV_DATE1 = "{PropertyName}| A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
         public static string INV_DATE2 = "{PropertyName}| A számla dátuma nem lehet későbbi, mint a fizetési határidő";
         public static string INV_LINES = "{PropertyName}| A számlán nincs tételsor";
@@ -62,6 +67,7 @@ namespace bbxBE.Application.Consts
         public static string VATCODE_27 = "27%";
         public static string VATCODE_KBAET = "KBAET";
         public static string VATCODE_FA = "FA";
+
         /*
                 public static string FV_REQUIRED = "{PropertyName}|{PropertyName} is required.";
                 public static string FV_LEN1 = "{PropertyName}|{PropertyName} must be one character.";

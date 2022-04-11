@@ -56,6 +56,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
                         break;
                 }
             }
+
             return base.SaveChangesAsync(cancellationToken);
         }
 
@@ -72,8 +73,9 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+  
+            optionsBuilder.EnableSensitiveDataLogging();
             optionsBuilder.UseLoggerFactory(_loggerFactory);
-            
         }
     }
 }

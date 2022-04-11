@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Commands.cmdProduct;
+﻿using bbxBE.Application.Commands.cmdImport;
+using bbxBE.Application.Commands.cmdProduct;
 using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
@@ -13,6 +14,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -95,6 +98,14 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Delete([FromQuery] DeleteProductCommand command)
         {
             return Ok(await Mediator.Send(command));
+        }
+
+
+        [HttpPost("import")]
+        public async Task<IActionResult> Import(List<IFormFile> productFiles, string fieldSeparator)
+        {
+            var productRequest = new ImportProductCommand() { ProductFiles = productFiles, FieldSeparator = fieldSeparator };
+            return Ok(await Mediator.Send(productRequest));
         }
     }
 }

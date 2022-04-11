@@ -52,6 +52,12 @@ namespace bbxBE.WebApi.Middlewares
                         // not found error
                         response.StatusCode = (int)HttpStatusCode.NoContent;
                         break;
+                    case ImportParseException e:
+                        // parsing problem
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        responseModel.Errors = new List<string>();
+                        responseModel.Errors.Add(e.Message);  
+                        break;
 
                     default:
                         // unhandled error
