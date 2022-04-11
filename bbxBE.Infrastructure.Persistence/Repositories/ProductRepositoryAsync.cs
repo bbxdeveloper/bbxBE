@@ -172,54 +172,64 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (prod != null)
             {
                 
-                if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
+                if (!string.IsNullOrWhiteSpace(p_ProductGroupCode) )
                 {
-                    p_product.ProductGroupID = _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                    var pg  =   _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
+                    p_product.ProductGroupID = pg.ID;
+                    p_product.ProductGroup = pg;
                 }
 
                 if (!string.IsNullOrWhiteSpace(p_OriginCode))
                 {
-                    p_product.OriginID = _Origins.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                    var origin= _Origins.AsNoTracking().SingleOrDefault(x => x.OriginCode== p_OriginCode);
+
+                    p_product.OriginID = origin.ID;
+                    p_product.Origin = origin;
                 }
 
                 if (!string.IsNullOrWhiteSpace(p_VatRateCode))
                 {
-                    p_product.VatRateID = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                    var vatRate = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
+
+                    p_product.VatRateID = vatRate.ID;
+                    p_product.VatRate = vatRate;
+
+                 }
+
+
+                var pc = p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString());
+                if( pc != null)
+                {
+                    var pcID = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())?.ID;
+                    if(pcID != null)
+                        pc.ID = pcID.Value ;
                 }
 
-                if (prod.ProductCodes != null)
+                var vtsz = p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString());
+                if (vtsz != null)
                 {
+                    var vtszID = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString())?.ID;
+                    if (vtszID != null)
+                        vtsz.ID = vtszID.Value;
+                }
 
-                    var pc = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString());
-                    if (pc != null)
-                    {
-                        p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ID = pc.ID;
-                    }
 
-                    var vtsz = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString());
-                    if (vtsz != null)
-                    {
-                        p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ID = vtsz.ID;
-                    }
 
                     //A changetracking mechanizmus miatt nem a produc-ból kérdezzük ki
 //                    var ean = prod.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
-                    var ean = _ProductCodes .SingleOrDefault(x => 
-                                x.ProductID == p_product.ID &&
-                                x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
-                    if (ean != null)
+                var ean = _ProductCodes .SingleOrDefault(x => 
+                            x.ProductID == p_product.ID &&
+                            x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
+                if (ean != null)
+                {
+                    var eanOrig = p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
+                    if (eanOrig != null)
+                        eanOrig.ID = ean.ID;
+                    else
                     {
-                        var eanOrig = p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
-                        if (eanOrig != null)
-                            eanOrig.ID = ean.ID;
-                        else
-                        {
 
-                            _ProductCodes.Remove(ean);
-                        }
-
+                        _ProductCodes.Remove(ean);
                     }
-          
                 }
             }
             else

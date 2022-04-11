@@ -88,10 +88,8 @@ namespace bxBE.Application.Commands.cmdProduct
 
         public async Task<Response<Product>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            var reqList = new List<CreateProductCommand>() { request };
-  //          var prod = await bllProduct.CreateAsynch(request, _ProductRepository, _mapper, cancellationToken);
-            var prod = await bllProduct.CreateRangeAsynch(reqList, _ProductRepository, _mapper, cancellationToken);
-            return new Response<Product>(null);
+            var prod = await bllProduct.CreateAsynch(request, _ProductRepository, _mapper, cancellationToken);
+            return new Response<Product>(prod);
         }
     }
 }
