@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -54,6 +55,9 @@ namespace bbxBE.Application.Commands.cmdImport
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
+        private List<CreateProductCommand> createProductCommands = new List<CreateProductCommand>();
+        private List<UpdateProductCommand> updateProductCommands = new List<UpdateProductCommand>();
+
 
         public ImportProductCommandHandler(IProductRepositoryAsync productRepository,
                                             IProductGroupRepositoryAsync productGroupCodeRepository,
@@ -73,28 +77,86 @@ namespace bbxBE.Application.Commands.cmdImport
             var mappedProducts = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
             var producItems = await GetProductItemsAsync(request, mappedProducts.productMap);
             var importProduct = new ImportProduct { AllItemsCount = producItems.Count };
+            var productItems = new HashSet<string>();
+
+            var pCodes = await _productRepository.GetAllProductAsync();
+            foreach (var item in pCodes)
+            {
+                if (item.ProductCodes != null)
+                {
+                    foreach (var item2 in item.ProductCodes)
+                    {
+                        if (item2.ProductCodeCategory == "OWN")
+                            productItems.Add(item2.ProductCodeValue);
+                    }
+                }   
+            }
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
 
             foreach (var item in producItems)
             {
-                var prod = await _productRepository.GetProductByProductCodeAsync(new GetProductByProductCode() { ProductCode = item.Key });
-
-                if (prod.Keys.Count == 0)
+                if (!productItems.Contains(item.Value.ProductCode))
                 {
-                    await CreateOrUpdateProductionAsync(importProduct, item.Value, cancellationToken);
+                    createProductCommands.Add(item.Value);
+                    //await CreateOrUpdateProductionAsync(importProduct, item.Value, cancellationToken);
                 }
                 else
                 {
                     var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
-                    prod.TryGetValue("ID", out object _i);
-                    updateProductCommand.ID = long.Parse(_i.ToString());
-                    await CreateOrUpdateProductionAsync(importProduct, updateProductCommand, cancellationToken);
+                    updateProductCommands.Add(updateProductCommand);
+                    
+                    //prod.TryGetValue("ID", out object _i);
+                    //updateProductCommand.ID = long.Parse(_i.ToString());
+
+
+                    //updateProductCommand.ID = long.Parse(item.Key.ToString());
+                    //await CreateOrUpdateProductionAsync(importProduct, updateProductCommand, cancellationToken);
                 }
+
+                //var prod = await _productRepository.GetProductByProductCodeAsync(new GetProductByProductCode() { ProductCode = item.Key });
             }
 
+            stopWatch.Stop();
+
+
+            stopWatch.Restart();
+
+            for (int i = 0; i < createProductCommands.Count; i++)
+            {
+                CreateOrUpdateProductionAsync(importProduct, createProductCommands[i], cancellationToken);
+            }
+
+            stopWatch.Stop();
+
+            stopWatch.Restart();
+
+            await bllProduct.CreateRangeAsynch(createProductCommands, _productRepository, _mapper, cancellationToken);
+
+            stopWatch.Stop();
+
+            stopWatch.Restart();
+
+            for (int i = 0; i < updateProductCommands.Count; i++)
+            {
+                //updateProductCommands[i].ID = long.Parse(item.Key.ToString());
+                CreateOrUpdateProductionAsync(importProduct, updateProductCommands[i], cancellationToken);
+            }
+
+            stopWatch.Stop();
+
+            stopWatch.Restart();
+
+            await bllProduct.UpdateRangeAsynch(updateProductCommands, _productRepository, _mapper, cancellationToken);
+
+            stopWatch.Stop();
             if (importProduct.HasErrorDuringImport)
             {
-                throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
+                //throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
             }
+            importProduct.CreatedItemsCount = createProductCommands.Count;
+            importProduct.UpdatedItemsCount = updateProductCommands.Count;
 
             return new Response<ImportProduct>(importProduct);
         }
@@ -105,40 +167,42 @@ namespace bbxBE.Application.Commands.cmdImport
             {
                 case "CreateProductCommand":
                     {
-                        await CreateProductGroupCodeIfNotExists(item, cancellationToken);
+                        await CreateProductGroupCodeIfNotExistsAsync(item, cancellationToken);
 
-                        await CreateOriginCodeIfNotExists(item, cancellationToken);
+                        await CreateOriginCodeIfNotExistsAsync(item, cancellationToken);
 
                         UpdateUnitOfMeasureIfNotExists(item);
 
-                        var validator = new createProductCommandValidator(_productRepository);
-                        var result = await validator.ValidateAsync(item as CreateProductCommand);
-                        if (!result.IsValid)
-                        {
-                            LogToErrorHandler(importProduct, result);
-                        }
-                        else
-                        {
-                            await bllProduct.CreateAsynch(item as CreateProductCommand, _productRepository, _mapper, cancellationToken);
-                            importProduct.CreatedItemsCount += 1;
-                        }
+                        //var validator = new createProductCommandValidator(_productRepository);
+                        //var result = await validator.ValidateAsync(item as CreateProductCommand);
+                        //if (!result.IsValid)
+                        //{
+                        //    LogToErrorHandler(importProduct, result);
+                        //}
+                        //else
+                        //{
+                        //    //createProductCommands.Add(item as CreateProductCommand);
+                        //    //await bllProduct.CreateAsynch(item as CreateProductCommand, _productRepository, _mapper, cancellationToken);
+                        //    //importProduct.CreatedItemsCount += 1;
+                        //}
                         break;
                     }
                 case "UpdateProductCommand":
                     {
                         UpdateUnitOfMeasureIfNotExists(item);
 
-                        var validator = new UpdateProductCommandValidator(_productRepository);
-                        var result = await validator.ValidateAsync(item as UpdateProductCommand);
-                        if (!result.IsValid)
-                        {
-                            LogToErrorHandler(importProduct, result);
-                        }
-                        else
-                        {
-                            await bllProduct.UpdateAsynch(item as UpdateProductCommand, _productRepository, _mapper, cancellationToken);
-                            importProduct.UpdatedItemsCount += 1;
-                        }
+                        //var validator = new UpdateProductCommandValidator(_productRepository);
+                        //var result = await validator.ValidateAsync(item as UpdateProductCommand);
+                        //if (!result.IsValid)
+                        //{
+                        //    LogToErrorHandler(importProduct, result);
+                        //}
+                        //else
+                        //{
+                        //    //updateProductCommands.Add(item as UpdateProductCommand);
+                        //    //await bllProduct.UpdateAsynch(item as UpdateProductCommand, _productRepository, _mapper, cancellationToken);
+                        //    //importProduct.UpdatedItemsCount += 1;
+                        //}
                         break;
                     }
                 default:
@@ -186,7 +250,7 @@ namespace bbxBE.Application.Commands.cmdImport
 
         }
 
-        private async Task CreateOriginCodeIfNotExists(object item, CancellationToken cancellationToken)
+        private async Task CreateOriginCodeIfNotExistsAsync(object item, CancellationToken cancellationToken)
         {
             if (!String.IsNullOrEmpty((item as CreateProductCommand).OriginCode))
             {
@@ -198,7 +262,7 @@ namespace bbxBE.Application.Commands.cmdImport
             }
         }
 
-        private async Task CreateProductGroupCodeIfNotExists(object item, CancellationToken cancellationToken)
+        private async Task CreateProductGroupCodeIfNotExistsAsync(object item, CancellationToken cancellationToken)
         {
             var IsUniqueProductGroupCode = await _productGroupRepository.IsUniqueProductGroupCodeAsync((item as CreateProductCommand).ProductGroupCode);
             if (IsUniqueProductGroupCode)
@@ -210,6 +274,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private void LogToErrorHandler(ImportProduct importProduct, FluentValidation.Results.ValidationResult result)
         {
             importProduct.HasErrorDuringImport = true;
+            importProduct.ErroredItemssCount = +1;
             LogToErrors(result);
         }
 

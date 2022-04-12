@@ -24,5 +24,6 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Entity> GetProductAsync(GetProduct requestParameters);
         Task<Entity> GetProductByProductCodeAsync(GetProductByProductCode requestParameter);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductAsync(QueryProduct requestParameters);
+        Task<List<Product>> GetAllProductAsync();
     }
 }

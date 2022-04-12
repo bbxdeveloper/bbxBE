@@ -444,6 +444,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-
+        public async Task<List<Product>> GetAllProductAsync()
+        {
+            return await _Products.AsNoTracking()
+                 .Include(p => p.ProductCodes).AsNoTracking()
+                 .Include(pg => pg.ProductGroup).AsNoTracking()
+                 .Include(o => o.Origin).AsNoTracking()
+                 .Include(v => v.VatRate).AsNoTracking().ToListAsync();
+        }
     }
 }
