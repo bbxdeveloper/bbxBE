@@ -1,5 +1,6 @@
 ﻿using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Infrastructure.Persistence.Caches;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Migrations;
 using bbxBE.Infrastructure.Persistence.Repositories;
@@ -47,6 +48,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<ICounterRepositoryAsync, CounterRepositoryAsync>();
             services.AddTransient<IInvoiceRepositoryAsync, InvoiceRepositoryAsync>();
             services.AddTransient<IVatRateRepositoryAsync, VatRateRepositoryAsync>();
+            services.AddSingleton<ICacheService, ProductCacheService>();
 
             /*
 

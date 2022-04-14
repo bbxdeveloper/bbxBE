@@ -20,6 +20,7 @@ using bbxBE.Common;
 using bbxBE.Application.Consts;
 using bbxBE.Application.Exceptions;
 using static bbxBE.Common.NAV.NAV_enums;
+using bbxBE.Infrastructure.Persistence.Caches;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -36,7 +37,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-
+        private readonly ICacheService _cache;
+    
 
         /*
            "id": 2272,
@@ -60,7 +62,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public ProductRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Product> dataShaperProduct,
             IDataShapeHelper<GetProductViewModel> dataShaperGetProductViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            ICacheService productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _Products = dbContext.Set<Product>();
@@ -75,6 +78,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _cache = productCacheService;
 
 
         }

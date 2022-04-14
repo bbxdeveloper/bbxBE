@@ -1,42 +1,47 @@
 ﻿using bbxBE.Application.Interfaces;
+using bbxBE.Domain.Settings;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace bbxBE.Infrastructure.Persistence.Caches
 {
-    public class MemoryCacheService : ICacheService
+    public class ProductCacheService : ICacheService
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly CacheConfiguration _cacheConfig;
+        private readonly ProductCacheSettings _productCacheSettings;
         private MemoryCacheEntryOptions _cacheOptions;
-        public MemoryCacheService(IMemoryCache memoryCache, IOptions<CacheConfiguration> cacheConfig)
+        public ProductCacheService(IMemoryCache memoryCache, IOptions<ProductCacheSettings> productCacheSettings)
         {
             _memoryCache = memoryCache;
-            _cacheConfig = cacheConfig.Value;
-            if (_cacheConfig != null)
+            _productCacheSettings = productCacheSettings.Value;
+            if (_productCacheSettings != null)
             {
                 _cacheOptions = new MemoryCacheEntryOptions
                 {
-                    AbsoluteExpiration = DateTime.Now.AddHours(_cacheConfig.AbsoluteExpirationInHours),
+                    AbsoluteExpiration = DateTime.Now.AddHours(_productCacheSettings.AbsoluteExpirationInHours),
                     Priority = CacheItemPriority.High,
-                    SlidingExpiration = TimeSpan.FromMinutes(_cacheConfig.SlidingExpirationInMinutes)
+                    SlidingExpiration = TimeSpan.FromMinutes(_productCacheSettings.SlidingExpirationInMinutes)
                 };
             }
         }
-        public bool TryGet<T>(string cacheKey, out T value)
+        public bool TryGet<T>(long ID, out T value)
         {
-            _memoryCache.TryGetValue(cacheKey, out value);
+            _memoryCache.TryGetValue(ID, out value);
             if (value == null) return false;
             else return true;
         }
-        public T Set<T>(string cacheKey, T value)
+        public T Set<T>(long ID, T value)
         {
-            return _memoryCache.Set(cacheKey, value, _cacheOptions);
+            return _memoryCache.Set(ID, value, _cacheOptions);
         }
-        public void Remove(string cacheKey)
+        public void Remove(long ID)
         {
-            _memoryCache.Remove(cacheKey);
+            _memoryCache.Remove(ID);
         }
+   
+
     }
 }
