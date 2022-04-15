@@ -13,6 +13,7 @@ namespace bbxBE.Infrastructure.Shared
             services.Configure<MailSettings>(_config.GetSection("MailSettings"));
             services.Configure<JWTSettings>(_config.GetSection("JWTSettings"));
             services.Configure<NAVSettings>(_config.GetSection("NAVSettings"));
+            services.Configure<ProductCacheSettings>(_config.GetSection("ProductCacheSettings"));
 
             services.AddTransient<IDateTimeService, DateTimeService>();
             services.AddTransient<IEmailService, EmailService>();

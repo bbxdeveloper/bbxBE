@@ -5,6 +5,7 @@ using bbxBE.Infrastructure.Persistence;
 using bbxBE.Infrastructure.Shared;
 using bbxBE.Queries;
 using bbxBE.WebApi.Extensions;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -49,6 +50,7 @@ namespace bbxBE.WebApi
             // API explorer version
             services.AddVersionedApiExplorerExtension();
 
+            services.AddMemoryCache();
 
             services.AddMvc().AddJsonOptions(options =>
             {
@@ -62,6 +64,8 @@ namespace bbxBE.WebApi
                 options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
+
+            services.AddHangfireServer();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)

@@ -21,6 +21,7 @@ using bbxBE.Application.Consts;
 using bbxBE.Application.Exceptions;
 using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Infrastructure.Persistence.Caches;
+using Hangfire;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -37,7 +38,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private readonly ICacheService _cache;
+        private readonly ICacheService<Product> _cacheService;
     
 
         /*
@@ -63,7 +64,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IDataShapeHelper<Product> dataShaperProduct,
             IDataShapeHelper<GetProductViewModel> dataShaperGetProductViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            ICacheService productCacheService) : base(dbContext)
+            ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _Products = dbContext.Set<Product>();
@@ -78,8 +79,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _cache = productCacheService;
+            _cacheService = productCacheService;
 
+            BackgroundJob.Enqueue(() => RefreshProductCacheAsynch());
 
         }
 
@@ -171,7 +173,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         .Include(pg => pg.ProductGroup).AsNoTracking()
                         .Include(o => o.Origin).AsNoTracking()
                         .Include(v => v.VatRate).AsNoTracking()
-                         .Where(x => x.ID == p_product.ID).FirstOrDefault();
+                        .Where(x => x.ID == p_product.ID).FirstOrDefault();
 
             if (prod != null)
             {
@@ -467,6 +469,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(o => o.Origin).AsNoTracking()
                  .Include(v => v.VatRate).AsNoTracking().ToListAsync();
         }
+        public async void RefreshProductCacheAsynch()
+        {
+            var q = _Products.AsNoTracking()
+                 .Include(p => p.ProductCodes).AsNoTracking()
+                 .Include(pg => pg.ProductGroup).AsNoTracking()
+                 .Include(o => o.Origin).AsNoTracking()
+                 .Include(v => v.VatRate).AsNoTracking();
+            await _cacheService.RefreshCacheAsynch(q);
+        }
+
+
 
     }
 }
