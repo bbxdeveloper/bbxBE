@@ -27,10 +27,10 @@ namespace bbxBE.Application.Commands.cmdProduct
             RuleFor(p => p.ProductCode)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                    .MustAsync(
-                         async (model, ProductCode,  cancellation) =>
+                    .Must(
+                         (model, ProductCode) =>
                          {
-                             return await IsUniqueProductCodeAsync(ProductCode, model.ID, cancellation);
+                             return IsUniqueProductCode(ProductCode, model.ID);
                          }
                      ).WithMessage(bbxBEConsts.FV_EXISTS)
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
@@ -55,9 +55,9 @@ namespace bbxBE.Application.Commands.cmdProduct
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
         }
 
-        private async Task<bool> IsUniqueProductCodeAsync(string ProductCode, long ID, CancellationToken cancellationToken)
+        private bool IsUniqueProductCode(string ProductCode, long ID)
         {
-            return await _ProductRepository.IsUniqueProductCodeAsync(ProductCode, ID);
+            return _ProductRepository.IsUniqueProductCode(ProductCode, ID);
         }
 
         private async Task<bool> CheckProductGroupCodeAsync(string ProductGroupCode, CancellationToken cancellationToken)

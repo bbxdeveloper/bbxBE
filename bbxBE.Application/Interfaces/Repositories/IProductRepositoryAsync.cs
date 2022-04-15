@@ -11,7 +11,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 {
     public interface IProductRepositoryAsync : IGenericRepositoryAsync<Product>
     {
-        Task<bool> IsUniqueProductCodeAsync(string ProductCode, long? ID = null);
+        bool IsUniqueProductCode(string ProductCode, long? ID = null);
         Task<bool> CheckProductGroupCodeAsync(string ProductGroupCode);
         Task<bool> CheckOriginCodeAsync(string OriginCode);
         Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode);
@@ -21,8 +21,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Product> DeleteProductAsync(long ID);
 
         Task<bool> SeedDataAsync(int rowCount);
-        Task<Entity> GetProductAsync(GetProduct requestParameters);
-        Task<Entity> GetProductByProductCodeAsync(GetProductByProductCode requestParameter);
+        Entity GetProduct(GetProduct requestParameters);
+        Entity GetProductByProductCode(GetProductByProductCode requestParameter);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductAsync(QueryProduct requestParameters);
         Task<List<Product>> GetAllProductsFromDBAsync();
 

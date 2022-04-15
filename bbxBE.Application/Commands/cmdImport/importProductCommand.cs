@@ -76,7 +76,7 @@ namespace bbxBE.Application.Commands.cmdImport
 
             foreach (var item in producItems)
             {
-                var prod = await _productRepository.GetProductByProductCodeAsync(new GetProductByProductCode() { ProductCode = item.Key });
+                var prod = _productRepository.GetProductByProductCode(new GetProductByProductCode() { ProductCode = item.Key });
 
                 if (prod.Keys.Count == 0)
                 {

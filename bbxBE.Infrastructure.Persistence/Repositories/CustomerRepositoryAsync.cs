@@ -16,6 +16,8 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -28,11 +30,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly ICacheService<Customer> _cacheService;
 
         public CustomerRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Customer> dataShaperCustomer, 
-            IDataShapeHelper<GetCustomerViewModel> dataShaperGetCustomerViewModel, 
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IDataShapeHelper<Customer> dataShaperCustomer,
+            IDataShapeHelper<GetCustomerViewModel> dataShaperGetCustomerViewModel,
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            ICacheService<Customer> customerCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _customers = dbContext.Set<Customer>();
@@ -41,20 +45,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _cacheService = customerCacheService;
+
+
+            var t = RefreshCustomerCache();
+            t.GetAwaiter().GetResult();
         }
 
 
-        public async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerId, long? ID = null)
+        public bool IsUniqueTaxpayerId(string TaxpayerId, long? ID = null)
         {
-            return !await _customers.AnyAsync(p => p.TaxpayerId == TaxpayerId && !p.Deleted && (ID == null || p.ID != ID.Value));
-         }
-
-        public async Task<bool> IsUniqueIsOwnDataAsync(long? ID = null)
-        {
-            return !await _customers.AnyAsync(p => p.IsOwnData  && !p.Deleted && (ID == null || p.ID != ID.Value));
+            var query = _cacheService.QueryCache();
+            return !query.ToList().Any(p => p.TaxpayerId == TaxpayerId && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
-        public async Task<bool> CheckBankAccountAsync(string bankAccountNumber)
+        public bool IsUniqueIsOwnData(long? ID = null)
+        {
+            var query = _cacheService.QueryCache();
+            return !query.ToList().Any(p => p.IsOwnData && !p.Deleted && (ID == null || p.ID != ID.Value));
+        }
+
+        public bool CheckBankAccount(string bankAccountNumber)
         {
             if (string.IsNullOrWhiteSpace(bankAccountNumber))
                 return true;
@@ -62,17 +73,46 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return bllCustomer.ValidateBankAccount(bankAccountNumber) || bllCustomer.ValidateIBAN(bankAccountNumber);
         }
 
-        public async Task<Entity> GetCustomerAsync(GetCustomer requestParameter)
+        public async Task<Product> DeleteCustomerAsync(long ID)
         {
-           
+
+            Customer cust = null;
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+                cust = _customers.Where(x => x.ID == ID).FirstOrDefault();
+
+                if (cust != null)
+                {
+
+                  
+                    _cacheService.TryRemove(cust);
+
+                    _customers.Remove(cust);
+
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, ID));
+                }
+            }
+            return cust;
+        }
+
+        public Entity GetCustomer(GetCustomer requestParameter)
+        {
+
 
             var ID = requestParameter.ID;
 
-            var item = await GetByIdAsync(ID);
-      
-//            var fields = requestParameter.Fields;
+            Customer cust = null;
+            if (!_cacheService.TryGetValue(ID, out cust))
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, ID));
 
-            var itemModel = _mapper.Map<Customer, GetCustomerViewModel>(item);
+
+            var itemModel = _mapper.Map<Customer, GetCustomerViewModel>(cust);
             var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();
 
             // shape data
@@ -80,6 +120,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParameter)
         {
 
@@ -96,18 +137,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _customers
-                .AsNoTracking()
-                .AsExpandable();
+
+            var query = _cacheService.QueryCache();
 
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = query.Count();
 
             // filter data
-            FilterBySearchString(ref result, searchString, IsOwnData);
+            FilterBySearchString(ref query, searchString, IsOwnData);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = query.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -119,26 +159,26 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                query = query.OrderBy(orderBy);
             }
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<Customer>("new(" + fields + ")");
+                query = query.Select<Customer>("new(" + fields + ")");
             }
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = query.ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetCustomerViewModel>();
-            resultData.ForEach( i => resultDataModel.Add(
-                _mapper.Map<Customer, GetCustomerViewModel>(i))
+            resultData.ForEach(i => resultDataModel.Add(
+               _mapper.Map<Customer, GetCustomerViewModel>(i))
             );
 
 
@@ -170,7 +210,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 predicate = predicate.And(p => p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor));
             }
-            else if( IsOwnData.Value)
+            else if (IsOwnData.Value)
             {
                 predicate = predicate.And(p => (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor)) && p.IsOwnData);
 
@@ -187,7 +227,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
+        public async Task RefreshCustomerCache()
+        {
+            if (_cacheService.IsCacheEmpty())
+            {
+                var q = _customers
+                .AsNoTracking()
+                .AsExpandable();
+                await _cacheService.RefreshCache(q);
 
- 
+            }
+
+        }
     }
 }
