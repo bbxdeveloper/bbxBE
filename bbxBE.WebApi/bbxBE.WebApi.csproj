@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
+    <PackageReference Include="Hangfire" Version="1.7.28" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
