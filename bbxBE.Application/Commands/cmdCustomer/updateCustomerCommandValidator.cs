@@ -29,30 +29,30 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
             RuleFor(p => p.TaxpayerNumber)
                    .MaximumLength(13).WithMessage(bbxBEConsts.FV_MAXLEN)
-                   .MustAsync(
-                        async (model, Name, cancellation) =>
+                   .Must(
+                        (model, Name, cancellation) =>
                         {
-                            return await IsUniqueTaxpayerIdAsync(Name, Convert.ToInt64(model.ID), cancellation);
+                            return IsUniqueTaxpayerId(Name, Convert.ToInt64(model.ID));
                         }
                     ).WithMessage(bbxBEConsts.FV_EXISTS);
 
             RuleFor(p => p.CustomerBankAccountNumber)
                        .MaximumLength(30).WithMessage(bbxBEConsts.FV_MAXLEN)
-                       .MustAsync(CheckBankAccountAsync).WithMessage(bbxBEConsts.FV_INVALIDFORMAT);
+                       .Must(CheckBankAccount).WithMessage(bbxBEConsts.FV_INVALIDFORMAT);
 
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.IsOwnData)
-                     .MustAsync(
-                        async (model, Name, cancellation) =>
+                     .Must(
+                        (model, Name) =>
                         {
-                            return await IsUniqueIsOwnDataAsync(model.IsOwnData, Convert.ToInt64(model.ID), cancellation);
+                            return IsUniqueIsOwnData(model.IsOwnData, Convert.ToInt64(model.ID));
                         }
                     ).WithMessage(bbxBEConsts.CST_OWNEXISTS);
         }
 
-        private async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerNumber, long ID, CancellationToken cancellationToken)
+        private bool IsUniqueTaxpayerId(string TaxpayerNumber, long ID)
         {
 
             if (TaxpayerNumber == null || string.IsNullOrWhiteSpace(TaxpayerNumber.Replace("-", "")))
@@ -60,7 +60,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
             var TaxItems = TaxpayerNumber.Split('-');
             if (TaxItems.Length != 0)
             {
-                return await _customerRepository.IsUniqueTaxpayerIdAsync(TaxItems[0], ID);
+                return _customerRepository.IsUniqueTaxpayerId(TaxItems[0], ID);
             }
             else
             {
@@ -68,19 +68,19 @@ namespace bbxBE.Application.Commands.cmdCustomer
             }
         }
 
-        private async Task<bool> IsUniqueIsOwnDataAsync(bool IsOwnData, long ID, CancellationToken cancellationToken)
+        private bool IsUniqueIsOwnData(bool IsOwnData, long ID)
         {
 
             if (!IsOwnData)
                 return true;
 
 
-            return await _customerRepository.IsUniqueIsOwnDataAsync(ID);
+            return _customerRepository.IsUniqueIsOwnData(ID);
         }
 
-        private async Task<bool> CheckBankAccountAsync(string p_CustomerBankAccountNumber, CancellationToken cancellationToken)
+        private bool CheckBankAccount(string p_CustomerBankAccountNumber)
         {
-            return await _customerRepository.CheckBankAccountAsync(p_CustomerBankAccountNumber);
+            return _customerRepository.CheckBankAccount(p_CustomerBankAccountNumber);
         }
 
     }

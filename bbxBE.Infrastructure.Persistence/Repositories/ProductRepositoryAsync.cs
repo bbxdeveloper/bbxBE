@@ -89,7 +89,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<bool> IsUniqueProductCodeAsync(string ProductCode, long? ProductID = null)
+        public bool IsUniqueProductCode(string ProductCode, long? ProductID = null)
         {
 
             /*
@@ -147,15 +147,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 _cacheService.AddOrUpdate(p_product);
 
+                await _Products.AddAsync(p_product);
+                _dbContext.ChangeTracker.AcceptAllChanges();
+                await _dbContext.SaveChangesAsync();
 
-                new Thread(async () =>
-                {
-                    await _Products.AddAsync(p_product);
-                    _dbContext.ChangeTracker.AcceptAllChanges();
-                    await _dbContext.SaveChangesAsync();
-
-                    await dbContextTransaction.CommitAsync();
-                }).Start();
+                await dbContextTransaction.CommitAsync();
             }
             return p_product;
         }
@@ -178,6 +174,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 await _dbContext.SaveChangesAsync();
 
                 await dbContextTransaction.CommitAsync();
+
+                await RefreshProductCache();
             }
             return item;
         }
@@ -303,8 +301,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 _Products.UpdateRange(p_productList);
                 await _dbContext.SaveChangesAsync();
-                dbContextTransaction.Commit();
+                await dbContextTransaction.CommitAsync();
 
+                await RefreshProductCache();
 
             }
             return item;
@@ -339,27 +338,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, ID));
                 }
-
-
             }
             return prod;
         }
 
-        public async Task<Entity> GetProductAsync(GetProduct requestParameter)
+        public Entity GetProduct(GetProduct requestParameter)
         {
 
             var ID = requestParameter.ID;
 
-            var item = _Products//.AsNoTracking().AsExpandable()
-                                  .Include(i => i.Origin)
-                                  .Include(i => i.ProductGroup)
-                                   .Include(i => i.VatRate)
-                                  .Include(i => i.ProductCodes)
-                                  .Where(i => i.ID == ID).FirstOrDefaultAsync();
+            Product prod = null;
+            if (!_cacheService.TryGetValue(ID, out prod))
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, ID));
 
-            //            var fields = requestParameter.Fields;
 
-            var itemModel = _mapper.Map<Product, GetProductViewModel>(item.Result);
+            var itemModel = _mapper.Map<Product, GetProductViewModel>(prod);
             var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
             // shape data
@@ -367,20 +360,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<Entity> GetProductByProductCodeAsync(GetProductByProductCode requestParameter)
+        public Entity GetProductByProductCode(GetProductByProductCode requestParameter)
         {
 
-            var item = _Products//.AsNoTracking().AsExpandable()
-                                  .Include(i => i.Origin)
-                                  .Include(i => i.ProductGroup)
-                                  .Include(i => i.ProductCodes)
-                                  .Where(i => i.ProductCodes.Any(c => c.ProductCodeValue.ToUpper() == requestParameter.ProductCode.ToUpper()
-                                                                   && c.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).FirstOrDefaultAsync();
+            var query = _cacheService.QueryCache();
+
+            var prod = query.Where(i => i.ProductCodes.Any(c => c.ProductCodeValue.ToUpper() == requestParameter.ProductCode.ToUpper()
+                                                                   && c.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).FirstOrDefault();
 
             //            var fields = requestParameter.Fields;
-            if (item.Result != null)
+            if (prod != null)
             {
-                var itemModel = _mapper.Map<Product, GetProductViewModel>(item.Result);
+                var itemModel = _mapper.Map<Product, GetProductViewModel>(prod);
                 var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
                 // shape data

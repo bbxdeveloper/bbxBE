@@ -33,9 +33,8 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
         public async Task<Response<long>> Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
         {
-            var cust = _mapper.Map<Customer>(request);
-            await _customerRepository.DeleteAsync(cust);
-            return new Response<long>(cust.ID);
+            await _customerRepository.DeleteCustomerAsync(request.ID);
+            return new Response<long>(request.ID);
         }
 
       

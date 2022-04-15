@@ -32,22 +32,27 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
             RuleFor(p => p.TaxpayerNumber)
                       .MaximumLength(13).WithMessage(bbxBEConsts.FV_MAXLEN)
-                      .MustAsync(IsUniqueTaxpayerIdAsync).WithMessage(bbxBEConsts.FV_EXISTS);
+                      .Must(IsUniqueTaxpayerId).WithMessage(bbxBEConsts.FV_EXISTS);
 
             RuleFor(p => p.CustomerBankAccountNumber)
                        .MaximumLength(30).WithMessage(bbxBEConsts.FV_MAXLEN)
-                       .MustAsync(CheckBankAccountAsync).WithMessage(bbxBEConsts.FV_INVALIDFORMAT);
+                       .Must(CheckBankAccount).WithMessage(bbxBEConsts.FV_INVALIDFORMAT);
 
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.FV_MAXLEN);
 
 
             RuleFor(p => p.IsOwnData)
-                       .MustAsync(IsUniqueIsOwnDataAsync).WithMessage(bbxBEConsts.CST_OWNEXISTS);
+                       .Must(IsUniqueIsOwnData).WithMessage(bbxBEConsts.CST_OWNEXISTS);
 
         }
 
-        private async Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerNumber, CancellationToken cancellationToken)
+        private bool CheckBankAccount(string arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool IsUniqueTaxpayerId(string TaxpayerNumber)
         {
 
             if (TaxpayerNumber == null || string.IsNullOrWhiteSpace(TaxpayerNumber.Replace("-", "")))
@@ -56,28 +61,28 @@ namespace bbxBE.Application.Commands.cmdCustomer
             var TaxItems = TaxpayerNumber.Split('-');
             if (TaxItems.Length != 0)
             {
-                return await _customerRepository.IsUniqueTaxpayerIdAsync(TaxItems[0]);
+                return _customerRepository.IsUniqueTaxpayerId(TaxItems[0]);
             }
             else
             {
                 return true;
             }
         }
-        private async Task<bool> IsUniqueIsOwnDataAsync(bool IsOwnData, CancellationToken cancellationToken)
+        private bool IsUniqueIsOwnData(bool IsOwnData)
         {
 
             if (!IsOwnData)
                 return true;
 
 
-            return await _customerRepository.IsUniqueIsOwnDataAsync();
+            return _customerRepository.IsUniqueIsOwnData();
         }
 
 
 
-        private async Task<bool> CheckBankAccountAsync(string p_CustomerBankAccountNumber, CancellationToken cancellationToken)
+        private bool CheckBankAccountAsync(string p_CustomerBankAccountNumber)
         {
-            return await _customerRepository.CheckBankAccountAsync(p_CustomerBankAccountNumber);
+            return  _customerRepository.CheckBankAccount(p_CustomerBankAccountNumber);
         }
 
     }

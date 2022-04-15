@@ -40,7 +40,7 @@ namespace bbxBE.Application.Queries.qProduct
           
 
             // query based on filter
-            var prod = await _productRepository.GetProductByProductCodeAsync(validFilter);
+            var prod = _productRepository.GetProductByProductCode(validFilter);
             var data = prod.MapItemFieldsByMapToAnnotation<GetProductViewModel>();
 
             // response wrapper

@@ -97,7 +97,7 @@ namespace bxBE.Application.Commands.cmdCustomer
 
             cust.CountryCode = string.IsNullOrWhiteSpace(request.CountryCode) ? bbxBEConsts.CNTRY_HU : cust.CountryCode.ToUpper();
 
-            await _customerRepository.UpdateAsync(cust);
+            await _customerRepository.UpdateCustomerAsync(cust);
             return new Response<Customer>(cust);
         }
 

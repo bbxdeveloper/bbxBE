@@ -11,12 +11,14 @@ namespace bbxBE.Application.Interfaces.Repositories
 {
     public interface ICustomerRepositoryAsync : IGenericRepositoryAsync<Customer>
     {
-        Task<bool> IsUniqueTaxpayerIdAsync(string TaxpayerId, long? ID = null);
-        Task<bool> IsUniqueIsOwnDataAsync( long? ID = null);
-        Task<bool> CheckBankAccountAsync(string bankAccountNumber);
+        bool IsUniqueTaxpayerId(string TaxpayerId, long? ID = null);
+        bool IsUniqueIsOwnData( long? ID = null);
+        bool CheckBankAccount(string bankAccountNumber);
         Task<bool> SeedDataAsync(int rowCount);
-
-        Task<Entity> GetCustomerAsync(GetCustomer requestParameters);
+        Task<Customer> AddCustomerAsync(Customer p_customer);
+        Task<Customer> UpdateCustomerAsync(Customer p_customer);
+        Task<Customer> DeleteCustomerAsync(long ID);
+        Entity GetCustomer(GetCustomer requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParameters);
     }
 }

@@ -31,7 +31,7 @@ namespace bbxBE.Application.Commands.cmdProduct
                     .MustAsync(
                          async (model, ProductCode, cancellation) =>
                          {
-                             return await IsUniqueProductCodeAsync(ProductCode, cancellation);
+                             return IsUniqueProductCode(ProductCode, cancellation);
                          }
                      ).WithMessage(bbxBEConsts.FV_EXISTS)
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
@@ -58,9 +58,9 @@ namespace bbxBE.Application.Commands.cmdProduct
 
         }
 
-        private async Task<bool> IsUniqueProductCodeAsync(string ProductCode, CancellationToken cancellationToken)
+        private bool IsUniqueProductCode(string ProductCode, CancellationToken cancellationToken)
         {
-                return await _ProductRepository.IsUniqueProductCodeAsync(ProductCode);
+            return _ProductRepository.IsUniqueProductCode(ProductCode);
         }
         private async Task<bool> CheckProductGroupCodeAsync(string ProductGroupCode, CancellationToken cancellationToken)
         {
