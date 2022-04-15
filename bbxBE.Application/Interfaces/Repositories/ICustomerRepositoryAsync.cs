@@ -15,7 +15,9 @@ namespace bbxBE.Application.Interfaces.Repositories
         bool IsUniqueIsOwnData( long? ID = null);
         bool CheckBankAccount(string bankAccountNumber);
         Task<bool> SeedDataAsync(int rowCount);
-        Task<Product> DeleteCustomerAsync(long ID);
+        Task<Customer> AddCustomerAsync(Customer p_customer);
+        Task<Customer> UpdateCustomerAsync(Customer p_customer);
+        Task<Customer> DeleteCustomerAsync(long ID);
         Entity GetCustomer(GetCustomer requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParameters);
     }
