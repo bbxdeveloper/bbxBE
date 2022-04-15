@@ -65,6 +65,7 @@ namespace bbxBE.WebApi
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
+            services.AddHangfire(x => x.UseSqlServerStorage(_config.GetConnectionString("bbxdbconnection")));
             services.AddHangfireServer();
         }
 

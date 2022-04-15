@@ -11,11 +11,11 @@ using bbxBE.Domain.Common;
 using System.Threading.Tasks;
 using bbxBE.Common.Globals;
 using Microsoft.EntityFrameworkCore;
-using bbxBE.Infrastructure.Persistence.Locking;
+
 
 namespace bbxBE.Infrastructure.Persistence.Caches
 {
-    public class ProductCacheService: ICacheService<Product>
+    public class ProductCacheService : ICacheService<Product>
     {
         private System.Collections.Concurrent.ConcurrentDictionary<long, Product> _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, Product>();
         public ProductCacheService()
@@ -26,24 +26,34 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             value = null;
             return _cache.TryGetValue(ID, out value);
         }
-        public Product AddOrUpdate( Product value)
+        public Product AddOrUpdate(Product value)
         {
-            return _cache.AddOrUpdate( value.ID, value, (key, oldValue) => value);
+            Product prod = null;
+            prod = _cache.AddOrUpdate(value.ID, value, (key, oldValue) => value);
+            return prod;
         }
 
         public bool TryRemove(Product value)
         {
-            return _cache.TryRemove(value.ID, out value);
+            bool succeed = false;
+            succeed = _cache.TryRemove(value.ID, out value);
+            return succeed;
         }
-        public async Task RefreshCacheAsynch( IQueryable<Product> query)
-        {
-            using (var lockObj = new ProductCacheLocker(GlobalLockObjs.ProductCacheLocker))
-            {
 
-                _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, Product>();
-                var result = await query.ToDictionaryAsync( i=>i.ID);
-                _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, Product>(result);
-            }
+        public bool IsCacheEmpty()
+        {
+            return _cache == null || _cache.Count() == 0;
+        }
+
+        public IQueryable<Product> QueryCache()
+        {
+            return _cache.Values.AsQueryable();
+        }
+        public async Task RefreshCache(IQueryable<Product> query)
+        {
+
+            var result = await query.ToDictionaryAsync(i => i.ID);
+            _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, Product>(result);
         }
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Reflection;
+using Hangfire;
 
 namespace bbxBE.Infrastructure.Persistence
 {
@@ -49,15 +50,17 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<ICounterRepositoryAsync, CounterRepositoryAsync>();
             services.AddTransient<IInvoiceRepositoryAsync, InvoiceRepositoryAsync>();
             services.AddTransient<IVatRateRepositoryAsync, VatRateRepositoryAsync>();
+
             services.AddSingleton<ICacheService<Product>, ProductCacheService>();
+
 
             /*
 
-                                    Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.Contains("Repository")).ToList().ForEach((t) =>
-                                    {
-                                        services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
-                                    });
-                        */
+                                         Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.Contains("Repository")).ToList().ForEach((t) =>
+                                         {
+                                             services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
+                                         });
+                             */
             services.AddLogging(c => c.AddFluentMigratorConsole())
             .AddFluentMigratorCore()
             .ConfigureRunner(c => c.AddSqlServer2012()

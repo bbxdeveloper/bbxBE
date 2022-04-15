@@ -12,7 +12,8 @@ namespace bbxBE.Application.Interfaces
         public bool TryGetValue(long ID, out T value);
         public T AddOrUpdate(T value);
         public bool TryRemove(T value);
-        public Task RefreshCacheAsynch(IQueryable<T> query);
-
+        public bool IsCacheEmpty();
+        public IQueryable<T> QueryCache();
+        public Task RefreshCache(IQueryable<T> query);
     }
 }
