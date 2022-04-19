@@ -78,13 +78,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
 
-                _cacheService.AddOrUpdate(p_customer);
 
                 await _customers.AddAsync(p_customer);
-                _dbContext.ChangeTracker.AcceptAllChanges();
+    //            _dbContext.ChangeTracker.AcceptAllChanges();
                 await _dbContext.SaveChangesAsync();
 
                 await dbContextTransaction.CommitAsync();
+                _cacheService.AddOrUpdate(p_customer);
             }
             return p_customer;
         }

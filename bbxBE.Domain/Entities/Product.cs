@@ -74,6 +74,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Termékkódok")]
         [Description("Termékkódok")]
+    //    [InverseProperty("Product")]
         public ICollection<ProductCode> ProductCodes { get; set; }
     }
 }
