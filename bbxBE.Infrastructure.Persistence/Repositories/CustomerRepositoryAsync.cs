@@ -240,16 +240,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (IsOwnData == null)
             {
-                predicate = predicate.And(p => p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor));
+                predicate = predicate.And(p => p.CustomerName != null && p.TaxpayerId != null && ( p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor)));
             }
             else if (IsOwnData.Value)
             {
-                predicate = predicate.And(p => (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor)) && p.IsOwnData);
+                predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))) && p.IsOwnData);
 
             }
             else
             {
-                predicate = predicate.And(p => (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor)) && !p.IsOwnData);
+                predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))) && !p.IsOwnData);
             }
 
             p_item = p_item.Where(predicate);
