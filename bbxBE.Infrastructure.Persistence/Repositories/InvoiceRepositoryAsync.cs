@@ -120,7 +120,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     _Invoices.Update(p_Invoice);
                     await _dbContext.SaveChangesAsync();
-                    dbContextTransaction.Commit();
+                    await dbContextTransaction.CommitAsync();
 
 
                 }
