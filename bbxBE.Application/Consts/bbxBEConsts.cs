@@ -63,6 +63,9 @@ namespace bbxBE.Application.Consts
         public static string NAV_QINVDATA_ERR = "{0} NAV queryInvoiceData error result:{1}";
         public static string NAV_QINVDATA_NOTFND_ERR = "{0} invoice not found:{1}";
 
+        public static string NAV_QTAXPAYER_ERR = "{0} NAV QueryTaxpayer, taxnumber:{1} error result:{2}";
+        public static string NAV_QTAXPAYER_TOKEN_ERR = "{0} NAV QueryTaxpayer token, taxnumber:{1} error result:{2}";
+        public static string NAV_QTAXPAYERT_OK = "{0} NAV QueryTaxpayer OK, taxnumber:{1}";
 
 
         public static string VATCODE_27 = "27%";

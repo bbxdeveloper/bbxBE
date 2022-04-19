@@ -1,4 +1,5 @@
 ﻿using bbxBE.Application.Consts;
+using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Common;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Settings;
@@ -15,7 +16,7 @@ using System.Text;
 
 namespace bbxBE.Application.BLL
 {
-    public  class bllNAV
+    public class bllNAV
     {
         NAVSettings _NAVSettings { get; }
         private readonly ILogger _logger;
@@ -27,7 +28,7 @@ namespace bbxBE.Application.BLL
 
         }
         public const string DEF_procname = "importFromNAV";
-        public  List<InvoiceDigestType> QueryInvoiceDigest(importFromNAVCommand request)
+        public List<InvoiceDigestType> QueryInvoiceDigest(importFromNAVCommand request)
         {
 
             var invoiceDigestRes = new List<InvoiceDigestType>();
@@ -99,7 +100,7 @@ namespace bbxBE.Application.BLL
             return invoiceDigestRes;
         }
 
-        public InvoiceData QueryInvoiceData( string p_invoiceNumber, InvoiceDirectionType p_invoiceDirection)
+        public InvoiceData QueryInvoiceData(string p_invoiceNumber, InvoiceDirectionType p_invoiceDirection)
         {
             InvoiceData result = null;
 
@@ -211,7 +212,8 @@ namespace bbxBE.Application.BLL
                 }
                 catch (WebException ex)
                 {
-                    response = (HttpWebResponse)ex.Response;
+                    throw;
+              //      response = (HttpWebResponse)ex.Response;
                 }
 
                 if (response != null)
@@ -233,9 +235,9 @@ namespace bbxBE.Application.BLL
                     else
                     {
                         // Util.Log2File(String.Format("{0} NAV error response. requestId:{1}, status:{2}, response:{3}", p_procname, p_requestId, response.StatusDescription, o_response), Global.POSTLOG_NAME);
-//                        Console.WriteLine(String.Format("{0} NAV error response. requestId:{1}, status:{2}, response:{3}", p_procname, p_requestId, response.StatusDescription, o_response));
+                        //                        Console.WriteLine(String.Format("{0} NAV error response. requestId:{1}, status:{2}, response:{3}", p_procname, p_requestId, response.StatusDescription, o_response));
                         throw new Exception(String.Format("{ 0} NAV error response. requestId:{1}, status:{2}, response:{3}", p_procname, p_requestId, response.StatusDescription, o_response));
-                  //      return false;
+                        //      return false;
                     }
                 }
                 return false;
@@ -251,8 +253,49 @@ namespace bbxBE.Application.BLL
 
         }
 
+        public TaxpayerDataType QueryTaxPayer(QueryTaxPayer request)
+        {
+
+            var invoiceDigestRes = new List<InvoiceDigestType>();
+
+            var ter = new TokenExchangeRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey);
+
+            var reqTer = XMLUtil.Object2XMLString<TokenExchangeRequest>(ter, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+            TaxpayerDataType result = null;
+            string response = "";
+            string msg = "";
+            if (bllNAV.NAVPost(_NAVSettings.TokenExchange, ter.header.requestId, reqTer, DEF_procname, out response))
+            {
+
+                TokenExchangeResponse resp = XMLUtil.XMLStringToObject<TokenExchangeResponse>(response);
+
+                var qtp = new QueryTaxpayerRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey, request.Taxnumber);
+
+                var qtpTer = XMLUtil.Object2XMLString<QueryTaxpayerRequest>(qtp, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+
+                if (bllNAV.NAVPost(_NAVSettings.QueryTaxPayer, qtp.header.requestId, qtpTer, DEF_procname, out response))
+                {
+
+                    QueryTaxpayerResponse respQtp = XMLUtil.XMLStringToObject<QueryTaxpayerResponse>(response);
+                    if (respQtp.taxpayerData != null)
+                    {
+                        result = respQtp.taxpayerData;
+                        msg = String.Format(bbxBEConsts.NAV_QTAXPAYERT_OK, DEF_procname, request.Taxnumber);
+                        Console.WriteLine(msg);
+                    }
+                    else
+                    {
+                        msg  = String.Format(bbxBEConsts.NAV_QTAXPAYER_ERR, DEF_procname, request.Taxnumber, response);
+                    }
+                    
+               }
+            }
+            else
+            {
+                msg = String.Format(bbxBEConsts.NAV_QTAXPAYER_TOKEN_ERR, DEF_procname, request.Taxnumber, response);
+            }
+            _logger.LogInformation(msg);
+            return result;
+        }
     }
-
-
-
 }
