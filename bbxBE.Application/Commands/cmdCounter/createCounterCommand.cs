@@ -60,6 +60,8 @@ namespace bxBE.Application.Commands.cmdCounter
         public async Task<Response<Counter>> Handle(CreateCounterCommand request, CancellationToken cancellationToken)
         {
             var cnt = _mapper.Map<Counter>(request);
+            if (cnt.CounterPool == null)
+                cnt.CounterPool = new List<CounterPoolItem>();
 
             cnt = await _CounterRepository.AddCounterAsync(cnt, request.WarehouseCode);
             return new Response<Counter>(cnt);
