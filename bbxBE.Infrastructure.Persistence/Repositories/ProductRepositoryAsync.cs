@@ -135,6 +135,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27).ID;
             }
+
+            foreach( var pc in p_product.ProductCodes)
+            {
+                pc.ProductCodeValue = pc.ProductCodeValue.ToUpper();
+            }    
+
             return p_product;
         }
 
@@ -145,13 +151,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
 
-                _cacheService.AddOrUpdate(p_product);
 
                 await _Products.AddAsync(p_product);
-                _dbContext.ChangeTracker.AcceptAllChanges();
+                
+
+           //     _dbContext.ChangeTracker.AcceptAllChanges();
                 await _dbContext.SaveChangesAsync();
 
                 await dbContextTransaction.CommitAsync();
+                _cacheService.AddOrUpdate(p_product);
             }
             return p_product;
         }
@@ -252,6 +260,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         _ProductCodes.Remove(ean);
                     }
                 }
+
+
+
+                foreach (var pcx in p_product.ProductCodes)
+                {
+                    pcx.ProductCodeValue = pcx.ProductCodeValue.ToUpper();
+                }
+
             }
             else
             {
@@ -296,7 +312,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     item++;
                 }
-                _dbContext.ChangeTracker.AcceptAllChanges();
+           //     _dbContext.ChangeTracker.AcceptAllChanges();
                 //  _dbContext.ChangeTracker.Clear();
 
                 _Products.UpdateRange(p_productList);
