@@ -16,6 +16,8 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qProductGroup;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -28,11 +30,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly ICacheService<ProductGroup> _cacheService;
+        private readonly ICacheService<Product> _productCacheService;
 
         public ProductGroupRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<ProductGroup> dataShaperProductGroup,
             IDataShapeHelper<GetProductGroupViewModel> dataShaperGetProductGroupViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            ICacheService<ProductGroup> productGroupCacheService,
+            ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _productGroups = dbContext.Set<ProductGroup>();
@@ -41,6 +47,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _cacheService = productGroupCacheService;
+            _productCacheService = productCacheService;
+
+            var t = RefreshProductGroupCache();
+            t.GetAwaiter().GetResult();
         }
 
 
@@ -49,18 +60,75 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !await _productGroups.AnyAsync(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
+        public async Task<ProductGroup> AddProudctGroupAsync(ProductGroup p_productGroup)
+        {
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
 
-        public async Task<Entity> GetProductGroupAsync(GetProductGroup requestParameter)
+
+                await _productGroups.AddAsync(p_productGroup);
+                await _dbContext.SaveChangesAsync();
+
+                await dbContextTransaction.CommitAsync();
+                _cacheService.AddOrUpdate(p_productGroup);
+            }
+            return p_productGroup;
+        }
+        public async Task<ProductGroup> UpdateProductGroupAsync(ProductGroup p_productGroup)
+        {
+
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+
+                _cacheService.AddOrUpdate(p_productGroup);
+
+                _productGroups.Update(p_productGroup);
+                await _dbContext.SaveChangesAsync();
+                await dbContextTransaction.CommitAsync();
+            }
+            return p_productGroup;
+        }
+
+        public async Task<ProductGroup> DeleteProductGroupAsync(long ID)
+        {
+
+            ProductGroup pg = null;
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+                pg = _productGroups.Where(x => x.ID == ID).FirstOrDefault();
+
+                if (pg != null)
+                {
+
+
+                    _cacheService.TryRemove(pg);
+
+                    _productGroups.Remove(pg);
+
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODUCTGROUPNOTFOUND, ID));
+                }
+            }
+            return pg;
+        }
+
+        public Entity GetProductGroup(GetProductGroup requestParameter)
         {
 
 
             var ID = requestParameter.ID;
-
-            var item = await GetByIdAsync(ID);
+            ProductGroup productGroup = null;
+            if (!_cacheService.TryGetValue(ID, out productGroup))
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODUCTGROUPNOTFOUND, ID));
 
             //            var fields = requestParameter.Fields;
 
-            var itemModel = _mapper.Map<ProductGroup, GetProductGroupViewModel>(item);
+            var itemModel = _mapper.Map<ProductGroup, GetProductGroupViewModel>(productGroup);
             var listFieldsModel = _modelHelper.GetModelFields<GetProductGroupViewModel>();
 
             // shape data
@@ -83,18 +151,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _productGroups
-                .AsNoTracking()
-                .AsExpandable();
+            var query = _cacheService.QueryCache();
+
 
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterBySearchString(ref result, searchString);
+            FilterBySearchString(ref query, searchString);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = await query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -106,21 +173,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                query = query.OrderBy(orderBy);
             }
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<ProductGroup>("new(" + fields + ")");
+                query = query.Select<ProductGroup>("new(" + fields + ")");
             }
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = await query.ToListAsync();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetProductGroupViewModel>();
@@ -157,6 +224,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-   
+        public async Task RefreshProductGroupCache()
+        {
+            if (_cacheService.IsCacheEmpty())
+            {
+                var q = _productGroups
+                .AsNoTracking()
+                .AsExpandable();
+                await _cacheService.RefreshCache(q);
+
+            }
+
+        }
+
     }
 }

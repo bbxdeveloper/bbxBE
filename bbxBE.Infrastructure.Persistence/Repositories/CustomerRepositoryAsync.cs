@@ -173,13 +173,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var query = _cacheService.QueryCache();
 
             // Count records total
-            recordsTotal = query.Count();
+            recordsTotal = await query.CountAsync();
 
             // filter data
             FilterBySearchString(ref query, searchString, IsOwnData);
 
             // Count records after filter
-            recordsFiltered = query.Count();
+            recordsFiltered = await query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -205,7 +205,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = query.ToList();
+            var resultData = await query.ToListAsync();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetCustomerViewModel>();
