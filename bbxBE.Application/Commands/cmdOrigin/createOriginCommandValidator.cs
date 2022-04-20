@@ -26,10 +26,10 @@ namespace bbxBE.Application.Commands.cmdOrigin
             RuleFor(p => p.OriginCode)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                    .MustAsync(
-                         async (model, Name, cancellation) =>
+                    .Must(
+                         (model, Name) =>
                          {
-                             return await IsUniqueOriginCodeAsync(Name, cancellation);
+                             return  IsUniqueOriginCodeAsync(Name);
                          }
                      ).WithMessage(bbxBEConsts.FV_EXISTS)
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
@@ -41,11 +41,11 @@ namespace bbxBE.Application.Commands.cmdOrigin
 
         }
 
-        private async Task<bool> IsUniqueOriginCodeAsync(string OriginCode, CancellationToken cancellationToken)
+        private bool IsUniqueOriginCodeAsync(string OriginCode)
         {
             if (OriginCode.Length != 0)
             {
-                return await _OriginRepository.IsUniqueOriginCodeAsync(OriginCode);
+                return _OriginRepository.IsUniqueOriginCode(OriginCode);
             }
             else
             {

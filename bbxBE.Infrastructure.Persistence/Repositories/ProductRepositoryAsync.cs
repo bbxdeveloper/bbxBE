@@ -40,7 +40,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly ICacheService<Product> _cacheService;
-
+        private readonly ICacheService<ProductGroup> _productGroupCacheService;
+        private readonly ICacheService<Origin> _originCacheService;
 
         /*
            "id": 2272,
@@ -73,8 +74,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _Origins = dbContext.Set<Origin>();
             _ProductGroups = dbContext.Set<ProductGroup>();
             _VatRates = dbContext.Set<VatRate>();
-
-
+         
             _dataShaperProduct = dataShaperProduct;
             _dataShaperGetProductViewModel = dataShaperGetProductViewModel;
             _modelHelper = modelHelper;
@@ -105,15 +105,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         }
 
+
         public async Task<bool> CheckProductGroupCodeAsync(string ProductGroupCode)
         {
+            //megj: ez ne cache-ből menjen
+            //var query = _productGroupCacheService.QueryCache();
+            //return query.ToList().Any(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted);
             return await _ProductGroups.AnyAsync(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted);
         }
 
         public async Task<bool> CheckOriginCodeAsync(string OriginCode)
         {
+            //megj: ez ne cache-ből menjen
+            //var query = _originCacheService.QueryCache();
+            //return query.ToList().Any(p => p.OriginCode == OriginCode && !p.Deleted);
+
             return await _Origins.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted);
         }
+     
+
 
         private Product PrepareNewProduct(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
@@ -510,5 +520,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             }
         }
+
     }
 }

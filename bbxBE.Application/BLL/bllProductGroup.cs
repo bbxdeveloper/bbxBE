@@ -14,7 +14,7 @@ namespace bbxBE.Application.BLL
         public static async Task<ProductGroup> CreateAsync(string productGroupName, string productGroupDescription,
                           IProductGroupRepositoryAsync _productGroupRepository, CancellationToken cancellationToken)
         {
-            ProductGroup productGroup = await _productGroupRepository.AddAsync(new ProductGroup
+            ProductGroup productGroup = await _productGroupRepository.AddProudctGroupAsync(new ProductGroup
             {
                 ProductGroupCode = productGroupName,
                 ProductGroupDescription = productGroupDescription

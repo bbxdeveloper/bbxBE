@@ -190,7 +190,7 @@ namespace bbxBE.Application.Commands.cmdImport
         {
             if (!String.IsNullOrEmpty((item as CreateProductCommand).OriginCode))
             {
-                var IsUniqueOriginCode = await _originRepository.IsUniqueOriginCodeAsync((item as CreateProductCommand).OriginCode);
+                var IsUniqueOriginCode = _originRepository.IsUniqueOriginCode((item as CreateProductCommand).OriginCode);
                 if (IsUniqueOriginCode)
                 {
                     await bllOrigin.CreateAsync((item as CreateProductCommand).OriginCode, (item as CreateProductCommand).OriginCode, _originRepository, cancellationToken);
@@ -200,7 +200,7 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private async Task CreateProductGroupCodeIfNotExists(object item, CancellationToken cancellationToken)
         {
-            var IsUniqueProductGroupCode = await _productGroupRepository.IsUniqueProductGroupCodeAsync((item as CreateProductCommand).ProductGroupCode);
+            var IsUniqueProductGroupCode = _productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode);
             if (IsUniqueProductGroupCode)
             {
                 await bllProductGroup.CreateAsync((item as CreateProductCommand).ProductGroupCode, (item as CreateProductCommand).ProductGroupCode, _productGroupRepository, cancellationToken);

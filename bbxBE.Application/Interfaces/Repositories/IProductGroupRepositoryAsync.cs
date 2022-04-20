@@ -11,7 +11,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 {
     public interface IProductGroupRepositoryAsync : IGenericRepositoryAsync<ProductGroup>
     {
-        Task<bool> IsUniqueProductGroupCodeAsync(string ProductGroupCode, long? ID = null);
+        bool IsUniqueProductGroupCode(string ProductGroupCode, long? ID = null);
 
         Task<ProductGroup> AddProudctGroupAsync(ProductGroup p_productGroup);
         Task<ProductGroup> UpdateProductGroupAsync(ProductGroup p_productGroup);
