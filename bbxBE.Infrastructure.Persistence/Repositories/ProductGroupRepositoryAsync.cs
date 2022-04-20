@@ -31,14 +31,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly ICacheService<ProductGroup> _cacheService;
-        private readonly ICacheService<Product> _productCacheService;
 
         public ProductGroupRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<ProductGroup> dataShaperProductGroup,
             IDataShapeHelper<GetProductGroupViewModel> dataShaperGetProductGroupViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            ICacheService<ProductGroup> productGroupCacheService,
-            ICacheService<Product> productCacheService) : base(dbContext)
+            ICacheService<ProductGroup> productGroupCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _productGroups = dbContext.Set<ProductGroup>();
@@ -48,16 +46,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _cacheService = productGroupCacheService;
-            _productCacheService = productCacheService;
 
             var t = RefreshProductGroupCache();
             t.GetAwaiter().GetResult();
         }
 
 
-        public async Task<bool> IsUniqueProductGroupCodeAsync(string ProductGroupCode, long? ID = null)
+        public bool IsUniqueProductGroupCode(string ProductGroupCode, long? ID = null)
         {
-            return !await _productGroups.AnyAsync(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+            var query = _cacheService.QueryCache();
+            return !query.ToList().Any(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
         public async Task<ProductGroup> AddProudctGroupAsync(ProductGroup p_productGroup)

@@ -11,7 +11,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 {
     public interface IOriginRepositoryAsync : IGenericRepositoryAsync<Origin>
     {
-        Task<bool> IsUniqueOriginCodeAsync(string OriginCode, long? ID = null);
+        bool IsUniqueOriginCode(string OriginCode, long? ID = null);
         Task<bool> SeedDataAsync(int rowCount);
         Task<Origin> AddOriginAsync(Origin p_origin);
         Task<Origin> UpdateOriginAsync(Origin p_origin);

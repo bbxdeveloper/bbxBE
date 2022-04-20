@@ -127,7 +127,7 @@ namespace bbxBE.Application.Commands.cmdImport
 
             stopWatch.Restart();
 
-            createProductCommands.RemoveRange(10, (createProductCommands.Count - 10));
+            //createProductCommands.RemoveRange(10, (createProductCommands.Count - 10));
 
             for (int i = 0; i < createProductCommands.Count; i++)
             {
@@ -264,8 +264,8 @@ namespace bbxBE.Application.Commands.cmdImport
         {
             if (!String.IsNullOrEmpty((item as CreateProductCommand).OriginCode))
             {
-                var IsUniqueOriginCode = _originRepository.IsUniqueOriginCodeAsync((item as CreateProductCommand).OriginCode);
-                if (IsUniqueOriginCode.Result)
+                //var IsUniqueOriginCode = _originRepository.IsUniqueOriginCode((item as CreateProductCommand).OriginCode);
+                if (_originRepository.IsUniqueOriginCode((item as CreateProductCommand).OriginCode))
                 {
                     createableOriginCodes.Add((item as CreateProductCommand).OriginCode);
                     //await bllOrigin.CreateAsync((item as CreateProductCommand).OriginCode, (item as CreateProductCommand).OriginCode, _originRepository, cancellationToken);
@@ -275,8 +275,8 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private async Task CreateProductGroupCodeIfNotExistsAsync(object item, CancellationToken cancellationToken)
         {
-            var IsUniqueProductGroupCode = _productGroupRepository.IsUniqueProductGroupCodeAsync((item as CreateProductCommand).ProductGroupCode);
-            if (IsUniqueProductGroupCode.Result)
+            //var IsUniqueProductGroupCode = _productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode);
+            if (_productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode))
             {
                 createableProductGroupCodes.Add((item as CreateProductCommand).ProductGroupCode);
                 //await bllProductGroup.CreateAsync((item as CreateProductCommand).ProductGroupCode, (item as CreateProductCommand).ProductGroupCode, _productGroupRepository, cancellationToken);
