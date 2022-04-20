@@ -45,6 +45,9 @@ namespace bbxBE.Application.Consts
         public static string FV_FILELISTCONUTER = "2 File-t kell feltölteni!";
         public static string FV_FILESIZE = "Üres file lett feltöltve!";
 
+
+        public static string FV_NOCACHEQUERY = "Nincs lekérdezés a gyorstótárhoz!";
+
         public static string INV_DATE1 = "{PropertyName}| A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
         public static string INV_DATE2 = "{PropertyName}| A számla dátuma nem lehet későbbi, mint a fizetési határidő";
         public static string INV_LINES = "{PropertyName}| A számlán nincs tételsor";

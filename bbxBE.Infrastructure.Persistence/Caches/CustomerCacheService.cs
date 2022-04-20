@@ -11,13 +11,15 @@ using bbxBE.Domain.Common;
 using System.Threading.Tasks;
 using bbxBE.Common.Globals;
 using Microsoft.EntityFrameworkCore;
-
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class CustomerCacheService : ICacheService<Customer>
     {
         private System.Collections.Concurrent.ConcurrentDictionary<long, Customer> _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, Customer>();
+        private IQueryable<Customer> _cacheQuery = null;
         public CustomerCacheService()
         {
         }
@@ -42,17 +44,25 @@ namespace bbxBE.Infrastructure.Persistence.Caches
 
         public bool IsCacheEmpty()
         {
-            return _cache == null || _cache.Count() == 0;
+            return _cacheQuery == null || _cache == null || _cache.Count() == 0;
         }
 
         public IQueryable<Customer> QueryCache()
         {
             return _cache.Values.AsQueryable();
         }
-        public async Task RefreshCache(IQueryable<Customer> query)
+        public async Task RefreshCache(IQueryable<Customer> query = null) 
         {
-
-            var result = await query.ToDictionaryAsync(i => i.ID);
+            if(query != null)
+            {
+                _cacheQuery = query;
+            }
+            else
+            {
+                if (_cacheQuery == null)
+                    throw new NoCacheQueryException(bbxBEConsts.FV_NOCACHEQUERY);
+            }
+            var result = await _cacheQuery.ToDictionaryAsync(i => i.ID);
             _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, Customer>(result);
         }
     }

@@ -322,8 +322,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     item++;
                 }
-           //     _dbContext.ChangeTracker.AcceptAllChanges();
-                //  _dbContext.ChangeTracker.Clear();
 
                 _Products.UpdateRange(p_productList);
                 await _dbContext.SaveChangesAsync();
@@ -505,11 +503,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task RefreshProductCache()
         {
-            Console.WriteLine("RefreshProductCache");
 
             if (_cacheService.IsCacheEmpty())
             {
-                Console.WriteLine("RefreshCache");
 
                 var q = _Products.AsNoTracking()
                      .Include(p => p.ProductCodes).AsNoTracking()
@@ -520,6 +516,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             }
         }
-
     }
 }
