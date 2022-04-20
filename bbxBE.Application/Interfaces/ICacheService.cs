@@ -14,6 +14,6 @@ namespace bbxBE.Application.Interfaces
         public bool TryRemove(T value);
         public bool IsCacheEmpty();
         public IQueryable<T> QueryCache();
-        public Task RefreshCache(IQueryable<T> query);
+        public Task RefreshCache(IQueryable<T> query = null);
     }
 }

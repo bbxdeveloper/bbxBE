@@ -14,7 +14,9 @@ namespace bbxBE.Application.Interfaces.Repositories
         bool IsUniqueProductGroupCode(string ProductGroupCode, long? ID = null);
 
         Task<ProductGroup> AddProudctGroupAsync(ProductGroup p_productGroup);
+        Task<long> AddProudctGroupRangeAsync(List<ProductGroup> p_productGroupList);
         Task<ProductGroup> UpdateProductGroupAsync(ProductGroup p_productGroup);
+        Task<long> UpdateProductGroupRangeAsync(List<ProductGroup> p_productGroupList);
         Task<ProductGroup> DeleteProductGroupAsync(long ID);
         Task<bool> SeedDataAsync(int rowCount);
 

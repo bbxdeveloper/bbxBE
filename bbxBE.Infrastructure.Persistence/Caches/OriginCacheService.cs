@@ -11,13 +11,15 @@ using bbxBE.Domain.Common;
 using System.Threading.Tasks;
 using bbxBE.Common.Globals;
 using Microsoft.EntityFrameworkCore;
-
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class OriginCacheService : ICacheService<Origin>
     {
         private System.Collections.Concurrent.ConcurrentDictionary<long, Origin> _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, Origin>();
+        private IQueryable<Origin> _cacheQuery = null;
         public OriginCacheService()
         {
         }
@@ -49,10 +51,19 @@ namespace bbxBE.Infrastructure.Persistence.Caches
         {
             return _cache.Values.AsQueryable();
         }
-        public async Task RefreshCache(IQueryable<Origin> query)
+        public async Task RefreshCache(IQueryable<Origin> query = null)
         {
+            if (query != null)
+            {
+                _cacheQuery = query;
+            }
+            else
+            {
+                if (_cacheQuery == null)
+                    throw new NoCacheQueryException(bbxBEConsts.FV_NOCACHEQUERY);
+            }
 
-            var result = await query.ToDictionaryAsync(i => i.ID);
+            var result = await _cacheQuery.ToDictionaryAsync(i => i.ID);
             _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, Origin>(result);
         }
     }

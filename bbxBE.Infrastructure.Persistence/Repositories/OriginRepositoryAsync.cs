@@ -63,32 +63,40 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Origin> AddOriginAsync(Origin p_origin)
         {
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
-            {
 
+            await _Origins.AddAsync(p_origin);
+            await _dbContext.SaveChangesAsync();
 
-                await _Origins.AddAsync(p_origin);
-                await _dbContext.SaveChangesAsync();
-
-                await dbContextTransaction.CommitAsync();
-                _cacheService.AddOrUpdate(p_origin);
-            }
+            _cacheService.AddOrUpdate(p_origin);
             return p_origin;
         }
-        public async Task<Origin> UpdateOriginAsync(Origin p_origin)
-        {
 
+        public async Task<long> AddOriginRangeAsync(List<Origin> p_originList)
+        {
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
 
 
-                _Origins.Update(p_origin);
+                await _Origins.AddRangeAsync(p_originList);
                 await _dbContext.SaveChangesAsync();
+
                 await dbContextTransaction.CommitAsync();
+            }
+            await RefreshOriginCache();
+            return p_originList.Count();
+        }
 
-                _cacheService.AddOrUpdate(p_origin);
+        public async Task<Origin> UpdateOriginAsync(Origin p_origin)
+        {
+            _Origins.Update(p_origin);
+            await _dbContext.SaveChangesAsync();
+            //                await dbContextTransaction.CommitAsync();
 
-                //Product cache aktualizálás
+            _cacheService.AddOrUpdate(p_origin);
+
+            //Product cache aktualizálás (ha fel van töltve)
+            if (!_productCacheService.IsCacheEmpty())
+            {
                 foreach (var prod in _productCacheService.QueryCache())
                 {
                     if (prod.OriginID == p_origin.ID)
@@ -98,6 +106,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
             return p_origin;
+        }
+
+        public async Task<long> UpdateOriginRangeAsync(List<Origin> p_originList)
+        {
+            _Origins.UpdateRange(p_originList);
+            await _dbContext.SaveChangesAsync();
+            //                await dbContextTransaction.CommitAsync();
+
+            await RefreshOriginCache();
+
+            //Product cache aktualizálás (ha fel van töltve)
+            if (!_productCacheService.IsCacheEmpty())
+            {
+                await _productCacheService.RefreshCache();
+            }
+            return p_originList.Count();
         }
 
         public async Task<Origin> DeleteOriginAsync(long ID)
