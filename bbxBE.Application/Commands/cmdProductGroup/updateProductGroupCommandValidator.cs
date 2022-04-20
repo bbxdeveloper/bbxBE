@@ -25,10 +25,10 @@ namespace bbxBE.Application.Commands.cmdProductGroup
             RuleFor(p => p.ProductGroupCode)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                   .MustAsync(
-                        async (model, Name, cancellation) =>
+                   .Must(
+                        (model, Name) =>
                         {
-                            return await IsUniqueProductGroupCodeAsync(Name, Convert.ToInt64(model.ID), cancellation);
+                            return  IsUniqueProductGroupCodeAsync(Name, Convert.ToInt64(model.ID));
                         }
                     ).WithMessage(bbxBEConsts.FV_EXISTS)
                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
@@ -39,11 +39,11 @@ namespace bbxBE.Application.Commands.cmdProductGroup
                 .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
         }
 
-        private async Task<bool> IsUniqueProductGroupCodeAsync(string ProductGroupCode, long ID, CancellationToken cancellationToken)
+        private bool IsUniqueProductGroupCodeAsync(string ProductGroupCode, long ID)
         {
             if (ProductGroupCode.Length != 0)
             {
-                return await _ProductGroupRepository.IsUniqueProductGroupCodeAsync(ProductGroupCode, ID);
+                return _ProductGroupRepository.IsUniqueProductGroupCode(ProductGroupCode, ID);
             }
             else
             {

@@ -200,7 +200,7 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private async Task CreateProductGroupCodeIfNotExists(object item, CancellationToken cancellationToken)
         {
-            var IsUniqueProductGroupCode = await _productGroupRepository.IsUniqueProductGroupCodeAsync((item as CreateProductCommand).ProductGroupCode);
+            var IsUniqueProductGroupCode = _productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode);
             if (IsUniqueProductGroupCode)
             {
                 await bllProductGroup.CreateAsync((item as CreateProductCommand).ProductGroupCode, (item as CreateProductCommand).ProductGroupCode, _productGroupRepository, cancellationToken);

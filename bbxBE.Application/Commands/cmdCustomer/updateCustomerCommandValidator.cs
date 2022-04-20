@@ -30,7 +30,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
             RuleFor(p => p.TaxpayerNumber)
                    .MaximumLength(13).WithMessage(bbxBEConsts.FV_MAXLEN)
                    .Must(
-                        (model, Name, cancellation) =>
+                        (model, Name) =>
                         {
                             return IsUniqueTaxpayerId(Name, Convert.ToInt64(model.ID));
                         }
