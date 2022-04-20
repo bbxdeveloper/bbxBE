@@ -75,33 +75,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Customer> AddCustomerAsync(Customer p_customer)
         {
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
-            {
-
 
                 await _customers.AddAsync(p_customer);
     //            _dbContext.ChangeTracker.AcceptAllChanges();
                 await _dbContext.SaveChangesAsync();
 
-                await dbContextTransaction.CommitAsync();
                 _cacheService.AddOrUpdate(p_customer);
-            }
             return p_customer;
         }
         public async Task<Customer> UpdateCustomerAsync(Customer p_customer)
         {
-
-            //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
-
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
-            {
-
-                _cacheService.AddOrUpdate(p_customer);
-
-                _customers.Update(p_customer);
-                await _dbContext.SaveChangesAsync();
-                await dbContextTransaction.CommitAsync();
-            }
+            _cacheService.AddOrUpdate(p_customer);
+            _customers.Update(p_customer);
+            await _dbContext.SaveChangesAsync();
             return p_customer;
         }
 

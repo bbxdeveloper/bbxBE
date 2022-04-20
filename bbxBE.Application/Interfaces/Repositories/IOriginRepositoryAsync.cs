@@ -14,7 +14,11 @@ namespace bbxBE.Application.Interfaces.Repositories
         bool IsUniqueOriginCode(string OriginCode, long? ID = null);
         Task<bool> SeedDataAsync(int rowCount);
         Task<Origin> AddOriginAsync(Origin p_origin);
+        Task<long> AddOriginRangeAsync(List<Origin> p_originList);
+
         Task<Origin> UpdateOriginAsync(Origin p_origin);
+        Task<long> UpdateOriginRangeAsync(List<Origin> p_originList);
+
         Task<Origin> DeleteOriginAsync(long ID);
         Entity GetOrigin(GetOrigin requestParameters);
         List<Entity> GetOriginList();

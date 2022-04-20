@@ -60,31 +60,40 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<ProductGroup> AddProudctGroupAsync(ProductGroup p_productGroup)
         {
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
-            {
 
 
-                await _productGroups.AddAsync(p_productGroup);
-                await _dbContext.SaveChangesAsync();
+            await _productGroups.AddAsync(p_productGroup);
+            await _dbContext.SaveChangesAsync();
 
-                await dbContextTransaction.CommitAsync();
-                _cacheService.AddOrUpdate(p_productGroup);
-            }
+            _cacheService.AddOrUpdate(p_productGroup);
             return p_productGroup;
         }
-        public async Task<ProductGroup> UpdateProductGroupAsync(ProductGroup p_productGroup)
+
+        public async Task<long> AddProudctGroupRangeAsync(List<ProductGroup> p_productGroupList)
         {
 
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
-            {
 
-                _cacheService.AddOrUpdate(p_productGroup);
-
-                _productGroups.Update(p_productGroup);
+                await _productGroups.AddRangeAsync(p_productGroupList);
                 await _dbContext.SaveChangesAsync();
-                await dbContextTransaction.CommitAsync();
-            }
+
+                await RefreshProductGroupCache();
+            return p_productGroupList.Count;
+        }
+
+        public async Task<ProductGroup> UpdateProductGroupAsync(ProductGroup p_productGroup)
+        {
+            _cacheService.AddOrUpdate(p_productGroup);
+            _productGroups.Update(p_productGroup);
+            await _dbContext.SaveChangesAsync();
             return p_productGroup;
+        }
+
+        public async Task<long> UpdateProductGroupRangeAsync(List<ProductGroup> p_productGroupList)
+        {
+            _productGroups.UpdateRange(p_productGroupList);
+            await _dbContext.SaveChangesAsync();
+            await RefreshProductGroupCache();
+            return p_productGroupList.Count;
         }
 
         public async Task<ProductGroup> DeleteProductGroupAsync(long ID)

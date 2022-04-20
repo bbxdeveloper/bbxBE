@@ -11,13 +11,15 @@ using bbxBE.Domain.Common;
 using System.Threading.Tasks;
 using bbxBE.Common.Globals;
 using Microsoft.EntityFrameworkCore;
-
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class ProductGroupCacheService : ICacheService<ProductGroup>
     {
         private System.Collections.Concurrent.ConcurrentDictionary<long, ProductGroup> _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, ProductGroup>();
+        private IQueryable<ProductGroup> _cacheQuery = null;
         public ProductGroupCacheService()
         {
         }
@@ -49,10 +51,20 @@ namespace bbxBE.Infrastructure.Persistence.Caches
         {
             return _cache.Values.AsQueryable();
         }
-        public async Task RefreshCache(IQueryable<ProductGroup> query)
+        public async Task RefreshCache(IQueryable<ProductGroup> query = null)
         {
 
-            var result = await query.ToDictionaryAsync(i => i.ID);
+            if (query != null)
+            {
+                _cacheQuery = query;
+            }
+            else
+            {
+                if (_cacheQuery == null)
+                    throw new NoCacheQueryException(bbxBEConsts.FV_NOCACHEQUERY);
+            }
+
+            var result = await _cacheQuery.ToDictionaryAsync(i => i.ID);
             _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, ProductGroup>(result);
         }
     }
