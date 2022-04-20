@@ -16,6 +16,8 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qOrigin;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -28,11 +30,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly ICacheService<Origin> _cacheService;
+        private readonly ICacheService<Product> _productCacheService;
 
         public OriginRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Origin> dataShaperOrigin,
             IDataShapeHelper<GetOriginViewModel> dataShaperGetOriginViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            ICacheService<Origin> originGroupCacheService,
+            ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _Origins = dbContext.Set<Origin>();
@@ -41,6 +47,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _cacheService = originGroupCacheService;
+            _productCacheService = productCacheService;
+
+            var t = RefreshOriginCache();
+            t.GetAwaiter().GetResult();
         }
 
 
@@ -49,31 +60,109 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !await _Origins.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
+        public async Task<Origin> AddOriginAsync(Origin p_origin)
+        {
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
 
-        public async Task<Entity> GetOriginAsync(GetOrigin requestParameter)
+
+                await _Origins.AddAsync(p_origin);
+                await _dbContext.SaveChangesAsync();
+
+                await dbContextTransaction.CommitAsync();
+                _cacheService.AddOrUpdate(p_origin);
+            }
+            return p_origin;
+        }
+        public async Task<Origin> UpdateOriginAsync(Origin p_origin)
+        {
+
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+
+
+                _Origins.Update(p_origin);
+                await _dbContext.SaveChangesAsync();
+                await dbContextTransaction.CommitAsync();
+
+                _cacheService.AddOrUpdate(p_origin);
+
+                //Product cache aktualizálás
+                foreach (var prod in _productCacheService.QueryCache())
+                {
+                    if (prod.OriginID == p_origin.ID)
+                    {
+                        prod.Origin = p_origin;
+                    }
+                }
+            }
+            return p_origin;
+        }
+
+        public async Task<Origin> DeleteOriginAsync(long ID)
+        {
+
+            Origin origin = null;
+            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            {
+                origin = _Origins.Where(x => x.ID == ID).FirstOrDefault();
+
+                if (origin != null)
+                {
+
+
+
+                    _Origins.Remove(origin);
+
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
+
+                    _cacheService.TryRemove(origin);
+                    //Product cache aktualizálás
+                    foreach (var prod in _productCacheService.QueryCache())
+                    {
+                        if (prod.OriginID == origin.ID)
+                        {
+                            prod.OriginID = 0;
+                            prod.Origin = null;
+                        }
+                    }
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_ORIGINNOTFOUND, ID));
+                }
+            }
+            return origin;
+        }
+
+        public Entity GetOrigin(GetOrigin requestParameter)
         {
             var ID = requestParameter.ID;
+            Origin origin = null;
+            if (!_cacheService.TryGetValue(ID, out origin))
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_ORIGINNOTFOUND, ID));
 
-            var item = await GetByIdAsync(ID);
-            var listFields = _modelHelper.GetDBFields<Origin>();
+
+            var itemModel = _mapper.Map<Origin, GetOriginViewModel>(origin);
+            var listFieldsModel = _modelHelper.GetModelFields<GetOriginViewModel>();
+
             // shape data
-            var shapeData = _dataShaperOrigin.ShapeData(item, String.Join(",", listFields));
+            var shapeData = _dataShaperGetOriginViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
             return shapeData;
         }
 
-        public async Task<List<Entity>> GetOriginListAsync()
+        public List<Entity> GetOriginList()
         {
-          
-            var items = _Origins
-                .AsNoTracking()
-                .AsExpandable();
+
+            var query = _cacheService.QueryCache();
 
             var listFields = _modelHelper.GetDBFields<Origin>();
 
             // shape data
             List<Entity> shapeData = new List<Entity>();
-            items.ForEachAsync(i =>
+            query.ForEachAsync(i =>
             {
                 shapeData.Add(_dataShaperOrigin.ShapeData(i, String.Join(",", listFields)));
 
@@ -98,18 +187,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var query = _Origins
-                .AsNoTracking()
-                .AsExpandable();
+            var query = _cacheService.QueryCache();
 
             // Count records total
-            recordsTotal = await query.CountAsync();
+            recordsTotal =  query.Count();
 
             // filter data
             FilterBySearchString(ref query, searchString);
 
             // Count records after filter
-            recordsFiltered = await query.CountAsync();
+            recordsFiltered = query.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -135,7 +222,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await query.ToListAsync();
+            var resultData = query.ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetOriginViewModel>();
@@ -162,7 +249,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<Origin>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.OriginDescription.ToUpper().Contains(srcFor));
+            predicate = predicate.And(p => p.OriginCode.ToUpper().Contains(srcFor) ||
+                                           p.OriginDescription.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }
@@ -170,6 +258,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Task<bool> SeedDataAsync(int rowCount)
         {
             throw new System.NotImplementedException();
+        }
+
+        public async Task RefreshOriginCache()
+        {
+            if (_cacheService.IsCacheEmpty())
+            {
+                var q = _Origins
+                .AsNoTracking()
+                .AsExpandable();
+                await _cacheService.RefreshCache(q);
+            }
         }
     }
 }

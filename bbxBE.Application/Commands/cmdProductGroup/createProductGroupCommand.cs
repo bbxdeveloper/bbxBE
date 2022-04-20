@@ -40,7 +40,7 @@ namespace bxBE.Application.Commands.cmdProductGroup
         {
             var pg = _mapper.Map<ProductGroup>(request);
 
-            await _ProductGroupRepository.AddAsync(pg);
+            await _ProductGroupRepository.AddProudctGroupAsync(pg);
             return new Response<ProductGroup>(pg);
         }
 

@@ -205,7 +205,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = query.ToList();
+            var resultData =  query.ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetCustomerViewModel>();
