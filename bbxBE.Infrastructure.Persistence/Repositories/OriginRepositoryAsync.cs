@@ -55,9 +55,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<bool> IsUniqueOriginCodeAsync(string OriginCode, long? ID = null)
+        public bool IsUniqueOriginCode(string OriginCode, long? ID = null)
         {
-            return !await _Origins.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+            var query = _cacheService.QueryCache();
+            return !query.ToList().Any(p => p.OriginCode == OriginCode && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
         public async Task<Origin> AddOriginAsync(Origin p_origin)
