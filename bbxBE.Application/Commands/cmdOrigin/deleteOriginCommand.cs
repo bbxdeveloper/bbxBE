@@ -33,9 +33,8 @@ namespace bbxBE.Application.Commands.cmdOrigin
 
         public async Task<Response<long>> Handle(DeleteOriginCommand request, CancellationToken cancellationToken)
         {
-            var cust = _mapper.Map<Origin>(request);
-            await _OriginRepository.DeleteAsync(cust);
-            return new Response<long>(cust.ID);
+            await _OriginRepository.DeleteOriginAsync(request.ID);
+            return new Response<long>(request.ID);
         }
 
       

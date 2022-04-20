@@ -155,13 +155,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             // Count records total
-            recordsTotal = await query.CountAsync();
+            recordsTotal = query.Count();
 
             // filter data
             FilterBySearchString(ref query, searchString);
 
             // Count records after filter
-            recordsFiltered = await query.CountAsync();
+            recordsFiltered = query.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -187,7 +187,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await query.ToListAsync();
+            var resultData =  query.ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetProductGroupViewModel>();
@@ -214,7 +214,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<ProductGroup>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.ProductGroupDescription.ToUpper().Contains(srcFor));
+            predicate = predicate.And(p => p.ProductGroupCode.ToUpper().Contains(srcFor)||
+                                            p.ProductGroupDescription.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }

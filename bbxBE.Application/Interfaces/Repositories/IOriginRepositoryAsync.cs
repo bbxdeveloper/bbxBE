@@ -13,9 +13,11 @@ namespace bbxBE.Application.Interfaces.Repositories
     {
         Task<bool> IsUniqueOriginCodeAsync(string OriginCode, long? ID = null);
         Task<bool> SeedDataAsync(int rowCount);
-
-        Task<Entity> GetOriginAsync(GetOrigin requestParameters);
-        Task<List<Entity>> GetOriginListAsync();
+        Task<Origin> AddOriginAsync(Origin p_origin);
+        Task<Origin> UpdateOriginAsync(Origin p_origin);
+        Task<Origin> DeleteOriginAsync(long ID);
+        Entity GetOrigin(GetOrigin requestParameters);
+        List<Entity> GetOriginList();
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOriginAsync(QueryOrigin requestParameters);
     }
 }
