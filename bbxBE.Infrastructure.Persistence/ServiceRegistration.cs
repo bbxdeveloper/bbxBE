@@ -1,5 +1,7 @@
 ﻿using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Domain.Entities;
+using bbxBE.Infrastructure.Persistence.Caches;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Migrations;
 using bbxBE.Infrastructure.Persistence.Repositories;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Reflection;
+using Hangfire;
 
 namespace bbxBE.Infrastructure.Persistence
 {
@@ -48,13 +51,17 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IInvoiceRepositoryAsync, InvoiceRepositoryAsync>();
             services.AddTransient<IVatRateRepositoryAsync, VatRateRepositoryAsync>();
 
+            services.AddSingleton<ICacheService<Product>, ProductCacheService>();
+            services.AddSingleton<ICacheService<Customer>, CustomerCacheService>();
+
+
             /*
 
-                                    Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.Contains("Repository")).ToList().ForEach((t) =>
-                                    {
-                                        services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
-                                    });
-                        */
+                                         Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.Contains("Repository")).ToList().ForEach((t) =>
+                                         {
+                                             services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
+                                         });
+                             */
             services.AddLogging(c => c.AddFluentMigratorConsole())
             .AddFluentMigratorCore()
             .ConfigureRunner(c => c.AddSqlServer2012()

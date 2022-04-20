@@ -57,6 +57,8 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private List<CreateProductCommand> createProductCommands = new List<CreateProductCommand>();
         private List<UpdateProductCommand> updateProductCommands = new List<UpdateProductCommand>();
+        private List<string> createableOriginCodes = new List<string>();
+        private List<string> createableProductGroupCodes = new List<string>();
 
 
         public ImportProductCommandHandler(IProductRepositoryAsync productRepository,
@@ -79,7 +81,10 @@ namespace bbxBE.Application.Commands.cmdImport
             var importProduct = new ImportProduct { AllItemsCount = producItems.Count };
             var productItems = new HashSet<string>();
 
-            var pCodes = await _productRepository.GetAllProductAsync();
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            var pCodes = await _productRepository.GetAllProductsFromDBAsync();
             foreach (var item in pCodes)
             {
                 if (item.ProductCodes != null)
@@ -92,8 +97,7 @@ namespace bbxBE.Application.Commands.cmdImport
                 }   
             }
 
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
+            stopWatch.Stop();
 
             foreach (var item in producItems)
             {
@@ -123,9 +127,13 @@ namespace bbxBE.Application.Commands.cmdImport
 
             stopWatch.Restart();
 
+            createProductCommands.RemoveRange(10, (createProductCommands.Count - 10));
+
             for (int i = 0; i < createProductCommands.Count; i++)
             {
+                stopWatch.Restart();
                 CreateOrUpdateProductionAsync(importProduct, createProductCommands[i], cancellationToken);
+                stopWatch.Stop();
             }
 
             stopWatch.Stop();
@@ -236,6 +244,8 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private static enUnitOfMeasure GetUnitOfMeasureValueByEnum(string unitOfMeasureValue)
         {
+            unitOfMeasureValue = unitOfMeasureValue.Replace("\"", "").Trim();
+
             if ((unitOfMeasureValue == "DB") || (unitOfMeasureValue == "DB."))
                 return enUnitOfMeasure.PIECE;
             if ((unitOfMeasureValue == "KG") || ((unitOfMeasureValue == "KILOGRAM")))
@@ -254,20 +264,22 @@ namespace bbxBE.Application.Commands.cmdImport
         {
             if (!String.IsNullOrEmpty((item as CreateProductCommand).OriginCode))
             {
-                var IsUniqueOriginCode = await _originRepository.IsUniqueOriginCodeAsync((item as CreateProductCommand).OriginCode);
-                if (IsUniqueOriginCode)
+                var IsUniqueOriginCode = _originRepository.IsUniqueOriginCodeAsync((item as CreateProductCommand).OriginCode);
+                if (IsUniqueOriginCode.Result)
                 {
-                    await bllOrigin.CreateAsync((item as CreateProductCommand).OriginCode, (item as CreateProductCommand).OriginCode, _originRepository, cancellationToken);
+                    createableOriginCodes.Add((item as CreateProductCommand).OriginCode);
+                    //await bllOrigin.CreateAsync((item as CreateProductCommand).OriginCode, (item as CreateProductCommand).OriginCode, _originRepository, cancellationToken);
                 }
             }
         }
 
         private async Task CreateProductGroupCodeIfNotExistsAsync(object item, CancellationToken cancellationToken)
         {
-            var IsUniqueProductGroupCode = await _productGroupRepository.IsUniqueProductGroupCodeAsync((item as CreateProductCommand).ProductGroupCode);
-            if (IsUniqueProductGroupCode)
+            var IsUniqueProductGroupCode = _productGroupRepository.IsUniqueProductGroupCodeAsync((item as CreateProductCommand).ProductGroupCode);
+            if (IsUniqueProductGroupCode.Result)
             {
-                await bllProductGroup.CreateAsync((item as CreateProductCommand).ProductGroupCode, (item as CreateProductCommand).ProductGroupCode, _productGroupRepository, cancellationToken);
+                createableProductGroupCodes.Add((item as CreateProductCommand).ProductGroupCode);
+                //await bllProductGroup.CreateAsync((item as CreateProductCommand).ProductGroupCode, (item as CreateProductCommand).ProductGroupCode, _productGroupRepository, cancellationToken);
             }
         }
 

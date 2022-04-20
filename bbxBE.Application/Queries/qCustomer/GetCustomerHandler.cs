@@ -55,7 +55,7 @@ namespace bbxBE.Application.Queries.qCustomer
             */
 
             // query based on filter
-            var entityPositions = await _positionRepository.GetCustomerAsync(validFilter);
+            var entityPositions = _positionRepository.GetCustomer(validFilter);
 
 
             var data = entityPositions.MapItemFieldsByMapToAnnotation<GetCustomerViewModel>();

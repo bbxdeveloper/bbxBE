@@ -31,6 +31,7 @@ namespace bbxBE.Application.Consts
         public static string FV_INVORIGINID = "{PropertyName}|{PropertyName} érvénytelen származási hely.";
         public static string FV_INVUNITOFMEASURE = "{PropertyName}|{PropertyName} érvénytelen mennyiségi egység:{PropertyValue} ";
         public static string FV_PRODNOTFOUND = "Termék nem található, ID:{0} ";
+        public static string FV_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
         public static string FV_INVALIDFORMAT = "{PropertyName}|{PropertyName} érvénytelen formátum.";
         public static string FV_COUNTERNOTFOUND = "Bizonylati tömb található, ID:{0} ";
         public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb található, Kód:{0}, Raktár:{1} ";
@@ -62,6 +63,9 @@ namespace bbxBE.Application.Consts
         public static string NAV_QINVDATA_ERR = "{0} NAV queryInvoiceData error result:{1}";
         public static string NAV_QINVDATA_NOTFND_ERR = "{0} invoice not found:{1}";
 
+        public static string NAV_QTAXPAYER_ERR = "{0} NAV QueryTaxpayer, taxnumber:{1} error result:{2}";
+        public static string NAV_QTAXPAYER_TOKEN_ERR = "{0} NAV QueryTaxpayer token, taxnumber:{1} error result:{2}";
+        public static string NAV_QTAXPAYERT_OK = "{0} NAV QueryTaxpayer OK, taxnumber:{1}";
 
 
         public static string VATCODE_27 = "27%";

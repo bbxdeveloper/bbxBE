@@ -65,7 +65,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 _Counters.Add(p_Counter);
                 await _dbContext.SaveChangesAsync();
-                dbContextTransaction.Commit();
+                await dbContextTransaction.CommitAsync();
 
             }
             return p_Counter;
@@ -88,7 +88,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     _Counters.Update(p_Counter);
                     await _dbContext.SaveChangesAsync();
-                    dbContextTransaction.Commit();
+                    await dbContextTransaction.CommitAsync();
 
 
                 }
@@ -163,7 +163,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     _Counters.Update(counter);
 
                     await _dbContext.SaveChangesAsync();
-                    dbContextTransaction.Commit();
+                    await dbContextTransaction.CommitAsync();
                 }
                 else
                 {
@@ -191,7 +191,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         _Counters.Update(counter);
 
                         await _dbContext.SaveChangesAsync();
-                        dbContextTransaction.Commit();
+                        await dbContextTransaction.CommitAsync();
                         result = true;
                     }
 
@@ -224,7 +224,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             c.Ticks = 0;
                             _Counters.Update(counter);
                             await _dbContext.SaveChangesAsync();
-                            dbContextTransaction.Commit();
+                            await dbContextTransaction.CommitAsync();
                             result = true;
                         }
                         result = false;
