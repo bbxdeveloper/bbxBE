@@ -12,9 +12,15 @@ namespace bbxBE.Application.Interfaces.Repositories
     public interface IProductGroupRepositoryAsync : IGenericRepositoryAsync<ProductGroup>
     {
         Task<bool> IsUniqueProductGroupCodeAsync(string ProductGroupCode, long? ID = null);
+
+        Task<ProductGroup> AddProudctGroupAsync(ProductGroup p_productGroup);
+        Task<ProductGroup> UpdateProductGroupAsync(ProductGroup p_productGroup);
+        Task<ProductGroup> DeleteProductGroupAsync(long ID);
         Task<bool> SeedDataAsync(int rowCount);
 
-        Task<Entity> GetProductGroupAsync(GetProductGroup requestParameters);
+        Entity GetProductGroup(GetProductGroup requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductGroupAsync(QueryProductGroup requestParameters);
+
+
     }
 }

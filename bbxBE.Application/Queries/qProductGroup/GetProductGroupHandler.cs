@@ -40,7 +40,7 @@ namespace bbxBE.Application.Queries.qProductGroup
           
 
             // query based on filter
-            var entityPositions = await _productGroupRepository.GetProductGroupAsync(validFilter);
+            var entityPositions = _productGroupRepository.GetProductGroup(validFilter);
             var data = entityPositions.MapItemFieldsByMapToAnnotation<GetProductGroupViewModel>();
 
             // response wrapper

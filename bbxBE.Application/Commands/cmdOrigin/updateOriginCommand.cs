@@ -48,7 +48,7 @@ namespace bxBE.Application.Commands.cmdOrigin
         {
             var cust = _mapper.Map<Origin>(request);
 
-            await _OriginRepository.UpdateAsync(cust);
+            await _OriginRepository.UpdateOriginAsync(cust);
             return new Response<Origin>(cust);
         }
 
