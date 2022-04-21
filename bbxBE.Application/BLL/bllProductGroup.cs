@@ -21,5 +21,20 @@ namespace bbxBE.Application.BLL
             });
             return productGroup;
         }
+
+        public static async Task<long> CreateRangeAsync(List<ProductGroup> productGroupList, IProductGroupRepositoryAsync _productGroupRepository, CancellationToken cancellationToken)
+        {
+            return await _productGroupRepository.AddProudctGroupRangeAsync(productGroupList);
+        }
+
+        public static async Task<long> CreateProductRangeByStringAsync(List<string> productGroupList, IProductGroupRepositoryAsync _productGroupRepository, CancellationToken cancellationToken)
+        {
+            var pgList = new List<ProductGroup>();
+            foreach (var productGroup in productGroupList)
+            {
+                pgList.Add(new ProductGroup { ProductGroupCode = productGroup, ProductGroupDescription = productGroup });
+            }
+            return await _productGroupRepository.AddProudctGroupRangeAsync(pgList);
+        }
     }
 }

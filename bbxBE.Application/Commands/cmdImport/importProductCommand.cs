@@ -57,8 +57,8 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private List<CreateProductCommand> createProductCommands = new List<CreateProductCommand>();
         private List<UpdateProductCommand> updateProductCommands = new List<UpdateProductCommand>();
-        private List<string> createableOriginCodes = new List<string>();
-        private List<string> createableProductGroupCodes = new List<string>();
+        private List<Origin> createableOriginCodes = new List<Origin>();
+        private List<ProductGroup> createableProductGroupCodes = new List<ProductGroup>();
 
 
         public ImportProductCommandHandler(IProductRepositoryAsync productRepository,
@@ -127,14 +127,34 @@ namespace bbxBE.Application.Commands.cmdImport
 
             stopWatch.Restart();
 
-            createProductCommands.RemoveRange(10, (createProductCommands.Count - 10));
+            //createProductCommands.RemoveRange(10, (createProductCommands.Count - 10));
 
             for (int i = 0; i < createProductCommands.Count; i++)
             {
-                stopWatch.Restart();
                 CreateOrUpdateProductionAsync(importProduct, createProductCommands[i], cancellationToken);
-                stopWatch.Stop();
             }
+
+            stopWatch.Stop();
+
+            stopWatch.Restart();
+
+            await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
+
+            //for (int i = 0; i < createableProductGroupCodes.Count; i++)
+            //{
+
+            //}
+
+            stopWatch.Stop();
+
+            stopWatch.Restart();
+
+            await _originRepository.AddOriginRangeAsync(createableOriginCodes);
+
+            //for (int i = 0; i < createableOriginCodes.Count; i++)
+            //{
+            //    await bllOrigin.CreateAsync(createableOriginCodes[i], createableOriginCodes[i], _originRepository, cancellationToken);
+            //}
 
             stopWatch.Stop();
 
@@ -267,7 +287,7 @@ namespace bbxBE.Application.Commands.cmdImport
                 //var IsUniqueOriginCode = _originRepository.IsUniqueOriginCode((item as CreateProductCommand).OriginCode);
                 if (_originRepository.IsUniqueOriginCode((item as CreateProductCommand).OriginCode))
                 {
-                    createableOriginCodes.Add((item as CreateProductCommand).OriginCode);
+                    createableOriginCodes.Add(new Origin { OriginCode = (item as CreateProductCommand).OriginCode, OriginDescription = (item as CreateProductCommand).OriginCode });
                     //await bllOrigin.CreateAsync((item as CreateProductCommand).OriginCode, (item as CreateProductCommand).OriginCode, _originRepository, cancellationToken);
                 }
             }
@@ -278,7 +298,7 @@ namespace bbxBE.Application.Commands.cmdImport
             //var IsUniqueProductGroupCode = _productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode);
             if (_productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode))
             {
-                createableProductGroupCodes.Add((item as CreateProductCommand).ProductGroupCode);
+                createableProductGroupCodes.Add(new ProductGroup { ProductGroupCode = (item as CreateProductCommand).ProductGroupCode, ProductGroupDescription = (item as CreateProductCommand).ProductGroupCode });
                 //await bllProductGroup.CreateAsync((item as CreateProductCommand).ProductGroupCode, (item as CreateProductCommand).ProductGroupCode, _productGroupRepository, cancellationToken);
             }
         }
