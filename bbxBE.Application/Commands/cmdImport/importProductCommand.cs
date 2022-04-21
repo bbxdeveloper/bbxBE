@@ -127,7 +127,7 @@ namespace bbxBE.Application.Commands.cmdImport
 
             stopWatch.Restart();
 
-            //createProductCommands.RemoveRange(10, (createProductCommands.Count - 10));
+            createProductCommands.RemoveRange(10, (createProductCommands.Count - 10));
 
             for (int i = 0; i < createProductCommands.Count; i++)
             {
