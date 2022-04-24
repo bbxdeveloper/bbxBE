@@ -472,16 +472,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             };
 
             // set order by
+
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                query = query.OrderBy(orderBy);
+                if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
+                {
+                    //Kis heka...
+                    query = query.OrderBy(o => o.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else
+                {
+                    query = query.OrderBy(orderBy);
+                }
+
             }
-
-
             // paging
             query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize);
 
             // retrieve data to list
             var resultData = query.ToList();
