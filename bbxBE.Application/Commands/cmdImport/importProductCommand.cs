@@ -9,6 +9,7 @@ using bbxBE.Application.Wrappers;
 using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdProduct;
+using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -21,6 +22,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
@@ -94,40 +96,29 @@ namespace bbxBE.Application.Commands.cmdImport
                         if (item2.ProductCodeCategory == "OWN")
                             productItems.Add(item2.ProductCodeValue);
                     }
-                }   
+                }
             }
-
-            stopWatch.Stop();
 
             foreach (var item in producItems)
             {
                 if (!productItems.Contains(item.Value.ProductCode))
                 {
                     createProductCommands.Add(item.Value);
-                    //await CreateOrUpdateProductionAsync(importProduct, item.Value, cancellationToken);
                 }
                 else
                 {
                     var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
                     updateProductCommands.Add(updateProductCommand);
-                    
-                    //prod.TryGetValue("ID", out object _i);
-                    //updateProductCommand.ID = long.Parse(_i.ToString());
-
-
-                    //updateProductCommand.ID = long.Parse(item.Key.ToString());
-                    //await CreateOrUpdateProductionAsync(importProduct, updateProductCommand, cancellationToken);
                 }
-
-                //var prod = await _productRepository.GetProductByProductCodeAsync(new GetProductByProductCode() { ProductCode = item.Key });
             }
 
-            stopWatch.Stop();
-
+            int packageSize = 10000;
+            var createProductCommandsRatio = (createProductCommands.Count / packageSize);
+            var createProductCommandsLeftOvers = (createProductCommands.Count % packageSize);
+            var updateProductCommandsRatio = (updateProductCommands.Count / packageSize);
+            var updateProductCommandsLeftOvers = (updateProductCommands.Count % packageSize);
 
             stopWatch.Restart();
-
-            //createProductCommands.RemoveRange(10, (createProductCommands.Count - 10));
 
             for (int i = 0; i < createProductCommands.Count; i++)
             {
@@ -136,47 +127,83 @@ namespace bbxBE.Application.Commands.cmdImport
 
             stopWatch.Stop();
 
+
+
             stopWatch.Restart();
 
             await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
 
-            //for (int i = 0; i < createableProductGroupCodes.Count; i++)
-            //{
-
-            //}
-
             stopWatch.Stop();
+
+
 
             stopWatch.Restart();
 
             await _originRepository.AddOriginRangeAsync(createableOriginCodes);
 
-            //for (int i = 0; i < createableOriginCodes.Count; i++)
-            //{
-            //    await bllOrigin.CreateAsync(createableOriginCodes[i], createableOriginCodes[i], _originRepository, cancellationToken);
-            //}
-
             stopWatch.Stop();
+
+
 
             stopWatch.Restart();
 
-            await bllProduct.CreateRangeAsynch(createProductCommands, _productRepository, _mapper, cancellationToken);
+            //var tasks = new List<Task>();
+            //tasks.Add(Task.Run(() => DoWork()));
+            //await Task.WhenAll(tasks);
+
+            try
+            {
+                //for (int i = 1; i < createProductCommandsRatio; i++)
+                //{
+                //    tasks.Add(Task.Run(() => bllProduct.CreateRangeAsynch(createProductCommands.GetRange(i, packageSize), _productRepository, _mapper, cancellationToken)));
+                //    //await bllProduct.CreateRangeAsynch(createProductCommands.GetRange(i, packageSize), _productRepository, _mapper, cancellationToken);
+                //}
+                //tasks.Add(Task.Run(() => bllProduct.CreateRangeAsynch(createProductCommands.GetRange(createProductCommands.Count - createProductCommandsLeftOvers, createProductCommandsLeftOvers), _productRepository, _mapper, cancellationToken)));
+                ////await bllProduct.CreateRangeAsynch(createProductCommands.GetRange(createProductCommands.Count - createProductCommandsLeftOvers, createProductCommandsLeftOvers), _productRepository, _mapper, cancellationToken);
+
+                //await Task.WhenAll(tasks);
+
+                await bllProduct.CreateRangeAsynch(createProductCommands, _productRepository, _mapper, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
 
             stopWatch.Stop();
+
 
             stopWatch.Restart();
 
             for (int i = 0; i < updateProductCommands.Count; i++)
             {
-                //updateProductCommands[i].ID = long.Parse(item.Key.ToString());
                 CreateOrUpdateProductionAsync(importProduct, updateProductCommands[i], cancellationToken);
             }
 
             stopWatch.Stop();
 
+
             stopWatch.Restart();
 
-            await bllProduct.UpdateRangeAsynch(updateProductCommands, _productRepository, _mapper, cancellationToken);
+            try
+            {
+                //for (int i = 1; i < updateProductCommandsRatio; i++)
+                //{
+                //    await Task.Run(() => bllProduct.UpdateRangeAsynch(updateProductCommands.GetRange(i, packageSize), _productRepository, _mapper, cancellationToken));
+                //}
+                //await Task.Run(() => bllProduct.UpdateRangeAsynch(updateProductCommands.GetRange(updateProductCommands.Count - updateProductCommandsLeftOvers, updateProductCommandsLeftOvers), _productRepository, _mapper, cancellationToken));
+
+                await bllProduct.UpdateRangeAsynch(updateProductCommands, _productRepository, _mapper, cancellationToken);
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
 
             stopWatch.Stop();
             if (importProduct.HasErrorDuringImport)
@@ -285,7 +312,7 @@ namespace bbxBE.Application.Commands.cmdImport
             if (!String.IsNullOrEmpty((item as CreateProductCommand).OriginCode))
             {
                 //var IsUniqueOriginCode = _originRepository.IsUniqueOriginCode((item as CreateProductCommand).OriginCode);
-                if (_originRepository.IsUniqueOriginCode((item as CreateProductCommand).OriginCode))
+                if (_originRepository.IsUniqueOriginCode((item as CreateProductCommand).OriginCode) && !createableOriginCodes.Any(b => b.OriginCode == (item as CreateProductCommand).OriginCode))
                 {
                     createableOriginCodes.Add(new Origin { OriginCode = (item as CreateProductCommand).OriginCode, OriginDescription = (item as CreateProductCommand).OriginCode });
                     //await bllOrigin.CreateAsync((item as CreateProductCommand).OriginCode, (item as CreateProductCommand).OriginCode, _originRepository, cancellationToken);
@@ -296,7 +323,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private async Task CreateProductGroupCodeIfNotExistsAsync(object item, CancellationToken cancellationToken)
         {
             //var IsUniqueProductGroupCode = _productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode);
-            if (_productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode))
+            if (_productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode) && !createableProductGroupCodes.Any(aa => aa.ProductGroupCode == (item as CreateProductCommand).ProductGroupCode))
             {
                 createableProductGroupCodes.Add(new ProductGroup { ProductGroupCode = (item as CreateProductCommand).ProductGroupCode, ProductGroupDescription = (item as CreateProductCommand).ProductGroupCode });
                 //await bllProductGroup.CreateAsync((item as CreateProductCommand).ProductGroupCode, (item as CreateProductCommand).ProductGroupCode, _productGroupRepository, cancellationToken);
@@ -344,18 +371,16 @@ namespace bbxBE.Application.Commands.cmdImport
         {
             string regExpPattern = $"{fieldSeparator}(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
             Regex regexp = new Regex(regExpPattern);
-            //currentLine = currentLine.Replace("\"", "\'");
-            //string[] currentFieldsArray = currentLine.Replace("\"", "").Trim().Split(fieldSeparator);
-            string[] currentFieldsArray = regexp.Split(currentLine); // currentLine.Replace("\"", "").Trim().Split(fieldSeparator);
+            string[] currentFieldsArray = regexp.Split(currentLine);
 
             var createPRoductCommand = new CreateProductCommand();
 
             try
-            {    
-                createPRoductCommand.Description = productMapper.ContainsKey(DescriptionFieldName) ? currentFieldsArray[productMapper[DescriptionFieldName]].Trim() : null;
-                createPRoductCommand.ProductCode = productMapper.ContainsKey(ProductCodeFieldName) ? currentFieldsArray[productMapper[ProductCodeFieldName]].Trim() : null;
-                createPRoductCommand.OriginCode = productMapper.ContainsKey(OriginCodeFieldName) ? currentFieldsArray[productMapper[OriginCodeFieldName]].Trim() : null;
-                createPRoductCommand.UnitOfMeasure = productMapper.ContainsKey(UnitOfMeasureFieldName) ? currentFieldsArray[productMapper[UnitOfMeasureFieldName]].Trim() : null;
+            {
+                createPRoductCommand.Description = productMapper.ContainsKey(DescriptionFieldName) ? currentFieldsArray[productMapper[DescriptionFieldName]].Replace("\"", "").Trim() : null;
+                createPRoductCommand.ProductCode = productMapper.ContainsKey(ProductCodeFieldName) ? currentFieldsArray[productMapper[ProductCodeFieldName]].Replace("\"", "").Trim() : null;
+                createPRoductCommand.OriginCode = productMapper.ContainsKey(OriginCodeFieldName) ? currentFieldsArray[productMapper[OriginCodeFieldName]].Replace("\"", "").Trim() : null;
+                createPRoductCommand.UnitOfMeasure = productMapper.ContainsKey(UnitOfMeasureFieldName) ? currentFieldsArray[productMapper[UnitOfMeasureFieldName]].Replace("\"", "").Trim() : null;
                 createPRoductCommand.UnitPrice1 = productMapper.ContainsKey(UnitPrice1FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice1FieldName]]) : 0;
                 createPRoductCommand.UnitPrice2 = productMapper.ContainsKey(UnitPrice2FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice2FieldName]]) : 0;
                 createPRoductCommand.IsStock = productMapper.ContainsKey(IsStockFieldName) ? bool.Parse(currentFieldsArray[productMapper[IsStockFieldName]]) : true;
@@ -363,9 +388,9 @@ namespace bbxBE.Application.Commands.cmdImport
                 createPRoductCommand.OrdUnit = productMapper.ContainsKey(OrdUnitFieldName) ? decimal.Parse(currentFieldsArray[productMapper[OrdUnitFieldName]]) : 0;
                 createPRoductCommand.ProductFee = productMapper.ContainsKey(ProductFeeFieldName) ? decimal.Parse(currentFieldsArray[productMapper[ProductFeeFieldName]]) : 0;
                 createPRoductCommand.Active = productMapper.ContainsKey(ActiveFieldName) ? (currentFieldsArray[productMapper[ActiveFieldName]] == "1" ? true : false) : false;
-                createPRoductCommand.EAN = productMapper.ContainsKey(EANFieldName) ? currentFieldsArray[productMapper[EANFieldName]].Trim() : null;
-                createPRoductCommand.VTSZ = productMapper.ContainsKey(VTSZFieldName) ? currentFieldsArray[productMapper[VTSZFieldName]].Trim() : null;
-                createPRoductCommand.ProductGroupCode = productMapper.ContainsKey(ProductGroupCodeFieldName) ? currentFieldsArray[productMapper[ProductGroupCodeFieldName]].Trim() : null;
+                createPRoductCommand.EAN = productMapper.ContainsKey(EANFieldName) ? currentFieldsArray[productMapper[EANFieldName]].Replace("\"", "").Trim() : null;
+                createPRoductCommand.VTSZ = productMapper.ContainsKey(VTSZFieldName) ? currentFieldsArray[productMapper[VTSZFieldName]].Replace("\"", "").Trim() : null;
+                createPRoductCommand.ProductGroupCode = productMapper.ContainsKey(ProductGroupCodeFieldName) ? currentFieldsArray[productMapper[ProductGroupCodeFieldName]].Replace("\"", "").Trim() : null;
                 createPRoductCommand.VatRateCode = "27%";
                 //createPRoductCommand.LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]]) : 0;
 
