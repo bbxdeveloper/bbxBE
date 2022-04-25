@@ -54,7 +54,7 @@ namespace bbxBE.Application.Queries.qVatRate
 
 
             // query based on filter
-            var entities = await _VatRateRepository.QueryPagedVatRateAsync(validFilter);
+            var entities = _VatRateRepository.QueryPagedVatRate(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetVatRateViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 

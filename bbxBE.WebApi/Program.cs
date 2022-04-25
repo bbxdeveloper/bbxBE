@@ -1,3 +1,4 @@
+using bbxBE.Application.Interfaces.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,9 +43,9 @@ namespace bbxBE.WebApi
                 }
             }
 
-            host
-                .MigrateDatabase()                
-                .Run();
+            host.MigrateDatabase();
+            host.Run();
+
 
         }
 
