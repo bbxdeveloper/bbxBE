@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdInvoice;
 using System;
@@ -16,9 +17,12 @@ namespace bbxBE.Application.BLL
         public static async Task<Invoice> CreateAsynch(createOutgoingInvoiceCommand request,
                    IInvoiceRepositoryAsync _InvoiceRepository, IMapper _mapper, CancellationToken cancellationToken)
         {
-
-
             return new Invoice();
+        }
+
+        public static string GetCounterCode(enInvoiceType p_nvoiceType)
+        {
+            return "";  
         }
     }
 }

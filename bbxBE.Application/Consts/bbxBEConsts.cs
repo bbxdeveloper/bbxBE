@@ -37,6 +37,7 @@ namespace bbxBE.Application.Consts
         public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb található, Kód:{0}, Raktár:{1} ";
         public static string FV_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
         public static string FV_ORIGINNOTFOUND = "Származási hely nem található, ID:{0} ";
+        public static string FV_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
 
         public static string FV_BASE = "Egy vagy több validációs hiba történt.";
 
@@ -78,6 +79,8 @@ namespace bbxBE.Application.Consts
         public static string VATCODE_FA = "FA";
 
         public static string FIELD_PRODUCTCODE = "PRODUCTCODE";
+        public static string DEF_WAREHOUSE = "001";
+
 
     }
 }

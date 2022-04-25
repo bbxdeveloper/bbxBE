@@ -42,6 +42,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<Product> _cacheService;
         private readonly ICacheService<ProductGroup> _productGroupCacheService;
         private readonly ICacheService<Origin> _originCacheService;
+        private readonly ICacheService<VatRate> _vatRateCacheService;
 
         /*
            "id": 2272,
@@ -66,7 +67,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IDataShapeHelper<Product> dataShaperProduct,
             IDataShapeHelper<GetProductViewModel> dataShaperGetProductViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            ICacheService<Product> productCacheService) : base(dbContext)
+            ICacheService<Product> cacheService,
+            ICacheService<ProductGroup> productGroupCacheService,
+            ICacheService<Origin> originCacheService,
+            ICacheService<VatRate> vatRateCacheService
+            ) : base(dbContext)
         {
             _dbContext = dbContext;
             _Products = dbContext.Set<Product>();
@@ -80,8 +85,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _cacheService = productCacheService;
-
+            _cacheService = cacheService;
+            _productGroupCacheService = productGroupCacheService;
+            _originCacheService = originCacheService;
+            _vatRateCacheService = vatRateCacheService;
 
             var t = RefreshProductCache();
             t.GetAwaiter().GetResult();
@@ -129,17 +136,43 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
             {
-                p_product.ProductGroupID = _ProductGroups.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                if (_productGroupCacheService.IsCacheEmpty())
+                {
+                    p_product.ProductGroupID = _ProductGroups.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                }
+                else
+                {
+                    var query = _productGroupCacheService.QueryCache();
+                    p_product.ProductGroupID = query.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(p_OriginCode))
             {
-                p_product.OriginID = _Origins.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                if (_originCacheService.IsCacheEmpty())
+                {
+                    p_product.OriginID = _Origins.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                }
+                else
+                {
+                    var query = _originCacheService.QueryCache();
+                    p_product.OriginID = query.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(p_VatRateCode))
             {
-                p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+
+                if (_vatRateCacheService.IsCacheEmpty())
+                {
+                    p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                }
+                else
+                {
+                    var query = _vatRateCacheService.QueryCache();
+                    p_product.VatRateID = query.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                }
+
             }
             else
             {
@@ -213,28 +246,68 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
                 {
-                    var pg = _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
-                    p_product.ProductGroupID = pg.ID;
-                    p_product.ProductGroup = pg;
+                    ProductGroup pg = null;
+                    if (_productGroupCacheService.IsCacheEmpty())
+                    {
+
+                        pg = _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
+                    }
+                    else
+                    {
+                        var query = _productGroupCacheService.QueryCache();
+                        pg = query.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
+                    }
+                    if (pg != null)
+                    {
+                        p_product.ProductGroupID = pg.ID;
+                        p_product.ProductGroup = pg;
+                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(p_OriginCode))
                 {
-                    var origin = _Origins.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
+                    Origin origin = null;
 
-                    p_product.OriginID = origin.ID;
-                    p_product.Origin = origin;
+                    if (_originCacheService.IsCacheEmpty())
+                    {
+
+                        origin = _Origins.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
+                    }
+                    else
+                    {
+                        var query = _originCacheService.QueryCache();
+                        origin = query.SingleOrDefault(x => x.OriginCode == p_OriginCode);
+                    }
+                    if (origin != null)
+                    {
+                        p_product.OriginID = origin.ID;
+                        p_product.Origin = origin;
+                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(p_VatRateCode))
                 {
-                    var vatRate = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
+                    VatRate vatRate = null;
 
+
+                    if (_vatRateCacheService.IsCacheEmpty())
+                    {
+
+                        vatRate = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
+                    }
+                    else
+                    {
+                        var query = _vatRateCacheService.QueryCache();
+                        vatRate = query.SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
+                    }
+                    if (vatRate != null)
+                    { }
                     p_product.VatRateID = vatRate.ID;
                     p_product.VatRate = vatRate;
-
                 }
 
+                //egylőre ezt nem cache-oljuk
+                //
 
                 var pc = p_product.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString());
                 if (pc != null)

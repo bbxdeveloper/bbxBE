@@ -16,6 +16,8 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qVatRate;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -23,28 +25,37 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<VatRate> _VatRates;
+        private readonly DbSet<Product> _Products;
         private IDataShapeHelper<VatRate> _dataShaperVatRate;
         private IDataShapeHelper<GetVatRateViewModel> _dataShaperGetVatRateViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly ICacheService<VatRate> _cacheService;
 
         public VatRateRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<VatRate> dataShaperVatRate,
             IDataShapeHelper<GetVatRateViewModel> dataShaperGetVatRateViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            ICacheService<VatRate> cacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _VatRates = dbContext.Set<VatRate>();
+            _Products = dbContext.Set<Product>();
             _dataShaperVatRate = dataShaperVatRate;
             _dataShaperGetVatRateViewModel = dataShaperGetVatRateViewModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _cacheService = cacheService;
+
+
+            var t = RefreshVatRateCache();
+            t.GetAwaiter().GetResult();
         }
 
 
-     
+
 
         public async Task<Entity> GetVatRateAsync(GetVatRate requestParameter)
         {
@@ -64,7 +75,49 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedVatRateAsync(QueryVatRate requestParameter)
+
+        public async Task<VatRate> AddVatRateAsync(VatRate p_vatRate)
+        {
+
+
+            await _VatRates.AddAsync(p_vatRate);
+            await _dbContext.SaveChangesAsync();
+
+            _cacheService.AddOrUpdate(p_vatRate);
+            return p_vatRate;
+        }
+        public async Task<VatRate> UpdateVatRateAsync(VatRate p_vatRate)
+        {
+            _cacheService.AddOrUpdate(p_vatRate);
+            _VatRates.Update(p_vatRate);
+            await _dbContext.SaveChangesAsync();
+            return p_vatRate;
+        }
+        public async Task<VatRate> DeleteVatRateAsync(long ID)
+        {
+
+            VatRate vr = null;
+
+            vr = _VatRates.Where(x => x.ID == ID).FirstOrDefault();
+
+            if (vr != null)
+            {
+
+
+                _cacheService.TryRemove(vr);
+                _VatRates.Remove(vr);
+                await _dbContext.SaveChangesAsync();
+
+            }
+            else
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATENOTFOUND, ID));
+            }
+
+            return vr;
+        }
+
+        public (IEnumerable<Entity> data, RecordsCount recordsCount) QueryPagedVatRate(QueryVatRate requestParameter)
         {
 
             var searchString = requestParameter.SearchString;
@@ -78,19 +131,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             int recordsTotal, recordsFiltered;
 
-            // Setup IQueryable
-            var result = _VatRates
-                .AsNoTracking()
-                .AsExpandable();
+            var query = _cacheService.QueryCache();
 
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = query.Count();
 
             // filter data
-            FilterBySearchString(ref result, searchString);
+            FilterBySearchString(ref query, searchString);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = query.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -102,21 +152,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                query = query.OrderBy(orderBy);
             }
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<VatRate>("new(" + fields + ")");
+                query = query.Select<VatRate>("new(" + fields + ")");
             }
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = query.ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetVatRateViewModel>();
@@ -153,6 +203,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-   
+        public async Task RefreshVatRateCache()
+        {
+
+            if (_cacheService.IsCacheEmpty())
+            {
+
+                var q = _VatRates
+                .AsNoTracking()
+                .AsExpandable();
+                await _cacheService.RefreshCache(q);
+
+            }
+        }
     }
 }
