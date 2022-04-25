@@ -55,6 +55,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddSingleton<ICacheService<Customer>, CustomerCacheService>();
             services.AddSingleton<ICacheService<ProductGroup>, ProductGroupCacheService>();
             services.AddSingleton<ICacheService<Origin>, OriginCacheService>();
+            services.AddSingleton<ICacheService<VatRate>, VatRateCacheService>();
 
 
             /*

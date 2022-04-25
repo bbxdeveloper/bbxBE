@@ -80,21 +80,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 _invoices.Add(p_invoice);
                 await _dbContext.SaveChangesAsync();
                 p_invoiceLines.ForEach(i => i.InvoiceID = p_invoice.ID);
-                _ = _invoiceLines.AddRangeAsync(p_invoiceLines);
+                await _invoiceLines.AddRangeAsync(p_invoiceLines);
 
                 p_summaryByVatRate.ForEach(i => i.InvoiceID = p_invoice.ID);
-                _ = _summaryByVatRates.AddRangeAsync(p_summaryByVatRate);
+                await _summaryByVatRates.AddRangeAsync(p_summaryByVatRate);
 
                 if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
                 {
                     p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
-                    _ = _additionalInvoiceData.AddRangeAsync(p_additionalInvoiceData);
+                    await _additionalInvoiceData.AddRangeAsync(p_additionalInvoiceData);
                 }
 
                 if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
                 {
                     p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
-                    _ = _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
+                    await _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
                 }
                 await _dbContext.SaveChangesAsync();
                 dbContextTransaction.Commit();
