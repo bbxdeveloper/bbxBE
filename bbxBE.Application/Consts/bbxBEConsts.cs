@@ -27,8 +27,9 @@ namespace bbxBE.Application.Consts
         public static string FV_EXISTS = "{PropertyName}|{PropertyName} már létezik.";
         public static string FV_INVALIDEMAIL = "{PropertyName}|{PropertyName} érvénytelen email cím.";
         public static string FV_ERBANK = "{PropertyName}|{PropertyName} érvénytelen bankszámlaszám.";
-        public static string FV_INVPRODUCTCROUPID = "{PropertyName}|{PropertyName} érvénytelen termékcsoport.";
-        public static string FV_INVORIGINID = "{PropertyName}|{PropertyName} érvénytelen származási hely.";
+        public static string FV_INVPRODUCTCROUPCODE = "{PropertyName}|{PropertyName} érvénytelen termékcsoport.";
+        public static string FV_INVORIGINCODE = "{PropertyName}|{PropertyName} érvénytelen származási hely.";
+        public static string FV_INVVATRATECODE = "{PropertyName}|{PropertyName} érvénytelen áfakód.";
         public static string FV_INVUNITOFMEASURE = "{PropertyName}|{PropertyName} érvénytelen mennyiségi egység:{PropertyValue} ";
         public static string FV_PRODNOTFOUND = "Termék nem található, ID:{0} ";
         public static string FV_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
