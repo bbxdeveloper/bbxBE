@@ -42,14 +42,16 @@ namespace bbxBE.Application.Commands.cmdProduct
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.ProductGroupCode)
-                 .MustAsync(CheckProductGroupCodeAsync).WithMessage(bbxBEConsts.FV_INVPRODUCTCROUPID);
+                 .MustAsync(CheckProductGroupCodeAsync).WithMessage(bbxBEConsts.FV_INVPRODUCTCROUPCODE);
  
             RuleFor(p => p.OriginCode)
-                 .MustAsync(CheckOriginCodeAsync).WithMessage(bbxBEConsts.FV_INVORIGINID);
-
+                 .MustAsync(CheckOriginCodeAsync).WithMessage(bbxBEConsts.FV_INVORIGINCODE);
 
             RuleFor(p => p.UnitOfMeasure)
-                 .MustAsync(CheckUnitOfMEasureAsync).WithMessage(bbxBEConsts.FV_INVUNITOFMEASURE);
+                 .Must(CheckUnitOfMEasure).WithMessage(bbxBEConsts.FV_INVUNITOFMEASURE);
+
+            RuleFor(p => p.VatRateCode)
+                 .MustAsync(CheckVatRateCodeAsync).WithMessage(bbxBEConsts.FV_INVVATRATECODE);
 
             RuleFor(p => p.VTSZ)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
@@ -78,7 +80,16 @@ namespace bbxBE.Application.Commands.cmdProduct
             }
             return true;
         }
-        private async Task<bool> CheckUnitOfMEasureAsync(string UnitOfMeasure, CancellationToken cancellationToken)
+
+        private async Task<bool> CheckVatRateCodeAsync(string VatRateCode, CancellationToken cancellationToken)
+        {
+            if (!string.IsNullOrWhiteSpace(VatRateCode))
+            {
+                return await _ProductRepository.CheckVatRateCodeAsync(VatRateCode);
+            }
+            return true;
+        }
+        private bool CheckUnitOfMEasure(string UnitOfMeasure)
         {
             var valid = Enum.TryParse(UnitOfMeasure, out enUnitOfMeasure uom);
             return valid;
