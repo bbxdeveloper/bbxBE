@@ -116,10 +116,10 @@ namespace bbxBE.Application.Commands.cmdImport
 
             stopWatch.Restart();
 
-            if (createProductCommands.Count > 0)
-                createProductCommands = createProductCommands.GetRange(0, 10);
-            if (updateProductCommands.Count > 0)
-                updateProductCommands = updateProductCommands.GetRange(0, 10);
+            //if (createProductCommands.Count > 0)
+            //    createProductCommands = createProductCommands.GetRange(0, 10);
+            //if (updateProductCommands.Count > 0)
+            //    updateProductCommands = updateProductCommands.GetRange(0, 10);
 
             // fill create Product items in Create list
             for (int i = 0; i < createProductCommands.Count; i++)

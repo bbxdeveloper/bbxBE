@@ -243,43 +243,47 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var prod in p_productList)
             {
                 PrepareNewProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
-                _cacheService.AddOrUpdate(prod);
                 item++;
             }
 
-            await _dbContext.BulkInsertAsync(p_productList);
-            await _dbContext.SaveChangesAsync();
-            await RefreshProductCache();
+            try
+            {
+                _dbContext.Database.SetCommandTimeout(3600);
+                await _dbContext.BulkInsertAsync(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+            
+
+            var subEntities = new List<ProductCode>();
+            foreach (var entity in p_productList)
+            {
+                foreach (var subEntity in entity.ProductCodes)
+                {
+                    subEntity.ProductID = entity.ID; // sets FK to match its linked PK that was generated in DB
+                }
+                subEntities.AddRange(entity.ProductCodes);
+            }
+            await _dbContext.BulkInsertAsync(subEntities);
+            //context.BulkInsert(subEntities);
+
+            await RefreshProductCache(true);
 
             //TODO: nem frissul a _cacheService a Product.ID-vel
 
             //TODO: frissiteni a ProductCodes -okat
-            RefreshProductCode(_cacheService);
+            //RefreshProductCode(_cacheService);
 
-            await _dbContext.BulkInsertAsync(pcList);
+            
             await _dbContext.SaveChangesAsync();
 
 
 
             return item;
-        }
-
-        private void RefreshProductCode(ICacheService<Product> prodList)
-        {
-            foreach (var prod in prodList.QueryCache())
-            {
-                if (prod.ProductCodes != null)
-                {
-                    foreach (var pcc in prod.ProductCodes)
-                    {
-                        if (!pcList.Any(x => x.ProductCodeValue == pcc.ProductCodeValue))
-                        {
-                            pcc.ProductID = prod.ID;
-                            pcList.Add(pcc);
-                        }
-                    }
-                }
-            }
         }
 
         private int PrepareProductPart(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList, int item)
@@ -466,7 +470,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
             //await dbContextTransaction.CommitAsync();
 
-            await RefreshProductCache();
+            await RefreshProductCache(true);
 
             //}
             return item;
@@ -650,10 +654,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(v => v.VatRate).AsNoTracking().ToListAsync();
         }
 
-        public async Task RefreshProductCache()
+        public async Task RefreshProductCache(bool force = false)
         {
 
-            if (_cacheService.IsCacheEmpty())
+            if (_cacheService.IsCacheEmpty() || force)
             {
 
                 var q = _Products.AsNoTracking()
