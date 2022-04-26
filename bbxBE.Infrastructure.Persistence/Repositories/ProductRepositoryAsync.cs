@@ -44,6 +44,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<ProductGroup> _productGroupCacheService;
         private readonly ICacheService<Origin> _originCacheService;
         private readonly ICacheService<VatRate> _vatRateCacheService;
+        private List<ProductCode> pcList = new List<ProductCode>();
 
         /*
            "id": 2272,
@@ -94,6 +95,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var t = RefreshProductCache();
             t.GetAwaiter().GetResult();
 
+            var t2 = RefreshVatRateCache();
+            t2.GetAwaiter().GetResult();
+
         }
 
 
@@ -116,22 +120,42 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CheckProductGroupCodeAsync(string ProductGroupCode)
         {
-            //megj: ez ne cache-ből menjen
-            //var query = _productGroupCacheService.QueryCache();
-            //return query.ToList().Any(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted);
-            return await _ProductGroups.AnyAsync(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted);
+            if (_productGroupCacheService.IsCacheEmpty())
+            {
+                return await _ProductGroups.AnyAsync(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted);
+            }
+            else
+            {
+                var query = _productGroupCacheService.QueryCache();
+                return query.ToList().Any(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted);
+            }
         }
 
         public async Task<bool> CheckOriginCodeAsync(string OriginCode)
         {
-            //megj: ez ne cache-ből menjen
-            //var query = _originCacheService.QueryCache();
-            //return query.ToList().Any(p => p.OriginCode == OriginCode && !p.Deleted);
-
-            return await _Origins.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted);
+            if (_originCacheService.IsCacheEmpty())
+            {
+                return await _Origins.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted);
+            }
+            else
+            {
+                var query = _originCacheService.QueryCache();
+                return query.ToList().Any(p => p.OriginCode == OriginCode && !p.Deleted);
+            }
         }
 
-
+        public async Task<bool> CheckVatRateCodeAsync(string VatRateCode)
+        {
+            if (_vatRateCacheService.IsCacheEmpty())
+            {
+                return await _VatRates.AnyAsync(p => p.VatRateCode == VatRateCode && !p.Deleted);
+            }
+            else
+            {
+                var query = _vatRateCacheService.QueryCache();
+                return query.ToList().Any(p => p.VatRateCode == VatRateCode && !p.Deleted);
+            }
+        }
 
         private Product PrepareNewProduct(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
@@ -163,17 +187,28 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (!string.IsNullOrWhiteSpace(p_VatRateCode))
             {
-                p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+
+                if (_vatRateCacheService.IsCacheEmpty())
+                {
+                    p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                }
+                else
+                {
+                    var query = _vatRateCacheService.QueryCache();
+                    p_product.VatRateID = query.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                }
+
             }
             else
             {
                 p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27).ID;
             }
 
-            //foreach (var pc in p_product.ProductCodes)
-            //{
-            //    pc.ProductCodeValue = pc.ProductCodeValue.ToUpper();
-            //}
+            foreach (var pc in p_product.ProductCodes)
+            {
+                pc.ProductCodeValue = pc.ProductCodeValue.ToUpper();
+                pc.ProductID = pc.ID;
+            }
 
             return p_product;
         }
@@ -202,39 +237,49 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<int> AddProductRangeAsync(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList)
         {
             var item = 0;
-            //using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
-            //{
 
-            int packageSize = 10000;
-            var productListRatio = (p_productList.Count / packageSize);
-            var productListLeftOvers = (p_productList.Count % packageSize);
 
-            var tasks = new List<Task>();
 
-            for (int i = 1; i < productListRatio; i++)
+            foreach (var prod in p_productList)
             {
-                tasks.Add(Task.Run(() => PrepareProductPart(p_productList.GetRange(i, packageSize), 
-                    p_ProductGroupCodeList.GetRange(i, packageSize), 
-                    p_OriginCodeList.GetRange(i, packageSize), 
-                    p_VatRateCodeList.GetRange(i, packageSize), item)));
+                PrepareNewProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
+                _cacheService.AddOrUpdate(prod);
+                item++;
             }
-            tasks.Add(Task.Run(() => PrepareProductPart(p_productList.GetRange(p_productList.Count - productListLeftOvers, productListLeftOvers), 
-                p_ProductGroupCodeList.GetRange(p_productList.Count - productListLeftOvers, productListLeftOvers), 
-                p_OriginCodeList.GetRange(p_productList.Count - productListLeftOvers, productListLeftOvers), 
-                p_VatRateCodeList.GetRange(p_productList.Count - productListLeftOvers, productListLeftOvers), item)));
-            
-            await Task.WhenAll(tasks);
 
             await _dbContext.BulkInsertAsync(p_productList);
+            await _dbContext.SaveChangesAsync();
+            await RefreshProductCache();
 
-            //await _Products.AddRangeAsync(p_productList);
+            //TODO: nem frissul a _cacheService a Product.ID-vel
+
+            //TODO: frissiteni a ProductCodes -okat
+            RefreshProductCode(_cacheService);
+
+            await _dbContext.BulkInsertAsync(pcList);
             await _dbContext.SaveChangesAsync();
 
-            //await dbContextTransaction.CommitAsync();
 
-            await RefreshProductCache();
-            //}
+
             return item;
+        }
+
+        private void RefreshProductCode(ICacheService<Product> prodList)
+        {
+            foreach (var prod in prodList.QueryCache())
+            {
+                if (prod.ProductCodes != null)
+                {
+                    foreach (var pcc in prod.ProductCodes)
+                    {
+                        if (!pcList.Any(x => x.ProductCodeValue == pcc.ProductCodeValue))
+                        {
+                            pcc.ProductID = prod.ID;
+                            pcList.Add(pcc);
+                        }
+                    }
+                }
+            }
         }
 
         private int PrepareProductPart(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList, int item)
@@ -408,20 +453,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             //{
 
-                foreach (var prod in p_productList)
-                {
-                    PrepareUpdateProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
+            foreach (var prod in p_productList)
+            {
+                PrepareUpdateProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
 
-                    item++;
-                }
+                item++;
+            }
 
-                await _dbContext.BulkUpdateAsync(p_productList);
+            await _dbContext.BulkUpdateAsync(p_productList);
 
-                //_Products.UpdateRange(p_productList);
-                await _dbContext.SaveChangesAsync();
-                //await dbContextTransaction.CommitAsync();
+            //_Products.UpdateRange(p_productList);
+            await _dbContext.SaveChangesAsync();
+            //await dbContextTransaction.CommitAsync();
 
-                await RefreshProductCache();
+            await RefreshProductCache();
 
             //}
             return item;
@@ -604,6 +649,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(o => o.Origin).AsNoTracking()
                  .Include(v => v.VatRate).AsNoTracking().ToListAsync();
         }
+
         public async Task RefreshProductCache()
         {
 
@@ -616,6 +662,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                      .Include(o => o.Origin).AsNoTracking()
                      .Include(v => v.VatRate).AsNoTracking();
                 await _cacheService.RefreshCache(q);
+
+            }
+        }
+        public async Task RefreshVatRateCache()
+        {
+
+            if (_vatRateCacheService.IsCacheEmpty())
+            {
+
+                var q = _VatRates
+                .AsNoTracking()
+                .AsExpandable();
+                await _vatRateCacheService.RefreshCache(q);
 
             }
         }
