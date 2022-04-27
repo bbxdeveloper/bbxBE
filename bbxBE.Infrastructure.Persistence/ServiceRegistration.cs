@@ -28,10 +28,12 @@ namespace bbxBE.Infrastructure.Persistence
             }
             else
             {
+
                 services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(
                    configuration.GetConnectionString("bbxdbconnection"),
-                   b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                   b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
+               );
             }
 
             // Connection Dappernak
@@ -70,7 +72,7 @@ namespace bbxBE.Infrastructure.Persistence
             .ConfigureRunner(c => c.AddSqlServer2012()
                 .WithGlobalConnectionString(configuration.GetConnectionString("bbxdbconnection"))
                 .ScanIn(Assembly.GetExecutingAssembly()).For.Migrations());
-           
+
         }
     }
 }
