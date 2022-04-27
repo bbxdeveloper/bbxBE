@@ -220,11 +220,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
 
-
                 await _Products.AddAsync(p_product);
 
-
-                //     _dbContext.ChangeTracker.AcceptAllChanges();
                 await _dbContext.SaveChangesAsync();
 
                 await dbContextTransaction.CommitAsync();
@@ -237,8 +234,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<int> AddProductRangeAsync(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList)
         {
             var item = 0;
-
-
 
             foreach (var prod in p_productList)
             {
@@ -254,53 +249,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             catch (Exception e)
             {
-
                 throw e;
             }
             
 
-            var subEntities = new List<ProductCode>();
-            foreach (var entity in p_productList)
+            var productCodes = new List<ProductCode>();
+            foreach (var product in p_productList)
             {
-                foreach (var subEntity in entity.ProductCodes)
+                foreach (var productCode in product.ProductCodes)
                 {
-                    subEntity.ProductID = entity.ID; // sets FK to match its linked PK that was generated in DB
+                    productCode.ProductID = product.ID; // sets FK to match its linked PK that was generated in DB
                 }
-                subEntities.AddRange(entity.ProductCodes);
+                productCodes.AddRange(product.ProductCodes);
             }
-            await _dbContext.BulkInsertAsync(subEntities);
-            //context.BulkInsert(subEntities);
-
-            await RefreshProductCache(true);
-
-            //TODO: nem frissul a _cacheService a Product.ID-vel
-
-            //TODO: frissiteni a ProductCodes -okat
-            //RefreshProductCode(_cacheService);
-
-            
+            await _dbContext.BulkInsertAsync(productCodes);
+            await RefreshProductCache(true);            
             await _dbContext.SaveChangesAsync();
-
-
-
-            return item;
-        }
-
-        private int PrepareProductPart(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList, int item)
-        {
-            foreach (var prod in p_productList)
-            {
-                PrepareNewProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
-
-                _cacheService.AddOrUpdate(prod);
-                item++;
-            }
 
             return item;
         }
 
         private Product PrepareUpdateProduct(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
+            //var x = _ProductCodes.Where(x => x.ProductCodeValue == p_product.ProductCodes).Select(c => c.ProductID);
+            //p_product.ID = long.Parse(_ProductCodes.Where(x => x.ProductID == p_product.ID).Select(c => c.ProductID).ToString());
+
             var prod = _Products.AsNoTracking()
                         .Include(p => p.ProductCodes).AsNoTracking()
                         .Include(pg => pg.ProductGroup).AsNoTracking()
@@ -452,27 +425,40 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<int> UpdateProductRangeAsync(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList)
         {
 
-            //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
             var item = 0;
-            //using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
-            //{
 
             foreach (var prod in p_productList)
             {
                 PrepareUpdateProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
-
                 item++;
             }
 
-            await _dbContext.BulkUpdateAsync(p_productList);
+            try
+            {
+                _dbContext.Database.SetCommandTimeout(3600);
+                await _dbContext.BulkUpdateAsync(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
+                await _dbContext.SaveChangesAsync();
 
-            //_Products.UpdateRange(p_productList);
-            await _dbContext.SaveChangesAsync();
-            //await dbContextTransaction.CommitAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
 
+            var productCodes = new List<ProductCode>();
+            foreach (var product in p_productList)
+            {
+                foreach (var productCode in product.ProductCodes)
+                {
+                    productCode.ProductID = product.ID; // sets FK to match its linked PK that was generated in DB
+                }
+                productCodes.AddRange(product.ProductCodes);
+            }
+            await _dbContext.BulkUpdateAsync(productCodes);
             await RefreshProductCache(true);
 
-            //}
+            await _dbContext.SaveChangesAsync();
+
             return item;
         }
 

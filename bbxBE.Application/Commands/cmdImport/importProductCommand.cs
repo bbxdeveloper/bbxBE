@@ -78,13 +78,10 @@ namespace bbxBE.Application.Commands.cmdImport
 
         public async Task<Response<ImportProduct>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
         {
-            var mappedProducts = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
-            var productItems = await GetProductItemsAsync(request, mappedProducts.productMap);
-            var importProduct = new ImportProduct { AllItemsCount = productItems.Count };
+            var mappedProductColumns = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
+            var productItemsFromCSV = await GetProductItemsAsync(request, mappedProductColumns.productMap);
+            var importProductResponse = new ImportProduct { AllItemsCount = productItemsFromCSV.Count };
             var productCodes = new HashSet<string>();
-
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
 
             // Get Products from Db/Cache and filter to OWN category.
             var pCodes = await _productRepository.GetAllProductsFromDBAsync();
@@ -101,7 +98,7 @@ namespace bbxBE.Application.Commands.cmdImport
             }
 
             // create a Product or Update only
-            foreach (var item in productItems)
+            foreach (var item in productItemsFromCSV)
             {
                 if (!productCodes.Contains(item.Value.ProductCode))
                 {
@@ -114,69 +111,28 @@ namespace bbxBE.Application.Commands.cmdImport
                 }
             }
 
-            stopWatch.Restart();
+            if (createProductCommands.Count > 0)
+                await CreateProdcutItems(importProductResponse, cancellationToken);
+            if (updateProductCommands.Count > 0)
+                await UpdateProductItems(importProductResponse, cancellationToken);
 
-            //if (createProductCommands.Count > 0)
-            //    createProductCommands = createProductCommands.GetRange(0, 10);
-            //if (updateProductCommands.Count > 0)
-            //    updateProductCommands = updateProductCommands.GetRange(0, 10);
-
-            // fill create Product items in Create list
-            for (int i = 0; i < createProductCommands.Count; i++)
+            if (importProductResponse.HasErrorDuringImport)
             {
-                CreateOrUpdateProductionAsync(importProduct, createProductCommands[i], cancellationToken);
+                throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
             }
+            importProductResponse.CreatedItemsCount = createProductCommands.Count;
+            importProductResponse.UpdatedItemsCount = updateProductCommands.Count;
 
-            stopWatch.Stop();
+            return new Response<ImportProduct>(importProductResponse);
+        }
 
-
-
-            stopWatch.Restart();
-
-            // create product groups into DB
-            await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
-
-            stopWatch.Stop();
-
-
-
-            stopWatch.Restart();
-
-            // create origin into DB
-            await _originRepository.AddOriginRangeAsync(createableOriginCodes);
-
-            stopWatch.Stop();
-
-
-
-            stopWatch.Restart();
-
-            // save Prodcuts list into DB. They need to create only
-            try
-            {
-                await bllProduct.CreateRangeAsynch(createProductCommands, _productRepository, _mapper, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-
-            stopWatch.Stop();
-
-
-            stopWatch.Restart();
-
+        private async Task UpdateProductItems(ImportProduct importProductResponse, CancellationToken cancellationToken)
+        {
             // fill update Product items in Update list
             for (int i = 0; i < updateProductCommands.Count; i++)
             {
-                CreateOrUpdateProductionAsync(importProduct, updateProductCommands[i], cancellationToken);
+                CreateOrUpdateProductionAsync(updateProductCommands[i], cancellationToken);
             }
-
-            stopWatch.Stop();
-
-
-            stopWatch.Restart();
 
             // save Prodcuts list into DB. They need to update only
             try
@@ -185,23 +141,44 @@ namespace bbxBE.Application.Commands.cmdImport
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                LogToErrorsByException(importProductResponse, ex);
             }
-
-
-            stopWatch.Stop();
-            if (importProduct.HasErrorDuringImport)
-            {
-                //throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
-            }
-            importProduct.CreatedItemsCount = createProductCommands.Count;
-            importProduct.UpdatedItemsCount = updateProductCommands.Count;
-
-            return new Response<ImportProduct>(importProduct);
         }
 
-        private async Task CreateOrUpdateProductionAsync(ImportProduct importProduct, object item, CancellationToken cancellationToken)
+        private async Task CreateProdcutItems(ImportProduct importProductResponse, CancellationToken cancellationToken)
+        {
+            // fill create Product items in Create list
+            for (int i = 0; i < createProductCommands.Count; i++)
+            {
+                await CreateOrUpdateProductionAsync(createProductCommands[i], cancellationToken);
+            }
+
+            // create product groups into DB
+            await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
+
+            // create origin into DB
+            await _originRepository.AddOriginRangeAsync(createableOriginCodes);
+
+
+            // save Prodcuts list into DB. They need to create only
+            try
+            {
+                await bllProduct.CreateRangeAsynch(createProductCommands, _productRepository, _mapper, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                LogToErrorsByException(importProductResponse, ex);
+            }
+        }
+
+        private void LogToErrorsByException(ImportProduct importProductResponse, Exception ex)
+        {
+            importProductResponse.HasErrorDuringImport = true;
+            importProductResponse.ErroredItemssCount = +1;
+            _logger.LogError(ex.Message);
+        }
+
+        private async Task CreateOrUpdateProductionAsync(object item, CancellationToken cancellationToken)
         {
             switch (item.GetType().Name)
             {
@@ -298,10 +275,10 @@ namespace bbxBE.Application.Commands.cmdImport
         {
             importProduct.HasErrorDuringImport = true;
             importProduct.ErroredItemssCount = +1;
-            LogToErrors(result);
+            LogToErrorsByValidation(result);
         }
 
-        private void LogToErrors(FluentValidation.Results.ValidationResult result)
+        private void LogToErrorsByValidation(FluentValidation.Results.ValidationResult result)
         {
             foreach (var failure in result.Errors)
             {
