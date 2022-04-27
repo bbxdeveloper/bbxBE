@@ -50,7 +50,7 @@ namespace bbxBE.Application.Commands.cmdProduct
                  .Must(CheckUnitOfMEasure).WithMessage(bbxBEConsts.FV_INVUNITOFMEASURE);
 
             RuleFor(p => p.VatRateCode)
-                .MustAsync(CheckOriginCodeAsync).WithMessage(bbxBEConsts.FV_INVVATRATECODE);
+                .MustAsync(CheckVatRateCodeAsync).WithMessage(bbxBEConsts.FV_INVVATRATECODE);
 
             RuleFor(p => p.VTSZ)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
