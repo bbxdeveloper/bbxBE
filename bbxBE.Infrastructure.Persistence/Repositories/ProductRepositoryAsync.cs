@@ -271,9 +271,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         private Product PrepareUpdateProduct(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
-            //var x = _ProductCodes.Where(x => x.ProductCodeValue == p_product.ProductCodes).Select(c => c.ProductID);
-            //p_product.ID = long.Parse(_ProductCodes.Where(x => x.ProductID == p_product.ID).Select(c => c.ProductID).ToString());
-
             var prod = _Products.AsNoTracking()
                         .Include(p => p.ProductCodes).AsNoTracking()
                         .Include(pg => pg.ProductGroup).AsNoTracking()
