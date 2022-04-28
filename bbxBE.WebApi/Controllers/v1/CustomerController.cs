@@ -1,4 +1,5 @@
 ﻿using bbxBE.Application.Commands.cmdCustomer;
+using bbxBE.Application.Commands.cmdImport;
 using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Enums;
 using bbxBE.Application.Interfaces.Queries;
@@ -13,21 +14,22 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+    //   [Authorize]
     public class CustomerController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        public CustomerController( IWebHostEnvironment env, IConfiguration conf)
+        public CustomerController(IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
-    }
+        }
 
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace bbxBE.WebApi.Controllers.v1
 
         // POST: USRController/Edit/5
         [HttpPut]
- //       [ValidateAntiForgeryToken]
+        //       [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UpdateCustomerCommand command)
         {
             return Ok(await Mediator.Send(command));
@@ -92,6 +94,14 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> QueryTaxpayer([FromQuery] QueryTaxPayer filter)
         {
             return Ok(await Mediator.Send(filter));
+        }
+
+
+        [HttpPost("import")]
+        public async Task<IActionResult> Import(List<IFormFile> customerFiles, string fieldSeparator)
+        {
+            var customerRequest = new ImportCustomerCommand() { ProductFiles = customerFiles, FieldSeparator = fieldSeparator };
+            return Ok(await Mediator.Send(customerRequest));
         }
     }
 }

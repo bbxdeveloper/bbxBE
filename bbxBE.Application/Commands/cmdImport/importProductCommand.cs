@@ -26,13 +26,13 @@ using System.Linq;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
-    public class ImportProductCommand : IRequest<Response<ImportProduct>>
+    public class ImportProductCommand : IRequest<Response<ImportedItemsStatistics>>
     {
         public List<IFormFile> ProductFiles { get; set; }
         public string FieldSeparator { get; set; } = ";";
     }
 
-    public class ImportProductCommandHandler : ProductMappingParser, IRequestHandler<ImportProductCommand, Response<ImportProduct>>
+    public class ImportProductCommandHandler : ProductMappingParser, IRequestHandler<ImportProductCommand, Response<ImportedItemsStatistics>>
     {
         private const string DescriptionFieldName = "Description";
         private const string ProductGroupCodeFieldName = "ProductGroupCode";
@@ -76,11 +76,11 @@ namespace bbxBE.Application.Commands.cmdImport
             _logger = logger;
         }
 
-        public async Task<Response<ImportProduct>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
+        public async Task<Response<ImportedItemsStatistics>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
         {
             var mappedProductColumns = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
             var productItemsFromCSV = await GetProductItemsAsync(request, mappedProductColumns.productMap);
-            var importProductResponse = new ImportProduct { AllItemsCount = productItemsFromCSV.Count };
+            var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };
             var productCodes = new Dictionary<string, long>();
 
             // Get Products from Db/Cache and filter to OWN category.
@@ -125,10 +125,10 @@ namespace bbxBE.Application.Commands.cmdImport
             importProductResponse.CreatedItemsCount = createProductCommands.Count;
             importProductResponse.UpdatedItemsCount = updateProductCommands.Count;
 
-            return new Response<ImportProduct>(importProductResponse);
+            return new Response<ImportedItemsStatistics>(importProductResponse);
         }
 
-        private async Task UpdateProductItems(ImportProduct importProductResponse, CancellationToken cancellationToken)
+        private async Task UpdateProductItems(ImportedItemsStatistics importProductResponse, CancellationToken cancellationToken)
         {
             // fill update Product items in Update list
             for (int i = 0; i < updateProductCommands.Count; i++)
@@ -147,7 +147,7 @@ namespace bbxBE.Application.Commands.cmdImport
             }
         }
 
-        private async Task CreateProdcutItems(ImportProduct importProductResponse, CancellationToken cancellationToken)
+        private async Task CreateProdcutItems(ImportedItemsStatistics importProductResponse, CancellationToken cancellationToken)
         {
             // fill create Product items in Create list
             for (int i = 0; i < createProductCommands.Count; i++)
@@ -173,7 +173,7 @@ namespace bbxBE.Application.Commands.cmdImport
             }
         }
 
-        private void LogToErrorsByException(ImportProduct importProductResponse, Exception ex)
+        private void LogToErrorsByException(ImportedItemsStatistics importProductResponse, Exception ex)
         {
             importProductResponse.HasErrorDuringImport = true;
             importProductResponse.ErroredItemssCount = +1;
@@ -273,7 +273,7 @@ namespace bbxBE.Application.Commands.cmdImport
             }
         }
 
-        private void LogToErrorHandler(ImportProduct importProduct, FluentValidation.Results.ValidationResult result)
+        private void LogToErrorHandler(ImportedItemsStatistics importProduct, FluentValidation.Results.ValidationResult result)
         {
             importProduct.HasErrorDuringImport = true;
             importProduct.ErroredItemssCount = +1;

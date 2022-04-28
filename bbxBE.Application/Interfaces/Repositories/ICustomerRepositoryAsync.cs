@@ -1,24 +1,14 @@
-﻿//using bbxBE.Application.Features.Positions.Queries.GetPositions;
-using bbxBE.Application.Interfaces;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Parameters;
-using bbxBE.Application.Queries.qCustomer;
+﻿using bbxBE.Application.Interfaces;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Interfaces.Repositories
+namespace bbxBE.Application.Commands.cmdImport
 {
     public interface ICustomerRepositoryAsync : IGenericRepositoryAsync<Customer>
     {
-        bool IsUniqueTaxpayerId(string TaxpayerId, long? ID = null);
-        bool IsUniqueIsOwnData( long? ID = null);
-        bool CheckBankAccount(string bankAccountNumber);
-        Task<bool> SeedDataAsync(int rowCount);
-        Task<Customer> AddCustomerAsync(Customer p_customer);
-        Task<Customer> UpdateCustomerAsync(Customer p_customer);
-        Task<Customer> DeleteCustomerAsync(long ID);
-        Entity GetCustomer(GetCustomer requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParameters);
+        bool IsUniqueProductCode(string CustomerCode, long? ID = null);
+        Task<int> AddProductRangeAsync(List<Customer> p_customerList);
+        Task<int> UpdateProductRangeAsync(List<Customer> p_customerList);
     }
 }
