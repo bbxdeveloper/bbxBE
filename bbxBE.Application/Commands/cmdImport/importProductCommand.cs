@@ -81,7 +81,7 @@ namespace bbxBE.Application.Commands.cmdImport
             var mappedProductColumns = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
             var productItemsFromCSV = await GetProductItemsAsync(request, mappedProductColumns.productMap);
             var importProductResponse = new ImportProduct { AllItemsCount = productItemsFromCSV.Count };
-            var productCodes = new HashSet<string>();
+            var productCodes = new Dictionary<string, long>();
 
             // Get Products from Db/Cache and filter to OWN category.
             var pCodes = await _productRepository.GetAllProductsFromDBAsync();
@@ -91,8 +91,8 @@ namespace bbxBE.Application.Commands.cmdImport
                 {
                     foreach (var item2 in item.ProductCodes)
                     {
-                        if (item2.ProductCodeCategory == "OWN")
-                            productCodes.Add(item2.ProductCodeValue);
+                        if (item2.ProductCodeCategory == "OWN" && (!productCodes.ContainsKey(item2.ProductCodeValue)))
+                            productCodes.Add(item2.ProductCodeValue, item2.ProductID);
                     }
                 }
             }
@@ -100,13 +100,15 @@ namespace bbxBE.Application.Commands.cmdImport
             // create a Product or Update only
             foreach (var item in productItemsFromCSV)
             {
-                if (!productCodes.Contains(item.Value.ProductCode))
+                if (!productCodes.ContainsKey(item.Value.ProductCode))
                 {
                     createProductCommands.Add(item.Value);
                 }
                 else
                 {
                     var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
+                    productCodes.TryGetValue(updateProductCommand.ProductCode, out long ID);
+                    updateProductCommand.ID = ID;
                     updateProductCommands.Add(updateProductCommand);
                 }
             }
