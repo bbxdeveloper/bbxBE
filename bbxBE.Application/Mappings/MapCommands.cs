@@ -9,6 +9,7 @@ using bbxBE.Application.Commands.cmdWarehouse;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCounter;
 using bxBE.Application.Commands.cmdCustomer;
+using bxBE.Application.Commands.cmdInvoice;
 using bxBE.Application.Commands.cmdOrigin;
 using bxBE.Application.Commands.cmdProduct;
 using bxBE.Application.Commands.cmdProductGroup;
@@ -51,6 +52,9 @@ namespace bbxBE.Command.Mappings
             CreateMap<CreateCounterCommand, Counter>();
             CreateMap<UpdateCounterCommand, Counter>();
             CreateMap<DeleteCounterCommand, Counter>();
+
+            CreateMap<CreateInvoiceCommand, Invoice>();
+            CreateMap<CreateInvoiceCommand, Invoice>().ReverseMap();
 
         }
     }

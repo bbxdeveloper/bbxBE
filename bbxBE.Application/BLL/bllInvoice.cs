@@ -14,15 +14,12 @@ namespace bbxBE.Application.BLL
 
       public static class bllInvoice
     {
-        public static async Task<Invoice> CreateAsynch(createOutgoingInvoiceCommand request,
+        public static async Task<Invoice> CreateAsynch(CreateInvoiceCommand request,
                    IInvoiceRepositoryAsync _InvoiceRepository, IMapper _mapper, CancellationToken cancellationToken)
         {
             return new Invoice();
         }
 
-        public static string GetCounterCode(enInvoiceType p_nvoiceType)
-        {
-            return "";  
-        }
-    }
+     }
 }
+ 

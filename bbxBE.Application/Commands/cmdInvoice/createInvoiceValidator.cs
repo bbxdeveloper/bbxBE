@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace bbxBE.Application.Commands.cmdInvoice
 {
 
-    public class createInvoiceCommandValidator : AbstractValidator<createOutgoingInvoiceCommand>
+    public class createInvoiceCommandValidator : AbstractValidator<CreateInvoiceCommand>
     {
         private readonly IInvoiceRepositoryAsync _InvoiceRepository;
 

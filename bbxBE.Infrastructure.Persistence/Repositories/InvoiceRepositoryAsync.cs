@@ -75,7 +75,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
-//                p_invoice = bllCounter.SafeGetNextAsync()
 
                 _invoices.Add(p_invoice);
                 await _dbContext.SaveChangesAsync();

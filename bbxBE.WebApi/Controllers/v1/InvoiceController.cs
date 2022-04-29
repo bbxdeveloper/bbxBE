@@ -40,7 +40,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create(createOutgoingInvoiceCommand command)
+        public async Task<IActionResult> Create(CreateInvoiceCommand command)
         {
             return Ok(await Mediator.Send(command));
         }

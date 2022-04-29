@@ -48,6 +48,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             return !await _Warehouses.AnyAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
+        public async Task<Warehouse> GetWarehouseByCodeAsync(string WarehouseCode)
+        {
+            return await _Warehouses.FirstOrDefaultAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted );
+        }
 
 
         public async Task<Entity> GetWarehouseAsync(GetWarehouse requestParameter)

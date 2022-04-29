@@ -94,7 +94,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND, p_Counter.ID));
+                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND, p_Counter.ID));
                 }
             }
             return p_Counter;
@@ -121,14 +121,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
         private const int ExpiredInMinutes = 30;
-        public async Task<string> GetNextValueAsync(string CounterCode, string WarehouseCode, bool useCounterPool = false)
+        public async Task<string> GetNextValueAsync(string CounterCode, long WarehouseID, bool useCounterPool = false)
         {
             var NextValue = "";
             using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
             {
                 var counter = _Counters
                     .Include( i=>i.Warehouse)
-                    .Where(x => x.CounterCode == CounterCode && x.Warehouse.WarehouseCode == WarehouseCode).FirstOrDefault();
+                    .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefault();
 
                 if (counter != null)
                 {
@@ -167,7 +167,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseCode));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseID));
                 }
             }
             return NextValue;
@@ -330,6 +330,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-   
     }
 }

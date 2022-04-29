@@ -35,7 +35,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
 
 
                 end",
-                enInvoiceType.INV.ToString()+ "_" + bbxBEConsts.DEF_WAREHOUSE, 
+                "K"+enInvoiceType.INV.ToString()+ "_" + bbxBEConsts.DEF_WAREHOUSE, 
                 bbxBEConsts.DEF_WAREHOUSE, enInvoiceType.INV.ToString() + "_" + bbxBEConsts.DEF_WAREHOUSE, "Szolnok KP", "K-", 1, 5, "S", ""));
 
             Execute.Sql(string.Format(@"
@@ -44,7 +44,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     insert into Counter ([WarehouseID],[CounterCode],[CounterDescription],[Prefix],[CurrentNumber],[NumbepartLength],[Suffix],[CounterPool])
                     values ( '{1}', '{2}','{3}', '{4}', {5}, {6}, '{7}', '{8}')
                end",
-               enInvoiceType.DLV.ToString() + "_" + bbxBEConsts.DEF_WAREHOUSE,
+               "K" + enInvoiceType.DLV.ToString() + "_" + bbxBEConsts.DEF_WAREHOUSE,
                bbxBEConsts.DEF_WAREHOUSE, enInvoiceType.DLV.ToString() + "_" + bbxBEConsts.DEF_WAREHOUSE, "Szolnok Száll", "S-", 1, 5, "S", ""));
         }
     }
