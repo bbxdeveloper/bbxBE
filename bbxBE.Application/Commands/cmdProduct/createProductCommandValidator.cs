@@ -28,10 +28,10 @@ namespace bbxBE.Application.Commands.cmdProduct
             RuleFor(p => p.ProductCode)
                  .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                    .MustAsync(
-                         async (model, ProductCode, cancellation) =>
+                    .Must(
+                          (model, ProductCode) =>
                          {
-                             return IsUniqueProductCode(ProductCode, cancellation);
+                             return IsUniqueProductCode(ProductCode);
                          }
                      ).WithMessage(bbxBEConsts.FV_EXISTS)
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
@@ -60,7 +60,7 @@ namespace bbxBE.Application.Commands.cmdProduct
 
         }
 
-        private bool IsUniqueProductCode(string ProductCode, CancellationToken cancellationToken)
+        private bool IsUniqueProductCode(string ProductCode)
         {
             return _ProductRepository.IsUniqueProductCode(ProductCode);
         }

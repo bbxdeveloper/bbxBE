@@ -56,6 +56,8 @@ namespace bbxBE.Command.Mappings
             CreateMap<CreateInvoiceCommand, Invoice>();
             CreateMap<CreateInvoiceCommand, Invoice>().ReverseMap();
 
+            CreateMap<CreateInvoiceCommand.InvoiceLine, InvoiceLine>();
+            CreateMap<CreateInvoiceCommand.InvoiceLine, InvoiceLine>().ReverseMap();
         }
     }
 }

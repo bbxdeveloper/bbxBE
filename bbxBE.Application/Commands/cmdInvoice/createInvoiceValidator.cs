@@ -1,6 +1,8 @@
 ﻿using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Enums;
+using bbxBE.Common.NAV;
 using bxBE.Application.Commands.cmdInvoice;
 using FluentValidation;
 using MediatR;
@@ -24,34 +26,46 @@ namespace bbxBE.Application.Commands.cmdInvoice
         {
             this._InvoiceRepository = InvoiceRepository;
 
-            RuleFor(p => p.WarehouseCode)
+            RuleFor(r => r.WarehouseCode)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
 
-            RuleFor(p => p.InvoiceIssueDate)
+            RuleFor(r => r.InvoiceIssueDate)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
             
-            RuleFor(p => p.InvoiceDeliveryDate)
+            RuleFor(r => r.InvoiceDeliveryDate)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
 
-            RuleFor(p => p.PaymentDate)
+            RuleFor(r => r.PaymentDate)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
 
-            RuleFor(p => new { p.InvoiceIssueDate, p.InvoiceDeliveryDate }).Must(m => m.InvoiceIssueDate >= m.InvoiceDeliveryDate)
+            RuleFor(r => new { r.InvoiceIssueDate, r.InvoiceDeliveryDate }).Must(m => m.InvoiceIssueDate >= m.InvoiceDeliveryDate)
                 .WithMessage(bbxBEConsts.INV_DATE1);
-            RuleFor(p => new { p.InvoiceIssueDate, p.PaymentDate }).Must(m => m.InvoiceIssueDate <= m.PaymentDate)
+            RuleFor(r => new { r.InvoiceIssueDate, r.PaymentDate }).Must(m => m.InvoiceIssueDate <= m.PaymentDate)
                 .WithMessage(bbxBEConsts.INV_DATE2);
 
-            RuleFor(p => p.CustomerID)
+            RuleFor(r => r.CustomerID)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
 
-            RuleFor(p => p.PaymentMethod)
+            RuleFor(r => r.PaymentMethod)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .Must(CheckPaymentMethod).WithMessage(bbxBEConsts.FV_INVPAYMENTMETHOD);
+
+
+            RuleFor(r => r.CurrencyCode)
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .Must(CheckCurrency).WithMessage(bbxBEConsts.FV_INVCURRENCY);
+
+
+            RuleFor(r => r.ExchangeRate)
+              .GreaterThan(0).WithMessage(bbxBEConsts.FV_EXCHANGERATE);
+
 
             RuleFor(p => new { p.InvoiceLines }).Must(m => m.InvoiceLines.Count > 0)
                 .WithMessage(bbxBEConsts.INV_LINES);
@@ -75,6 +89,17 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 return true;
             }
 
+        }
+        private bool CheckPaymentMethod(string PaymentMethod)
+        {
+            var valid = Enum.TryParse(PaymentMethod, out PaymentMethodType pm);
+            return valid;
+        }
+
+        private bool CheckCurrency(string Currency)
+        {
+            var valid = Enum.TryParse(Currency, out enCurrencyCodes curr);
+            return valid;
         }
 
     }

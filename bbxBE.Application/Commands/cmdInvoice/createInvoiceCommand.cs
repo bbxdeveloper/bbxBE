@@ -4,6 +4,7 @@ using bbxBE.Application.BLL;
 using bbxBE.Application.Consts;
 using bbxBE.Application.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Enums;
@@ -111,6 +112,14 @@ namespace bxBE.Application.Commands.cmdInvoice
 		[Description("Fizetési mód")]
 		public string PaymentMethod { get; set; }
 
+		[ColumnLabel("Pénznem")]
+		[Description("Pénznem")]
+		public string CurrencyCode { get; set; }
+
+
+		[ColumnLabel("Árfolyam")]
+		[Description("Árfolyam")]
+		public decimal ExchangeRate { get; set; }
 
 		[ColumnLabel("Megjegyzés")]
 		[Description("Megjegyzés")]
@@ -138,19 +147,25 @@ namespace bxBE.Application.Commands.cmdInvoice
 	public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, Response<Invoice>>
     {
 		private readonly IInvoiceRepositoryAsync _InvoiceRepository;
-		private readonly ICounterRepositoryAsync _CounterRepositoryAsync;
-		private readonly IWarehouseRepositoryAsync _WarehouseRepositoryAsync;
+		private readonly ICounterRepositoryAsync _CounterRepository;
+		private readonly IWarehouseRepositoryAsync _WarehouseRepository;
+		private readonly ICustomerRepositoryAsync _CustomerRepository;
+		private readonly IProductRepositoryAsync _ProductRepository;
 		private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
         public CreateInvoiceCommandHandler(IInvoiceRepositoryAsync InvoiceRepository,
-			ICounterRepositoryAsync CounterRepositoryAsync,
-			IWarehouseRepositoryAsync WarehouseRepositoryAsync,
+			ICounterRepositoryAsync CounterRepository,
+			IWarehouseRepositoryAsync WarehouseRepository,
+			ICustomerRepositoryAsync CustomerRepository,
+			IProductRepositoryAsync ProductRepository,
 			IMapper mapper, IConfiguration configuration)
         {
             _InvoiceRepository = InvoiceRepository;
-			_CounterRepositoryAsync = CounterRepositoryAsync;
-			_WarehouseRepositoryAsync = WarehouseRepositoryAsync;
+			_CounterRepository = CounterRepository;
+			_WarehouseRepository = WarehouseRepository;
+			_CustomerRepository = CustomerRepository;
+			_ProductRepository = ProductRepository;
 			_mapper = mapper;
             _configuration = configuration;
         }
@@ -199,9 +214,10 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 		public async Task<Response<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
         {
-			var cnt = _mapper.Map<Invoice>(request);
+			var invoice = _mapper.Map<Invoice>(request);
 
-			Invoice invoice = null;
+			
+
 			List<InvoiceLine> invoiceLines = null;
 			List<SummaryByVatRate> summaryByVatRate = null;
 			List<AdditionalInvoiceData> additionalInvoiceData = null;
@@ -209,17 +225,33 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 			request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;		//Átmenetileg
 
-			var wh = await _WarehouseRepositoryAsync.GetWarehouseByCodeAsync( request.WarehouseCode);
+			var wh = await _WarehouseRepository.GetWarehouseByCodeAsync( request.WarehouseCode);
 			if (wh == null)
 			{
 				throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_WAREHOUSENOTFOUND, request.WarehouseCode));
 			}
-
 			invoice.WarehouseID = wh.ID;
+			
+			/* ey nem kell
+			var cust =  _CustomerRepository.GetCustomer(new GetCustomer() { ID = request.CustomerID });
+			if (cust == null)
+			{
+				throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, request.CustomerID));
+			}
+			invoice.Customer = cust;
+			*/
+
+			if( !string.IsNullOrWhiteSpace( request.Notice))
+            {
+				invoice.AdditionalInvoiceData = new List<AdditionalInvoiceData>() {  new AdditionalInvoiceData()
+							{ DataName = "Notice", DataDescription = "Megjegyzés", DataValue = request.Notice }};
+
+			}
+
 
 			var invoiceType = (enInvoiceType)Enum.Parse(typeof(enInvoiceType), invoice.InvoiceType);
 			var counterCode = bllCounter.GetCounterCode(invoiceType, invoice.Incoming, wh.ID);
-			var invNum = _CounterRepositoryAsync.GetNextValueAsync(counterCode, wh.ID);
+			var invNum = _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
 
 			invoice = await _InvoiceRepository.AddInvoiceAsync(invoice, invoiceLines, summaryByVatRate, additionalInvoiceData, additionalInvoiceLineData);
             return new Response<Invoice>(invoice);
