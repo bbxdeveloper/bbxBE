@@ -266,7 +266,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			invoice.invoiceGrossAmountHUF = invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF;
 
 			//Tételsorok
-			
+			invoice.InvoiceLines = new List<InvoiceLine>();
 
 			invoice = await _InvoiceRepository.AddInvoiceAsync(invoice, invoiceLines, summaryByVatRate, additionalInvoiceData, additionalInvoiceLineData);
             return new Response<Invoice>(invoice);

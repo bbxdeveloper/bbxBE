@@ -78,33 +78,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
 
-                _invoices.Add(p_invoice);
-                await _dbContext.SaveChangesAsync();
-
-                /*
-                p_invoiceLines.ForEach(i => i.InvoiceID = p_invoice.ID);
-                await _invoiceLines.AddRangeAsync(p_invoiceLines);
-
-                    p_summaryByVatRate.ForEach(i => i.InvoiceID = p_invoice.ID);
-                    await _summaryByVatRates.AddRangeAsync(p_summaryByVatRate);
-
-                    if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
-                    {
-                        p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
-                        await _additionalInvoiceData.AddRangeAsync(p_additionalInvoiceData);
-                    }
-
-                    if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
-                    {
-                        p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
-                        await _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
-                    }
+                    await _invoices.AddAsync(p_invoice);
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
+
+                    /*
+                    p_invoiceLines.ForEach(i => i.InvoiceID = p_invoice.ID);
+                    await _invoiceLines.AddRangeAsync(p_invoiceLines);
+
+                        p_summaryByVatRate.ForEach(i => i.InvoiceID = p_invoice.ID);
+                        await _summaryByVatRates.AddRangeAsync(p_summaryByVatRate);
+
+                        if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
+                        {
+                            p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
+                            await _additionalInvoiceData.AddRangeAsync(p_additionalInvoiceData);
+                        }
+
+                        if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
+                        {
+                            p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
+                            await _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
+                        }
+                        await _dbContext.SaveChangesAsync();
+                        await dbContextTransaction.CommitAsync();
+                    */
                 }
                 catch (Exception ex)
                 {
-                   await dbContextTransaction.RollbackAsync();
+                    await dbContextTransaction.RollbackAsync();
                     throw;
                 }
             }
@@ -112,34 +114,34 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return p_invoice;
         }
 
-        public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
-        {
-            /*
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
             {
-
-                var cnt = _Invoices.Where(x => x.ID == p_Invoice.ID).FirstOrDefault();
-
-                if (cnt != null)
+                /*
+                using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
                 {
-                    if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
+
+                    var cnt = _Invoices.Where(x => x.ID == p_Invoice.ID).FirstOrDefault();
+
+                    if (cnt != null)
                     {
-                        p_Invoice.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
+                        if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
+                        {
+                            p_Invoice.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
+                        }
+
+                        _Invoices.Update(p_Invoice);
+                        await _dbContext.SaveChangesAsync();
+                        await dbContextTransaction.CommitAsync();
+
+
                     }
-
-                    _Invoices.Update(p_Invoice);
-                    await _dbContext.SaveChangesAsync();
-                    await dbContextTransaction.CommitAsync();
-
-
+                    else
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_InvoiceNOTFOUND, p_Invoice.ID));
+                    }
                 }
-                else
-                {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_InvoiceNOTFOUND, p_Invoice.ID));
-                }
-            }
-            */
-            return p_invoice;
+                */
+                    return p_invoice;
         }
 
         public async Task<Entity> GetInvoiceAsync(GetInvoice requestParameter)
