@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Application.Commands.cmdImport;
 
 namespace bbxBE.Application.Queries.qCustomer
 {
