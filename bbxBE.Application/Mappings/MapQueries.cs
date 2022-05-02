@@ -50,8 +50,8 @@ namespace bbxBE.Queries.Mappings
             CreateMap<Counter, GetCounterViewModel>()
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription));
 
-            CreateMap<List<VatRate>, List<GetVatRateViewModel>>();
-            CreateMap<VatRate, GetVatRateViewModel>();
-        }
+            CreateMap<VatRate, GetVatRateViewModel>()
+              .ForMember(dst => dst.VatRateDescription, opt => opt.MapFrom(src => src.VatRateCode + " (áfa%:" + (src.VatPercentage * 100).ToString("0.##") + ")"));
+       }
     }
 }

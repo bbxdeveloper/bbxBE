@@ -162,7 +162,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("LineDeliveryDate").AsDateTime2().Nullable()
                     .WithColumn("DeliveryNote").AsString().Nullable()                   //Szállítólevél-szám
                     .WithColumn("DeliveryNoteInvoiceID").AsInt64().Nullable()           //Szállítólevél ID
-                    .WithColumn("DeliveryNoteLineNumber").AsInt16().NotNullable()       //Kapcsolódó szállítólevél sor
+                    .WithColumn("DeliveryNoteLineNumber").AsInt16().Nullable()       //Kapcsolódó szállítólevél sor
 
                     //Termékdíj - A környezetvédelmi termékdíj-kötelezettség átvállalása
                     .WithColumn("TakeoverReason").AsString().Nullable()

@@ -484,13 +484,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public Entity GetProductByProductCode(GetProductByProductCode requestParameter)
+        public Product GetProductByProductCode(string productCode)
         {
 
             var query = _cacheService.QueryCache();
 
-            var prod = query.Where(i => i.ProductCodes.Any(c => c.ProductCodeValue.ToUpper() == requestParameter.ProductCode.ToUpper()
+            var prod = query.Where(i => i.ProductCodes.Any(c => c.ProductCodeValue.ToUpper() == productCode.ToUpper()
                                                                    && c.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).FirstOrDefault();
+            return prod;
+        }
+        public Entity GetProductByProductCode(GetProductByProductCode requestParameter)
+        {
+            var prod = GetProductByProductCode(requestParameter.ProductCode.ToUpper());
 
             //            var fields = requestParameter.Fields;
             if (prod != null)

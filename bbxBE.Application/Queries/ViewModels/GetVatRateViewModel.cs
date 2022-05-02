@@ -18,6 +18,11 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Áfaleíró-kód")]
         [Description("Áfaleíró-kód")]
         public string VatRateCode { get; set; }
+
+        [ColumnLabel("Áfaleíró leírás")]
+        [Description("Áfaleíró leírás")]
+        public string VatRateDescription { get; set; }
+
         [ColumnLabel("Áfa mértéke")]
         [Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
         public decimal VatPercentage { get; set; }

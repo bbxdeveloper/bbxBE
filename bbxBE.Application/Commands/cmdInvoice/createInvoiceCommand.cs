@@ -5,6 +5,7 @@ using bbxBE.Application.Consts;
 using bbxBE.Application.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.qCustomer;
+using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Enums;
@@ -15,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -151,6 +153,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 		private readonly IWarehouseRepositoryAsync _WarehouseRepository;
 		private readonly ICustomerRepositoryAsync _CustomerRepository;
 		private readonly IProductRepositoryAsync _ProductRepository;
+		private readonly IVatRateRepositoryAsync _VatRateRepository;
 		private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
@@ -159,6 +162,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			IWarehouseRepositoryAsync WarehouseRepository,
 			ICustomerRepositoryAsync CustomerRepository,
 			IProductRepositoryAsync ProductRepository,
+			IVatRateRepositoryAsync VatRateRepository,
 			IMapper mapper, IConfiguration configuration)
         {
             _InvoiceRepository = InvoiceRepository;
@@ -166,6 +170,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			_WarehouseRepository = WarehouseRepository;
 			_CustomerRepository = CustomerRepository;
 			_ProductRepository = ProductRepository;
+			_VatRateRepository = VatRateRepository;
 			_mapper = mapper;
             _configuration = configuration;
         }
@@ -217,59 +222,111 @@ namespace bxBE.Application.Commands.cmdInvoice
         {
 			var invoice = _mapper.Map<Invoice>(request);
 
-			
-
-			List<InvoiceLine> invoiceLines = null;
-			List<SummaryByVatRate> summaryByVatRate = null;
-			List<AdditionalInvoiceData> additionalInvoiceData = null;
-			List<AdditionalInvoiceLineData> additionalInvoiceLineData = null;
-
-
-			//ID-k feloldása
-			request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;		//Átmenetileg
-
-			var wh = await _WarehouseRepository.GetWarehouseByCodeAsync( request.WarehouseCode);
-			if (wh == null)
+			var counterCode = "";
+			try
 			{
-				throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_WAREHOUSENOTFOUND, request.WarehouseCode));
-			}
-			invoice.WarehouseID = wh.ID;
-			
-			/* ez nem kell
-			var cust =  _CustomerRepository.GetCustomer(new GetCustomer() { ID = request.CustomerID });
-			if (cust == null)
-			{
-				throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, request.CustomerID));
-			}
-			invoice.Customer = cust;
-			*/
 
-			//Megjegyzés
-			if( !string.IsNullOrWhiteSpace( request.Notice))
-            {
-				invoice.AdditionalInvoiceData = new List<AdditionalInvoiceData>() {  new AdditionalInvoiceData()
+
+				//ID-k feloldása
+				request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;      //Átmenetileg
+
+				var wh = await _WarehouseRepository.GetWarehouseByCodeAsync(request.WarehouseCode);
+				if (wh == null)
+				{
+					throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_WAREHOUSENOTFOUND, request.WarehouseCode));
+				}
+				invoice.WarehouseID = wh.ID;
+
+				/* ez nem kell
+				var cust =  _CustomerRepository.GetCustomer(new GetCustomer() { ID = request.CustomerID });
+				if (cust == null)
+				{
+					throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, request.CustomerID));
+				}
+				invoice.Customer = cust;
+				*/
+
+				//Megjegyzés
+				if (!string.IsNullOrWhiteSpace(request.Notice))
+				{
+					invoice.AdditionalInvoiceData = new List<AdditionalInvoiceData>() {  new AdditionalInvoiceData()
 							{ DataName = "Notice", DataDescription = "Megjegyzés", DataValue = request.Notice }};
 
+				}
+
+				//Számlaszám megállapítása
+				var invoiceType = (enInvoiceType)Enum.Parse(typeof(enInvoiceType), invoice.InvoiceType);
+				counterCode = bllCounter.GetCounterCode(invoiceType, invoice.Incoming, wh.ID);
+				invoice.InvoiceNumber = await _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
+
+
+				//Kiszámítható mezők kiszámolása
+				invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;
+				invoice.InvoiceVatAmountHUF = invoice.InvoiceVatAmount * invoice.ExchangeRate;
+
+				invoice.InvoiceGrossAmount = invoice.InvoiceNetAmount + invoice.InvoiceVatAmount;
+				invoice.invoiceGrossAmountHUF = invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF;
+
+				//Tételsorok
+				foreach (var ln in invoice.InvoiceLines)
+				{
+					var rln = request.InvoiceLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
+
+
+					var prod = _ProductRepository.GetProductByProductCode(rln.ProductCode);
+					if (prod == null)
+					{
+						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODCODENOTFOUND, rln.ProductCode));
+					}
+					var vatRate = await _VatRateRepository.GetVatRateByCodeAsync(rln.VatRateCode);
+					if (vatRate == null)
+					{
+						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATECODENOTFOUND, rln.VatRateCode));
+					}
+
+					//	ln.Product = prod;
+					ln.ProductID = prod.ID;
+					ln.LineDescription = prod.Description;
+					//	ln.VatRate = vatRate;
+					ln.VatRateID = vatRate.ID;
+					ln.LineNatureIndicator = prod.NatureIndicator;
+
+					ln.UnitPriceHUF = ln.UnitPrice * invoice.ExchangeRate;
+					ln.LineNetAmountHUF = ln.LineNetAmount * invoice.ExchangeRate;
+					ln.lineVatAmountHUF = ln.lineVatAmount * invoice.ExchangeRate;
+
+					ln.lineGrossAmountNormal = ln.LineNetAmount + ln.lineVatAmount;
+					ln.lineGrossAmountNormalHUF = ln.lineGrossAmountNormal * invoice.ExchangeRate;
+
+
+				}
+
+
+
+				//SummaryByVatrate
+				invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
+							.Select(g => new SummaryByVatRate()
+							{
+								VatRateID = g.Key,
+								VatRateNetAmount = g.Sum(s => s.lineVatAmount),
+								VatRateNetAmountHUF = g.Sum(s => s.lineVatAmountHUF),
+
+							}
+							).ToList();
+
+				await _InvoiceRepository.AddInvoiceAsync(invoice);
+	//			await _CounterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
+
+				return new Response<Invoice>(invoice);
 			}
-
-			//Számlaszám megállapítása
-			var invoiceType = (enInvoiceType)Enum.Parse(typeof(enInvoiceType), invoice.InvoiceType);
-			var counterCode = bllCounter.GetCounterCode(invoiceType, invoice.Incoming, wh.ID);
-            invoice.InvoiceNumber = await _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
-
-
-			//Kiszámítható mezők kiszámolása
-			invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;
-			invoice.InvoiceVatAmountHUF = invoice.InvoiceVatAmount * invoice.ExchangeRate;
-
-			invoice.InvoiceGrossAmount = invoice.InvoiceNetAmount + invoice.InvoiceVatAmount;
-			invoice.invoiceGrossAmountHUF = invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF;
-
-			//Tételsorok
-			invoice.InvoiceLines = new List<InvoiceLine>();
-
-			invoice = await _InvoiceRepository.AddInvoiceAsync(invoice, invoiceLines, summaryByVatRate, additionalInvoiceData, additionalInvoiceLineData);
-            return new Response<Invoice>(invoice);
+			catch (Exception ex)
+			{ 
+				if( !string.IsNullOrWhiteSpace( invoice.InvoiceNumber) && !string.IsNullOrWhiteSpace(counterCode))
+                {
+					await _CounterRepository.RollbackValueAsync(counterCode, invoice.WarehouseID, invoice.InvoiceNumber);
+				}
+			}
+			return null;
         }
 
 

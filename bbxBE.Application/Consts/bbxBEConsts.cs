@@ -35,6 +35,8 @@ namespace bbxBE.Application.Consts
         public static string FV_EXCHANGERATE = "{PropertyName}|{PropertyName} Érvénytelen árfolyam::{PropertyValue} ";
         public static string FV_INVCURRENCY = "{PropertyName}|{PropertyName} érvénytelen pénznem:{PropertyValue}";
         public static string FV_PRODNOTFOUND = "Termék nem található, ID:{0} ";
+        public static string FV_PRODCODENOTFOUND = "Termék nem található, kód:{0} ";
+        public static string FV_VATRATECODENOTFOUND = "Áfakód található, kód:{0} ";
         public static string FV_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
         public static string FV_INVALIDFORMAT = "{PropertyName}|{PropertyName} érvénytelen formátum.";
         public static string FV_COUNTERNOTFOUND = "Bizonylati tömb nem található, ID:{0} ";

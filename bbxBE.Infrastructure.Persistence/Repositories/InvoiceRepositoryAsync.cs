@@ -70,7 +70,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
+        public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice)
         {
 
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())

@@ -27,20 +27,16 @@ namespace bbxBE.Application.Commands.cmdInvoice
             this._InvoiceRepository = InvoiceRepository;
 
             RuleFor(r => r.WarehouseCode)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED);
 
             RuleFor(r => r.InvoiceIssueDate)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
-            
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED);
+
             RuleFor(r => r.InvoiceDeliveryDate)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED);
 
             RuleFor(r => r.PaymentDate)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED);
 
             RuleFor(r => new { r.InvoiceIssueDate, r.InvoiceDeliveryDate }).Must(m => m.InvoiceIssueDate >= m.InvoiceDeliveryDate)
                 .WithMessage(bbxBEConsts.INV_DATE1);
@@ -48,18 +44,15 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 .WithMessage(bbxBEConsts.INV_DATE2);
 
             RuleFor(r => r.CustomerID)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED);
 
             RuleFor(r => r.PaymentMethod)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .Must(CheckPaymentMethod).WithMessage(bbxBEConsts.FV_INVPAYMENTMETHOD);
 
 
             RuleFor(r => r.CurrencyCode)
                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
                 .Must(CheckCurrency).WithMessage(bbxBEConsts.FV_INVCURRENCY);
 
 
