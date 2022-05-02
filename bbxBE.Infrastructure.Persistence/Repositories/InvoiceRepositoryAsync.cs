@@ -78,6 +78,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 _invoices.Add(p_invoice);
                 await _dbContext.SaveChangesAsync();
+
+                /*
                 p_invoiceLines.ForEach(i => i.InvoiceID = p_invoice.ID);
                 await _invoiceLines.AddRangeAsync(p_invoiceLines);
 
@@ -95,6 +97,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
                     await _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
                 }
+                */
                 await _dbContext.SaveChangesAsync();
                 dbContextTransaction.Commit();
             }

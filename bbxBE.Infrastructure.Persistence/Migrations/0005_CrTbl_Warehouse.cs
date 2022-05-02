@@ -22,6 +22,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("WarehouseCode").AsString().NotNullable()
                     .WithColumn("WarehouseDescription").AsString();
 
+            Insert.IntoTable("Warehouse").Row(new { WarehouseCode = "001", WarehouseDescription = "Szolnok központi" });
         }
 
     }

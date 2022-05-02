@@ -63,10 +63,10 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("IncomingInvReference").AsString().Nullable()
 
                     //invoiceReference (javítószámla)
-                    .WithColumn("OriginalInvoiceID").AsInt64().NotNullable().ForeignKey()
-                    .WithColumn("OriginalInvoiceNumber").AsString().NotNullable()
-                    .WithColumn("ModifyWithoutMaster").AsBoolean().NotNullable().WithDefaultValue(false)
-                    .WithColumn("ModificationIndex").AsInt16().NotNullable().WithDefaultValue(0)
+                    .WithColumn("OriginalInvoiceID").AsInt64().Nullable().ForeignKey()
+                    .WithColumn("OriginalInvoiceNumber").AsString().Nullable()
+                    .WithColumn("ModifyWithoutMaster").AsBoolean().Nullable().WithDefaultValue(false)
+                    .WithColumn("ModificationIndex").AsInt16().Nullable().WithDefaultValue(0)
 
 
                     //InvoiceOrdernumber
