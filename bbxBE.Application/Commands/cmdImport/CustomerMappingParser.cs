@@ -20,10 +20,10 @@ namespace bbxBE.Application.Commands.cmdImport
             return this;
         }
 
-        public CustomerMappingParser GetProductMapping(ImportCustomerCommand mappingFile)
+        public CustomerMappingParser GetCustomerMapping(ImportCustomerCommand mappingFile)
         {
             string s;
-            using (var reader = new StreamReader(mappingFile.ProductFiles[0].OpenReadStream()))
+            using (var reader = new StreamReader(mappingFile.CustomerFiles[0].OpenReadStream()))
             {
                 s = reader.ReadToEnd();
             }

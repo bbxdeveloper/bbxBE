@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.BLL;
+using bbxBE.Application.Commands.cmdImport;
 using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
@@ -36,6 +37,10 @@ namespace bxBE.Application.Commands.cmdCustomer
         [ColumnLabel("Adóalany adószám")]
         [Description("Adóalany adószám")]
         public string TaxpayerNumber { get; set; }          //9999999-9-99
+
+        [ColumnLabel("Adóalany adószám közepe")]
+        [Description("Adóalany adószám közepea")]
+        public string VatCode { get; set; }
 
         [ColumnLabel("Külföldi adószám")]
         [Description("Külföldi adószám")]
