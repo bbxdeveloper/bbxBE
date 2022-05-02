@@ -95,7 +95,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             Customer cust = null;
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 cust = _customers.Where(x => x.ID == ID).FirstOrDefault();
 

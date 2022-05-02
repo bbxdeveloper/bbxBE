@@ -70,42 +70,50 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate , List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
+        public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
         {
-            
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-
-                _invoices.Add(p_invoice);
-                await _dbContext.SaveChangesAsync();
-                p_invoiceLines.ForEach(i => i.InvoiceID = p_invoice.ID);
-                await _invoiceLines.AddRangeAsync(p_invoiceLines);
-
-                p_summaryByVatRate.ForEach(i => i.InvoiceID = p_invoice.ID);
-                await _summaryByVatRates.AddRangeAsync(p_summaryByVatRate);
-
-                if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
+                try
                 {
-                    p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
-                    await _additionalInvoiceData.AddRangeAsync(p_additionalInvoiceData);
-                }
 
-                if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
-                {
-                    p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
-                    await _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
+                    _invoices.Add(p_invoice);
+                    await _dbContext.SaveChangesAsync();
+                    p_invoiceLines.ForEach(i => i.InvoiceID = p_invoice.ID);
+                    await _invoiceLines.AddRangeAsync(p_invoiceLines);
+
+                    p_summaryByVatRate.ForEach(i => i.InvoiceID = p_invoice.ID);
+                    await _summaryByVatRates.AddRangeAsync(p_summaryByVatRate);
+
+                    if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
+                    {
+                        p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
+                        await _additionalInvoiceData.AddRangeAsync(p_additionalInvoiceData);
+                    }
+
+                    if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
+                    {
+                        p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
+                        await _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
+                    }
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
                 }
-                await _dbContext.SaveChangesAsync();
-                dbContextTransaction.Commit();
+                catch (Exception ex)
+                {
+                   await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
             }
-            
+
             return p_invoice;
         }
 
         public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
         {
             /*
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
                 var cnt = _Invoices.Where(x => x.ID == p_Invoice.ID).FirstOrDefault();

@@ -179,7 +179,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 		  "paymentDate": "2022-04-29",
 		  "customerID": 12,
 		  "paymentMethod": "TRANSFER",
-		  "notice": "Megjegyzés",
+		 "currencyCode": "HUF",
+		  "exchangeRate": 1,		  "notice": "Megjegyzés",
 		  "invoiceNetAmount": 110,
 		  "invoiceVatAmount": 297,
 		  "invoiceLines": [
@@ -251,7 +252,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 			var invoiceType = (enInvoiceType)Enum.Parse(typeof(enInvoiceType), invoice.InvoiceType);
 			var counterCode = bllCounter.GetCounterCode(invoiceType, invoice.Incoming, wh.ID);
-			var invNum = _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
+			invoice.InvoiceNumber = await _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
 
 			invoice = await _InvoiceRepository.AddInvoiceAsync(invoice, invoiceLines, summaryByVatRate, additionalInvoiceData, additionalInvoiceLineData);
             return new Response<Invoice>(invoice);

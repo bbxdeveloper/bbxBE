@@ -55,7 +55,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode)
         {
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
                 if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
@@ -74,7 +74,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Counter> UpdateCounterAsync(Counter p_Counter, string p_WarehouseCode)
         {
 
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
                 var cnt = _Counters.Where(x => x.ID == p_Counter.ID).FirstOrDefault();
@@ -124,7 +124,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<string> GetNextValueAsync(string CounterCode, long WarehouseID, bool useCounterPool = false)
         {
             var NextValue = "";
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 var counter = _Counters
                     .Include( i=>i.Warehouse)
@@ -176,7 +176,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<bool> FinalizeValueAsync(string CounterCode, string WarehouseCode, string counterValue)
         {
             var result = false;
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 var counter = _Counters
                     .Include(i => i.Warehouse)
@@ -207,32 +207,41 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<bool> RollbackValueAsync(string CounterCode, string WarehouseCode, string counterValue)
         {
             var result = false;
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var counter = _Counters
-                    .Include(i => i.Warehouse)
-                    .Where(x => x.CounterCode == CounterCode && x.Warehouse.WarehouseCode == WarehouseCode).FirstOrDefault();
 
-                if (counter != null)
+                try
                 {
+                    var counter = _Counters
+                        .Include(i => i.Warehouse)
+                        .Where(x => x.CounterCode == CounterCode && x.Warehouse.WarehouseCode == WarehouseCode).FirstOrDefault();
 
-                    if (counter.CounterPool != null)
+                    if (counter != null)
                     {
-                        var c = counter.CounterPool.Where(w => w.CounterValue == counterValue).FirstOrDefault();
-                        if( c != null)
+
+                        if (counter.CounterPool != null)
                         {
-                            c.Ticks = 0;
-                            _Counters.Update(counter);
-                            await _dbContext.SaveChangesAsync();
-                            await dbContextTransaction.CommitAsync();
-                            result = true;
+                            var c = counter.CounterPool.Where(w => w.CounterValue == counterValue).FirstOrDefault();
+                            if (c != null)
+                            {
+                                c.Ticks = 0;
+                                _Counters.Update(counter);
+                                await _dbContext.SaveChangesAsync();
+                                await dbContextTransaction.CommitAsync();
+                                result = true;
+                            }
+                            result = false;
                         }
-                        result = false;
+                    }
+                    else
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseCode));
                     }
                 }
-                else
+                catch( Exception ex )
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseCode));
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
                 }
             }
             return result;

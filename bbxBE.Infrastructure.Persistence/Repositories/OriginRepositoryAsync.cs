@@ -73,7 +73,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<long> AddOriginRangeAsync(List<Origin> p_originList)
         {
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
 
@@ -128,7 +128,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             Origin origin = null;
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 origin = _Origins.Where(x => x.ID == ID).FirstOrDefault();
 
