@@ -224,6 +224,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 			List<AdditionalInvoiceData> additionalInvoiceData = null;
 			List<AdditionalInvoiceLineData> additionalInvoiceLineData = null;
 
+
+			//ID-k feloldása
 			request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;		//Átmenetileg
 
 			var wh = await _WarehouseRepository.GetWarehouseByCodeAsync( request.WarehouseCode);
@@ -233,7 +235,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			}
 			invoice.WarehouseID = wh.ID;
 			
-			/* ey nem kell
+			/* ez nem kell
 			var cust =  _CustomerRepository.GetCustomer(new GetCustomer() { ID = request.CustomerID });
 			if (cust == null)
 			{
@@ -242,6 +244,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			invoice.Customer = cust;
 			*/
 
+			//Megjegyzés
 			if( !string.IsNullOrWhiteSpace( request.Notice))
             {
 				invoice.AdditionalInvoiceData = new List<AdditionalInvoiceData>() {  new AdditionalInvoiceData()
@@ -249,10 +252,21 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 			}
 
-
+			//Számlaszám megállapítása
 			var invoiceType = (enInvoiceType)Enum.Parse(typeof(enInvoiceType), invoice.InvoiceType);
 			var counterCode = bllCounter.GetCounterCode(invoiceType, invoice.Incoming, wh.ID);
-			invoice.InvoiceNumber = await _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
+            invoice.InvoiceNumber = await _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
+
+
+			//Kiszámítható mezők kiszámolása
+			invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;
+			invoice.InvoiceVatAmountHUF = invoice.InvoiceVatAmount * invoice.ExchangeRate;
+
+			invoice.InvoiceGrossAmount = invoice.InvoiceNetAmount + invoice.InvoiceVatAmount;
+			invoice.invoiceGrossAmountHUF = invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF;
+
+			//Tételsorok
+			
 
 			invoice = await _InvoiceRepository.AddInvoiceAsync(invoice, invoiceLines, summaryByVatRate, additionalInvoiceData, additionalInvoiceLineData);
             return new Response<Invoice>(invoice);

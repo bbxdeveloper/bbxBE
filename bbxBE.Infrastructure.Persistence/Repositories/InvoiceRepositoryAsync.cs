@@ -78,10 +78,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
 
-                    _invoices.Add(p_invoice);
-                    await _dbContext.SaveChangesAsync();
-                    p_invoiceLines.ForEach(i => i.InvoiceID = p_invoice.ID);
-                    await _invoiceLines.AddRangeAsync(p_invoiceLines);
+                _invoices.Add(p_invoice);
+                await _dbContext.SaveChangesAsync();
+
+                /*
+                p_invoiceLines.ForEach(i => i.InvoiceID = p_invoice.ID);
+                await _invoiceLines.AddRangeAsync(p_invoiceLines);
 
                     p_summaryByVatRate.ForEach(i => i.InvoiceID = p_invoice.ID);
                     await _summaryByVatRates.AddRangeAsync(p_summaryByVatRate);
