@@ -87,8 +87,8 @@ namespace bbxBE.Application.Commands.cmdImport
             string[] currentFieldsArray = regexp.Split(currentLine);
 
 
-            string regExpPatternForBankAccount = $"([0-9]{8}-[0-9]{8}-[0-9]{8}-[0-9]{8}|[0-9]{8}-[0-9]{8}-[0-9]{8})";
-            string regExpPatternForVatNumber = $"[0-9]{8}-[0-9]{1}-[0-9]{2}";
+            string regExpPatternForBankAccount = $"([0-9]{{8}}-[0-9]{{8}}-[0-9]{{8}}-[0-9]{{8}}|[0-9]{{8}}-[0-9]{{8}}-[0-9]{{8}})";
+            string regExpPatternForVatNumber = $"[0-9]{{8}}-[0-9]{{1}}-[0-9]{{2}}";
             var createCustomerCommand = new CreateCustomerCommand();
 
             try
