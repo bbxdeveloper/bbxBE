@@ -18,8 +18,6 @@ using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Exceptions;
 using bbxBE.Application.Consts;
-using bbxBE.Application.Commands.cmdImport;
-using EFCore.BulkExtensions;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -92,7 +90,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
             return p_customer;
         }
-        
+
         public async Task<Customer> DeleteCustomerAsync(long ID)
         {
 
@@ -123,7 +121,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Customer GetOwnData()
         {
             var query = _cacheService.QueryCache();
-            return query.SingleOrDefault( s => s.IsOwnData);
+            return query.SingleOrDefault(s => s.IsOwnData);
         }
 
         public Customer GetCustomer(long customerID)
@@ -266,47 +264,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         }
 
-        public bool IsUniqueCustomerCode(string CustomerCode, long? ID = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<int> AddCustomerRangeAsync(List<Customer> p_customerList)
-        {
-
-            _dbContext.Database.SetCommandTimeout(3600);
-            await _dbContext.BulkInsertAsync(p_customerList, new BulkConfig
-            {
-                SetOutputIdentity = true,
-                PreserveInsertOrder = true,
-                BulkCopyTimeout = 0,
-                WithHoldlock = false,
-                BatchSize = 5000
-            });
-            await _dbContext.SaveChangesAsync();
-
-            return p_customerList.Count;
-
-        }
-
-        Task<int> ICustomerRepositoryAsync.AddCustomerAsync(Customer p_customer)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<int> ICustomerRepositoryAsync.DeleteCustomerAsync(long ID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> UpdateCustomerRangeAsync(List<Customer> p_customerList)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<int> ICustomerRepositoryAsync.UpdateCustomerAsync(Customer p_customer)
-        {
-            throw new NotImplementedException();
-        }
+    
     }
 }

@@ -84,6 +84,7 @@ namespace bxBE.Application.Commands.cmdCustomer
         {
             var cust = _mapper.Map<Customer>(request);
 
+            /*
             if (request.TaxpayerNumber != null && !string.IsNullOrWhiteSpace(request.TaxpayerNumber.Replace("-", "")))
             {
                 var TaxItems = request.TaxpayerNumber.Split('-');
@@ -97,6 +98,8 @@ namespace bxBE.Application.Commands.cmdCustomer
                                             : CustomerVatStatusType.OTHER.ToString();
 
             cust.CountryCode = string.IsNullOrWhiteSpace(request.CountryCode) ? bbxBEConsts.CNTRY_HU : cust.CountryCode.ToUpper();
+            */
+
 
             await _customerRepository.UpdateCustomerAsync(cust);
             return new Response<Customer>(cust);

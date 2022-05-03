@@ -38,10 +38,7 @@ namespace bxBE.Application.Commands.cmdCustomer
         [Description("Adóalany adószám")]
         public string TaxpayerNumber { get; set; }          //9999999-9-99
 
-        [ColumnLabel("Adóalany adószám közepe")]
-        [Description("Adóalany adószám közepea")]
-        public string VatCode { get; set; }
-
+ 
         [ColumnLabel("Külföldi adószám")]
         [Description("Külföldi adószám")]
         public string ThirdStateTaxId { get; set; }
@@ -86,7 +83,7 @@ namespace bxBE.Application.Commands.cmdCustomer
         public async Task<Response<Customer>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
             var cust = _mapper.Map<Customer>(request);
-
+            /*
             if (request.TaxpayerNumber != null && !string.IsNullOrWhiteSpace(request.TaxpayerNumber.Replace("-", "")))
             {
                 var TaxItems = request.TaxpayerNumber.Split('-');
@@ -98,9 +95,9 @@ namespace bxBE.Application.Commands.cmdCustomer
                                     string.IsNullOrWhiteSpace(request.CountryCode) || request.CountryCode == bbxBEConsts.CNTRY_HU ?
                                             CustomerVatStatusType.DOMESTIC.ToString()
                                             : CustomerVatStatusType.OTHER.ToString();
-
+            
             cust.CountryCode = string.IsNullOrWhiteSpace(request.CountryCode) ? bbxBEConsts.CNTRY_HU : cust.CountryCode.ToUpper();
-
+            */
             await _customerRepository.AddCustomerAsync(cust);
             return new Response<Customer>(cust);
         }
