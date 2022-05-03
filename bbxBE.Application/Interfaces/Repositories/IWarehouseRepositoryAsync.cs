@@ -13,6 +13,7 @@ namespace bbxBE.Application.Interfaces.Repositories
     {
         Task<bool> IsUniqueWarehouseCodeAsync(string WarehouseCode, long? ID = null);
         Task<bool> SeedDataAsync(int rowCount);
+        Task<Warehouse> GetWarehouseByCodeAsync(string WarehouseCode);
 
         Task<Entity> GetWarehouseAsync(GetWarehouse requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedWarehouseAsync(QueryWarehouse requestParameters);

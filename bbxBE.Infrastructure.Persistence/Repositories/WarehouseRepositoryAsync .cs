@@ -46,7 +46,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsUniqueWarehouseCodeAsync(string WarehouseCode, long? ID = null)
         {
-            return !await _Warehouses.AnyAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+            return !await _Warehouses.AsNoTracking().AnyAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+        }
+        public async Task<Warehouse> GetWarehouseByCodeAsync(string WarehouseCode)
+        {
+            return await _Warehouses.AsNoTracking().FirstOrDefaultAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted );
         }
 
 

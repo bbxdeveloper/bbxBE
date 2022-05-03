@@ -215,7 +215,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
                 p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
@@ -407,7 +407,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
  
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
                 p_product = PrepareUpdateProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
@@ -469,7 +469,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
             Product prod = null;
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 prod = _Products.Include(p => p.ProductCodes).Where(x => x.ID == ID).FirstOrDefault();
 
@@ -515,13 +515,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public Entity GetProductByProductCode(GetProductByProductCode requestParameter)
+        public Product GetProductByProductCode(string productCode)
         {
 
             var query = _cacheService.QueryCache();
 
-            var prod = query.Where(i => i.ProductCodes.Any(c => c.ProductCodeValue.ToUpper() == requestParameter.ProductCode.ToUpper()
+            var prod = query.Where(i => i.ProductCodes.Any(c => c.ProductCodeValue.ToUpper() == productCode.ToUpper()
                                                                    && c.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).FirstOrDefault();
+            return prod;
+        }
+        public Entity GetProductByProductCode(GetProductByProductCode requestParameter)
+        {
+            var prod = GetProductByProductCode(requestParameter.ProductCode.ToUpper());
 
             //            var fields = requestParameter.Fields;
             if (prod != null)

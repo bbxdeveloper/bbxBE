@@ -143,6 +143,10 @@ namespace bbxBE.Domain.Entities
 			}
 		}
 
+		[ColumnLabel("Példány")]
+		[Description("Nyomtatott példány száma")]
+		public short Copies { get; set; }
+
 		[ColumnLabel("Bevétel biz.")]
 		[Description("Bevétel alapjául szolgáló bizonylat")]
 		public string IncomingInvReference { get; set; }

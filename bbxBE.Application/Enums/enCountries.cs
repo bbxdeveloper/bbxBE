@@ -8,16 +8,19 @@ namespace bbxBE.Application.Enums
 {
     public enum enCountries
     {
-        [Description("Hungary")] HU,
-        [Description("Austria")] AT,
-        [Description("Germany")] DE,
-        [Description("Italy")] IT,
-        [Description("Poland")] PL,
-        [Description("Romania")] RO,
-        [Description("Serbia")] RS,
-        [Description("Slovakia")] SK,
-        [Description("Slovenia")] SI,
+        [Description("Magyarország")] HU,
+        [Description("Ausztria")] AT,
+        [Description("Németország")] DE,
+        [Description("Horvátország")] HR,
+        [Description("Olaszország")] IT,
+        [Description("Lengyelország")] PL,
+        [Description("Románia")] RO,
+        [Description("Szerbia")] RS,
+        [Description("Szlovákia")] SK,
+        [Description("Szlovénia")] SI,
+        [Description("Ukrajna")] UA,
 
+        /*
         [Description("Afghanistan")] AF,
         [Description("Åland Islands")] AX,
         [Description("Albania")] AL,
@@ -72,7 +75,6 @@ namespace bbxBE.Application.Enums
         [Description("Cook Islands")] CK,
         [Description("Costa Rica")] CR,
         [Description("Côte d'Ivoire")] CI,
-        [Description("Croatia")] HR,
         [Description("Cuba")] CU,
         [Description("Curaçao")] CW,
         [Description("Cyprus")] CY,
@@ -241,7 +243,6 @@ namespace bbxBE.Application.Enums
         [Description("Turks and Caicos Islands")] TC,
         [Description("Tuvalu")] TV,
         [Description("Uganda")] UG,
-        [Description("Ukraine")] UA,
         [Description("United Arab Emirates")] AE,
         [Description("United Kingdom of Great Britain and Northern Ireland")] GB,
         [Description("United States of America")] US,
@@ -258,5 +259,6 @@ namespace bbxBE.Application.Enums
         [Description("Yemen")] YE,
         [Description("Zambia")] ZM,
         [Description("Zimbabwe")] ZW
+        */
     }
 }

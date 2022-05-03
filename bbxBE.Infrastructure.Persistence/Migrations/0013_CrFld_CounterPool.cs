@@ -20,7 +20,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
 
 
             Alter.Table("Counter")
-                .AddColumn("CounterPool").AsString().WithDefaultValue("");
+                .AddColumn("CounterPool").AsString(int.MaxValue).WithDefaultValue("");
             Update.Table("Counter").Set(new { CounterPool = "" }).AllRows();
         }
     }

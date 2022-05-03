@@ -58,15 +58,16 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("ExchangeRate").AsDecimal().NotNullable().WithDefaultValue(1)
                     .WithColumn("UtilitySettlementIndicator").AsBoolean().NotNullable().WithDefaultValue(false)
                     .WithColumn("InvoiceAppearance").AsString().NotNullable().WithDefaultValue(InvoiceCategoryType.NORMAL.ToString())
+                    .WithColumn("Copies").AsInt16().Nullable()
 
                     //Incoming (bevételezés)
                     .WithColumn("IncomingInvReference").AsString().Nullable()
 
                     //invoiceReference (javítószámla)
-                    .WithColumn("OriginalInvoiceID").AsInt64().NotNullable().ForeignKey()
-                    .WithColumn("OriginalInvoiceNumber").AsString().NotNullable()
-                    .WithColumn("ModifyWithoutMaster").AsBoolean().NotNullable().WithDefaultValue(false)
-                    .WithColumn("ModificationIndex").AsInt16().NotNullable().WithDefaultValue(0)
+                    .WithColumn("OriginalInvoiceID").AsInt64().Nullable().ForeignKey()
+                    .WithColumn("OriginalInvoiceNumber").AsString().Nullable()
+                    .WithColumn("ModifyWithoutMaster").AsBoolean().Nullable().WithDefaultValue(false)
+                    .WithColumn("ModificationIndex").AsInt16().Nullable().WithDefaultValue(0)
 
 
                     //InvoiceOrdernumber
@@ -162,7 +163,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("LineDeliveryDate").AsDateTime2().Nullable()
                     .WithColumn("DeliveryNote").AsString().Nullable()                   //Szállítólevél-szám
                     .WithColumn("DeliveryNoteInvoiceID").AsInt64().Nullable()           //Szállítólevél ID
-                    .WithColumn("DeliveryNoteLineNumber").AsInt16().NotNullable()       //Kapcsolódó szállítólevél sor
+                    .WithColumn("DeliveryNoteLineNumber").AsInt16().Nullable()       //Kapcsolódó szállítólevél sor
 
                     //Termékdíj - A környezetvédelmi termékdíj-kötelezettség átvállalása
                     .WithColumn("TakeoverReason").AsString().Nullable()

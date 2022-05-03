@@ -116,9 +116,7 @@ namespace bbxBE.Application.Commands.cmdImport
                 var vatnumber = customerMapping.ContainsKey(TaxpayerIdFieldName) ? currentFieldsArray[customerMapping[TaxpayerIdFieldName]].Replace("\"", "").Trim() : null;
                 if ((!string.IsNullOrEmpty(vatnumber)) && (new Regex(regExpPatternForVatNumber).Match(vatnumber).Success))
                 {
-                    createCustomerCommand.TaxpayerNumber = vatnumber.Substring(0, 8);
-                    createCustomerCommand.VatCode = vatnumber.Substring(9, 1);
-                    createCustomerCommand.CountryCode = vatnumber.Substring(11, 2);
+                    createCustomerCommand.TaxpayerNumber = vatnumber;
                 }
                 if (string.IsNullOrEmpty(createCustomerCommand.CountryCode))
                     createCustomerCommand.CountryCode = "HU";

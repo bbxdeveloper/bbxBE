@@ -2,6 +2,7 @@
 using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Consts;
+using bbxBE.Application.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
@@ -32,19 +33,29 @@ namespace bxBE.Application.Commands.cmdCounter
     public class GetNextNumberCommandHandler : IRequestHandler<GetNextNumberCommand, Response<string>>
     {
         private readonly ICounterRepositoryAsync _CounterRepository;
+        private readonly IWarehouseRepositoryAsync _WarehouseRepositoryAsync;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public GetNextNumberCommandHandler(ICounterRepositoryAsync CounterRepository, IMapper mapper, IConfiguration configuration)
+        public GetNextNumberCommandHandler(ICounterRepositoryAsync CounterRepository,
+            IWarehouseRepositoryAsync WarehouseRepositoryAsync,
+            IMapper mapper, IConfiguration configuration)
         {
             _CounterRepository = CounterRepository;
+            _WarehouseRepositoryAsync = WarehouseRepositoryAsync;
             _mapper = mapper;
             _configuration = configuration;
         }
 
         public async Task<Response<string>> Handle(GetNextNumberCommand request, CancellationToken cancellationToken)
         {
-            var next = await _CounterRepository.GetNextValueAsync(request.CounterCode, request.WarehouseCode);
+            var wh = await _WarehouseRepositoryAsync.GetWarehouseByCodeAsync(request.WarehouseCode);
+            if(wh == null) 
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_WAREHOUSENOTFOUND, request.WarehouseCode));
+            }
+
+            var next = await _CounterRepository.GetNextValueAsync(request.CounterCode, wh.ID);
             return new Response<string>(next);
         }
 

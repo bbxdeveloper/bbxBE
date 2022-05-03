@@ -6,9 +6,12 @@ using bbxBE.Application.Commands.cmdProduct;
 using bbxBE.Application.Commands.cmdProductGroup;
 using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Commands.cmdWarehouse;
+using bbxBE.Application.Consts;
+using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCounter;
 using bxBE.Application.Commands.cmdCustomer;
+using bxBE.Application.Commands.cmdInvoice;
 using bxBE.Application.Commands.cmdOrigin;
 using bxBE.Application.Commands.cmdProduct;
 using bxBE.Application.Commands.cmdProductGroup;
@@ -28,11 +31,42 @@ namespace bbxBE.Command.Mappings
             CreateMap<DeleteUSR_USERCommand, USR_USER>();
 
             CreateMap<CreateCustomerCommand, Customer>()
-                .ForMember(dst => dst.TaxpayerId, 
-                    opt => opt.MapFrom(src => !src.CountryCode.Equals("HU") ? 
-                    src.TaxpayerNumber + "-" + src.VatCode + "-" + src.CountryCode 
-                    : "HU" ));
-            CreateMap<UpdateCustomerCommand, Customer>();
+                .ForMember(dst => dst.TaxpayerId,
+                    opt => opt.MapFrom(src => src.CountryCode.Equals(bbxBEConsts.CNTRY_HU) && src.TaxpayerNumber.Length >= 8 ?
+                    src.TaxpayerNumber.Substring(0, 8) : ""))
+                .ForMember(dst => dst.VatCode,
+                    opt => opt.MapFrom(src => src.CountryCode.Equals(bbxBEConsts.CNTRY_HU) && src.TaxpayerNumber.Length >= 10 ?
+                    src.TaxpayerNumber.Substring(9, 1) : ""))
+                .ForMember(dst => dst.CountyCode,
+                    opt => opt.MapFrom(src => src.CountryCode.Equals(bbxBEConsts.CNTRY_HU) && src.TaxpayerNumber.Length >= 13 ?
+                    src.TaxpayerNumber.Substring(11, 2) : ""))
+                .ForMember(dst => dst.CustomerVatStatus,
+                    opt => opt.MapFrom(src => src.PrivatePerson ? CustomerVatStatusType.PRIVATE_PERSON.ToString() :
+                                    string.IsNullOrWhiteSpace(src.CountryCode) || src.CountryCode == bbxBEConsts.CNTRY_HU ?
+                                            CustomerVatStatusType.DOMESTIC.ToString()
+                                            : CustomerVatStatusType.OTHER.ToString()))
+                .ForMember(dst => dst.CountryCode,
+                    opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.CountryCode) ? bbxBEConsts.CNTRY_HU : src.CountryCode.ToUpper()));
+
+
+            CreateMap<UpdateCustomerCommand, Customer>()
+                .ForMember(dst => dst.TaxpayerId,
+                    opt => opt.MapFrom(src => src.CountryCode.Equals(bbxBEConsts.CNTRY_HU) && src.TaxpayerNumber.Length >= 8 ?
+                    src.TaxpayerNumber.Substring(0, 8) : ""))
+                .ForMember(dst => dst.VatCode,
+                    opt => opt.MapFrom(src => src.CountryCode.Equals(bbxBEConsts.CNTRY_HU) && src.TaxpayerNumber.Length >= 10 ?
+                    src.TaxpayerNumber.Substring(9, 1) : ""))
+                .ForMember(dst => dst.CountyCode,
+                    opt => opt.MapFrom(src => src.CountryCode.Equals(bbxBEConsts.CNTRY_HU) && src.TaxpayerNumber.Length >= 13 ?
+                    src.TaxpayerNumber.Substring(11, 2) : ""))
+                .ForMember(dst => dst.CustomerVatStatus,
+                    opt => opt.MapFrom(src => src.PrivatePerson ? CustomerVatStatusType.PRIVATE_PERSON.ToString() :
+                                    string.IsNullOrWhiteSpace(src.CountryCode) || src.CountryCode == bbxBEConsts.CNTRY_HU ?
+                                            CustomerVatStatusType.DOMESTIC.ToString()
+                                            : CustomerVatStatusType.OTHER.ToString()))
+                .ForMember(dst => dst.CountryCode,
+                    opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.CountryCode) ? bbxBEConsts.CNTRY_HU : src.CountryCode.ToUpper()));
+
             CreateMap<DeleteCustomerCommand, Customer>();
 
             CreateMap<CreateProductGroupCommand, ProductGroup>();
@@ -56,6 +90,11 @@ namespace bbxBE.Command.Mappings
             CreateMap<UpdateCounterCommand, Counter>();
             CreateMap<DeleteCounterCommand, Counter>();
 
+            CreateMap<CreateInvoiceCommand, Invoice>();
+            CreateMap<CreateInvoiceCommand, Invoice>().ReverseMap();
+
+            CreateMap<CreateInvoiceCommand.InvoiceLine, InvoiceLine>();
+            CreateMap<CreateInvoiceCommand.InvoiceLine, InvoiceLine>().ReverseMap();
         }
     }
 }

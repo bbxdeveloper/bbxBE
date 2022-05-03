@@ -55,7 +55,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode)
         {
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
                 if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
@@ -74,7 +74,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Counter> UpdateCounterAsync(Counter p_Counter, string p_WarehouseCode)
         {
 
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
                 var cnt = _Counters.Where(x => x.ID == p_Counter.ID).FirstOrDefault();
@@ -94,7 +94,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND, p_Counter.ID));
+                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND, p_Counter.ID));
                 }
             }
             return p_Counter;
@@ -121,14 +121,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
         private const int ExpiredInMinutes = 30;
-        public async Task<string> GetNextValueAsync(string CounterCode, string WarehouseCode, bool useCounterPool = false)
+        public async Task<string> GetNextValueAsync(string CounterCode, long WarehouseID, bool useCounterPool = false)
         {
             var NextValue = "";
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var counter = _Counters
-                    .Include( i=>i.Warehouse)
-                    .Where(x => x.CounterCode == CounterCode && x.Warehouse.WarehouseCode == WarehouseCode).FirstOrDefault();
+                var counter = _Counters.AsNoTracking()
+                    .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefault();
 
                 if (counter != null)
                 {
@@ -167,27 +166,33 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseCode));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseID));
                 }
             }
             return NextValue;
         }
 
-        public async Task<bool> FinalizeValueAsync(string CounterCode, string WarehouseCode, string counterValue)
+        public async Task<bool> FinalizeValueAsync(string CounterCode, long WarehouseID, string counterValue)
         {
             var result = false;
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var counter = _Counters
-                    .Include(i => i.Warehouse)
-                    .Where(x => x.CounterCode == CounterCode && x.Warehouse.WarehouseCode == WarehouseCode).FirstOrDefault();
+                var counter = _Counters.AsNoTracking()
+                    .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefault();
 
                 if (counter != null)
                 {
+                    
+                    var entity = await _dbContext.FindAsync(typeof(Counter), counter.ID); //To Avoid tracking error
+                    if(entity != null)
+                        _dbContext.Entry(entity).State = EntityState.Detached;
+
+
 
                     if (counter.CounterPool != null)
                     {
                         counter.CounterPool = counter.CounterPool.Where(w => w .CounterValue != counterValue).ToList();
+                        //       _dbContext.Entry<Counter>(counter).State = EntityState.Modified;
                         _Counters.Update(counter);
 
                         await _dbContext.SaveChangesAsync();
@@ -198,41 +203,52 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseCode));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseID));
                 }
             }
             return result;
         }
 
-        public async Task<bool> RollbackValueAsync(string CounterCode, string WarehouseCode, string counterValue)
+        public async Task<bool> RollbackValueAsync(string CounterCode, long WarehouseID, string counterValue)
         {
             var result = false;
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var counter = _Counters
-                    .Include(i => i.Warehouse)
-                    .Where(x => x.CounterCode == CounterCode && x.Warehouse.WarehouseCode == WarehouseCode).FirstOrDefault();
 
-                if (counter != null)
+                try
                 {
+                    var counter = _Counters.AsNoTracking()
+                        .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefault();
 
-                    if (counter.CounterPool != null)
+                    if (counter != null)
                     {
-                        var c = counter.CounterPool.Where(w => w.CounterValue == counterValue).FirstOrDefault();
-                        if( c != null)
+                        var entity = await _dbContext.FindAsync(typeof(Counter), counter.ID); //To Avoid tracking error
+                        if (entity != null)
+                            _dbContext.Entry(entity).State = EntityState.Detached;
+
+                        if (counter.CounterPool != null)
                         {
-                            c.Ticks = 0;
-                            _Counters.Update(counter);
-                            await _dbContext.SaveChangesAsync();
-                            await dbContextTransaction.CommitAsync();
-                            result = true;
+                            var c = counter.CounterPool.Where(w => w.CounterValue == counterValue).FirstOrDefault();
+                            if (c != null)
+                            {
+                                c.Ticks = 0;
+                                _Counters.Update(counter);
+                                await _dbContext.SaveChangesAsync();
+                                await dbContextTransaction.CommitAsync();
+                                result = true;
+                            }
+                            result = false;
                         }
-                        result = false;
+                    }
+                    else
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseID));
                     }
                 }
-                else
+                catch( Exception ex )
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseCode));
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
                 }
             }
             return result;
@@ -330,6 +346,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-   
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCounter;
 using System;
@@ -15,13 +16,13 @@ namespace bbxBE.Application.BLL
     {
         public static object Locker = new object();
 
-        public static async Task<string> SafeGetNextAsync(ICounterRepositoryAsync _CounterRepositoryAsync, string CounterCode, string WarehouseCode)
+        public static async Task<string> SafeGetNextAsync(ICounterRepositoryAsync _CounterRepositoryAsync, string CounterCode, long WarehouseID)
         {
             string num = "";
             string res = "???";
             try
             {
-                num = await _CounterRepositoryAsync.GetNextValueAsync(CounterCode, WarehouseCode);
+                num = await _CounterRepositoryAsync.GetNextValueAsync(CounterCode, WarehouseID);
             }
             catch (Exception ex)
             {
@@ -30,6 +31,14 @@ namespace bbxBE.Application.BLL
             return res;
         }
 
-   
+        public static string GetCounterCode(enInvoiceType p_nvoiceType, bool Incoming, long WarehouseID)
+        {
+            var first = (Incoming ? "B" : "K");
+            var second = p_nvoiceType.ToString();
+            var third = WarehouseID.ToString().PadLeft(3, '0');
+            return String.Format($"{first}{second}_{third}");
+        }
+
+
     }
 }

@@ -31,14 +31,21 @@ namespace bbxBE.Application.Consts
         public static string FV_INVORIGINCODE = "{PropertyName}|{PropertyName} érvénytelen származási hely.";
         public static string FV_INVVATRATECODE = "{PropertyName}|{PropertyName} érvénytelen áfakód.";
         public static string FV_INVUNITOFMEASURE = "{PropertyName}|{PropertyName} érvénytelen mennyiségi egység:{PropertyValue} ";
+        public static string FV_INVPAYMENTMETHOD = "{PropertyName}|{PropertyName} érvénytelen fizetési mód:{PropertyValue} ";
+        public static string FV_EXCHANGERATE = "{PropertyName}|{PropertyName} Érvénytelen árfolyam::{PropertyValue} ";
+        public static string FV_INVCURRENCY = "{PropertyName}|{PropertyName} érvénytelen pénznem:{PropertyValue}";
         public static string FV_PRODNOTFOUND = "Termék nem található, ID:{0} ";
+        public static string FV_PRODCODENOTFOUND = "Termék nem található, kód:{0} ";
+        public static string FV_VATRATECODENOTFOUND = "Áfakód található, kód:{0} ";
         public static string FV_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
+        public static string FV_OWNNOTFOUND = "Saját adat nem található!";
         public static string FV_INVALIDFORMAT = "{PropertyName}|{PropertyName} érvénytelen formátum.";
-        public static string FV_COUNTERNOTFOUND = "Bizonylati tömb található, ID:{0} ";
-        public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb található, Kód:{0}, Raktár:{1} ";
+        public static string FV_COUNTERNOTFOUND = "Bizonylati tömb nem található, ID:{0} ";
+        public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb nem található, Kód:{0}, Raktár ID:{1} ";
         public static string FV_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
         public static string FV_ORIGINNOTFOUND = "Származási hely nem található, ID:{0} ";
         public static string FV_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
+        public static string FV_WAREHOUSENOTFOUND = "Raktár nem található, Kód:{0}";
 
         public static string FV_BASE = "Egy vagy több validációs hiba történt.";
 

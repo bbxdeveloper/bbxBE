@@ -54,6 +54,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             t.GetAwaiter().GetResult();
         }
 
+        public async Task<VatRate> GetVatRateByCodeAsync(string vatRateCode)
+        {
+            VatRate vr = null;
+
+            vr = await _VatRates.AsNoTracking().Where(x => x.VatRateCode.ToUpper() == vatRateCode.ToUpper()).FirstOrDefaultAsync();
+            return vr;
+        }
+
 
 
 
@@ -98,7 +106,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             VatRate vr = null;
 
-            vr = _VatRates.Where(x => x.ID == ID).FirstOrDefault();
+            vr = _VatRates.AsNoTracking().Where(x => x.ID == ID).FirstOrDefault();
 
             if (vr != null)
             {

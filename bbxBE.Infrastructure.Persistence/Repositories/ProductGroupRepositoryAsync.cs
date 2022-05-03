@@ -100,7 +100,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             ProductGroup pg = null;
-            using (var dbContextTransaction = _dbContext.Database.BeginTransaction())
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 pg = _productGroups.Where(x => x.ID == ID).FirstOrDefault();
 

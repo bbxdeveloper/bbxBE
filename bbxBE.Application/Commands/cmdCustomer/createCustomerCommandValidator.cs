@@ -48,9 +48,9 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
         }
 
-        private bool CheckBankAccount(string arg)
+        private bool CheckBankAccount(string p_CustomerBankAccountNumber)
         {
-            throw new NotImplementedException();
+            return _customerRepository.CheckBankAccount(p_CustomerBankAccountNumber);
         }
 
         private bool IsUniqueTaxpayerId(string TaxpayerNumber)
