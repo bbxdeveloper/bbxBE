@@ -15,8 +15,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         bool CheckBankAccount(string BankAccount);
         Task<Customer> AddCustomerAsync(Customer p_customer);
         Task<int> AddCustomerRangeAsync(List<Customer> p_customerList);
-        Task<int> DeleteCustomerAsync(long ID);
-        Task<int> UpdateCustomerRangeAsync(List<Customer> p_customerList);
+        Task<Customer> DeleteCustomerAsync(long ID);
         Task<Customer> UpdateCustomerAsync(Customer p_customer);
         Customer GetOwnData();
         Customer GetCustomer(long customerID);

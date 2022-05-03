@@ -18,6 +18,7 @@ using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Exceptions;
 using bbxBE.Application.Consts;
+using EFCore.BulkExtensions;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -83,6 +84,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _cacheService.AddOrUpdate(p_customer);
             return p_customer;
         }
+        public async Task<int> AddCustomerRangeAsync(List<Customer> p_customerList)
+        {
+
+            _dbContext.Database.SetCommandTimeout(3600);
+            await _dbContext.BulkInsertAsync(p_customerList, new BulkConfig
+            {
+                SetOutputIdentity = true,
+                PreserveInsertOrder = true,
+                BulkCopyTimeout = 0,
+                WithHoldlock = false,
+                BatchSize = 5000
+            });
+            await _dbContext.SaveChangesAsync();
+
+            return p_customerList.Count;
+
+        }
+
         public async Task<Customer> UpdateCustomerAsync(Customer p_customer)
         {
             _cacheService.AddOrUpdate(p_customer);
