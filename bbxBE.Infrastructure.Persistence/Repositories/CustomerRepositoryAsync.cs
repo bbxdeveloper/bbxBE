@@ -90,7 +90,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
             return p_customer;
         }
-
+        
         public async Task<Customer> DeleteCustomerAsync(long ID)
         {
 
@@ -118,17 +118,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return cust;
         }
+        public Customer GetOwnData()
+        {
+            var query = _cacheService.QueryCache();
+            return query.SingleOrDefault( s => s.IsOwnData);
+        }
+
+        public Customer GetCustomer(long customerID)
+        {
+            Customer cust = null;
+            if (!_cacheService.TryGetValue(customerID, out cust))
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, customerID));
+            return cust;
+        }
 
         public Entity GetCustomer(GetCustomer requestParameter)
         {
-
-
-            var ID = requestParameter.ID;
-
-            Customer cust = null;
-            if (!_cacheService.TryGetValue(ID, out cust))
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, ID));
-
+            var cust = GetCustomer(requestParameter.ID);
 
             var itemModel = _mapper.Map<Customer, GetCustomerViewModel>(cust);
             var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();

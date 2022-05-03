@@ -177,12 +177,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var result = false;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                _dbContext.ChangeTracker.Clear();
                 var counter = _Counters.AsNoTracking()
                     .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefault();
 
                 if (counter != null)
                 {
+                    
+                    var entity = await _dbContext.FindAsync(typeof(Counter), counter.ID); //To Avoid tracking error
+                    if(entity != null)
+                        _dbContext.Entry(entity).State = EntityState.Detached;
+
+
 
                     if (counter.CounterPool != null)
                     {
@@ -217,6 +222,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     if (counter != null)
                     {
+                        var entity = await _dbContext.FindAsync(typeof(Counter), counter.ID); //To Avoid tracking error
+                        if (entity != null)
+                            _dbContext.Entry(entity).State = EntityState.Detached;
 
                         if (counter.CounterPool != null)
                         {

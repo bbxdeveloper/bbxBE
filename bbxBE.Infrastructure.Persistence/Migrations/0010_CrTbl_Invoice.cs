@@ -58,6 +58,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("ExchangeRate").AsDecimal().NotNullable().WithDefaultValue(1)
                     .WithColumn("UtilitySettlementIndicator").AsBoolean().NotNullable().WithDefaultValue(false)
                     .WithColumn("InvoiceAppearance").AsString().NotNullable().WithDefaultValue(InvoiceCategoryType.NORMAL.ToString())
+                    .WithColumn("Copies").AsInt16().Nullable()
 
                     //Incoming (bevételezés)
                     .WithColumn("IncomingInvReference").AsString().Nullable()

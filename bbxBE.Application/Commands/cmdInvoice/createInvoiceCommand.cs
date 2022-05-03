@@ -237,14 +237,13 @@ namespace bxBE.Application.Commands.cmdInvoice
 				}
 				invoice.WarehouseID = wh.ID;
 
-				/* ez nem kell
-				var cust =  _CustomerRepository.GetCustomer(new GetCustomer() { ID = request.CustomerID });
-				if (cust == null)
+				var supplier =  _CustomerRepository.GetOwnData();
+				if (supplier == null)
 				{
-					throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, request.CustomerID));
+					throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OWNNOTFOUND));
 				}
-				invoice.Customer = cust;
-				*/
+				invoice.SupplierID = supplier.ID;
+				
 
 				//Megjegyzés
 				if (!string.IsNullOrWhiteSpace(request.Notice))
@@ -315,8 +314,11 @@ namespace bxBE.Application.Commands.cmdInvoice
 							).ToList();
 
 				await _InvoiceRepository.AddInvoiceAsync(invoice);
-	//			await _CounterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
+				await _CounterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
 
+				invoice.InvoiceLines.Clear();
+				invoice.SummaryByVatRates.Clear();
+				invoice.AdditionalInvoiceData.Clear();
 				return new Response<Invoice>(invoice);
 			}
 			catch (Exception ex)
