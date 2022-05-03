@@ -18,6 +18,8 @@ using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Exceptions;
 using bbxBE.Application.Consts;
+using bbxBE.Application.Commands.cmdImport;
+using EFCore.BulkExtensions;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -76,11 +78,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Customer> AddCustomerAsync(Customer p_customer)
         {
 
-                await _customers.AddAsync(p_customer);
-    //            _dbContext.ChangeTracker.AcceptAllChanges();
-                await _dbContext.SaveChangesAsync();
+            await _customers.AddAsync(p_customer);
+            //            _dbContext.ChangeTracker.AcceptAllChanges();
+            await _dbContext.SaveChangesAsync();
 
-                _cacheService.AddOrUpdate(p_customer);
+            _cacheService.AddOrUpdate(p_customer);
             return p_customer;
         }
         public async Task<Customer> UpdateCustomerAsync(Customer p_customer)
@@ -102,7 +104,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (cust != null)
                 {
 
-                  
+
                     _cacheService.TryRemove(cust);
 
                     _customers.Remove(cust);
@@ -197,7 +199,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData =  query.ToList();
+            var resultData = query.ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetCustomerViewModel>();
@@ -232,7 +234,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (IsOwnData == null)
             {
-                predicate = predicate.And(p => p.CustomerName != null && p.TaxpayerId != null && ( p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor)));
+                predicate = predicate.And(p => p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor)));
             }
             else if (IsOwnData.Value)
             {
@@ -262,6 +264,49 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             }
 
+        }
+
+        public bool IsUniqueCustomerCode(string CustomerCode, long? ID = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<int> AddCustomerRangeAsync(List<Customer> p_customerList)
+        {
+
+            _dbContext.Database.SetCommandTimeout(3600);
+            await _dbContext.BulkInsertAsync(p_customerList, new BulkConfig
+            {
+                SetOutputIdentity = true,
+                PreserveInsertOrder = true,
+                BulkCopyTimeout = 0,
+                WithHoldlock = false,
+                BatchSize = 5000
+            });
+            await _dbContext.SaveChangesAsync();
+
+            return p_customerList.Count;
+
+        }
+
+        Task<int> ICustomerRepositoryAsync.AddCustomerAsync(Customer p_customer)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<int> ICustomerRepositoryAsync.DeleteCustomerAsync(long ID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> UpdateCustomerRangeAsync(List<Customer> p_customerList)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<int> ICustomerRepositoryAsync.UpdateCustomerAsync(Customer p_customer)
+        {
+            throw new NotImplementedException();
         }
     }
 }

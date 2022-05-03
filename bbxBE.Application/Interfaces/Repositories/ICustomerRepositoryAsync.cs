@@ -1,6 +1,4 @@
-﻿//using bbxBE.Application.Features.Positions.Queries.GetPositions;
-using bbxBE.Application.Interfaces;
-using bbxBE.Application.Interfaces.Queries;
+﻿using bbxBE.Application.Interfaces;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Domain.Entities;
@@ -11,16 +9,18 @@ namespace bbxBE.Application.Interfaces.Repositories
 {
     public interface ICustomerRepositoryAsync : IGenericRepositoryAsync<Customer>
     {
-        bool IsUniqueTaxpayerId(string TaxpayerId, long? ID = null);
-        bool IsUniqueIsOwnData( long? ID = null);
-        bool CheckBankAccount(string bankAccountNumber);
-        Task<bool> SeedDataAsync(int rowCount);
-        Task<Customer> AddCustomerAsync(Customer p_customer);
-        Task<Customer> UpdateCustomerAsync(Customer p_customer);
-        Task<Customer> DeleteCustomerAsync(long ID);
-        Customer GetOwnData();
+        bool IsUniqueCustomerCode(string CustomerCode, long? ID = null);
+        bool IsUniqueTaxpayerId(string Taxpaxpayer, long? ID = null);
+        bool IsUniqueIsOwnData(long? ID = null);
+        bool CheckBankAccount(string BankAccount);
+        Task<int> AddCustomerRangeAsync(List<Customer> p_customerList);
+        Task<int> AddCustomerAsync(Customer p_customer);
+        Task<int> DeleteCustomerAsync(long ID);
+        Task<int> UpdateCustomerRangeAsync(List<Customer> p_customerList);
+        Task<int> UpdateCustomerAsync(Customer p_customer);
         Customer GetCustomer(long customerID);
         Entity GetCustomer(GetCustomer requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParameters);
+        Entity GetCustomer(GetCustomer requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParamter);
     }
 }

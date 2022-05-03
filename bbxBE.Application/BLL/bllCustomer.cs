@@ -1,7 +1,12 @@
-﻿using bbxBE.Domain.Entities;
+﻿using AutoMapper;
+using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Domain.Entities;
+using bxBE.Application.Commands.cmdCustomer;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace bbxBE.Application.BLL
 {
@@ -49,6 +54,19 @@ namespace bbxBE.Application.BLL
 
             return (System.Text.RegularExpressions.Regex.IsMatch(bankAccount, "^[0-9]{8}-[0-9]{8}(-[0-9]{8})?$"));
   
+        }
+
+        public static async Task<int> CreateRangeAsynch(List<CreateCustomerCommand> requestList,
+             ICustomerRepositoryAsync _CustomerRepository, IMapper _mapper, CancellationToken cancellationToken)
+        {
+            var customerList = new List<Customer>();
+            foreach (var customer in requestList)
+            {
+                var cust = _mapper.Map<Customer>(customer);
+                customerList.Add(cust);
+            }
+
+            return await _CustomerRepository.AddCustomerRangeAsync(customerList);
         }
 
     }

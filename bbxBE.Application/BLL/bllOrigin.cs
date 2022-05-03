@@ -22,5 +22,19 @@ namespace bbxBE.Application.BLL
             return origin;
         }
 
+        public static async Task<long> CreateRangeAsync(List<Origin> originList, IOriginRepositoryAsync _originRepository, CancellationToken cancellationToken)
+        {
+            return await _originRepository.AddOriginRangeAsync(originList);
+        }
+
+        public static async Task<long> CreateOriginRangeByStringAsync(List<string> originList, IOriginRepositoryAsync _originRepository, CancellationToken cancellationToken)
+        {
+            var oList = new List<Origin>();
+            foreach (var origin in originList)
+            {
+                oList.Add(new Origin { OriginCode = origin, OriginDescription = origin});
+            }
+            return await _originRepository.AddOriginRangeAsync(oList);
+        }
     }
 }

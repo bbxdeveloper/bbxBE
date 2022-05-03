@@ -28,7 +28,11 @@ namespace bbxBE.Command.Mappings
             CreateMap<UpdateUSR_USERCommand, USR_USER>();
             CreateMap<DeleteUSR_USERCommand, USR_USER>();
 
-            CreateMap<CreateCustomerCommand, Customer>();
+            CreateMap<CreateCustomerCommand, Customer>()
+                .ForMember(dst => dst.TaxpayerId, 
+                    opt => opt.MapFrom(src => !src.CountryCode.Equals("HU") ? 
+                    src.TaxpayerNumber + "-" + src.VatCode + "-" + src.CountryCode 
+                    : "HU" ));
             CreateMap<UpdateCustomerCommand, Customer>();
             CreateMap<DeleteCustomerCommand, Customer>();
 
