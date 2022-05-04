@@ -110,11 +110,11 @@ namespace bbxBE.Application.Commands.cmdImport
                 var bankAccountNumber = customerMapping.ContainsKey(CustomerBankAccountNumberFieldName)
                         ? currentFieldsArray[customerMapping[CustomerBankAccountNumberFieldName]].Replace("\"", "").Trim() : null;
                 if ((!string.IsNullOrEmpty(bankAccountNumber)) &&
-                    (new Regex(regExpPatternForBankAccount).Match(bankAccountNumber).Success))
+                    (Regex.IsMatch(bankAccountNumber, regExpPatternForBankAccount)))
                     createCustomerCommand.CustomerBankAccountNumber = bankAccountNumber;
 
                 var vatnumber = customerMapping.ContainsKey(TaxpayerIdFieldName) ? currentFieldsArray[customerMapping[TaxpayerIdFieldName]].Replace("\"", "").Trim() : null;
-                if ((!string.IsNullOrEmpty(vatnumber)) && (new Regex(regExpPatternForVatNumber).Match(vatnumber).Success))
+                if ((!string.IsNullOrEmpty(vatnumber)) && (Regex.IsMatch(vatnumber, regExpPatternForVatNumber)))
                 {
                     createCustomerCommand.TaxpayerNumber = vatnumber.Substring(0, 8);
                     createCustomerCommand.VatCode = vatnumber.Substring(9, 1);
