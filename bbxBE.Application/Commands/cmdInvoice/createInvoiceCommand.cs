@@ -249,7 +249,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 				if (!string.IsNullOrWhiteSpace(request.Notice))
 				{
 					invoice.AdditionalInvoiceData = new List<AdditionalInvoiceData>() {  new AdditionalInvoiceData()
-							{ DataName = "Notice", DataDescription = "Megjegyzés", DataValue = request.Notice }};
+							{ DataName = bbxBEConsts.DEF_NOTICE, DataDescription = bbxBEConsts.DEF_NOTICEDESC, DataValue = request.Notice }};
 
 				}
 

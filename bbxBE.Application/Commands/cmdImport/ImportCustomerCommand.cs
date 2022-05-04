@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using bbxBE.Application.BLL;
+using bbxBE.Application.Commands.ResultModels;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;

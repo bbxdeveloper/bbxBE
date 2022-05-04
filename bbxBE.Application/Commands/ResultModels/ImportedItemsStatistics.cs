@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace bbxBE.Domain.Entities
+namespace bbxBE.Application.Commands.ResultModels
 {
     public class ImportedItemsStatistics
     {

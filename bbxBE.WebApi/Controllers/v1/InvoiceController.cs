@@ -33,6 +33,17 @@ namespace bbxBE.WebApi.Controllers.v1
             _conf = conf;
         }
 
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] GetInvoice filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
+
 
         /// <summary>
         /// POST api/controller

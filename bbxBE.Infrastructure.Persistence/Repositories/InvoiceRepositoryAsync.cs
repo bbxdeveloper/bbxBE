@@ -150,7 +150,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var ID = requestParameter.ID;
 
-            var item = await GetByIdAsync(ID);
+//            var item = await GetByIdAsync(ID);
+            var item = _invoices.AsNoTracking()
+            .Include(s => s.Supplier).AsNoTracking()
+            .Include(c => c.Customer).AsNoTracking()
+            .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+            .Where(x => x.ID == ID).FirstOrDefault();
 
             //            var fields = requestParameter.Fields;
 
