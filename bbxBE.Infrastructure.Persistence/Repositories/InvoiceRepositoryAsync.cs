@@ -182,8 +182,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
 
-            var query = _invoices//.AsNoTracking().AsExpandable()
-                    .Include(i => i.Warehouse).AsQueryable();
+            //var query = _invoices//.AsNoTracking().AsExpandable()
+            //        .Include(i => i.Warehouse).AsQueryable();
+            var query = _invoices.AsNoTracking()
+             .Include(w => w.Warehouse).AsNoTracking()
+             .Include(s => s.Supplier).AsNoTracking()
+             .Include(c => c.Customer).AsNoTracking()
+             .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+             .Include(i => i.InvoiceLines).AsNoTracking();
 
 
             // Count records total
