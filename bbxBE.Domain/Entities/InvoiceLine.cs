@@ -18,10 +18,8 @@ namespace bbxBE.Domain.Entities
 
 		[ColumnLabel("Termék ID")]
 		[Description("Termék ID")]
-		public long ProductID { get; set; }
-		[ColumnLabel("Áfa ID")]
-		[Description("Áfa ID")]
-		public long VatRateID { get; set; }
+		public long? ProductID { get; set; }
+
 		[ColumnLabel("#")]
 		[Description("Sor száma")]
 		public short LineNumber { get; set; }
@@ -32,6 +30,24 @@ namespace bbxBE.Domain.Entities
 		[ColumnLabel("Termékértékesítés/szolgáltatásnyújtás")]
 		[Description("Termékértékesítés vagy szolgáltatásnyújtás jelölése (egyelőre csak PRODUCT)")]
 		public string LineNatureIndicator { get; set; }
+
+		[ColumnLabel("Termékkód")]
+		[Description("Termékkód")]
+		public string ProductCode { get; set; }
+
+		[ColumnLabel("VTSZ")]
+		[Description("Vámtarifa szám")]
+		public string VTSZ { get; set; }
+
+		[ColumnLabel("Áfa ID")]
+		[Description("Áfa ID")]
+		public long VatRateID { get; set; }
+
+		[ColumnLabel("Áfa%")]
+		[Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
+		public decimal VatPercentage { get; set; }
+
+
 		[ColumnLabel("Megnevezés")]
 		[Description("A termék vagy szolgáltatás megnevezése")]
 		public string LineDescription { get; set; }

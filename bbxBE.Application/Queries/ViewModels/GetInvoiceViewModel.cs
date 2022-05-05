@@ -35,9 +35,21 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Termékkód")]
 			public string ProductCode { get; set; }
 
-			[ColumnLabel("Áfakód")]
-			[Description("Áfakód")]
-			public string VatRateCode { get; set; }
+			[ColumnLabel("VTSZ")]
+			[Description("Vámtarifa szám")]
+			public string VTSZ { get; set; }
+
+			[ColumnLabel("Áfa ID")]
+			[Description("Áfa ID")]
+			public long VatRateID { get; set; }
+
+			[ColumnLabel("Áfa%")]
+			[Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
+			public decimal VatPercentage { get; set; }
+
+			[ColumnLabel("Megnevezés")]
+			[Description("A termék vagy szolgáltatás megnevezése")]
+			public string LineDescription { get; set; }
 
 			[ColumnLabel("Mennyiség")]
 			[Description("Mennyiség")]
@@ -73,15 +85,17 @@ namespace bbxBE.Application.Queries.ViewModels
 
 			[ColumnLabel("Ár")]
 			[Description("Ár")]
-			public decimal Price { get; set; }
+			public decimal UnitPrice { get; set; }
 
 			[ColumnLabel("Nettó érték")]
 			[Description("Ár a számla pénznemében")]
 			public decimal LineNetAmount { get; set; }
-
 			[ColumnLabel("Áfa érték")]
 			[Description("Áfa a számla pénznemében")]
 			public decimal lineVatAmount { get; set; }
+			[ColumnLabel("Bruttó érték")]
+			[Description("Bruttó a számla pénznemében")]
+			public decimal lineGrossAmountNormal { get; set; }
 
 		}
 

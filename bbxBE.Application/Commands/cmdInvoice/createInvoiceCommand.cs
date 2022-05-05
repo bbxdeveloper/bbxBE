@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bxBE.Application.Commands.cmdInvoice
 {
@@ -285,9 +286,14 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 					//	ln.Product = prod;
 					ln.ProductID = prod.ID;
+					ln.ProductCode = rln.ProductCode;
+					ln.VTSZ = prod.ProductCodes.FirstOrDefault(c => c.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ProductCodeValue;
 					ln.LineDescription = prod.Description;
+
 					//	ln.VatRate = vatRate;
 					ln.VatRateID = vatRate.ID;
+					ln.VatPercentage = vatRate.VatPercentage;
+
 					ln.LineNatureIndicator = prod.NatureIndicator;
 
 					ln.UnitPriceHUF = ln.UnitPrice * invoice.ExchangeRate;
@@ -327,6 +333,7 @@ namespace bxBE.Application.Commands.cmdInvoice
                 {
 					await _CounterRepository.RollbackValueAsync(counterCode, invoice.WarehouseID, invoice.InvoiceNumber);
 				}
+				throw;
 			}
 			return null;
         }

@@ -54,7 +54,7 @@ namespace bbxBE.Queries.Mappings
             CreateMap<VatRate, GetVatRateViewModel>()
               .ForMember(dst => dst.VatRateDescription, opt => opt.MapFrom(src => src.VatRateCode + " (áfa%:" + (src.VatPercentage * 100).ToString("0.##") + ")"));
 
-            _ = CreateMap<Invoice, GetInvoiceViewModel>()
+            CreateMap<Invoice, GetInvoiceViewModel>()
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
 
              .ForMember(dst => dst.SupplierName, opt => opt.MapFrom(src => src.Supplier.CustomerName))
@@ -77,6 +77,8 @@ namespace bbxBE.Queries.Mappings
 
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null || src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
                                     src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataDescription : "")));
+
+            CreateMap<InvoiceLine, GetInvoiceViewModel.InvoiceLine>();
         }
     }
 }
