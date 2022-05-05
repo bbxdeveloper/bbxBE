@@ -34,7 +34,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                 if not exists (select * from Counter where CounterCode='{0}')
                 begin
                     insert into Counter ([WarehouseID],[CounterCode],[CounterDescription],[Prefix],[CurrentNumber],[NumbepartLength],[Suffix],[CounterPool])
-                    select ID, '{2}','{3}', '{4}', {5}, {6}, '{7}', '{8}' from Warehouse where WarehouseCode='{1}')
+                    select ID, '{2}','{3}', '{4}', {5}, {6}, '{7}', '{8}' from Warehouse where WarehouseCode='{1}'
                 end",
                 "K"+enInvoiceType.INV.ToString()+ "_" + bbxBEConsts.DEF_WAREHOUSE,
                 bbxBEConsts.DEF_WAREHOUSE, enInvoiceType.INV.ToString() + "_" + bbxBEConsts.DEF_WAREHOUSE, "Szolnok KP", "K-", 1, 5, "S", ""));
@@ -43,7 +43,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                 if not exists (select * from Counter where CounterCode='{0}')
                 begin
                     insert into Counter ([WarehouseID],[CounterCode],[CounterDescription],[Prefix],[CurrentNumber],[NumbepartLength],[Suffix],[CounterPool])
-                    select ID, '{2}','{3}', '{4}', {5}, {6}, '{7}', '{8}' from Warehouse where WarehouseCode='{1}')
+                    select ID, '{2}','{3}', '{4}', {5}, {6}, '{7}', '{8}' from Warehouse where WarehouseCode='{1}'
                end",
                "K" + enInvoiceType.DLV.ToString() + "_" + bbxBEConsts.DEF_WAREHOUSE,
                bbxBEConsts.DEF_WAREHOUSE, enInvoiceType.DLV.ToString() + "_" + bbxBEConsts.DEF_WAREHOUSE, "Szolnok Száll", "S-", 1, 5, "S", ""));

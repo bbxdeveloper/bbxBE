@@ -83,7 +83,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
                     {
-                        p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode).ID;
+                        p_Counter.Warehouse = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
                     }
 
                     _Counters.Update(p_Counter);
