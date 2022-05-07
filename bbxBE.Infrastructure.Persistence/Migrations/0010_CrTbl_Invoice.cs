@@ -29,6 +29,16 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
             Delete.Table("InvoiceLine");
 
             Delete.Table("AdditionalInvoiceLineData");
+
+            /*
+                delete VersionInfo where Version = 10
+                drop table AdditionalInvoiceData
+                drop table AdditionalInvoiceLineData
+                drop table Invoice
+                drop table InvoiceLine
+                drop table SummaryByVatRate
+
+             */
         }
         public override void Up()
         {
@@ -132,8 +142,11 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                      .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                      .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
                      .WithColumn("InvoiceID").AsInt64().NotNullable().ForeignKey()
-                     .WithColumn("ProductID").AsInt64().NotNullable().ForeignKey()
+                     .WithColumn("ProductID").AsInt64().Nullable().ForeignKey()                         //Opcionális
+                     .WithColumn("ProductCode").AsString().Nullable()                                   //Opcionális!
+                     .WithColumn("VTSZ").AsString().Nullable()                                          //Opcionális!
                      .WithColumn("VatRateID").AsInt64().NotNullable().ForeignKey()
+                     .WithColumn("VatPercentage").AsDecimal().Nullable()
                      .WithColumn("LineNumber").AsInt16().NotNullable()
                      .WithColumn("LineExpressionIndicator").AsBoolean().WithDefaultValue(true)           // Ha a tag értéke true, akkor adott számlasorban kötelező megadni:
                                                                                                          // a.a termék vagy szolgáltatás nevét

@@ -24,6 +24,7 @@ using bbxBE.Infrastructure.Persistence.Caches;
 using Hangfire;
 using System.Threading;
 using EFCore.BulkExtensions;
+using bbxBE.Common.Locking;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -649,17 +650,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task RefreshProductCache(bool force = false)
         {
-
-            if (_cacheService.IsCacheEmpty() || force)
+      ú//      using (var lockObj = new ProductCacheLock(Common.Globals.GlobalLockObjs.ProductCacheLocker))
             {
+                   if (_cacheService.IsCacheEmpty() || force)
+                {
 
-                var q = _Products.AsNoTracking()
-                     .Include(p => p.ProductCodes).AsNoTracking()
-                     .Include(pg => pg.ProductGroup).AsNoTracking()
-                     .Include(o => o.Origin).AsNoTracking()
-                     .Include(v => v.VatRate).AsNoTracking();
-                await _cacheService.RefreshCache(q);
+                    var q = _Products.AsNoTracking()
+                         .Include(p => p.ProductCodes).AsNoTracking()
+                         .Include(pg => pg.ProductGroup).AsNoTracking()
+                         .Include(o => o.Origin).AsNoTracking()
+                         .Include(v => v.VatRate).AsNoTracking();
+                    await _cacheService.RefreshCache(q);
 
+                }
             }
         }
         public async Task RefreshVatRateCache()

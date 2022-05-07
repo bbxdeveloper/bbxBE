@@ -23,6 +23,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using bbxBE.Application.Commands.ResultModels;
 
 namespace bbxBE.Application.Commands.cmdImport
 {

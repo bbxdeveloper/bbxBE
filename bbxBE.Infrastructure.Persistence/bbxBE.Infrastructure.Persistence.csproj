@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Locking\**" />
+    <EmbeddedResource Remove="Locking\**" />
+    <None Remove="Locking\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
     <PackageReference Include="Hangfire.Core" Version="1.7.28" />
@@ -21,10 +27,6 @@
   <ItemGroup>
     <ProjectReference Include="..\bbxBE.Application\bbxBE.Application.csproj" />
     <ProjectReference Include="..\bbxBE.Domain\bbxBE.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Locking\" />
   </ItemGroup>
 
 </Project>

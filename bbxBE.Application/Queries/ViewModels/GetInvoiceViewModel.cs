@@ -35,9 +35,21 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Termékkód")]
 			public string ProductCode { get; set; }
 
-			[ColumnLabel("Áfakód")]
-			[Description("Áfakód")]
-			public string VatRateCode { get; set; }
+			[ColumnLabel("VTSZ")]
+			[Description("Vámtarifa szám")]
+			public string VTSZ { get; set; }
+
+			[ColumnLabel("Áfa ID")]
+			[Description("Áfa ID")]
+			public long VatRateID { get; set; }
+
+			[ColumnLabel("Áfa%")]
+			[Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
+			public decimal VatPercentage { get; set; }
+
+			[ColumnLabel("Megnevezés")]
+			[Description("A termék vagy szolgáltatás megnevezése")]
+			public string LineDescription { get; set; }
 
 			[ColumnLabel("Mennyiség")]
 			[Description("Mennyiség")]
@@ -73,24 +85,31 @@ namespace bbxBE.Application.Queries.ViewModels
 
 			[ColumnLabel("Ár")]
 			[Description("Ár")]
-			public decimal Price { get; set; }
+			public decimal UnitPrice { get; set; }
 
 			[ColumnLabel("Nettó érték")]
 			[Description("Ár a számla pénznemében")]
 			public decimal LineNetAmount { get; set; }
-
 			[ColumnLabel("Áfa érték")]
 			[Description("Áfa a számla pénznemében")]
 			public decimal lineVatAmount { get; set; }
+			[ColumnLabel("Bruttó érték")]
+			[Description("Bruttó a számla pénznemében")]
+			public decimal lineGrossAmountNormal { get; set; }
 
 		}
 
 		[MapTo("ID")]
 		public long ID { get; set; }
 
+		[ColumnLabel("Raktár ID")]
+		[Description("Raktár ID")]
+		public long WarehouseID { get; set; }
+
 		[ColumnLabel("Raktár")]
 		[Description("Raktár")]
-		public string WarehouseCode { get; set; }
+		public string Warehouse { get; set; }
+
 
 		[ColumnLabel("Számlaszám")]
 		[Description("Számla sorszáma")]
@@ -108,16 +127,90 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Fizetési határidő dátuma")]
 		public DateTime PaymentDate { get; set; }
 
+		#region Supplier
+		[ColumnLabel("Szállító ID")]
+		[Description("Szállító ID")]
+		public long SupplierID { get; set; }
+
+		[ColumnLabel("Szállítónév")]
+		[Description("Szállítónév")]
+		public string SupplierName { get; set; }
+
+		[ColumnLabel("Bankszámlaszám")]
+		[Description("Szállító bankszámlaszám")]
+		public string SupplierBankAccountNumber { get; set; }
 
 
+		[ColumnLabel("Adószám")]
+		[Description("Szállító adószám")]
+		public string SupplierTaxpayerNumber { get; set; }
 
+		[ColumnLabel("Országkód")]
+		[Description("Szállító országkód")]
+		public string SupplierCountryCode { get; set; }
+
+		[ColumnLabel("IRSZ")]
+		[Description("Szállító irányítószám")]
+		public string SupplierPostalCode { get; set; }
+
+		[ColumnLabel("Város")]
+		[Description("Szállító város")]
+		public string SupplierCity { get; set; }
+
+		[ColumnLabel("Cím")]
+		[Description("Szállítócím")]
+		public string SupplierAdditionalAddressDetail { get; set; }
+
+
+		[ColumnLabel("Megjegyzés")]
+		[Description("Szállító megjegyzés")]
+		public string SupplierComment { get; set; }
+
+		#endregion
+
+		#region Customer
 		[ColumnLabel("Ügyfél ID")]
 		[Description("Ügyfél ID")]
 		public long CustomerID { get; set; }
 
+		[ColumnLabel("Ügyfélnév")]
+		[Description("Ügyfélnév")]
+		public string CustomerName { get; set; }
 
-		#region PaymentMethod
-		[IgnoreDataMember]
+		[ColumnLabel("Bankszámlaszám")]
+		[Description("Ügyfél bankszámlaszám")]
+		public string CustomerBankAccountNumber { get; set; }
+
+
+		[ColumnLabel("Adószám")]
+		[Description("Ügyfél adószám")]
+		public string CustomerTaxpayerNumber { get; set; }
+
+		[ColumnLabel("Országkód")]
+		[Description("Ügyfél országkód")]
+		public string CustomerCountryCode { get; set; }
+
+		[ColumnLabel("IRSZ")]
+		[Description("Ügyfél irányítószám")]
+		public string CustomerPostalCode { get; set; }
+
+		[ColumnLabel("Város")]
+		[Description("Ügyfél város")]
+		public string CustomerCity { get; set; }
+
+		[ColumnLabel("Cím")]
+		[Description("Ügyfélcím")]
+		public string CustomerAdditionalAddressDetail { get; set; }
+
+
+		[ColumnLabel("Megjegyzés")]
+		[Description("Ügyfél megjegyzés")]
+		public string CustomerComment { get; set; }
+
+        #endregion
+
+        #region PaymentMethod
+        [IgnoreDataMember]
 		[NotDBField]
 		[NotModelField]
 		private PaymentMethodType _PaymentMethod { get; set; }
@@ -143,7 +236,6 @@ namespace bbxBE.Application.Queries.ViewModels
 		[NotDBField]
 		public string PaymentMethodX { get { return Common.Utils.GetEnumDescription(_PaymentMethod); } }
 		#endregion
-
 
 
 		[ColumnLabel("Megjegyzés")]

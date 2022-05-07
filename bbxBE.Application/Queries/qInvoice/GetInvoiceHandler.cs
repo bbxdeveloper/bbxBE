@@ -26,7 +26,7 @@ namespace bbxBE.Application.Queries.qInvoice
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetInvoiceHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IModelHelper modelHelper)
+        public   GetInvoiceHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IModelHelper modelHelper)
         {
             _invoiceRepository = invoiceRepository;
             _mapper = mapper;

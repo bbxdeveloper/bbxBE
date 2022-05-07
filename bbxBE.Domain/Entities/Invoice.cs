@@ -204,6 +204,7 @@ namespace bbxBE.Domain.Entities
 		[Description("Szállító")]
 		public Customer Supplier { get; set; }
 
+
 		[ForeignKey("CustomerID")]
 		[ColumnLabel("Ügyfél")]
 		[Description("Ügyfél")]

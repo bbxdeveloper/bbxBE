@@ -60,7 +60,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
                 {
-                    p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode).ID;
+                    var wh = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
+                    p_Counter.WarehouseID = wh.ID;
+                    p_Counter.Warehouse = wh;
+
                 }
 
                 _Counters.Add(p_Counter);
@@ -83,7 +86,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
                     {
-                        p_Counter.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode).ID;
+                        var wh = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
+                        p_Counter.WarehouseID = wh.ID;
+                        p_Counter.Warehouse = wh;
                     }
 
                     _Counters.Update(p_Counter);
@@ -105,8 +110,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             var ID = requestParameter.ID;
+            var item  = _Counters//.AsNoTracking().AsExpandable()
+                    .Include(i => i.Warehouse).SingleOrDefault(s=>s.ID == ID);
 
-            var item = await GetByIdAsync(ID);
+            //            var item = await GetByIdAsync(ID);
 
             //            var fields = requestParameter.Fields;
 
