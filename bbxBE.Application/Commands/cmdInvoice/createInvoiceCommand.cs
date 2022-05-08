@@ -324,7 +324,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 				invoice.InvoiceLines.Clear();
 				invoice.SummaryByVatRates.Clear();
-				invoice.AdditionalInvoiceData.Clear();
+				if(invoice.AdditionalInvoiceData != null) 
+					invoice.AdditionalInvoiceData.Clear();
 				return new Response<Invoice>(invoice);
 			}
 			catch (Exception ex)

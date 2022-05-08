@@ -93,14 +93,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _originCacheService = originCacheService;
             _vatRateCacheService = vatRateCacheService;
 
-            var t = RefreshProductCache();
-            t.GetAwaiter().GetResult();
+            Task.Run(() => this.RefreshProductCache()).Wait();
+            //RefreshProductCache();
+            //t.GetAwaiter().GetResult();
 
-            var t2 = RefreshVatRateCache();
-            t2.GetAwaiter().GetResult();
-
+            Task.Run(() => this.RefreshVatRateCache()).Wait();
+            //await RefreshVatRateCache();
+            // t2.GetAwaiter().GetResult();
         }
-
 
         public bool IsUniqueProductCode(string ProductCode, long? ProductID = null)
         {
@@ -650,7 +650,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task RefreshProductCache(bool force = false)
         {
-      ú//      using (var lockObj = new ProductCacheLock(Common.Globals.GlobalLockObjs.ProductCacheLocker))
+      //      using (var lockObj = new ProductCacheLock(Common.Globals.GlobalLockObjs.ProductCacheLocker))
             {
                    if (_cacheService.IsCacheEmpty() || force)
                 {

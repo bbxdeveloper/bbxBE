@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace bbxBE.WebApi.Middlewares
 {
@@ -46,17 +47,50 @@ namespace bbxBE.WebApi.Middlewares
                     case KeyNotFoundException e:
                         // not found error
                         response.StatusCode = (int)HttpStatusCode.NotFound;
+                        responseModel.Errors = new List<string>();
+                        responseModel.Errors.Add(e.Message);
                         break;
 
                     case ResourceNotFoundException e:
                         // not found error
-                        response.StatusCode = (int)HttpStatusCode.NoContent;
+                        //response.StatusCode = (int)HttpStatusCode.NoContent;
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        responseModel.Errors = new List<string>();
+                        responseModel.Errors.Add(e.Message);
                         break;
+
                     case ImportParseException e:
                         // parsing problem
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         responseModel.Errors = new List<string>();
                         responseModel.Errors.Add(e.Message);  
+                        break;
+
+                    case InvalidOperationException e:
+                        if (e.InnerException != null && e.InnerException.GetType() == typeof(AggregateException))
+                        {
+                            response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+                            var ae = e.InnerException as AggregateException;
+                            if (ae.Flatten().InnerExceptions.Count == 1)
+                            {
+                                //Ha csak egy inner exception akkor Message-ba berakjuk az InnerException-t
+                                //responseModel.Errors.Add(responseModel.Message);
+                                responseModel.Message = ae.Flatten().InnerExceptions.First().Message;
+                            }
+                            else
+                            {
+                                responseModel.Errors = new List<string>();
+                                foreach (var ie in ae.Flatten().InnerExceptions)
+                                {
+                                    responseModel.Errors.Add(ie.Message);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        }
                         break;
 
                     default:

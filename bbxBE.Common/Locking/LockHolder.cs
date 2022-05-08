@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace bbxBE.Common
+namespace bbxBE.Common.Locking
 {
     public class LockHolder<T> : IDisposable where T : class
     {

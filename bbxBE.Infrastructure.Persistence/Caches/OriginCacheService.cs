@@ -60,7 +60,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             else
             {
                 if (_cacheQuery == null)
-                    throw new NoCacheQueryException(bbxBEConsts.FV_NOCACHEQUERY);
+                    throw new NoCacheQueryException(bbxBEConsts.ERR_NOCACHEQUERY);
             }
 
             var result = await _cacheQuery.ToDictionaryAsync(i => i.ID);
