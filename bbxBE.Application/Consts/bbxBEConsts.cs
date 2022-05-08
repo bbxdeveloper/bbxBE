@@ -12,8 +12,10 @@ namespace bbxBE.Application.Consts
         public static string DB = "bbx";
 
         public static string CNTRY_HU = "HU";
-        public static string PwdSalt = "PwdSalt";
+        public static string CONF_PwdSalt = "PwdSalt";
 
+        public static string CONF_CacheSettings = "CacheSettings";
+        public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
         public static string FV_REQUIRED = "{PropertyName}|{PropertyName} mező kitöltése kötelező.";
         public static string FV_LEN1 = "{PropertyName}|{PropertyName} mező karakterek száma:1.";
@@ -55,7 +57,8 @@ namespace bbxBE.Application.Consts
         public static string FV_FILESIZE = "Üres file lett feltöltve!";
 
 
-        public static string FV_NOCACHEQUERY = "Nincs lekérdezés a gyorstótárhoz!";
+        public static string ERR_NOCACHEQUERY = "Nincs lekérdezés a gyorstótárhoz!";
+        public static string ERR_LOCKEDCACHE = "Gyorsítótár feltöltés alatt ! A műveletet később végrehajtható.";
 
         public static string INV_DATE1 = "{PropertyName}| A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
         public static string INV_DATE2 = "{PropertyName}| A számla dátuma nem lehet későbbi, mint a fizetési határidő";

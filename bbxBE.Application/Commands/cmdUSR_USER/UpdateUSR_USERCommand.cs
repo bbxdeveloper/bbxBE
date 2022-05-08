@@ -54,7 +54,7 @@ namespace bbxBE.Application.Commands.cmdUSR_USER
 
             var usr = _mapper.Map<USR_USER>(request);
 
-            usr.USR_PASSWDHASH = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.PwdSalt));
+            usr.USR_PASSWDHASH = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt));
 
             await _usrRepository.UpdateAsync(usr);
             return new Response<USR_USER>(usr);

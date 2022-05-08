@@ -49,7 +49,7 @@ namespace bbxBE.Application.Commands.cmdUSR_USER
         public async Task<Response<USR_USER>> Handle(CreateUSR_USERCommand request, CancellationToken cancellationToken)
         {
             var usr = _mapper.Map<USR_USER>(request);
-            usr.USR_PASSWDHASH = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.PwdSalt));
+            usr.USR_PASSWDHASH = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt));
 
             await _usrRepository.AddAsync(usr);
             return new Response<USR_USER>(usr);
