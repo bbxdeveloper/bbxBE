@@ -79,7 +79,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             if (!locked)
             {
                 _logger.LogError($"{className} cache LOCKED");
-                throw new LockedCacheException(string.Format($"{className}:{0}", bbxBEConsts.ERR_LOCKEDCACHE));
+                throw new LockedCacheException(string.Format($"{className}:"+bbxBEConsts.ERR_LOCKEDCACHE));
             }
 
             try
