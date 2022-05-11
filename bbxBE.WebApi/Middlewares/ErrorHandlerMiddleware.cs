@@ -66,6 +66,11 @@ namespace bbxBE.WebApi.Middlewares
                         responseModel.Errors.Add(e.Message);  
                         break;
 
+                    case LockedCacheException e:
+                        // parsing problem
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        break;
+
                     case InvalidOperationException e:
                         if (e.InnerException != null && e.InnerException.GetType() == typeof(AggregateException))
                         {
