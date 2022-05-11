@@ -161,6 +161,9 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Szállítócím")]
 		public string SupplierAdditionalAddressDetail { get; set; }
 
+		[ColumnLabel("Külföldi adószám")]
+		[Description("Külföldi adószám")]
+		public string SupplierThirdStateTaxId { get; set; }
 
 		[ColumnLabel("Megjegyzés")]
 		[Description("Szállító megjegyzés")]
@@ -202,6 +205,10 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Ügyfélcím")]
 		public string CustomerAdditionalAddressDetail { get; set; }
 
+		[ColumnLabel("Külföldi adószám")]
+		[Description("Külföldi adószám")]
+		public string CustomerThirdStateTaxId { get; set; }
+
 
 		[ColumnLabel("Megjegyzés")]
 		[Description("Ügyfél megjegyzés")]
@@ -241,6 +248,10 @@ namespace bbxBE.Application.Queries.ViewModels
 		[ColumnLabel("Megjegyzés")]
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }  //AdditionalInvoiceData-ban tároljuk!
+
+		[ColumnLabel("Példány")]
+		[Description("Nyomtatott példány száma")]
+		public short Copies { get; set; }
 
 		[ColumnLabel("Nettó")]
 		[Description("A számla nettó összege a számla pénznemében")]
