@@ -64,6 +64,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.SupplierPostalCode, opt => opt.MapFrom(src => src.Supplier.PostalCode))
              .ForMember(dst => dst.SupplierCity, opt => opt.MapFrom(src => src.Supplier.City))
              .ForMember(dst => dst.SupplierAdditionalAddressDetail, opt => opt.MapFrom(src => src.Supplier.AdditionalAddressDetail))
+             .ForMember(dst => dst.SupplierThirdStateTaxId, opt => opt.MapFrom(src => src.Supplier.ThirdStateTaxId))
              .ForMember(dst => dst.SupplierComment, opt => opt.MapFrom(src => src.Supplier.Comment))
 
              .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => src.Customer.CustomerName))
@@ -73,6 +74,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CustomerPostalCode, opt => opt.MapFrom(src => src.Customer.PostalCode))
              .ForMember(dst => dst.CustomerCity, opt => opt.MapFrom(src => src.Customer.City))
              .ForMember(dst => dst.CustomerAdditionalAddressDetail, opt => opt.MapFrom(src => src.Customer.AdditionalAddressDetail))
+             .ForMember(dst => dst.CustomerThirdStateTaxId, opt => opt.MapFrom(src => src.Customer.ThirdStateTaxId))
              .ForMember(dst => dst.CustomerComment, opt => opt.MapFrom(src => src.Customer.Comment))
 
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null || src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
