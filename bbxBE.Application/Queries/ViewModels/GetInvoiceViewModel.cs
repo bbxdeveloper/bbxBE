@@ -114,6 +114,10 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Áfaleíró-kód")]
 			public string VatRateCode { get; set; }
 
+			[ColumnLabel("Áfaalap")]
+			[Description("Áfaalap a számla pénznemében")]
+			public decimal VatNetAmount { get; set; }
+
 			[ColumnLabel("Áfa értéke")]
 			[Description("Áfa értéke a számla pénznemében")]
 			public decimal VatRateNetAmount { get; set; }

@@ -313,6 +313,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 							.Select(g => new SummaryByVatRate()
 							{
 								VatRateID = g.Key,
+								VatNetAmount = g.Sum(s => s.LineNetAmount),
+								VatNetAmountHUF = g.Sum(s => s.LineNetAmountHUF),
 								VatRateNetAmount = g.Sum(s => s.lineVatAmount),
 								VatRateNetAmountHUF = g.Sum(s => s.lineVatAmountHUF),
 

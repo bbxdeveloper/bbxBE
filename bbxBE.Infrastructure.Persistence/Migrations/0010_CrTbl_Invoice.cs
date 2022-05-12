@@ -132,6 +132,8 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
                     .WithColumn("InvoiceID").AsInt64().NotNullable().ForeignKey()
                     .WithColumn("VatRateID").AsInt64().NotNullable().ForeignKey()
+                    .WithColumn("VatNetAmount").AsCurrency().NotNullable()
+                    .WithColumn("VatNetAmountHUF").AsCurrency().NotNullable()
                     .WithColumn("VatRateNetAmount").AsCurrency().NotNullable()
                     .WithColumn("VatRateNetAmountHUF").AsCurrency().NotNullable();
 

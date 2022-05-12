@@ -82,27 +82,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 
-                    /*
-                    p_invoiceLines.ForEach(i => i.InvoiceID = p_invoice.ID);
-                    await _invoiceLines.AddRangeAsync(p_invoiceLines);
-
-                        p_summaryByVatRate.ForEach(i => i.InvoiceID = p_invoice.ID);
-                        await _summaryByVatRates.AddRangeAsync(p_summaryByVatRate);
-
-                        if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
-                        {
-                            p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
-                            await _additionalInvoiceData.AddRangeAsync(p_additionalInvoiceData);
-                        }
-
-                        if (p_additionalInvoiceData != null && p_additionalInvoiceData.Count > 0)
-                        {
-                            p_additionalInvoiceData.ForEach(i => i.InvoiceID = p_invoice.ID);
-                            await _additionalInvoiceLineData.AddRangeAsync(p_additionalInvoiceLineData);
-                        }
-                        await _dbContext.SaveChangesAsync();
-                        await dbContextTransaction.CommitAsync();
-                    */
                 }
                 catch (Exception ex)
                 {
@@ -114,34 +93,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return p_invoice;
         }
 
-            public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
-            {
-                /*
-                using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
-                {
-
-                    var cnt = _Invoices.Where(x => x.ID == p_Invoice.ID).FirstOrDefault();
-
-                    if (cnt != null)
-                    {
-                        if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
-                        {
-                            p_Invoice.WarehouseID = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode)?.ID;
-                        }
-
-                        _Invoices.Update(p_Invoice);
-                        await _dbContext.SaveChangesAsync();
-                        await dbContextTransaction.CommitAsync();
-
-
-                    }
-                    else
-                    {
-                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_InvoiceNOTFOUND, p_Invoice.ID));
-                    }
-                }
-                */
-                    return p_invoice;
+        public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
+        {
+            throw new NotImplementedException("UpdateInvoiceAsync");
         }
 
         public async Task<Entity> GetInvoiceAsync(GetInvoice requestParameter)
@@ -151,12 +105,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var ID = requestParameter.ID;
 
             var item = _invoices.AsNoTracking()
-            .Include(w => w.Warehouse).AsNoTracking()
-            .Include(s => s.Supplier).AsNoTracking()
-            .Include(c => c.Customer).AsNoTracking()
-            .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-            .Include(i => i.InvoiceLines).AsNoTracking()
-            .Where(x => x.ID == ID).FirstOrDefault();
+              .Include(w => w.Warehouse).AsNoTracking()
+              .Include(s => s.Supplier).AsNoTracking()
+              .Include(c => c.Customer).AsNoTracking()
+              .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+              .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
+              .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+              .Where(x => x.ID == ID).FirstOrDefault();
 
             //            var fields = requestParameter.Fields;
 
