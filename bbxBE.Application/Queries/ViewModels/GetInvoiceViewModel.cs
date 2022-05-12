@@ -17,7 +17,7 @@ namespace bbxBE.Application.Queries.ViewModels
 	/// In this case, <see cref="GetInvoiceViewModel"/> will be the value for the TDestination parameter.
 	/// </summary>
 	public class GetInvoiceViewModel
-    {
+	{
 
 
 		[Description("Számlasor")]
@@ -42,6 +42,10 @@ namespace bbxBE.Application.Queries.ViewModels
 			[ColumnLabel("Áfa ID")]
 			[Description("Áfa ID")]
 			public long VatRateID { get; set; }
+
+			[ColumnLabel("Áfaleíró-kód")]
+			[Description("Áfaleíró-kód")]
+			public string VatRateCode { get; set; }
 
 			[ColumnLabel("Áfa%")]
 			[Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
@@ -98,6 +102,28 @@ namespace bbxBE.Application.Queries.ViewModels
 			public decimal lineGrossAmountNormal { get; set; }
 
 		}
+
+		[Description("Áfaösszesítő")]
+		public class SummaryByVatRate 
+		{
+			[ColumnLabel("Áfa ID")]
+			[Description("Áfa ID")]
+			public long VatRateID { get; set; }
+
+			[ColumnLabel("Áfaleíró-kód")]
+			[Description("Áfaleíró-kód")]
+			public string VatRateCode { get; set; }
+
+			[ColumnLabel("Áfaalap")]
+			[Description("Áfaalap a számla pénznemében")]
+			public decimal VatNetAmount { get; set; }
+
+			[ColumnLabel("Áfa értéke")]
+			[Description("Áfa értéke a számla pénznemében")]
+			public decimal VatRateNetAmount { get; set; }
+
+		}
+
 
 		[MapTo("ID")]
 		public long ID { get; set; }
@@ -214,10 +240,10 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Ügyfél megjegyzés")]
 		public string CustomerComment { get; set; }
 
-        #endregion
+		#endregion
 
-        #region PaymentMethod
-        [IgnoreDataMember]
+		#region PaymentMethod
+		[IgnoreDataMember]
 		[NotDBField]
 		[NotModelField]
 		private PaymentMethodType _PaymentMethod { get; set; }
@@ -261,12 +287,19 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("A számla áfa összege a számla pénznemében")]
 		public decimal InvoiceVatAmount { get; set; }
 
+		[ColumnLabel("Bruttó")]
+		[Description("A számla végösszege a számla pénznemében")]
+		public decimal InvoiceGrossAmount { get; set; }
+
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
 		public List<GetInvoiceViewModel.InvoiceLine> InvoiceLines { get; set; } = new List<GetInvoiceViewModel.InvoiceLine>();
 
+		[ColumnLabel("Áfaösszesítők")]
+		[Description("Áfaösszesítők")]
+		public List<GetInvoiceViewModel.SummaryByVatRate> SummaryByVatRates { get; set; } = new List<GetInvoiceViewModel.SummaryByVatRate>();
 
 
 
-    }
+	}
 }

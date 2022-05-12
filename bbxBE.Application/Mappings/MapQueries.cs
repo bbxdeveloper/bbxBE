@@ -80,8 +80,11 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null && src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
                                     src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataDescription : "")));
 
+            CreateMap<InvoiceLine, GetInvoiceViewModel.InvoiceLine>()
+             .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
 
-            CreateMap<InvoiceLine, GetInvoiceViewModel.InvoiceLine>();
+            CreateMap<SummaryByVatRate, GetInvoiceViewModel.SummaryByVatRate>()
+             .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
         }
     }
 }

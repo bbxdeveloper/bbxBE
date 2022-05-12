@@ -17,6 +17,15 @@ namespace bbxBE.Domain.Entities
 		[ColumnLabel("Áfa ID")]
 		[Description("Áfa ID")]
 		public long VatRateID { get; set; }
+
+		[ColumnLabel("Áfaalap")]
+		[Description("Áfaalap a számla pénznemében")]
+		public decimal VatNetAmount { get; set; }
+
+		[ColumnLabel("Áfaalap HUF")]
+		[Description("Áfaalap a forintban")]
+		public decimal VatNetAmountHUF { get; set; }
+
 		[ColumnLabel("Áfa értéke")]
 		[Description("Áfa értéke a számla pénznemében")]
 		public decimal VatRateNetAmount { get; set; }
