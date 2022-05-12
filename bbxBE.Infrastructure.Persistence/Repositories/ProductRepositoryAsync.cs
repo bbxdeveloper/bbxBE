@@ -650,7 +650,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task RefreshProductCache(bool force = false)
         {
-      ú//      using (var lockObj = new ProductCacheLock(Common.Globals.GlobalLockObjs.ProductCacheLocker))
+      //      using (var lockObj = new ProductCacheLock(Common.Globals.GlobalLockObjs.ProductCacheLocker))
             {
                    if (_cacheService.IsCacheEmpty() || force)
                 {

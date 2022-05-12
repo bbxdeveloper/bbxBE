@@ -189,7 +189,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
              .Include(s => s.Supplier).AsNoTracking()
              .Include(c => c.Customer).AsNoTracking()
              .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-             .Include(i => i.InvoiceLines).AsNoTracking();
+             .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
+             .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking();
 
 
             // Count records total
