@@ -8,9 +8,15 @@
     <RepositoryType>Public</RepositoryType>
     <PackageProjectUrl>https://github.com/workcontrolgit</PackageProjectUrl>
     <Version>1.3.0</Version>
+    <Configurations>Debug;Release;Test</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bbxBE.WebApi.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|AnyCPU'">
     <DocumentationFile>bbxBE.WebApi.xml</DocumentationFile>
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>

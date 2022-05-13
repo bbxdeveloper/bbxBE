@@ -1,10 +1,12 @@
 ﻿using bbxBE.Application.Consts;
 using bbxBE.Infrastructure.Persistence.Migrations;
 using FluentMigrator.Runner;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 public static class MigrationManager
@@ -19,7 +21,11 @@ public static class MigrationManager
 
             try
             {
-                databaseService.CreateDatabase(bbxBEConsts.DB);
+                IDbConnection connection = new SqlConnection(databaseService.Context.ConnectionString);
+                var dbName = connection.Database;
+
+
+                databaseService.CreateDatabase(dbName);
                 migrationService.ListMigrations();
                 migrationService.MigrateUp();
             }

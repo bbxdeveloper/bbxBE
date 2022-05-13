@@ -9,11 +9,11 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
 {
     public class Database
     {
-        private readonly DapperContext _context;
+        public  DapperContext Context { get; set; }
 
         public Database(DapperContext context)
         {
-            _context = context;
+            Context = context;
         }
 
         public void CreateDatabase(string dbName)
@@ -22,7 +22,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
             var parameters = new DynamicParameters();
             parameters.Add("name", dbName);
 
-            using (var connection = _context.CreateMasterDbConnection())
+            using (var connection = Context.CreateConnection())
             {
                 var records = connection.Query(query, parameters);
                 if (!records.Any())

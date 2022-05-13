@@ -9,8 +9,6 @@ namespace bbxBE.Application.Consts
         public static int CodeLen = 12;
         public static int DescriptionLen = 12;
 
-        public static string DB = "bbx";
-
         public static string CNTRY_HU = "HU";
         public static string CONF_PwdSalt = "PwdSalt";
 
