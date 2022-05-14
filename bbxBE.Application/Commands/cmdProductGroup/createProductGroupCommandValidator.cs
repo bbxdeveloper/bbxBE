@@ -24,8 +24,8 @@ namespace bbxBE.Application.Commands.cmdProductGroup
         {
             this._ProductGroupRepository = ProductGroupRepository;
             RuleFor(p => p.ProductGroupCode)
-                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                     .Must(
                             (model, Name) =>
                          {
@@ -35,8 +35,8 @@ namespace bbxBE.Application.Commands.cmdProductGroup
                  .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.ProductGroupDescription)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
         }

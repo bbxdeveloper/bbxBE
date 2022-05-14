@@ -27,32 +27,32 @@ namespace bbxBE.Application.Commands.cmdInvoice
             this._InvoiceRepository = InvoiceRepository;
 
             RuleFor(r => r.WarehouseCode)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(r => r.InvoiceIssueDate)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(r => r.InvoiceDeliveryDate)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(r => r.PaymentDate)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(r => new { r.InvoiceIssueDate, r.InvoiceDeliveryDate }).Must(m => m.InvoiceIssueDate >= m.InvoiceDeliveryDate)
                 .WithMessage(bbxBEConsts.INV_DATE1);
             RuleFor(r => new { r.InvoiceIssueDate, r.PaymentDate }).Must(m => m.InvoiceIssueDate <= m.PaymentDate)
-                .WithMessage(bbxBEConsts.INV_DATE2);
+                .WithMessage(bbxBEConsts.ERR_INV_DATE2);
 
             RuleFor(r => r.CustomerID)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(r => r.PaymentMethod)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .Must(CheckPaymentMethod).WithMessage(bbxBEConsts.FV_INVPAYMENTMETHOD);
 
 
             RuleFor(r => r.CurrencyCode)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .Must(CheckCurrency).WithMessage(bbxBEConsts.FV_INVCURRENCY);
 
 
@@ -61,7 +61,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
 
 
             RuleFor(p => new { p.InvoiceLines }).Must(m => m.InvoiceLines.Count > 0)
-                .WithMessage(bbxBEConsts.INV_LINES);
+                .WithMessage(bbxBEConsts.ERR_INV_LINES);
 
            //invoiceline-ekre is validálást!!
            /*

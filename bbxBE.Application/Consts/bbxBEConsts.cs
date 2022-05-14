@@ -15,13 +15,13 @@ namespace bbxBE.Application.Consts
         public static string CONF_CacheSettings = "CacheSettings";
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
-        public static string FV_REQUIRED = "{PropertyName}|{PropertyName} mező kitöltése kötelező.";
+        public static string ERR_REQUIRED = "{PropertyName}|{PropertyName} mező kitöltése kötelező.";
         public static string FV_LEN1 = "{PropertyName}|{PropertyName} mező karakterek száma:1.";
         public static string FV_LEN2 = "{PropertyName}|{PropertyName} mező karakterek száma:2.";
         public static string FV_LEN8 = "{PropertyName}|{PropertyName} mező karakterek száma:8.";
 
         public static string FV_MAXLEN = "{PropertyName}|{PropertyName} mező mérete nem lehet több, mint {MaxLength}.";
-        public static string FV_RANGE = "{PropertyName}|{PropertyName} mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
+        public static string ERR_RANGE = "{PropertyName}|{PropertyName} mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
 
 
         public static string FV_EXISTS = "{PropertyName}|{PropertyName} már létezik.";
@@ -58,12 +58,15 @@ namespace bbxBE.Application.Consts
         public static string ERR_NOCACHEQUERY = "Nincs lekérdezés a gyorstótárhoz!";
         public static string ERR_LOCKEDCACHE = "Gyorsítótár feltöltés alatt ! A műveletet később végrehajtható.";
 
-        public static string INV_DATE1 = "{PropertyName}| A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
-        public static string INV_DATE2 = "{PropertyName}| A számla dátuma nem lehet későbbi, mint a fizetési határidő";
-        public static string INV_LINES = "{PropertyName}| A számlán nincs tételsor";
-        public static string INV_VATSUMS = "{PropertyName}| A számlán nincs áfánkénti összesítő";
+        public static string ERR_INV_DATE1 = "{PropertyName}| A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
+        public static string ERR_INV_DATE2 = "{PropertyName}| A számla dátuma nem lehet későbbi, mint a fizetési határidő";
+        public static string ERR_INV_LINES = "{PropertyName}| A számlán nincs tételsor";
+        public static string ERR_INV_VATSUMS = "{PropertyName}| A számlán nincs áfánkénti összesítő";
 
-        public static string CST_OWNEXISTS = "{PropertyName}|{PropertyName} Saját adat már létezik.";
+        public static string ERR_CST_OWNEXISTS = "{PropertyName}|{PropertyName} Saját adat már létezik.";
+
+
+        public static string ERR_OFFER_DATE1 = "{PropertyName}| A lejárati dátum nem lehet korábbi, mint a ajánlat kibocsátásának dátuma!";
 
         public static string NAV_INVDIRECTION = "{PropertyName}|{PropertyName} érvénytelen biyonylatirány:{PropertyValue} ";
 

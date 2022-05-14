@@ -24,8 +24,8 @@ namespace bbxBE.Application.Commands.cmdCustomer
         {
             _customerRepository = customerRepository;
             RuleFor(p => p.ID)
-                .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
         }
     }

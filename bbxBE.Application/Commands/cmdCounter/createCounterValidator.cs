@@ -24,8 +24,8 @@ namespace bbxBE.Application.Commands.cmdCounter
         {
             this._CounterRepository = CounterRepository;
             RuleFor(p => p.CounterCode)
-                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                     .MustAsync(
                          async (model, Name, cancellation) =>
                          {
@@ -35,19 +35,19 @@ namespace bbxBE.Application.Commands.cmdCounter
                  .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.CounterDescription)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.Prefix)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.NumbepartLength)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .InclusiveBetween(1, 10).WithMessage(bbxBEConsts.FV_RANGE);
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .InclusiveBetween(1, 10).WithMessage(bbxBEConsts.ERR_RANGE);
         }
         /*
                     .WithColumn("NumbepartLength").AsInt64().NotNullable()

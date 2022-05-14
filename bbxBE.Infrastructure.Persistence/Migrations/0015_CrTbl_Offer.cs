@@ -36,7 +36,9 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("OfferVaidityDate").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("CustomerID").AsInt64().NotNullable().ForeignKey()
                     .WithColumn("Copies").AsInt16().Nullable()
-                    .WithColumn("Notice").AsString(int.MaxValue).NotNullable();
+                    .WithColumn("Notice").AsString(int.MaxValue).NotNullable()
+                    .WithColumn("CurrencyCode").AsString().NotNullable().WithDefaultValue(enCurrencyCodes.HUF.ToString())
+                    .WithColumn("ExchangeRate").AsDecimal().NotNullable().WithDefaultValue(1);
 
 
             Create.Index("INX_OfferNumber")

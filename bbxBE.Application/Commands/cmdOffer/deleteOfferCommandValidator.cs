@@ -12,16 +12,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdProductGroup
+namespace bbxBE.Application.Commands.cmdOffer
 {
 
-    public class DeleteProductGroupCommandValidator : AbstractValidator<DeleteProductGroupCommand>
+    public class DeleteOfferCommandValidator : AbstractValidator<DeleteOfferCommand>
     {
-        private readonly IProductGroupRepositoryAsync _ProductGroupRepository;
+        private readonly IOfferRepositoryAsync _OfferRepository;
 
-        public DeleteProductGroupCommandValidator(IProductGroupRepositoryAsync ProductGroupRepository)
+        public DeleteOfferCommandValidator(IOfferRepositoryAsync OfferRepository)
         {
-            _ProductGroupRepository = ProductGroupRepository;
+            _OfferRepository = OfferRepository;
             RuleFor(p => p.ID)
                 .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);

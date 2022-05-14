@@ -27,8 +27,8 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
 
             RuleFor(p => p.CustomerName)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.TaxpayerNumber)
@@ -44,7 +44,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
 
             RuleFor(p => p.IsOwnData)
-                       .Must(IsUniqueIsOwnData).WithMessage(bbxBEConsts.CST_OWNEXISTS);
+                       .Must(IsUniqueIsOwnData).WithMessage(bbxBEConsts.ERR_CST_OWNEXISTS);
 
         }
 
