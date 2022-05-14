@@ -36,36 +36,6 @@ namespace bbxBE.Application.Commands.cmdOffer
 
             RuleFor(r => new { r.OfferIssueDate, r.OfferVaidityDate}).Must(m => m.OfferIssueDate <= m.OfferVaidityDate)
                 .WithMessage(bbxBEConsts.ERR_OFFER_DATE1);
-
-            RuleFor(p => p.OfferCode)
-                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                    .Must(
-                         (model, Name) =>
-                         {
-                             return  IsUniqueOfferCodeAsync(Name);
-                         }
-                     ).WithMessage(bbxBEConsts.FV_EXISTS)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
-
-            RuleFor(p => p.OfferDescription)
-                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
-
-        }
-
-        private bool IsUniqueOfferCodeAsync(string OfferCode)
-        {
-            if (OfferCode.Length != 0)
-            {
-                return _OfferRepository.IsUniqueOfferCode(OfferCode);
-            }
-            else
-            {
-                return true;
-            }
-
         }
 
     }

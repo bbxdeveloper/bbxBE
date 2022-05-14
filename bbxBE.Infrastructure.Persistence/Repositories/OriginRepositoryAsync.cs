@@ -135,8 +135,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (origin != null)
                 {
 
-
-
                     _Origins.Remove(origin);
 
                     await _dbContext.SaveChangesAsync();

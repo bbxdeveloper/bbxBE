@@ -26,13 +26,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<Offer> _Offers;
         private readonly DbSet<OfferLine> _OfferLines;
-        private readonly DbSet<SummaryByVatRate> _summaryByVatRates;
-        private readonly DbSet<AdditionalOfferData> _additionalOfferData;
-        private readonly DbSet<AdditionalOfferLineData> _additionalOfferLineData;
 
         private readonly DbSet<Customer> _customers;
         private readonly DbSet<VatRate> _vatRates;
-        private readonly DbSet<Warehouse> _warehouses;
 
         private IDataShapeHelper<Offer> _dataShaperOffer;
         private IDataShapeHelper<GetOfferViewModel> _dataShaperGetOfferViewModel;
@@ -49,12 +45,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     
             _Offers = dbContext.Set<Offer>();
             _OfferLines = dbContext.Set<OfferLine>();
-            _summaryByVatRates = dbContext.Set<SummaryByVatRate>();
-            _additionalOfferData = dbContext.Set<AdditionalOfferData>();
-            _additionalOfferLineData = dbContext.Set<AdditionalOfferLineData>();
             _customers = dbContext.Set<Customer>();
             _vatRates = dbContext.Set<VatRate>();
-            _warehouses = dbContext.Set<Warehouse>();
 
             _dataShaperOffer = dataShaperOffer;
             _dataShaperGetOfferViewModel = dataShaperGetOfferViewModel;
@@ -87,10 +79,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return p_Offer;
         }
 
-        public async Task<Offer> UpdateOfferAsync(Offer p_Offer, List<OfferLine> p_OfferLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalOfferData> p_additionalOfferData, List<AdditionalOfferLineData> p_additionalOfferLineData)
+        public async Task<Offer> UpdateOfferAsync(Offer p_Offer, List<OfferLine> p_OfferLines)
         {
             throw new NotImplementedException("UpdateOfferAsync");
         }
+
+        public async Task<Offer> DeleteOfferAsync(long ID)
+        {
+
+            Offer offer = null;
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                offer = _Offers.Where(x => x.ID == ID).FirstOrDefault();
+
+                if (offer != null)
+                {
+
+                    throw new NotImplementedException("DeleteOfferAsync");
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_ORIGINNOTFOUND, ID));
+                }
+            }
+            return offer;
+        }
+
 
         public async Task<Entity> GetOfferAsync(GetOffer requestParameter)
         {
@@ -99,15 +116,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var ID = requestParameter.ID;
 
             var item = _Offers.AsNoTracking()
-              .Include(w => w.Warehouse).AsNoTracking()
-              .Include(s => s.Supplier).AsNoTracking()
               .Include(c => c.Customer).AsNoTracking()
-              .Include(a => a.AdditionalOfferData).AsNoTracking()
               .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
-              .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
               .Where(x => x.ID == ID).FirstOrDefault();
-
-            //            var fields = requestParameter.Fields;
 
             var itemModel = _mapper.Map<Offer, GetOfferViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
@@ -119,8 +130,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOfferAsync(QueryOffer requestParameter)
         {
-
-
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
@@ -134,12 +143,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //var query = _Offers//.AsNoTracking().AsExpandable()
             //        .Include(i => i.Warehouse).AsQueryable();
             var query = _Offers.AsNoTracking()
-             .Include(w => w.Warehouse).AsNoTracking()
-             .Include(s => s.Supplier).AsNoTracking()
              .Include(c => c.Customer).AsNoTracking()
-             .Include(a => a.AdditionalOfferData).AsNoTracking()
-             .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
-             .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking();
+             .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking();
 
 
             // Count records total
@@ -196,9 +201,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBy(ref IQueryable<Offer> p_item, bool Incoming,  string WarehouseCode, string OfferNumber, 
+        private void FilterBy(ref IQueryable<Offer> p_item,string OfferNumber, 
                                 DateTime? OfferIssueDateFrom, DateTime? OfferIssueDateTo, 
-                                DateTime? OfferDeliveryDateFrom, DateTime? OfferDeliveryDateTo)
+                                DateTime? OfferVaidityDateFrom, DateTime? OfferVaidityDateTo)
         {
             if (!p_item.Any())
                 return;
@@ -211,13 +216,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             var predicate = PredicateBuilder.New<Offer>();
 
-           predicate = predicate.And(p => p.Incoming == Incoming
-                           && (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
-                           && (OfferNumber == null || p.OfferNumber.Contains(OfferNumber))
+           predicate = predicate.And(p => (OfferNumber == null || p.OfferNumber.Contains(OfferNumber))
                            && (!OfferIssueDateFrom.HasValue || p.OfferIssueDate >= OfferIssueDateFrom.Value)
                            && (!OfferIssueDateTo.HasValue || p.OfferIssueDate <= OfferIssueDateFrom.Value)
-                           && (!OfferDeliveryDateFrom.HasValue || p.OfferDeliveryDate >= OfferDeliveryDateFrom.Value)
-                           && (!OfferDeliveryDateTo.HasValue || p.OfferDeliveryDate <= OfferDeliveryDateTo.Value)
+                           && (!OfferVaidityDateFrom.HasValue || p.OfferVaidityDate >= OfferVaidityDateFrom.Value)
+                           && (!OfferVaidityDateTo.HasValue || p.OfferVaidityDate <= OfferVaidityDateTo.Value)
                            );
 
             p_item = p_item.Where(predicate);

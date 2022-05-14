@@ -100,10 +100,10 @@ namespace bxBE.Application.Commands.cmdOffer
 
         public async Task<Response<Offer>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
         {
-            var cust = _mapper.Map<Offer>(request);
+            var offer = _mapper.Map<Offer>(request);
 
-            await _OfferRepository.AddOfferAsync(cust);
-            return new Response<Offer>(cust);
+            await _OfferRepository.AddOfferAsync(offer);
+            return new Response<Offer>(offer);
         }
 
 

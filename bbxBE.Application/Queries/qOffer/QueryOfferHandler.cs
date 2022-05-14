@@ -20,33 +20,25 @@ namespace bbxBE.Application.Queries.qOffer
     public class QueryOffer : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
 
-        [ColumnLabel("B/K")]
-        [Description("Bejővő/Kimenő")]
-        public bool Incoming { get; set; }
-
-        [ColumnLabel("Raktár")]
-        [Description("Raktár")]
-        public string WarehouseCode { get; set; }
-
-        [ColumnLabel("Számlaszám")]
-        [Description("Számla sorszáma")]
+        [ColumnLabel("Ajánlat száma")]
+        [Description("Ajánlat száma")]
         public string OfferNumber { get; set; }
 
         [ColumnLabel("Kelt.tól")]
         [Description("Kiállítás dátumától")]
-        public DateTime? OfferIssueDateFrom { get; set; }
+        public DateTime OfferIssueDateFrom { get; set; }
 
         [ColumnLabel("Kelt.ig")]
         [Description("Kiállítás dátumáig")]
-        public DateTime? OfferIssueDateTo { get; set; }
+        public DateTime OfferIssueDateTo { get; set; }
 
-        [ColumnLabel("Teljesítés tól")]
-        [Description("Teljesítés dátumától")]
-        public DateTime? OfferDeliveryDateFrom { get; set; }
+        [ColumnLabel("Érvényesség tól")]
+        [Description("Érvényesség dátumától")]
+        public DateTime OfferVaidityDateForm { get; set; }
 
-        [ColumnLabel("Teljesítés ig")]
-        [Description("Teljesítés dátumig")]
-        public DateTime? OfferDeliveryDateTo { get; set; }
+        [ColumnLabel("Érvényességig")]
+        [Description("Érvényesség dátumáig")]
+        public DateTime OfferVaidityDateTo { get; set; }
     }
 
     public class QueryOfferHandler : IRequestHandler<QueryOffer, PagedResponse<IEnumerable<Entity>>>

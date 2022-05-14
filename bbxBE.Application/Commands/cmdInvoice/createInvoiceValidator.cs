@@ -39,7 +39,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(r => new { r.InvoiceIssueDate, r.InvoiceDeliveryDate }).Must(m => m.InvoiceIssueDate >= m.InvoiceDeliveryDate)
-                .WithMessage(bbxBEConsts.INV_DATE1);
+                .WithMessage(bbxBEConsts.ERR_INV_DATE1);
             RuleFor(r => new { r.InvoiceIssueDate, r.PaymentDate }).Must(m => m.InvoiceIssueDate <= m.PaymentDate)
                 .WithMessage(bbxBEConsts.ERR_INV_DATE2);
 
