@@ -151,9 +151,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterBy(ref query, requestParameter.Incoming, requestParameter.WarehouseCode, requestParameter.OfferNumber, 
+            FilterBy(ref query, requestParameter.OfferNumber, 
                     requestParameter.OfferIssueDateFrom, requestParameter.OfferIssueDateTo,
-                    requestParameter.OfferDeliveryDateFrom, requestParameter.OfferDeliveryDateTo);
+                    requestParameter.OfferVaidityDateForm, requestParameter.OfferVaidityDateTo );
 
             // Count records after filter
             recordsFiltered = await query.CountAsync();

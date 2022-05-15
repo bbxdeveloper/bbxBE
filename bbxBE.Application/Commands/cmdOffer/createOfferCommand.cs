@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
-	public class CreateOfferCommand
+	public class CreateOfferCommand : IRequest<Response<Offer>>
 	{
 
 		[Description("Árajánlat-sor")]
