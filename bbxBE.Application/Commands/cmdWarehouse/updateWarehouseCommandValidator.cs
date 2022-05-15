@@ -19,12 +19,12 @@ namespace bbxBE.Application.Commands.cmdWarehouse
 
 
             RuleFor(p => p.ID)
-                .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(p => p.WarehouseCode)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                    .MustAsync(
                         async (model, Name, cancellation) =>
                         {
@@ -34,8 +34,8 @@ namespace bbxBE.Application.Commands.cmdWarehouse
                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.WarehouseDescription)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
         }
 

@@ -23,8 +23,8 @@ namespace bbxBE.Application.Commands.ValidatorRules
         public static IRuleBuilderOptions<string, string> NameValidator<T>(this IRuleBuilder<string, string> ruleBuilder)
         {
 
-           return ruleBuilder.NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                           .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+           return ruleBuilder.NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                           .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                            .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
             //                      .MustAsync(IsUniqueNameAsync).WithMessage(bbxBEConsts.FV_EXISTS);
         }

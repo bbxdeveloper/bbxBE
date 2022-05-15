@@ -21,12 +21,12 @@ namespace bbxBE.Application.Commands.cmdProduct
 
 
             RuleFor(p => p.ID)
-                .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(p => p.ProductCode)
-                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                     .Must(
                          (model, ProductCode) =>
                          {
@@ -36,8 +36,8 @@ namespace bbxBE.Application.Commands.cmdProduct
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.Description)
-                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.ProductGroupCode)
@@ -53,8 +53,8 @@ namespace bbxBE.Application.Commands.cmdProduct
                 .MustAsync(CheckVatRateCodeAsync).WithMessage(bbxBEConsts.FV_INVVATRATECODE);
 
             RuleFor(p => p.VTSZ)
-                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
         }
 

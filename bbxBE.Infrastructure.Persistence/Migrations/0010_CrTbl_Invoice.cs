@@ -112,9 +112,6 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                          .OnColumn("WarehouseID").Ascending()
                          .WithOptions().NonClustered();
 
-
-
-
             Create.Table("AdditionalInvoiceData")
                     .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
                     .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
@@ -122,7 +119,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
                     .WithColumn("InvoiceID").AsInt64().NotNullable().ForeignKey()
                     .WithColumn("DataName").AsString().NotNullable()
-                    .WithColumn("DataDescription").AsString().Nullable()
+                    .WithColumn("DataDescription").AsString(int.MaxValue).Nullable()
                     .WithColumn("DataValue").AsString().Nullable();
 
             Create.Table("SummaryByVatRate")
@@ -194,15 +191,19 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("ProductFeeRate").AsDecimal().Nullable()
                     .WithColumn("ProductFeeAmount").AsDecimal().Nullable();
 
+            Create.Index("INX_InvoiceLineProduct")
+                         .OnTable("InvoiceLine")
+                         .OnColumn("ProductID").Ascending()
+                         .WithOptions().NonClustered();
 
-               Create.Table("AdditionalInvoiceLineData")
+            Create.Table("AdditionalInvoiceLineData")
                     .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
                     .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
                     .WithColumn("InvoiceLineID").AsInt64().NotNullable().ForeignKey()
                     .WithColumn("DataName").AsString().NotNullable()
-                    .WithColumn("DataDescription").AsString().Nullable()
+                    .WithColumn("DataDescription").AsString(int.MaxValue).Nullable()
                     .WithColumn("DataValue").AsString().Nullable();
         }
     }

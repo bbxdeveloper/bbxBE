@@ -85,6 +85,20 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<SummaryByVatRate, GetInvoiceViewModel.SummaryByVatRate>()
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
+
+            CreateMap<Offer, GetOfferViewModel>()
+             .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => src.Customer.CustomerName))
+             .ForMember(dst => dst.CustomerBankAccountNumber, opt => opt.MapFrom(src => src.Customer.CustomerBankAccountNumber))
+             .ForMember(dst => dst.CustomerTaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.Customer.TaxpayerId, src.Customer.VatCode, src.Customer.CountyCode)))
+             .ForMember(dst => dst.CustomerCountryCode, opt => opt.MapFrom(src => src.Customer.CountyCode))
+             .ForMember(dst => dst.CustomerPostalCode, opt => opt.MapFrom(src => src.Customer.PostalCode))
+             .ForMember(dst => dst.CustomerCity, opt => opt.MapFrom(src => src.Customer.City))
+             .ForMember(dst => dst.CustomerAdditionalAddressDetail, opt => opt.MapFrom(src => src.Customer.AdditionalAddressDetail))
+             .ForMember(dst => dst.CustomerComment, opt => opt.MapFrom(src => src.Customer.Comment));
+
+            CreateMap<OfferLine, GetOfferViewModel.OfferLine>()
+             .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
+
         }
     }
 }

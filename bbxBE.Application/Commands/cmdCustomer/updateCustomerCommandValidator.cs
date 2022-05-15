@@ -19,12 +19,12 @@ namespace bbxBE.Application.Commands.cmdCustomer
             this._customerRepository = customerRepository;
 
             RuleFor(p => p.ID)
-               .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
-               .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+               .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(p => p.CustomerName)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
 
@@ -50,7 +50,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
                         {
                             return IsUniqueIsOwnData(model.IsOwnData, Convert.ToInt64(model.ID));
                         }
-                    ).WithMessage(bbxBEConsts.CST_OWNEXISTS);
+                    ).WithMessage(bbxBEConsts.ERR_CST_OWNEXISTS);
         }
 
         private bool IsUniqueTaxpayerId(string TaxpayerNumber, long ID)

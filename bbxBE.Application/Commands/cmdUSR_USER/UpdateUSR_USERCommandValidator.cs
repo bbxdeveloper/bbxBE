@@ -24,13 +24,13 @@ namespace bbxBE.Application.Commands.cmdUSR_USER
             this._usrRepository = usrRepository;
 
             RuleFor(p => p.ID)
-                .GreaterThan(0).WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED);
+                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
 
             RuleFor(p => p.Name)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN)
                 .MustAsync(
                     async (model,Name, cancellation) =>
@@ -40,14 +40,14 @@ namespace bbxBE.Application.Commands.cmdUSR_USER
                 ).WithMessage(bbxBEConsts.FV_EXISTS);
 
             RuleFor(p => p.Email)
-                .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN)
                 .MustAsync(IsValidEmailAsync).WithMessage(bbxBEConsts.FV_INVALIDEMAIL);
 
             RuleFor(p => p.LoginName)
-                 .NotEmpty().WithMessage(bbxBEConsts.FV_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.FV_REQUIRED)
+                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
 
             RuleFor(p => p.Comment)

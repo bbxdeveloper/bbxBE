@@ -47,6 +47,10 @@ namespace bbxBE.Application.Queries
             services.AddScoped<IDataShapeHelper<VatRate>, DataShapeHelper<VatRate>>();
             services.AddScoped<IDataShapeHelper<GetVatRateViewModel>, DataShapeHelper<GetVatRateViewModel>>();
 
+            services.AddScoped<IDataShapeHelper<Offer>, DataShapeHelper<Offer>>();
+            services.AddScoped<IDataShapeHelper<GetOfferViewModel>, DataShapeHelper<GetOfferViewModel>>();
+
+
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>
             {
                 services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);

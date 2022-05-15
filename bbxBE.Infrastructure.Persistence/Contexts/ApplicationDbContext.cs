@@ -39,6 +39,8 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<SummaryByVatRate> SummaryByVatRate { get; set; }
         public DbSet<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
         public DbSet<AdditionalInvoiceLineData> AdditionalInvoiceLineData { get; set; }
+        public DbSet<Offer> Offer { get; set; }
+        public DbSet<OfferLine> OfferLine { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
