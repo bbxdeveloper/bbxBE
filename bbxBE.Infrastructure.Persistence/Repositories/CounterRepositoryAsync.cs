@@ -110,8 +110,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             var ID = requestParameter.ID;
-            var item  = _Counters//.AsNoTracking().AsExpandable()
-                    .Include(i => i.Warehouse).SingleOrDefault(s=>s.ID == ID);
+            var item  = await _Counters//.AsNoTracking().AsExpandable()
+                    .Include(i => i.Warehouse).SingleOrDefaultAsync(s=>s.ID == ID);
 
             //            var item = await GetByIdAsync(ID);
 
@@ -133,8 +133,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var NextValue = "";
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var counter = _Counters.AsNoTracking()
-                    .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefault();
+                var counter = await _Counters.AsNoTracking()
+                    .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefaultAsync();
 
                 if (counter != null)
                 {
@@ -184,8 +184,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var result = false;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var counter = _Counters.AsNoTracking()
-                    .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefault();
+                var counter = await _Counters.AsNoTracking()
+                    .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefaultAsync();
 
                 if (counter != null)
                 {
@@ -224,8 +224,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 try
                 {
-                    var counter = _Counters.AsNoTracking()
-                        .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefault();
+                    var counter = await _Counters.AsNoTracking()
+                        .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefaultAsync();
 
                     if (counter != null)
                     {

@@ -90,7 +90,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             Offer offer = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                offer = _Offers.Where(x => x.ID == ID).FirstOrDefault();
+                offer = await _Offers.Where(x => x.ID == ID).FirstOrDefaultAsync();
 
                 if (offer != null)
                 {
@@ -115,10 +115,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var ID = requestParameter.ID;
 
-            var item = _Offers.AsNoTracking()
+            var item = await _Offers.AsNoTracking()
               .Include(c => c.Customer).AsNoTracking()
               .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
-              .Where(x => x.ID == ID).FirstOrDefault();
+              .Where(x => x.ID == ID).FirstOrDefaultAsync();
 
             var itemModel = _mapper.Map<Offer, GetOfferViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();

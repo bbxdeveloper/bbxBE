@@ -17,7 +17,10 @@ namespace bbxBE.Application.Queries.qInvoice
     public class GetInvoice:  IRequest<Entity>
     {
         public long ID { get; set; }
-  //      public string Fields { get; set; }
+
+        //Teljes reációs szerkezet kell? I/N
+        public bool FullData { get; set; } = true;
+        //      public string Fields { get; set; }
     }
 
     public class GetInvoiceHandler : IRequestHandler<GetInvoice, Entity>

@@ -164,7 +164,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 if (_productGroupCacheService.IsCacheEmpty())
                 {
-                    p_product.ProductGroupID = _ProductGroups.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                    p_product.ProductGroupID =  _ProductGroups.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
                 }
                 else
                 {
@@ -191,7 +191,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 if (_vatRateCacheService.IsCacheEmpty())
                 {
-                    p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                    p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID; 
                 }
                 else
                 {
@@ -296,7 +296,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     if (_productGroupCacheService.IsCacheEmpty())
                     {
 
-                        pg = _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
+                        pg =  _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
                     }
                     else
                     {
@@ -472,7 +472,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             Product prod = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                prod = _Products.Include(p => p.ProductCodes).Where(x => x.ID == ID).FirstOrDefault();
+                prod = await _Products.Include(p => p.ProductCodes).Where(x => x.ID == ID).FirstOrDefaultAsync();
 
                 if (prod != null)
                 {

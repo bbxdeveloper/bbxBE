@@ -47,6 +47,7 @@ namespace bbxBE.WebApi
             // API explorer
             services.AddMvcCore()
                 .AddApiExplorer();
+       
             // API explorer version
             services.AddVersionedApiExplorerExtension();
 
@@ -64,6 +65,8 @@ namespace bbxBE.WebApi
                 options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
+
+            services.AddHttpContextAccessor();
 
             services.AddHangfire(x => x.UseSqlServerStorage(_config.GetConnectionString("bbxdbconnection")));
             services.AddHangfireServer();

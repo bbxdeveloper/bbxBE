@@ -104,15 +104,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var ID = requestParameter.ID;
 
-            var item = _invoices.AsNoTracking()
-              .Include(w => w.Warehouse).AsNoTracking()
-              .Include(s => s.Supplier).AsNoTracking()
-              .Include(c => c.Customer).AsNoTracking()
-              .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-              .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
-              .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
-              .Where(x => x.ID == ID).FirstOrDefault();
+            Invoice item;
 
+            if (requestParameter.FullData)
+            {
+                item = await _invoices.AsNoTracking()
+                  .Include(w => w.Warehouse).AsNoTracking()
+                  .Include(s => s.Supplier).AsNoTracking()
+                  .Include(c => c.Customer).AsNoTracking()
+                  .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
+                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                  .Where(x => x.ID == ID).FirstOrDefaultAsync();
+            }
+            else
+            {
+                item = await _invoices.AsNoTracking()
+                  .Where(x => x.ID == ID).FirstOrDefaultAsync();
+            }
             //            var fields = requestParameter.Fields;
 
             var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);
@@ -123,6 +132,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
+        public async Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true)
+        {
+
+
+            Invoice item;
+
+            if (FullData)
+            {
+                item = await _invoices.AsNoTracking()
+                  .Include(w => w.Warehouse).AsNoTracking()
+                  .Include(s => s.Supplier).AsNoTracking()
+                  .Include(c => c.Customer).AsNoTracking()
+                  .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
+                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                  .Where(x => x.ID == ID).FirstOrDefaultAsync();
+            }
+            else
+            {
+                item = await _invoices.AsNoTracking()
+                  .Where(x => x.ID == ID).FirstOrDefaultAsync();
+            }
+            return  item;
+        }
+
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
         {
 
