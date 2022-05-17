@@ -779,7 +779,7 @@
     </StyleRule>
   </StyleSheet>
   <ReportParameters>
-    <ReportParameter Name="invoiceID" Type="Integer" Text="invoiceID" Visible="True">
+    <ReportParameter Name="InvoiceID" Type="Integer" Text="InvoiceID" Visible="True">
       <Value>
         <String>1</String>
       </Value>

@@ -55,7 +55,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
             System.Xml.XmlReaderSettings settings = new System.Xml.XmlReaderSettings();
             settings.IgnoreWhitespace = true;
             using (System.Xml.XmlReader xmlReader = XmlReader.Create(new StringReader(reportTRDX), settings))
-            //using (System.Xml.XmlReader xmlReader = System.Xml.XmlReader.Create(@"Reports/Invoice.trdx", settings))
+            //using (System.Xml.XmlReader xmlReader =   System.Xml.XmlReader.Create(@"Reports/Invoice.trdx", settings))
             {
                 ReportXmlSerializer xmlSerializer = new ReportXmlSerializer();
                 rep = (Telerik.Reporting.Report)xmlSerializer.Deserialize(xmlReader);
@@ -64,7 +64,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 reportSource.ReportDocument = rep;
             }
 
-            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("ID", request.ID));
+            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvoiceID", request.ID));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
 
             ReportProcessor reportProcessor = new ReportProcessor();
