@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Reports\Invoice.trdx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 

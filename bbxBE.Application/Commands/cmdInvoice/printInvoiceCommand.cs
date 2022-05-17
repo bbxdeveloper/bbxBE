@@ -26,6 +26,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
     public class PrintInvoiceCommand : IRequest<FileStreamResult>
     {
         public long ID { get; set; }
+        public string InvoiceNumber { get; set; }
 
         public string baseURL;
     }
@@ -54,6 +55,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
             System.Xml.XmlReaderSettings settings = new System.Xml.XmlReaderSettings();
             settings.IgnoreWhitespace = true;
             using (System.Xml.XmlReader xmlReader = XmlReader.Create(new StringReader(reportTRDX), settings))
+            //using (System.Xml.XmlReader xmlReader = System.Xml.XmlReader.Create(@"Reports/Invoice.trdx", settings))
             {
                 ReportXmlSerializer xmlSerializer = new ReportXmlSerializer();
                 rep = (Telerik.Reporting.Report)xmlSerializer.Deserialize(xmlReader);
@@ -76,7 +78,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
 
 
             Stream stream = new MemoryStream(result.DocumentBytes);
-            string fileName = "Invoice";
+            string fileName = "Invoice.pdf";
 
              
             var fsr = new FileStreamResult(stream, $"application/pdf") { FileDownloadName = fileName };

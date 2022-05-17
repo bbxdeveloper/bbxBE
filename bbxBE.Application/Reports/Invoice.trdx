@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report DataSourceName="webServiceDataSource1" Width="18cm" Name="invoice" Zoom="2" SnapGridSize="0.1cm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;1&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:,&quot;@BaseURL&quot;:,&quot;JWT&quot;:,&quot;FullData&quot;:}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Query" Name="ID">
           <Value>
@@ -16,6 +16,11 @@
         <WebServiceParameter WebServiceParameterType="Inline" Name="JWT">
           <Value>
             <String>= Parameters.JWT.Value</String>
+          </Value>
+        </WebServiceParameter>
+        <WebServiceParameter WebServiceParameterType="Query" Name="FullData">
+          <Value>
+            <String>= Parameters.FullData.Value</String>
           </Value>
         </WebServiceParameter>
       </Parameters>
@@ -787,6 +792,11 @@
     <ReportParameter Name="JWT" AllowNull="True">
       <Value>
         <String></String>
+      </Value>
+    </ReportParameter>
+    <ReportParameter Name="FullData" Type="Boolean" Text="FullData">
+      <Value>
+        <String>true</String>
       </Value>
     </ReportParameter>
   </ReportParameters>

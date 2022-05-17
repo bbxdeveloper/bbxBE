@@ -1,10 +1,12 @@
 using bbxBE.Application;
 using bbxBE.Application.Commands;
+using bbxBE.Application.Exceptions;
 using bbxBE.Application.Queries;
 using bbxBE.Infrastructure.Persistence;
 using bbxBE.Infrastructure.Shared;
 using bbxBE.Queries;
 using bbxBE.WebApi.Extensions;
+using bbxBE.WebApi.Middlewares;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -91,6 +93,16 @@ namespace bbxBE.WebApi
             loggerFactory.AddSerilog();
             app.UseRouting();
 
+
+            var _logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(_config)
+                .WriteTo.Console()
+                .CreateLogger();
+        //    var loggerMiddleWare = loggerFactory.AddSerilog(_logger);
+
+
+            //        _logger.Error(new ResourceNotFoundException("Teszt"), "teszt msg");
+
             //Enable CORS
             app.UseCors(x => x
             .AllowAnyOrigin()
@@ -100,6 +112,7 @@ namespace bbxBE.WebApi
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSwaggerExtension();
+            app.UseErrorLoggingMiddleware();
             app.UseErrorHandlingMiddleware();
             app.UseHealthChecks("/health");
 

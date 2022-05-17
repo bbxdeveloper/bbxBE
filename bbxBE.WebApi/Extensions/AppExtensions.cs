@@ -1,5 +1,6 @@
 ﻿using bbxBE.WebApi.Middlewares;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
 
 namespace bbxBE.WebApi.Extensions
 {
@@ -18,5 +19,12 @@ namespace bbxBE.WebApi.Extensions
         {
             app.UseMiddleware<ErrorHandlerMiddleware>();
         }
+
+        //https://blog.elmah.io/error-logging-middleware-in-aspnetcore/
+        public static IApplicationBuilder UseErrorLoggingMiddleware(this IApplicationBuilder app)
+        {
+            return app.UseMiddleware<ErrorLoggingMiddleware>();
+        }
+
     }
 }
