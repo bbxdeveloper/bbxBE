@@ -65,7 +65,7 @@ namespace bbxBE.Domain.Entities
 		[Description("Típus")]
 		public string InvoiceCategory
 		{
-			get { return Enum.GetName(typeof(InvoiceCategoryType), invoiceType); }
+			get { return Enum.GetName(typeof(InvoiceCategoryType), invoiceCategory); }
 			set
 			{
 				if (value != null)
@@ -91,7 +91,7 @@ namespace bbxBE.Domain.Entities
 		[Description("Fizetési mód")]
 		public string PaymentMethod
 		{
-			get { return Enum.GetName(typeof(PaymentMethodType), invoiceType); }
+			get { return Enum.GetName(typeof(PaymentMethodType), paymentMethod); }
 			set
 			{
 				if (value != null)
@@ -107,7 +107,7 @@ namespace bbxBE.Domain.Entities
 		private enCurrencyCodes currencyCode;
 		public string CurrencyCode
 		{
-			get { return Enum.GetName(typeof(enCurrencyCodes), invoiceType); }
+			get { return Enum.GetName(typeof(enCurrencyCodes), currencyCode); }
 			set
 			{
 				if (value != null)
@@ -132,7 +132,7 @@ namespace bbxBE.Domain.Entities
 		[Description("A számla vagy módosító okirat megjelenési formája")]
 		public string InvoiceAppearance
 		{
-			get { return Enum.GetName(typeof(InvoiceAppearanceType), invoiceType); }
+			get { return Enum.GetName(typeof(InvoiceAppearanceType), invoiceAppearance); }
 			set
 			{
 				if (value != null)

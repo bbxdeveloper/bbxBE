@@ -92,6 +92,8 @@ namespace bbxBE.Application.Consts
 
         public static string FIELD_PRODUCTCODE = "PRODUCTCODE";
         public static string DEF_WAREHOUSE = "001";
+        public static long DEF_WAREHOUSE_ID = 1;
+        public static string DEF_OFFERCOUNTER = "AJ";
 
         public static string DEF_NOTICE = "Notice";
         public static string DEF_NOTICEDESC = "Megjegyzés"; 

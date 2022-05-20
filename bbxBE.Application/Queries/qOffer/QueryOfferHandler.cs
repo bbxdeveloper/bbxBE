@@ -20,25 +20,29 @@ namespace bbxBE.Application.Queries.qOffer
     public class QueryOffer : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
 
+        [ColumnLabel("Ügyfél ID")]
+        [Description("Ügyfél ID")]
+        public long CustomerID { get; set; }
+
         [ColumnLabel("Ajánlat száma")]
         [Description("Ajánlat száma")]
         public string OfferNumber { get; set; }
 
         [ColumnLabel("Kelt.tól")]
         [Description("Kiállítás dátumától")]
-        public DateTime OfferIssueDateFrom { get; set; }
+        public DateTime? OfferIssueDateFrom { get; set; }
 
         [ColumnLabel("Kelt.ig")]
         [Description("Kiállítás dátumáig")]
-        public DateTime OfferIssueDateTo { get; set; }
+        public DateTime? OfferIssueDateTo { get; set; }
 
         [ColumnLabel("Érvényesség tól")]
         [Description("Érvényesség dátumától")]
-        public DateTime OfferVaidityDateForm { get; set; }
+        public DateTime? OfferVaidityDateForm { get; set; }
 
         [ColumnLabel("Érvényességig")]
         [Description("Érvényesség dátumáig")]
-        public DateTime OfferVaidityDateTo { get; set; }
+        public DateTime? OfferVaidityDateTo { get; set; }
     }
 
     public class QueryOfferHandler : IRequestHandler<QueryOffer, PagedResponse<IEnumerable<Entity>>>

@@ -71,14 +71,6 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Ajánlat száma")]
 		public string OfferNumber { get; set; }
 
-		[ColumnLabel("Kelt")]
-		[Description("Kiállítás dátuma")]
-		public DateTime OfferIssueDate { get; set; }
-
-		[ColumnLabel("Érvényesség")]
-		[Description("Érvényesség dátuma")]
-		public DateTime OfferVaidityDate { get; set; }
-
 		#region Customer
 		[ColumnLabel("Ügyfél ID")]
 		[Description("Ügyfél ID")]
@@ -121,6 +113,15 @@ namespace bbxBE.Application.Queries.ViewModels
 
 		#endregion
 
+		[ColumnLabel("Kelt")]
+		[Description("Kiállítás dátuma")]
+		public DateTime OfferIssueDate { get; set; }
+
+		[ColumnLabel("Érvényesség")]
+		[Description("Érvényesség dátuma")]
+		public DateTime OfferVaidityDate { get; set; }
+
+
 		[ColumnLabel("Példány")]
 		[Description("Nyomtatott példány száma")]
 		public short Copies { get; set; }
@@ -129,6 +130,9 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }
 
+		[ColumnLabel("Törölt")]
+		[Description("Törölt")]
+		public bool Deleted { get; set; }
 
 
 

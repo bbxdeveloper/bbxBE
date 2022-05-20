@@ -21,6 +21,26 @@ using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
+
+    /*
+      {
+"customerID": 5,
+  "offerIssueDate": "2022-05-20",
+  "offerVaidityDate": "2022-05-20",
+  "notice": "elsï ajánlat",
+  "offerLines": [
+    {
+     "lineNumber": 1,
+      "productCode": "VEG-2973",
+      "lineDescription": "Boyler 600W f√tïbetét",
+     "vatRateCode": "27%",
+       "unitPrice": 10,
+      "unitVat": 2.7,
+      "unitGross": 12.7
+    }
+  ]
+}
+     */
     public class OfferRepositoryAsync : GenericRepositoryAsync<Offer>, IOfferRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
@@ -151,7 +171,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterBy(ref query, requestParameter.OfferNumber, 
+            FilterBy(ref query,requestParameter.CustomerID, requestParameter.OfferNumber, 
                     requestParameter.OfferIssueDateFrom, requestParameter.OfferIssueDateTo,
                     requestParameter.OfferVaidityDateForm, requestParameter.OfferVaidityDateTo );
 
@@ -201,11 +221,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBy(ref IQueryable<Offer> p_item,string OfferNumber, 
+        private void FilterBy(ref IQueryable<Offer> p_items, long CustomerID, string OfferNumber, 
                                 DateTime? OfferIssueDateFrom, DateTime? OfferIssueDateTo, 
                                 DateTime? OfferVaidityDateFrom, DateTime? OfferVaidityDateTo)
         {
-            if (!p_item.Any())
+            if (!p_items.Any())
                 return;
 
             /*
@@ -216,14 +236,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             var predicate = PredicateBuilder.New<Offer>();
 
-           predicate = predicate.And(p => (OfferNumber == null || p.OfferNumber.Contains(OfferNumber))
+           predicate = predicate.And(p => (CustomerID == 0 || CustomerID == p.CustomerID)
+                           && (string.IsNullOrWhiteSpace(OfferNumber) || p.OfferNumber.ToUpper().Contains(OfferNumber.ToUpper()))
                            && (!OfferIssueDateFrom.HasValue || p.OfferIssueDate >= OfferIssueDateFrom.Value)
-                           && (!OfferIssueDateTo.HasValue || p.OfferIssueDate <= OfferIssueDateFrom.Value)
+                           && (!OfferIssueDateTo.HasValue || p.OfferIssueDate <= OfferIssueDateTo.Value)
                            && (!OfferVaidityDateFrom.HasValue || p.OfferVaidityDate >= OfferVaidityDateFrom.Value)
                            && (!OfferVaidityDateTo.HasValue || p.OfferVaidityDate <= OfferVaidityDateTo.Value)
                            );
 
-            p_item = p_item.Where(predicate);
+            p_items = p_items.Where(predicate);
         }
 
         public Task<bool> SeedDataAsync(int rowCount)

@@ -237,11 +237,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBy(ref IQueryable<Invoice> p_item, bool Incoming,  string WarehouseCode, string InvoiceNumber, 
+        private void FilterBy(ref IQueryable<Invoice> p_items, bool Incoming,  string WarehouseCode, string InvoiceNumber, 
                                 DateTime? InvoiceIssueDateFrom, DateTime? InvoiceIssueDateTo, 
                                 DateTime? InvoiceDeliveryDateFrom, DateTime? InvoiceDeliveryDateTo)
         {
-            if (!p_item.Any())
+            if (!p_items.Any())
                 return;
 
             /*
@@ -256,12 +256,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                            && (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
                            && (InvoiceNumber == null || p.InvoiceNumber.Contains(InvoiceNumber))
                            && (!InvoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= InvoiceIssueDateFrom.Value)
-                           && (!InvoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= InvoiceIssueDateFrom.Value)
+                           && (!InvoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= InvoiceIssueDateTo.Value)
                            && (!InvoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= InvoiceDeliveryDateFrom.Value)
                            && (!InvoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= InvoiceDeliveryDateTo.Value)
                            );
 
-            p_item = p_item.Where(predicate);
+            p_items = p_items.Where(predicate);
         }
 
         public Task<bool> SeedDataAsync(int rowCount)
