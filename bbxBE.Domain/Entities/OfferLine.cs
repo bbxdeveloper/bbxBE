@@ -48,6 +48,22 @@ namespace bbxBE.Domain.Entities
 		[Description("Ár forintban")]
 		public decimal UnitPriceHUF { get; set; }
 
+		[ColumnLabel("Áfa értéke")]
+		[Description("Áfa értéke")]
+		public decimal UnitVat { get; set; }
+
+		[ColumnLabel("Áfa értéke forintban")]
+		[Description("Áfa értéke forintban")]
+		public decimal UnitVatHUF { get; set; }
+
+		[ColumnLabel("Bruttó ár")]
+		[Description("Bruttó ár")]
+		public decimal UnitGross { get; set; }
+
+		[ColumnLabel("Bruttó ár forintban")]
+		[Description("Bruttó ár forintban")]
+		public decimal UnitGrossHUF { get; set; }
+
 		//Relációk
 		[JsonIgnore]					//ignorálni kell, mert körkörös hivatkozást eredményez
 		[ForeignKey("OfferID")]

@@ -7,11 +7,13 @@ using bbxBE.Application.Commands.cmdProductGroup;
 using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Commands.cmdWarehouse;
 using bbxBE.Application.Consts;
+using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCounter;
 using bxBE.Application.Commands.cmdCustomer;
 using bxBE.Application.Commands.cmdInvoice;
+using bxBE.Application.Commands.cmdOffer;
 using bxBE.Application.Commands.cmdOrigin;
 using bxBE.Application.Commands.cmdProduct;
 using bxBE.Application.Commands.cmdProductGroup;
@@ -95,6 +97,12 @@ namespace bbxBE.Command.Mappings
 
             CreateMap<CreateInvoiceCommand.InvoiceLine, InvoiceLine>();
             CreateMap<CreateInvoiceCommand.InvoiceLine, InvoiceLine>().ReverseMap();
+
+            CreateMap<CreateOfferCommand, Offer>();
+            CreateMap<CreateOfferCommand, Offer>().ReverseMap();
+
+            CreateMap<CreateOfferCommand.OfferLine, OfferLine>();
+            CreateMap<CreateOfferCommand.OfferLine, OfferLine>().ReverseMap();
         }
     }
 }

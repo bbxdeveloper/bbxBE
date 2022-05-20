@@ -1,4 +1,5 @@
-﻿using bbxBE.Common.Enums;
+﻿using bbxBE.Application.Consts;
+using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using FluentMigrator;
@@ -68,15 +69,30 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                      .WithColumn("LineNumber").AsInt16().NotNullable()
                      .WithColumn("ProductID").AsInt64().Nullable().ForeignKey()                         //Opcionális
                      .WithColumn("ProductCode").AsString().Nullable()                                   //Opcionális!
+                     .WithColumn("LineDescription").AsString().NotNullable()
                      .WithColumn("VatRateID").AsInt64().NotNullable().ForeignKey()
                      .WithColumn("VatPercentage").AsDecimal().Nullable()
                      .WithColumn("UnitPrice").AsCurrency().NotNullable().WithDefaultValue(0)
-                     .WithColumn("UnitPriceHUF").AsCurrency().NotNullable().WithDefaultValue(0);
+                     .WithColumn("UnitPriceHUF").AsCurrency().NotNullable().WithDefaultValue(0)
+                     .WithColumn("UnitVat").AsCurrency().NotNullable().WithDefaultValue(0)
+                     .WithColumn("UnitVatHUF").AsCurrency().NotNullable().WithDefaultValue(0)
+                     .WithColumn("UnitGross").AsCurrency().NotNullable().WithDefaultValue(0)
+                     .WithColumn("UnitGrossHUF").AsCurrency().NotNullable().WithDefaultValue(0);
 
             Create.Index("INX_OfferLineProduct")
                          .OnTable("OfferLine")
                          .OnColumn("ProductID").Ascending()
                          .WithOptions().NonClustered();
+
+            Execute.Sql(string.Format(@"
+                if not exists (select * from Counter where CounterCode='{0}')
+                begin
+                    insert into Counter ([WarehouseID],[CounterCode],[CounterDescription],[Prefix],[CurrentNumber],[NumbepartLength],[Suffix],[CounterPool])
+                    select ID, '{2}','{3}', '{4}', {5}, {6}, '{7}', '{8}' from Warehouse where WarehouseCode='{1}'
+               end",
+                bbxBEConsts.DEF_OFFERCOUNTER,
+                bbxBEConsts.DEF_WAREHOUSE, bbxBEConsts.DEF_OFFERCOUNTER, "Árajánlatok", bbxBEConsts.DEF_OFFERCOUNTER, 1, 5, "/", ""));
+
         }
     }
 }

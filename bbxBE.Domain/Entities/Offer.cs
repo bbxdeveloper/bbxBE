@@ -39,6 +39,25 @@ namespace bbxBE.Domain.Entities
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }
 
+		[ColumnLabel("Pénznem")]
+		[Description("Pénznem")]
+		private enCurrencyCodes currencyCode;
+		public string CurrencyCode
+		{
+			get { return Enum.GetName(typeof(enCurrencyCodes), currencyCode); }
+			set
+			{
+				if (value != null)
+					currencyCode = (enCurrencyCodes)Enum.Parse(typeof(enCurrencyCodes), value);
+				else
+					currencyCode = enCurrencyCodes.HUF;
+
+			}
+		}
+		[ColumnLabel("Árfolyam")]
+		[Description("Árfolyam")]
+		public decimal ExchangeRate { get; set; }
+
 		//relációk
 
 

@@ -7,16 +7,20 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace bbxBE.WebApi.Middlewares
 {
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
+        //  private readonly ILogger _logger;
 
+//        public ErrorHandlerMiddleware(RequestDelegate next, ILogger p_Logger)
         public ErrorHandlerMiddleware(RequestDelegate next)
         {
             _next = next;
+//            _logger = p_Logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -63,7 +67,7 @@ namespace bbxBE.WebApi.Middlewares
                         // parsing problem
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         responseModel.Errors = new List<string>();
-                        responseModel.Errors.Add(e.Message);  
+                        responseModel.Errors.Add(e.Message);
                         break;
 
                     case LockedCacheException e:
@@ -105,7 +109,9 @@ namespace bbxBE.WebApi.Middlewares
                 }
                 var result = JsonConvert.SerializeObject(responseModel);
 
+  //              _logger.LogError(error, error.Message);
                 await response.WriteAsync(result);
+                throw;
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Commands.cmdUSR_USER;
+﻿using bbxBE.Application.Commands.cmdInvoice;
+using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qInvoice;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using static bbxBE.Common.NAV.NAV_enums;
 
@@ -25,12 +27,15 @@ namespace bbxBE.WebApi.Controllers.v1
 
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
+        private readonly IHttpContextAccessor _context;
         public InvoiceController(
            IWebHostEnvironment env,
-           IConfiguration conf)
+           IConfiguration conf,
+            IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
+            _context = context;
         }
 
         /// <summary>
@@ -41,7 +46,7 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] GetInvoice filter)
         {
-            return Ok(await Mediator.Send(filter));
+             return Ok(await Mediator.Send(filter));
         }
 
 
@@ -88,6 +93,23 @@ namespace bbxBE.WebApi.Controllers.v1
                 return Ok(await Mediator.Send(command));
         }
 
+        /// <summary>
+        /// POST api/controller
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("print")]
+        public async Task<IActionResult> Print(PrintInvoiceCommand command)
+        {
+
+            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var result = await Mediator.Send(command);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
+        }
         /*
 
                 /// <summary>

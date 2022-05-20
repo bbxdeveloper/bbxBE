@@ -74,6 +74,13 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.Print(bbxBE.Application.Commands.cmdInvoice.PrintInvoiceCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.OfferController.Get(bbxBE.Application.Queries.qOffer.GetOffer)">
             <summary>
             GET: api/controller
