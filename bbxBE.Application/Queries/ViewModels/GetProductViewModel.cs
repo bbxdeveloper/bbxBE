@@ -9,13 +9,13 @@ using System.Runtime.Serialization;
 namespace bbxBE.Application.Queries.ViewModels
 {
     /// <summary>
-    /// MapTo properties marks the names in the output Entity
+    /// MapToEntity properties marks the names in the output Entity
     /// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
     /// In this case, <see cref="GetProductViewModel"/> will be the value for the TDestination parameter.
     /// </summary>
     public class GetProductViewModel
     {
-        [MapTo("ID")]
+        [MapToEntity("ID")]
         public long ID { get; set; }
         [ColumnLabel("Termékkód")]
         [Description("Termékkód")]
@@ -31,31 +31,16 @@ namespace bbxBE.Application.Queries.ViewModels
         public string Origin { get; set; }
   
         #region UnitOfMeasure
-        [IgnoreDataMember]
-        [NotDBField]
-        [NotModelField]
-        private enUnitOfMeasure _UnitOfMeasure { get; set; } = enUnitOfMeasure.PIECE;
-
         [DataMember]
         [ColumnLabel("Me.e")]
         [Description("Mennyiségi egység")]
-        public string UnitOfMeasure
-        {
-            get { return Enum.GetName(typeof(enUnitOfMeasure), _UnitOfMeasure); }
-            set
-            {
-                if (value != null)
-                    _UnitOfMeasure = (enUnitOfMeasure)Enum.Parse(typeof(enUnitOfMeasure), value);
-                else
-                    _UnitOfMeasure = enUnitOfMeasure.PIECE;
-            }
-        }
+        public string UnitOfMeasure { get; set; }
 
         [ColumnLabel("Me.e név")]
         [Description("Mennyiségi egység megnevezés")]
         [DataMember]
         [NotDBField]
-        public string UnitOfMeasureX { get { return Common.Utils.GetEnumDescription(_UnitOfMeasure); } }
+        public string UnitOfMeasureX { get; set; }
         #endregion
 
         [ColumnLabel("Elad. ár1")]

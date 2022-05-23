@@ -70,6 +70,10 @@ namespace bbxBE.WebApi
 
             services.AddHttpContextAccessor();
 
+            services.AddAutoMapper(typeof(Startup));
+            services.AddControllersWithViews();
+
+
             services.AddHangfire(x => x.UseSqlServerStorage(_config.GetConnectionString("bbxdbconnection")));
             services.AddHangfireServer();
         }
@@ -108,6 +112,7 @@ namespace bbxBE.WebApi
             .AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader());
+
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();

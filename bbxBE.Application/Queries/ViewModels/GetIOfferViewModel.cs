@@ -12,7 +12,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
 
 	/// <summary>
-	/// MapTo properties marks the names in the output Entity
+	/// MapToEntity properties marks the names in the output Entity
 	/// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
 	/// In this case, <see cref="GetOfferViewModel"/> will be the value for the TDestination parameter.
 	/// </summary>
@@ -22,7 +22,7 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Árajánlat-sor")]
 		public class OfferLine
 		{
-			[MapTo("ID")]
+			[MapToEntity("ID")]
 			public string ID { get; set; }
 			[ColumnLabel("Árajánlat ID")]
 			[Description("Árajánlat ID")]
@@ -44,6 +44,20 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("A termék vagy szolgáltatás megnevezése")]
 			public string LineDescription { get; set; }
 
+			#region UnitOfMeasure
+
+			[DataMember]
+			[ColumnLabel("Me.e")]
+			[Description("Mennyiségi egység")]
+			public string UnitOfMeasure { get; set; }
+
+			[ColumnLabel("Me.e név")]
+			[Description("Mennyiségi egység megnevezés")]
+			[DataMember]
+			[NotDBField]
+			public string UnitOfMeasureX { get; set; }
+			#endregion
+
 			[ColumnLabel("Áfa ID")]
 			[Description("Áfa ID")]
 			public long VatRateID { get; set; }
@@ -64,7 +78,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
 
 
-		[MapTo("ID")]
+		[MapToEntity("ID")]
 		public long ID { get; set; }
 
 		[ColumnLabel("Ajánlat száma")]
@@ -134,6 +148,9 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Törölt")]
 		public bool Deleted { get; set; }
 
+		[ColumnLabel("Ajánlatsorok")]
+		[Description("Ajánlatsorok")]
+		public List<GetOfferViewModel.OfferLine> OfferLines { get; set; } = new List<GetOfferViewModel.OfferLine>();
 
 
 

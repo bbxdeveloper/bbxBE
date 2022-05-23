@@ -72,6 +72,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                      .WithColumn("LineDescription").AsString().NotNullable()
                      .WithColumn("VatRateID").AsInt64().NotNullable().ForeignKey()
                      .WithColumn("VatPercentage").AsDecimal().Nullable()
+                     .WithColumn("UnitOfMeasure").AsString().NotNullable().WithDefaultValue("")
                      .WithColumn("UnitPrice").AsCurrency().NotNullable().WithDefaultValue(0)
                      .WithColumn("UnitPriceHUF").AsCurrency().NotNullable().WithDefaultValue(0)
                      .WithColumn("UnitVat").AsCurrency().NotNullable().WithDefaultValue(0)

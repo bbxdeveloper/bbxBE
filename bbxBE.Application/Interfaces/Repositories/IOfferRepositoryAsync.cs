@@ -17,7 +17,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 
 
         Task<Entity> GetOfferAsync(GetOffer requestParameters);
-         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOfferAsync(QueryOffer requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOfferAsync(QueryOffer requestParameters);
         
     }
 }

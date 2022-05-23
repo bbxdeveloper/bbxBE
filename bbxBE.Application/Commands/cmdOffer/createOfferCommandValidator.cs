@@ -36,6 +36,13 @@ namespace bbxBE.Application.Commands.cmdOffer
 
             RuleFor(r => new { r.OfferIssueDate, r.OfferVaidityDate}).Must(m => m.OfferIssueDate <= m.OfferVaidityDate)
                 .WithMessage(bbxBEConsts.ERR_OFFER_DATE1);
+
+            //Offerline-ekre is validálást!!
+            /*
+             RuleFor(p => p.UnitOfMeasure)
+                  .MustAsync(CheckUnitOfMEasureAsync).WithMessage(bbxBEConsts.FV_INVUNITOFMEASURE);
+            */
+
         }
 
     }

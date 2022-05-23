@@ -1,17 +1,18 @@
 ﻿using AutoMapper.Configuration.Conventions;
+using bbxBE.Common.Attributes;
 using System;
 
 
 namespace bbxBE.Application.Queries.ViewModels
 {
     /// <summary>
-    /// MapTo properties marks the names in the output Entity
+    /// MapToEntity properties marks the names in the output Entity
     /// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
     /// In this case, <see cref="GetCounterViewModel"/> will be the value for the TDestination parameter.
     /// </summary>
     public class GetCounterViewModel
     {
-        [MapTo("ID")]
+        [MapToEntity("ID")]
         public long ID { get; set; }
 
         public string CounterCode { get; set; }

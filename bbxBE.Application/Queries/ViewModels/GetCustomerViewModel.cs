@@ -6,13 +6,13 @@ using System.ComponentModel;
 namespace bbxBE.Application.Queries.ViewModels
 {
     /// <summary>
-    /// MapTo properties marks the names in the output Entity
+    /// MapToEntity properties marks the names in the output Entity
     /// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
     /// In this case, <see cref="GetCustomerViewModel"/> will be the value for the TDestination parameter.
     /// </summary>
     public class GetCustomerViewModel
     {
-        [MapTo("ID")]
+        [MapToEntity("ID")]
         public long ID { get; set; }
 
         public string CustomerName { get; set; }
@@ -22,12 +22,12 @@ namespace bbxBE.Application.Queries.ViewModels
 
         
         //     [NotDBField]
-        [MapTo("TaxpayerNumber")]
+        [MapToEntity("TaxpayerNumber")]
         [NotDBFieldAttribute]
         public string TaxpayerNumber { get; set; }
         
 
-        [MapTo("FullAddress")]
+        [MapToEntity("FullAddress")]
         [NotDBFieldAttribute]
         public string FullAddress { get; set; }
       

@@ -1,4 +1,5 @@
 ﻿using AutoMapper.Configuration.Conventions;
+using bbxBE.Common.Attributes;
 using System;
 
 
@@ -11,7 +12,7 @@ namespace bbxBE.Application.Queries.ViewModels
     /// </summary>
     public class GetProductGroupViewModel
     {
-        [MapTo("ID")]
+        [MapToEntityAttribute("ID")]
         public long ID { get; set; }
 
         public string ProductGroupCode { get; set; }
