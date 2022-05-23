@@ -30,6 +30,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
     <PackageReference Include="MimeKit" Version="2.10.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="Telerik.Reporting" Version="15.0.21.326" />
     <PackageReference Include="Telerik.Reporting.WebServiceDataSource" Version="15.0.21.326" />
   </ItemGroup>
