@@ -24,6 +24,7 @@ namespace bbxBE.Application.Queries.ViewModels
 		{
 			[MapToEntity("ID")]
 			public string ID { get; set; }
+
 			[ColumnLabel("Árajánlat ID")]
 			[Description("Árajánlat ID")]
 			public long OfferID { get; set; }
@@ -44,6 +45,7 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("A termék vagy szolgáltatás megnevezése")]
 			public string LineDescription { get; set; }
 
+			
 			#region UnitOfMeasure
 
 			[DataMember]
@@ -57,7 +59,35 @@ namespace bbxBE.Application.Queries.ViewModels
 			[NotDBField]
 			public string UnitOfMeasureX { get; set; }
 			#endregion
+			/*
+			#region UnitOfMeasure
+			[IgnoreDataMember]
+			[NotDBField]
+			[NotModelField]
+			private enUnitOfMeasure _UnitOfMeasure { get; set; }
 
+			[DataMember]
+			[ColumnLabel("Me.e")]
+			[Description("Mennyiségi egység")]
+			public string UnitOfMeasure
+			{
+				get { return Enum.GetName(typeof(enUnitOfMeasure), _UnitOfMeasure); }
+				set
+				{
+					if (value != null)
+						_UnitOfMeasure = (enUnitOfMeasure)Enum.Parse(typeof(enUnitOfMeasure), value);
+					else
+						_UnitOfMeasure = enUnitOfMeasure.PIECE;
+				}
+			}
+
+			[ColumnLabel("Me.e név")]
+			[Description("Mennyiségi egység megnevezés")]
+			[DataMember]
+			[NotDBField]
+			public string UnitOfMeasureX { get { return Common.Utils.GetEnumDescription(_UnitOfMeasure); } }
+			#endregion
+			*/
 			[ColumnLabel("Áfa ID")]
 			[Description("Áfa ID")]
 			public long VatRateID { get; set; }

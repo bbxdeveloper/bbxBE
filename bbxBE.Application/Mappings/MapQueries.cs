@@ -33,8 +33,8 @@ namespace bbxBE.Queries.Mappings
             CreateMap<Origin, GetOriginViewModel>();
 
             CreateMap<List<Product>, List<GetProductViewModel>>();
-            CreateMap<Product, GetProductViewModel>()
-             .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)));
+            CreateMap<Product, GetProductViewModel>();
+//             .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)));
 
             CreateMap<List<Warehouse>, List<GetWarehouseViewModel>>();
             CreateMap<Warehouse, GetWarehouseViewModel>();
@@ -86,7 +86,7 @@ namespace bbxBE.Queries.Mappings
                                     src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataDescription : "")));
 
             CreateMap<InvoiceLine, GetInvoiceViewModel.InvoiceLine>()
-             .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)))
+//             .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)))
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
 
             CreateMap<SummaryByVatRate, GetInvoiceViewModel.SummaryByVatRate>()

@@ -20,7 +20,15 @@ namespace bbxBE.Application
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             FluentValidation.ValidatorOptions.Global.DisplayNameResolver = (type, member, expression) => {
-                return member.GetCustomAttribute<ColumnLabelAttribute>()?.LabelText;
+                if (member != null)
+                {
+                    var labelAttr = member.GetCustomAttribute<ColumnLabelAttribute>();
+                    if (labelAttr != null)
+                        return member.GetCustomAttribute<ColumnLabelAttribute>()?.LabelText;
+                    else
+                        return "?";
+                }
+                return "?";
             }; 
 
 
