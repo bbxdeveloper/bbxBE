@@ -12,7 +12,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
 
 	/// <summary>
-	/// MapTo properties marks the names in the output Entity
+	/// MapToEntity properties marks the names in the output Entity
 	/// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
 	/// In this case, <see cref="GetInvoiceViewModel"/> will be the value for the TDestination parameter.
 	/// </summary>
@@ -24,7 +24,7 @@ namespace bbxBE.Application.Queries.ViewModels
 		public class InvoiceLine
 		{
 
-			[MapTo("ID")]
+			[MapToEntity("ID")]
 			public string ID { get; set; }
 
 			[ColumnLabel("#")]
@@ -58,6 +58,21 @@ namespace bbxBE.Application.Queries.ViewModels
 			[ColumnLabel("Mennyiség")]
 			[Description("Mennyiség")]
 			public decimal Quantity { get; set; }
+			/*
+						#region UnitOfMeasure
+
+						[DataMember]
+						[ColumnLabel("Me.e")]
+						[Description("Mennyiségi egység")]
+						public string UnitOfMeasure { get; set; }
+
+						[ColumnLabel("Me.e név")]
+						[Description("Mennyiségi egység megnevezés")]
+						[DataMember]
+						[NotDBField]
+						public string UnitOfMeasureX { get; set; }
+						#endregion
+			*/
 
 			#region UnitOfMeasure
 			[IgnoreDataMember]
@@ -73,7 +88,7 @@ namespace bbxBE.Application.Queries.ViewModels
 				get { return Enum.GetName(typeof(enUnitOfMeasure), _UnitOfMeasure); }
 				set
 				{
-					if (value != null)
+					if ( !string.IsNullOrWhiteSpace(value))
 						_UnitOfMeasure = (enUnitOfMeasure)Enum.Parse(typeof(enUnitOfMeasure), value);
 					else
 						_UnitOfMeasure = enUnitOfMeasure.PIECE;
@@ -125,7 +140,7 @@ namespace bbxBE.Application.Queries.ViewModels
 		}
 
 
-		[MapTo("ID")]
+		[MapToEntity("ID")]
 		public long ID { get; set; }
 
 		[ColumnLabel("Raktár ID")]
@@ -243,31 +258,17 @@ namespace bbxBE.Application.Queries.ViewModels
 		#endregion
 
 		#region PaymentMethod
-		[IgnoreDataMember]
-		[NotDBField]
-		[NotModelField]
-		private PaymentMethodType _PaymentMethod { get; set; }
 
 		[DataMember]
 		[ColumnLabel("Fiz.mód")]
 		[Description("Fizetési mód")]
-		public string PaymentMethod
-		{
-			get { return Enum.GetName(typeof(PaymentMethodType), _PaymentMethod); }
-			set
-			{
-				if (value != null)
-					_PaymentMethod = (PaymentMethodType)Enum.Parse(typeof(PaymentMethodType), value);
-				else
-					_PaymentMethod = PaymentMethodType.CASH;
-			}
-		}
+		public string PaymentMethod { get; set; }
 
 		[ColumnLabel("Fiz.mód")]
 		[Description("Fizetési mód megnevezés")]
 		[DataMember]
 		[NotDBField]
-		public string PaymentMethodX { get { return Common.Utils.GetEnumDescription(_PaymentMethod); } }
+		public string PaymentMethodX { get; set; }
 		#endregion
 
 

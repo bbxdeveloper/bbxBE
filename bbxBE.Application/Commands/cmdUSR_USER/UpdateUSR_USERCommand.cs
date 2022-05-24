@@ -16,22 +16,17 @@ using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdUSR_USER
 {
+
     public class UpdateUSR_USERCommand : IRequest<Response<USR_USER>>
     {
         public long ID { get; set; }
 
-        [MapTo("USR_NAME")]
         public string Name { get; set; }
-        [MapTo("USR_EMAIL")]
         public string Email { get; set; }
-        [MapTo("USR_LOGIN")]
         public string LoginName { get; set; }
 
         public string Password { get; set; }
-        [MapTo("USR_LOGIN")]
         public string Comment { get; set; }
-
-        [MapTo("USR_ACTIVE")]
         public bool Active { get; set; }
 
     }

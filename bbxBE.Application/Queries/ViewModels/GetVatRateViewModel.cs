@@ -12,7 +12,7 @@ namespace bbxBE.Application.Queries.ViewModels
     /// </summary>
     public class GetVatRateViewModel
     {
-        [MapTo("ID")]
+        [MapToEntity("ID")]
         public long ID { get; set; }
 
         [ColumnLabel("Áfaleíró-kód")]

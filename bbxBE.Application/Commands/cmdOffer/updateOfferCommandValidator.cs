@@ -16,15 +16,18 @@ using System.Threading.Tasks;
 namespace bbxBE.Application.Commands.cmdOffer
 {
 
-    public class createOfferCommandValidator : AbstractValidator<CreateOfferCommand>
+    public class updateCommandValidator : AbstractValidator<UpdateOfferCommand>
     {
         private readonly IOfferRepositoryAsync _OfferRepository;
 
-        public createOfferCommandValidator(IOfferRepositoryAsync OfferRepository)
+        public updateCommandValidator(IOfferRepositoryAsync OfferRepository)
         {
             this._OfferRepository = OfferRepository;
 
             RuleFor(r => r.CustomerID)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
+
+            RuleFor(r => r.OfferNumber)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(r => r.OfferIssueDate)
@@ -32,7 +35,6 @@ namespace bbxBE.Application.Commands.cmdOffer
 
             RuleFor(r => r.OfferVaidityDate)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
-
 
             RuleFor(r => new { r.OfferIssueDate, r.OfferVaidityDate}).Must(m => m.OfferIssueDate <= m.OfferVaidityDate)
                 .WithMessage(bbxBEConsts.ERR_OFFER_DATE1);

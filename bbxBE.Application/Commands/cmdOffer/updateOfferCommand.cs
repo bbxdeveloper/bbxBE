@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
-	public class CreateOfferCommand : IRequest<Response<Offer>>
+	public class UpdateOfferCommand : IRequest<Response<Offer>>
 	{
 
 		[Description("Árajánlat-sor")]
@@ -44,13 +44,6 @@ namespace bxBE.Application.Commands.cmdOffer
 			[Description("Mennyiségi egység kód")]
 			public string UnitOfMeasure { get; set; }
 
-			/*
-			[ColumnLabel("Áfa ID")]
-			[Description("Áfa ID")]
-			public long VatRateID { get; set; }
-			*/
-
-
 			[ColumnLabel("Áfaleíró-kód")]
 			[Description("Áfaleíró-kód")]
 			public string VatRateCode { get; set; }
@@ -68,10 +61,15 @@ namespace bxBE.Application.Commands.cmdOffer
 			public decimal UnitGross { get; set; }
 		}
 
+		public long ID { get; set; }
+
 		[ColumnLabel("Ügyfél ID")]
 		[Description("Ügyfél ID")]
 		public long CustomerID { get; set; }
 
+		[ColumnLabel("Ajánlat száma")]
+		[Description("Ajánlat száma")]
+		public string OfferNumber { get; set; }
 
 		[ColumnLabel("Kelt")]
 		[Description("Kiállítás dátuma")]
@@ -90,11 +88,9 @@ namespace bxBE.Application.Commands.cmdOffer
 		public List<OfferLine> OfferLines { get; set; } = new List<OfferLine>();
 
 
-
-
 	}
 
-	public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Response<Offer>>
+	public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand, Response<Offer>>
     {
         private readonly IOfferRepositoryAsync _OfferRepository;
 		private readonly ICounterRepositoryAsync _CounterRepository;
@@ -104,7 +100,7 @@ namespace bxBE.Application.Commands.cmdOffer
 		private readonly IMapper _mapper;
 		private readonly IConfiguration _configuration;
 
-        public CreateOfferCommandHandler(IOfferRepositoryAsync OfferRepository,
+        public UpdateOfferCommandHandler(IOfferRepositoryAsync OfferRepository,
 						ICounterRepositoryAsync CounterRepository,
 						ICustomerRepositoryAsync CustomerRepository,
 						IProductRepositoryAsync ProductRepository,
@@ -122,7 +118,7 @@ namespace bxBE.Application.Commands.cmdOffer
             _configuration = configuration;
         }
 
-        public async Task<Response<Offer>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Offer>> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
         {
             var offer = _mapper.Map<Offer>(request);
 
@@ -135,9 +131,6 @@ namespace bxBE.Application.Commands.cmdOffer
 			try
 			{
 
-				//Árajánlatszám megállapítása
-				counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
-				offer.OfferNumber = await _CounterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);
 
 				//Tételsorok
 				foreach (var ln in offer.OfferLines)
@@ -174,16 +167,11 @@ namespace bxBE.Application.Commands.cmdOffer
 
 				await _OfferRepository.AddOfferAsync(offer);
 
-				await _CounterRepository.FinalizeValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, offer.OfferNumber);
 
 				return new Response<Offer>(offer);
 			}
 			catch (Exception ex)
 			{
-				if (!string.IsNullOrWhiteSpace(offer.OfferNumber) && !string.IsNullOrWhiteSpace(counterCode))
-				{
-					await _CounterRepository.RollbackValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, offer.OfferNumber);
-				}
 				throw;
 			}
 		}

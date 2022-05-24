@@ -9,13 +9,13 @@ using System.Runtime.Serialization;
 namespace bbxBE.Application.Queries.ViewModels
 {
     /// <summary>
-    /// MapTo properties marks the names in the output Entity
+    /// MapToEntity properties marks the names in the output Entity
     /// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
     /// In this case, <see cref="GetProductViewModel"/> will be the value for the TDestination parameter.
     /// </summary>
     public class GetProductViewModel
     {
-        [MapTo("ID")]
+        [MapToEntity("ID")]
         public long ID { get; set; }
         [ColumnLabel("Termékkód")]
         [Description("Termékkód")]
@@ -29,12 +29,26 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Származási hely")]
         [Description("Származási hely")]
         public string Origin { get; set; }
-  
+
+        /*  
+                #region UnitOfMeasure
+                [DataMember]
+                [ColumnLabel("Me.e")]
+                [Description("Mennyiségi egység")]
+                public string UnitOfMeasure { get; set; }
+
+                [ColumnLabel("Me.e név")]
+                [Description("Mennyiségi egység megnevezés")]
+                [DataMember]
+                [NotDBField]
+                public string UnitOfMeasureX { get; set; }
+                #endregion
+        */
         #region UnitOfMeasure
         [IgnoreDataMember]
         [NotDBField]
         [NotModelField]
-        private enUnitOfMeasure _UnitOfMeasure { get; set; } = enUnitOfMeasure.PIECE;
+        private enUnitOfMeasure _UnitOfMeasure { get; set; }
 
         [DataMember]
         [ColumnLabel("Me.e")]

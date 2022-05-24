@@ -1,30 +1,32 @@
 ﻿using AutoMapper.Configuration.Conventions;
+using AutoMapper;
+using bbxBE.Common.Attributes;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
     /// <summary>
-    /// MapTo properties marks the names in the output Entity
+    /// MapToEntity properties marks the names in the output Entity
     /// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
     /// In this case, <see cref="GetUSR_USERViewModel"/> will be the value for the TDestination parameter.
     /// </summary>
     public class GetUSR_USERViewModel
     {
-        [MapTo("ID")]
+        [MapToEntity("ID")]
         public long ID { get; set; }
 
-        [MapTo("Name")]
+        [MapToEntity("Name")]
         public string USR_NAME { get; set; }
 
-        [MapTo("LoginName")]
+        [MapToEntity("LoginName")]
         public string USR_LOGIN { get; set; }
 
-        [MapTo("Email")]
+        [MapToEntity("Email")]
         public string USR_EMAIL { get; set; }
 
-        [MapTo("Comment")]
+        [MapToEntity("Comment")]
         public string USR_COMMENT { get; set; }
 
-        [MapTo("Active")]
+        [MapToEntity("Active")]
         public bool USR_ACTIVE { get; set; }
     }
 }

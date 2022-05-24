@@ -13,5 +13,7 @@ namespace bbxBE.Common.Attributes
         {
             LabelText = _labelText;
         }
+
+       
     }
 }

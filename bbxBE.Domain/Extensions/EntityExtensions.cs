@@ -1,4 +1,5 @@
 ﻿using AutoMapper.Configuration.Conventions;
+using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace bbxBE.Domain.Extensions
 
             // Don't install AutoMapper v11, v8.1.1 is perfectly fine.
             // This class can't be found in v11.
-            var typeOfMapToAttribute = typeof(MapToAttribute);
+            var typeOfMapToAttribute = typeof(bbxBE.Common.Attributes.MapToEntityAttribute);
 
             foreach (string propertyName in pData.Keys)
             {
@@ -48,7 +49,7 @@ namespace bbxBE.Domain.Extensions
                 if (attrs != null)
                 {
                     // Get [MapTo("...")] attribute
-                    var mapToAttribute = (MapToAttribute)attrs.GetCustomAttributes(typeOfMapToAttribute, false).FirstOrDefault();
+                    var mapToAttribute = (MapToEntityAttribute)attrs.GetCustomAttributes(typeOfMapToAttribute, false).FirstOrDefault();
                     if (mapToAttribute != null)
                     {
                         // Get value from attribute

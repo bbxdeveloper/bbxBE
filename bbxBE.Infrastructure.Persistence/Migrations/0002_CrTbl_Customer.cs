@@ -20,7 +20,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
                     .WithColumn("CustomerName").AsString().NotNullable()
-                    .WithColumn("CustomerBankAccountNumber").AsString()
+                    .WithColumn("CustomerBankAccountNumber").AsString().Nullable()
                     .WithColumn("CustomerVatStatus").AsString().NotNullable()
                     .WithColumn("TaxpayerId").AsString().Nullable()
                     .WithColumn("VatCode").AsString().Nullable()

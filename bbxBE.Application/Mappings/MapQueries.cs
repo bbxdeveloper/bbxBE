@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Text;
 using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Application.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.NAV;
 
 namespace bbxBE.Queries.Mappings
 {
@@ -32,6 +34,7 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<List<Product>, List<GetProductViewModel>>();
             CreateMap<Product, GetProductViewModel>();
+//             .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)));
 
             CreateMap<List<Warehouse>, List<GetWarehouseViewModel>>();
             CreateMap<Warehouse, GetWarehouseViewModel>();
@@ -77,10 +80,13 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CustomerThirdStateTaxId, opt => opt.MapFrom(src => src.Customer.ThirdStateTaxId))
              .ForMember(dst => dst.CustomerComment, opt => opt.MapFrom(src => src.Customer.Comment))
 
+             .ForMember(dst => dst.PaymentMethodX, opt => opt.MapFrom(src => PaymentMethodNameResolver(src.PaymentMethod)))
+
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null && src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
                                     src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataDescription : "")));
 
             CreateMap<InvoiceLine, GetInvoiceViewModel.InvoiceLine>()
+//             .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)))
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
 
             CreateMap<SummaryByVatRate, GetInvoiceViewModel.SummaryByVatRate>()
@@ -97,8 +103,29 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CustomerComment, opt => opt.MapFrom(src => src.Customer.Comment));
 
             CreateMap<OfferLine, GetOfferViewModel.OfferLine>()
+             .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver( src.UnitOfMeasure)))
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
 
+        }
+
+        private static string enUnitOfMeasureNameResolver(string UnitOfMeasure)
+        {
+            if (!string.IsNullOrWhiteSpace(UnitOfMeasure))
+            {
+                var _unitOfMeasure = (enUnitOfMeasure)Enum.Parse(typeof(enUnitOfMeasure), UnitOfMeasure);
+                return Common.Utils.GetEnumDescription(_unitOfMeasure);
+            }
+            return "";
+        }
+
+        private static string PaymentMethodNameResolver(string PaymentMethod)
+        {
+            if (!string.IsNullOrWhiteSpace(PaymentMethod))
+            {
+                var pm = (PaymentMethodType)Enum.Parse(typeof(PaymentMethodType), PaymentMethod);
+                return Common.Utils.GetEnumDescription(pm);
+            }
+            return "";
         }
     }
 }

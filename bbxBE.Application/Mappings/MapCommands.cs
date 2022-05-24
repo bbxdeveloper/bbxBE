@@ -28,8 +28,18 @@ namespace bbxBE.Command.Mappings
     {
         public MapCommands()
         {
-            CreateMap<CreateUSR_USERCommand, USR_USER>();
-            CreateMap<UpdateUSR_USERCommand, USR_USER>();
+            CreateMap<CreateUSR_USERCommand, USR_USER>()
+             .ForMember(dst => dst.USR_NAME, opt => opt.MapFrom(src => src.Name))
+             .ForMember(dst => dst.USR_EMAIL, opt => opt.MapFrom(src => src.Email))
+             .ForMember(dst => dst.USR_LOGIN, opt => opt.MapFrom(src => src.LoginName))
+             .ForMember(dst => dst.USR_COMMENT, opt => opt.MapFrom(src => src.Comment));
+
+            CreateMap<UpdateUSR_USERCommand, USR_USER>()
+             .ForMember(dst => dst.USR_NAME, opt => opt.MapFrom(src => src.Name))
+             .ForMember(dst => dst.USR_EMAIL, opt => opt.MapFrom(src => src.Email))
+             .ForMember(dst => dst.USR_LOGIN, opt => opt.MapFrom(src => src.LoginName))
+             .ForMember(dst => dst.USR_COMMENT, opt => opt.MapFrom(src => src.Comment));
+
             CreateMap<DeleteUSR_USERCommand, USR_USER>();
 
             CreateMap<CreateCustomerCommand, Customer>()

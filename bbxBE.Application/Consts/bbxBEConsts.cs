@@ -15,31 +15,31 @@ namespace bbxBE.Application.Consts
         public static string CONF_CacheSettings = "CacheSettings";
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
-        public static string ERR_REQUIRED = "{PropertyName}|{PropertyName} mező kitöltése kötelező.";
-        public static string FV_LEN1 = "{PropertyName}|{PropertyName} mező karakterek száma:1.";
-        public static string FV_LEN2 = "{PropertyName}|{PropertyName} mező karakterek száma:2.";
-        public static string FV_LEN8 = "{PropertyName}|{PropertyName} mező karakterek száma:8.";
+        public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
+        public static string FV_LEN1 = "{PropertyName}:  mező karakterek száma:1.";
+        public static string FV_LEN2 = "{PropertyName}:  mező karakterek száma:2.";
+        public static string FV_LEN8 = "{PropertyName}:  mező karakterek száma:8.";
 
-        public static string FV_MAXLEN = "{PropertyName}|{PropertyName} mező mérete nem lehet több, mint {MaxLength}.";
-        public static string ERR_RANGE = "{PropertyName}|{PropertyName} mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
+        public static string FV_MAXLEN = "{PropertyName}:  mező mérete nem lehet több, mint {MaxLength}.";
+        public static string ERR_RANGE = "{PropertyName}:  mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
 
 
-        public static string FV_EXISTS = "{PropertyName}|{PropertyName} már létezik.";
-        public static string FV_INVALIDEMAIL = "{PropertyName}|{PropertyName} érvénytelen email cím.";
-        public static string FV_ERBANK = "{PropertyName}|{PropertyName} érvénytelen bankszámlaszám.";
-        public static string FV_INVPRODUCTCROUPCODE = "{PropertyName}|{PropertyName} érvénytelen termékcsoport.";
-        public static string FV_INVORIGINCODE = "{PropertyName}|{PropertyName} érvénytelen származási hely.";
-        public static string FV_INVVATRATECODE = "{PropertyName}|{PropertyName} érvénytelen áfakód.";
-        public static string FV_INVUNITOFMEASURE = "{PropertyName}|{PropertyName} érvénytelen mennyiségi egység:{PropertyValue} ";
-        public static string FV_INVPAYMENTMETHOD = "{PropertyName}|{PropertyName} érvénytelen fizetési mód:{PropertyValue} ";
-        public static string FV_EXCHANGERATE = "{PropertyName}|{PropertyName} Érvénytelen árfolyam::{PropertyValue} ";
-        public static string FV_INVCURRENCY = "{PropertyName}|{PropertyName} érvénytelen pénznem:{PropertyValue}";
+        public static string FV_EXISTS = "{PropertyName}:  már létezik.";
+        public static string FV_INVALIDEMAIL = "{PropertyName}:  érvénytelen email cím.";
+        public static string FV_ERBANK = "{PropertyName}:  érvénytelen bankszámlaszám.";
+        public static string FV_INVPRODUCTCROUPCODE = "{PropertyName}:  érvénytelen termékcsoport.";
+        public static string FV_INVORIGINCODE = "{PropertyName}:  érvénytelen származási hely.";
+        public static string FV_INVVATRATECODE = "{PropertyName}:  érvénytelen áfakód.";
+        public static string FV_INVUNITOFMEASURE = "{PropertyName}:  érvénytelen mennyiségi egység:{PropertyValue} ";
+        public static string FV_INVPAYMENTMETHOD = "{PropertyName}:  érvénytelen fizetési mód:{PropertyValue} ";
+        public static string FV_EXCHANGERATE = "{PropertyName}:  Érvénytelen árfolyam::{PropertyValue} ";
+        public static string FV_INVCURRENCY = "{PropertyName}:  érvénytelen pénznem:{PropertyValue}";
         public static string FV_PRODNOTFOUND = "Termék nem található, ID:{0} ";
         public static string FV_PRODCODENOTFOUND = "Termék nem található, kód:{0} ";
         public static string FV_VATRATECODENOTFOUND = "Áfakód található, kód:{0} ";
         public static string FV_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
         public static string FV_OWNNOTFOUND = "Saját adat nem található!";
-        public static string FV_INVALIDFORMAT = "{PropertyName}|{PropertyName} érvénytelen formátum.";
+        public static string FV_INVALIDFORMAT = "{PropertyName}:  érvénytelen formátum.";
         public static string FV_COUNTERNOTFOUND = "Bizonylati tömb nem található, ID:{0} ";
         public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb nem található, Kód:{0}, Raktár ID:{1} ";
         public static string FV_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
@@ -63,12 +63,12 @@ namespace bbxBE.Application.Consts
         public static string ERR_INV_LINES = "{PropertyName}| A számlán nincs tételsor";
         public static string ERR_INV_VATSUMS = "{PropertyName}| A számlán nincs áfánkénti összesítő";
 
-        public static string ERR_CST_OWNEXISTS = "{PropertyName}|{PropertyName} Saját adat már létezik.";
+        public static string ERR_CST_OWNEXISTS = "{PropertyName}:  Saját adat már létezik.";
 
 
         public static string ERR_OFFER_DATE1 = "{PropertyName}| A lejárati dátum nem lehet korábbi, mint a ajánlat kibocsátásának dátuma!";
 
-        public static string NAV_INVDIRECTION = "{PropertyName}|{PropertyName} érvénytelen biyonylatirány:{PropertyValue} ";
+        public static string NAV_INVDIRECTION = "{PropertyName}:  érvénytelen biyonylatirány:{PropertyValue} ";
 
   
         public static string NAV_TOKENEXCHANGE_ERR = "{0} NAV tokenExchange error result:{1}";

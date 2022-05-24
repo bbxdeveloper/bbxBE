@@ -2,6 +2,7 @@
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using FluentValidation;
 using MediatR;
@@ -17,6 +18,20 @@ namespace bbxBE.Application
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            FluentValidation.ValidatorOptions.Global.DisplayNameResolver = (type, member, expression) => {
+                if (member != null)
+                {
+                    var labelAttr = member.GetCustomAttribute<ColumnLabelAttribute>();
+                    if (labelAttr != null)
+                        return member.GetCustomAttribute<ColumnLabelAttribute>()?.LabelText;
+                    else
+                        return "?";
+                }
+                return "?";
+            }; 
+
+
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); //Validáció behúzása?
 
             services.AddMediatR(Assembly.GetExecutingAssembly());                       //Controller  Mediator DI -hez
