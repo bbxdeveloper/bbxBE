@@ -33,30 +33,30 @@ namespace bbxBE.Application.Commands.cmdProduct
                          {
                              return IsUniqueProductCode(ProductCode);
                          }
-                     ).WithMessage(bbxBEConsts.FV_EXISTS)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                     ).WithMessage(bbxBEConsts.ERR_EXISTS)
+                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.Description)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.ProductGroupCode)
-                 .MustAsync(CheckProductGroupCodeAsync).WithMessage(bbxBEConsts.FV_INVPRODUCTCROUPCODE);
+                 .MustAsync(CheckProductGroupCodeAsync).WithMessage(bbxBEConsts.ERR_INVPRODUCTCROUPCODE);
  
             RuleFor(p => p.OriginCode)
-                 .MustAsync(CheckOriginCodeAsync).WithMessage(bbxBEConsts.FV_INVORIGINCODE);
+                 .MustAsync(CheckOriginCodeAsync).WithMessage(bbxBEConsts.ERR_INVORIGINCODE);
 
             RuleFor(p => p.UnitOfMeasure)
-                 .Must(CheckUnitOfMEasure).WithMessage(bbxBEConsts.FV_INVUNITOFMEASURE);
+                 .Must(CheckUnitOfMEasure).WithMessage(bbxBEConsts.ERR_INVUNITOFMEASURE);
 
             RuleFor(p => p.VatRateCode)
-                 .MustAsync(CheckVatRateCodeAsync).WithMessage(bbxBEConsts.FV_INVVATRATECODE);
+                 .MustAsync(CheckVatRateCodeAsync).WithMessage(bbxBEConsts.ERR_INVVATRATECODE);
 
             RuleFor(p => p.VTSZ)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
         }
 

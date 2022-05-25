@@ -26,22 +26,22 @@ namespace bbxBE.Application.Commands.cmdUSR_USER
             RuleFor(p => p.Name)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN)
-                .MustAsync(IsUniqueNameAsync).WithMessage(bbxBEConsts.FV_EXISTS);
+                .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
+                .MustAsync(IsUniqueNameAsync).WithMessage(bbxBEConsts.ERR_EXISTS);
 
             RuleFor(p => p.Email)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN)
-                .MustAsync(IsValidEmailAsync).WithMessage(bbxBEConsts.FV_INVALIDEMAIL);
+                .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
+                .MustAsync(IsValidEmailAsync).WithMessage(bbxBEConsts.ERR_INVALIDEMAIL);
 
             RuleFor(p => p.LoginName)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.Comment)
-                 .MaximumLength(2000).WithMessage(bbxBEConsts.FV_MAXLEN);
+                 .MaximumLength(2000).WithMessage(bbxBEConsts.ERR_MAXLEN);
         }
 
         private async Task<bool> IsUniqueNameAsync(string p_USR_NAME, CancellationToken cancellationToken)

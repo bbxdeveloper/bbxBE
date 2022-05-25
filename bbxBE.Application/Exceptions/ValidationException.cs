@@ -7,7 +7,7 @@ namespace bbxBE.Application.Exceptions
 {
     public class ValidationException : Exception
     {
-        public ValidationException() : base( bbxBEConsts.FV_BASE)
+        public ValidationException() : base( bbxBEConsts.ERR_VALIDATION)
         {
             Errors = new List<string>();
         }

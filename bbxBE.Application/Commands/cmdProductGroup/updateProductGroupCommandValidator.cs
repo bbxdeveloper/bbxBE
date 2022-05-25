@@ -30,13 +30,13 @@ namespace bbxBE.Application.Commands.cmdProductGroup
                         {
                             return  IsUniqueProductGroupCodeAsync(Name, Convert.ToInt64(model.ID));
                         }
-                    ).WithMessage(bbxBEConsts.FV_EXISTS)
-                .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
+                    ).WithMessage(bbxBEConsts.ERR_EXISTS)
+                .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.ProductGroupDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
         }
 
         private bool IsUniqueProductGroupCodeAsync(string ProductGroupCode, long ID)

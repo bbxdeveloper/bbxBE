@@ -31,13 +31,13 @@ namespace bbxBE.Application.Commands.cmdProductGroup
                          {
                              return  IsUniqueProductGroupCode(Name);
                          }
-                     ).WithMessage(bbxBEConsts.FV_EXISTS)
-                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
+                     ).WithMessage(bbxBEConsts.ERR_EXISTS)
+                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.ProductGroupDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
         }
 

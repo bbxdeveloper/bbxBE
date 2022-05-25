@@ -21,6 +21,41 @@ using System.Threading.Tasks;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
+	/*
+	 * 
+ {
+"customerID": 5,
+  "offerIssueDate": "2022-05-20",
+  "offerVaidityDate": "2022-05-20",
+  "notice": "elsï ajánlat",
+  "offerLines": [
+    {
+     "lineNumber": 1,
+      "productCode": "VEG-2973",
+      "lineDescription": "Boyler 600W f√tïbetét",
+"UnitOfMeasure" : "PIECE",
+     "vatRateCode": "27%",
+      "discount": 10,
+      "showDiscount": true,
+       "unitPrice": 10,
+      "unitVat": 2.7,
+      "unitGross": 12.7
+    },
+      {
+     "lineNumber": 2,
+      "productCode": "IZZ-861",
+      "lineDescription": "HANDY 10139 Érvéghüvely prés",
+     "vatRateCode": "27%",
+"UnitOfMeasure" : "PIECE",
+      "discount": 10,
+      "showDiscount": true,
+       "unitPrice": 100,
+      "unitVat": 27,
+      "unitGross": 127
+    }
+  ]
+}
+	*/
 	public class CreateOfferCommand : IRequest<Response<Offer>>
 	{
 
@@ -40,6 +75,13 @@ namespace bxBE.Application.Commands.cmdOffer
 			[Description("A termék vagy szolgáltatás megnevezése")]
 			public string LineDescription { get; set; }
 
+			[ColumnLabel("Árengedmény %")]
+			[Description("Árengedmény %)")]
+			public decimal Discount { get; set; }
+			[ColumnLabel("Árengedmény megjelenítés?")]
+			[Description("Árengedmény megjelenítés)")]
+			public bool ShowDiscount { get; set; }
+
 			[ColumnLabel("Me.e.")]
 			[Description("Mennyiségi egység kód")]
 			public string UnitOfMeasure { get; set; }
@@ -51,7 +93,7 @@ namespace bxBE.Application.Commands.cmdOffer
 			*/
 
 
-			[ColumnLabel("Áfaleíró-kód")]
+	[ColumnLabel("Áfaleíró-kód")]
 			[Description("Áfaleíró-kód")]
 			public string VatRateCode { get; set; }
 
@@ -135,6 +177,7 @@ namespace bxBE.Application.Commands.cmdOffer
 			try
 			{
 
+				offer.LatestVersion = true;
 				//Árajánlatszám megállapítása
 				counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
 				offer.OfferNumber = await _CounterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);

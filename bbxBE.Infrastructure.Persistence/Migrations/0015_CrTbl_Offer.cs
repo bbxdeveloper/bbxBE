@@ -39,7 +39,9 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("Copies").AsInt16().Nullable()
                     .WithColumn("Notice").AsString(int.MaxValue).NotNullable()
                     .WithColumn("CurrencyCode").AsString().NotNullable().WithDefaultValue(enCurrencyCodes.HUF.ToString())
-                    .WithColumn("ExchangeRate").AsDecimal().NotNullable().WithDefaultValue(1);
+                    .WithColumn("ExchangeRate").AsDecimal().NotNullable().WithDefaultValue(1)
+                    .WithColumn("OfferVersion").AsInt16().NotNullable().WithDefaultValue(0)
+                    .WithColumn("LatestVersion").AsBoolean().WithDefaultValue(true);
 
 
             Create.Index("INX_OfferNumber")
@@ -70,6 +72,8 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                      .WithColumn("ProductID").AsInt64().Nullable().ForeignKey()                         //Opcionális
                      .WithColumn("ProductCode").AsString().Nullable()                                   //Opcionális!
                      .WithColumn("LineDescription").AsString().NotNullable()
+                     .WithColumn("Discount").AsDecimal().NotNullable().WithDefaultValue(0)
+                     .WithColumn("ShowDiscount").AsBoolean().NotNullable().WithDefaultValue(false)
                      .WithColumn("VatRateID").AsInt64().NotNullable().ForeignKey()
                      .WithColumn("VatPercentage").AsDecimal().Nullable()
                      .WithColumn("UnitOfMeasure").AsString().NotNullable().WithDefaultValue("")

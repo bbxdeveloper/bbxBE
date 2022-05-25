@@ -39,6 +39,15 @@ namespace bbxBE.Domain.Entities
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }
 
+		[ColumnLabel("Verzió")]
+		[Description("Verzió")]
+		public short OfferVersion { get; set; }
+
+		[ColumnLabel("Legutolsó verzió?")]
+		[Description("Legutolsó verzió?")]
+		public bool LatestVersion { get; set; }
+
+
 		[ColumnLabel("Pénznem")]
 		[Description("Pénznem")]
 		private enCurrencyCodes currencyCode;
@@ -57,6 +66,7 @@ namespace bbxBE.Domain.Entities
 		[ColumnLabel("Árfolyam")]
 		[Description("Árfolyam")]
 		public decimal ExchangeRate { get; set; }
+
 
 		//relációk
 

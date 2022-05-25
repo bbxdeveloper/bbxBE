@@ -63,11 +63,10 @@ namespace bbxBE.Application.Commands.cmdInvoice
             RuleFor(p => new { p.InvoiceLines }).Must(m => m.InvoiceLines.Count > 0)
                 .WithMessage(bbxBEConsts.ERR_INV_LINES);
 
-           //invoiceline-ekre is validálást!!
-           /*
-            RuleFor(p => p.UnitOfMeasure)
-                 .MustAsync(CheckUnitOfMEasureAsync).WithMessage(bbxBEConsts.FV_INVUNITOFMEASURE);
-           */
+            RuleForEach(r => r.InvoiceLines)
+                 .SetValidator(model => new CreateInvoiceLinesCommandValidatror());
+
+
 
         }
 
@@ -96,4 +95,21 @@ namespace bbxBE.Application.Commands.cmdInvoice
         }
 
     }
+
+    public class CreateInvoiceLinesCommandValidatror : AbstractValidator<CreateInvoiceCommand.InvoiceLine>
+    {
+        public CreateInvoiceLinesCommandValidatror()
+        {
+            RuleFor(p => p.UnitOfMeasure)
+                 .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.LineNumber, model.ProductCode, model.UnitOfMeasure));
+        }
+
+        public bool CheckUnitOfMEasure(string unitOfMeasure)
+        {
+            var valid = Enum.TryParse(unitOfMeasure, out enUnitOfMeasure uom);
+            return valid;
+        }
+
+    }
+
 }

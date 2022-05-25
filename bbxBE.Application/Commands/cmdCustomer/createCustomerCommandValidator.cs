@@ -29,18 +29,18 @@ namespace bbxBE.Application.Commands.cmdCustomer
             RuleFor(p => p.CustomerName)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.TaxpayerNumber)
-                      .MaximumLength(13).WithMessage(bbxBEConsts.FV_MAXLEN)
-                      .Must(IsUniqueTaxpayerId).WithMessage(bbxBEConsts.FV_EXISTS);
+                      .MaximumLength(13).WithMessage(bbxBEConsts.ERR_MAXLEN)
+                      .Must(IsUniqueTaxpayerId).WithMessage(bbxBEConsts.ERR_EXISTS);
 
             RuleFor(p => p.CustomerBankAccountNumber)
-                       .MaximumLength(30).WithMessage(bbxBEConsts.FV_MAXLEN)
+                       .MaximumLength(30).WithMessage(bbxBEConsts.ERR_MAXLEN)
                        .Must(CheckBankAccount).WithMessage(bbxBEConsts.FV_INVALIDFORMAT);
 
             RuleFor(p => p.Comment)
-                 .MaximumLength(2000).WithMessage(bbxBEConsts.FV_MAXLEN);
+                 .MaximumLength(2000).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
 
             RuleFor(p => p.IsOwnData)
