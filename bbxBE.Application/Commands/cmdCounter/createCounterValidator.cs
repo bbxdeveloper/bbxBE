@@ -31,18 +31,18 @@ namespace bbxBE.Application.Commands.cmdCounter
                          {
                              return await IsUniqueCounterCodeAsync(Name, cancellation);
                          }
-                     ).WithMessage(bbxBEConsts.FV_EXISTS)
-                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
+                     ).WithMessage(bbxBEConsts.ERR_EXISTS)
+                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.CounterDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.Prefix)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.NumbepartLength)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)

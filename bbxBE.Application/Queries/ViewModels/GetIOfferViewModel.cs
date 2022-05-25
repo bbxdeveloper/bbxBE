@@ -59,35 +59,14 @@ namespace bbxBE.Application.Queries.ViewModels
 			[NotDBField]
 			public string UnitOfMeasureX { get; set; }
 			#endregion
-			/*
-			#region UnitOfMeasure
-			[IgnoreDataMember]
-			[NotDBField]
-			[NotModelField]
-			private enUnitOfMeasure _UnitOfMeasure { get; set; }
+			
+			[ColumnLabel("Árengedmény %")]
+			[Description("Árengedmény %)")]
+			public decimal Discount { get; set; }
+			[ColumnLabel("Árengedmény megjelenítés?")]
+			[Description("Árengedmény megjelenítés)")]
 
-			[DataMember]
-			[ColumnLabel("Me.e")]
-			[Description("Mennyiségi egység")]
-			public string UnitOfMeasure
-			{
-				get { return Enum.GetName(typeof(enUnitOfMeasure), _UnitOfMeasure); }
-				set
-				{
-					if (value != null)
-						_UnitOfMeasure = (enUnitOfMeasure)Enum.Parse(typeof(enUnitOfMeasure), value);
-					else
-						_UnitOfMeasure = enUnitOfMeasure.PIECE;
-				}
-			}
-
-			[ColumnLabel("Me.e név")]
-			[Description("Mennyiségi egység megnevezés")]
-			[DataMember]
-			[NotDBField]
-			public string UnitOfMeasureX { get { return Common.Utils.GetEnumDescription(_UnitOfMeasure); } }
-			#endregion
-			*/
+			public bool ShowDiscount { get; set; }
 			[ColumnLabel("Áfa ID")]
 			[Description("Áfa ID")]
 			public long VatRateID { get; set; }
@@ -174,9 +153,10 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }
 
-		[ColumnLabel("Törölt")]
-		[Description("Törölt")]
-		public bool Deleted { get; set; }
+		[ColumnLabel("Verzió")]
+		[Description("Verzió")]
+		public short OfferVersion { get; set; }
+
 
 		[ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]

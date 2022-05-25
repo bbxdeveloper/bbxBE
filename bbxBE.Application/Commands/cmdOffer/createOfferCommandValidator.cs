@@ -1,6 +1,7 @@
 ﻿using bbxBE.Application.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdOffer;
 using FluentValidation;
 using MediatR;
@@ -37,13 +38,27 @@ namespace bbxBE.Application.Commands.cmdOffer
             RuleFor(r => new { r.OfferIssueDate, r.OfferVaidityDate}).Must(m => m.OfferIssueDate <= m.OfferVaidityDate)
                 .WithMessage(bbxBEConsts.ERR_OFFER_DATE1);
 
-            //Offerline-ekre is validálást!!
-            /*
-             RuleFor(p => p.UnitOfMeasure)
-                  .MustAsync(CheckUnitOfMEasureAsync).WithMessage(bbxBEConsts.FV_INVUNITOFMEASURE);
-            */
 
+
+            RuleForEach(r => r.OfferLines)
+                .SetValidator(model => new CreateOfferLinesCommandValidatror());
         }
 
     }
+    public class CreateOfferLinesCommandValidatror : AbstractValidator<CreateOfferCommand.OfferLine>
+    {
+        public CreateOfferLinesCommandValidatror()
+        {
+            RuleFor(p => p.UnitOfMeasure)
+                 .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.LineNumber, model.ProductCode, model.UnitOfMeasure));
+        }
+
+        public bool CheckUnitOfMEasure(string unitOfMeasure)
+        {
+            var valid = Enum.TryParse(unitOfMeasure, out enUnitOfMeasure uom);
+            return valid;
+        }
+
+    }
+
 }

@@ -20,17 +20,19 @@ namespace bbxBE.Application.Consts
         public static string FV_LEN2 = "{PropertyName}:  mező karakterek száma:2.";
         public static string FV_LEN8 = "{PropertyName}:  mező karakterek száma:8.";
 
-        public static string FV_MAXLEN = "{PropertyName}:  mező mérete nem lehet több, mint {MaxLength}.";
+        public static string ERR_MAXLEN = "{PropertyName}:  mező mérete nem lehet több, mint {MaxLength}.";
         public static string ERR_RANGE = "{PropertyName}:  mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
 
 
-        public static string FV_EXISTS = "{PropertyName}:  már létezik.";
-        public static string FV_INVALIDEMAIL = "{PropertyName}:  érvénytelen email cím.";
-        public static string FV_ERBANK = "{PropertyName}:  érvénytelen bankszámlaszám.";
-        public static string FV_INVPRODUCTCROUPCODE = "{PropertyName}:  érvénytelen termékcsoport.";
-        public static string FV_INVORIGINCODE = "{PropertyName}:  érvénytelen származási hely.";
-        public static string FV_INVVATRATECODE = "{PropertyName}:  érvénytelen áfakód.";
-        public static string FV_INVUNITOFMEASURE = "{PropertyName}:  érvénytelen mennyiségi egység:{PropertyValue} ";
+        public static string ERR_EXISTS = "{PropertyName}:  már létezik.";
+        public static string ERR_INVALIDEMAIL = "{PropertyName}:  érvénytelen email cím.";
+        public static string ERR_ERBANK = "{PropertyName}: érvénytelen bankszámlaszám.";
+        public static string ERR_INVPRODUCTCROUPCODE = "{PropertyName}: érvénytelen termékcsoport.";
+        public static string ERR_INVORIGINCODE = "{PropertyName}:  érvénytelen származási hely.";
+        public static string ERR_INVVATRATECODE = "{PropertyName}:  érvénytelen áfakód.";
+        public static string ERR_INVUNITOFMEASURE = "{PropertyName}:  érvénytelen mennyiségi egység:{PropertyValue} ";
+        public static string ERR_INVUNITOFMEASURE2 = "Sor: {0}, termék:{1} : érvénytelen mennyiségi egység:{2} ";
+
         public static string FV_INVPAYMENTMETHOD = "{PropertyName}:  érvénytelen fizetési mód:{PropertyValue} ";
         public static string FV_EXCHANGERATE = "{PropertyName}:  Érvénytelen árfolyam::{PropertyValue} ";
         public static string FV_INVCURRENCY = "{PropertyName}:  érvénytelen pénznem:{PropertyValue}";
@@ -47,7 +49,7 @@ namespace bbxBE.Application.Consts
         public static string FV_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
         public static string FV_WAREHOUSENOTFOUND = "Raktár nem található, Kód:{0}";
 
-        public static string FV_BASE = "Egy vagy több validációs hiba történt.";
+        public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 
         public static string FV_FILELISTISNULL = "A File lista nem lehet üres!";
         public static string FV_FILELISTISEMPTY = "A File lista nem lehet NULL!";

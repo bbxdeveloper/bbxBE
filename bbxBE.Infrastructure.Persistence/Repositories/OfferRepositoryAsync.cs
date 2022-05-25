@@ -23,17 +23,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 {
 
     /*
-      {
+      
+ {
 "customerID": 5,
   "offerIssueDate": "2022-05-20",
   "offerVaidityDate": "2022-05-20",
-  "notice": "elsï ajánlat",
+  "notice": "első ajánlat",
   "offerLines": [
     {
      "lineNumber": 1,
       "productCode": "VEG-2973",
-      "lineDescription": "Boyler 600W f√tïbetét",
+      "lineDescription": "Boyler 600W fűtőbetét",
      "vatRateCode": "27%",
+      "discount": 10,
+      "showDiscount": true,
        "unitPrice": 10,
       "unitVat": 2.7,
       "unitGross": 12.7

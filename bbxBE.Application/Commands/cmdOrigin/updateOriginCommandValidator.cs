@@ -29,13 +29,13 @@ namespace bbxBE.Application.Commands.cmdOrigin
                         {
                             return IsUniqueOriginCode(Name, Convert.ToInt64(model.ID));
                         }
-                    ).WithMessage(bbxBEConsts.FV_EXISTS)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                    ).WithMessage(bbxBEConsts.ERR_EXISTS)
+                .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.OriginDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
         }
 
         private bool IsUniqueOriginCode(string OriginCode, long ID)

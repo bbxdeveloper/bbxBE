@@ -25,7 +25,7 @@ namespace bbxBE.Application.Commands.ValidatorRules
 
            return ruleBuilder.NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                            .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                           .MaximumLength(80).WithMessage(bbxBEConsts.FV_MAXLEN);
+                           .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
             //                      .MustAsync(IsUniqueNameAsync).WithMessage(bbxBEConsts.FV_EXISTS);
         }
 
