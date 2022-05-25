@@ -177,6 +177,7 @@ namespace bxBE.Application.Commands.cmdOffer
 			try
 			{
 
+				offer.LatestVersion = true;
 				//Árajánlatszám megállapítása
 				counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
 				offer.OfferNumber = await _CounterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);

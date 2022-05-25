@@ -43,6 +43,10 @@ namespace bbxBE.Domain.Entities
 		[Description("Verzió")]
 		public short OfferVersion { get; set; }
 
+		[ColumnLabel("Legutolsó verzió?")]
+		[Description("Legutolsó verzió?")]
+		public bool LatestVersion { get; set; }
+
 
 		[ColumnLabel("Pénznem")]
 		[Description("Pénznem")]

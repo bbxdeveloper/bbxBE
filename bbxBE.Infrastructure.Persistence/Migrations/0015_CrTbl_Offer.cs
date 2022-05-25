@@ -40,7 +40,8 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("Notice").AsString(int.MaxValue).NotNullable()
                     .WithColumn("CurrencyCode").AsString().NotNullable().WithDefaultValue(enCurrencyCodes.HUF.ToString())
                     .WithColumn("ExchangeRate").AsDecimal().NotNullable().WithDefaultValue(1)
-                    .WithColumn("OfferVersion").AsInt16().NotNullable().WithDefaultValue(0);
+                    .WithColumn("OfferVersion").AsInt16().NotNullable().WithDefaultValue(0)
+                    .WithColumn("LatestVersion").AsBoolean().WithDefaultValue(true);
 
 
             Create.Index("INX_OfferNumber")

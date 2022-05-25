@@ -157,6 +157,10 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Verzió")]
 		public short OfferVersion { get; set; }
 
+		[ColumnLabel("Legutolsó verzió?")]
+		[Description("Legutolsó verzió?")]
+		public bool LatestVersion { get; set; }
+
 
 		[ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
