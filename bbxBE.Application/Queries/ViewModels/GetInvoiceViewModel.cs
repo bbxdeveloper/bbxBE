@@ -58,48 +58,18 @@ namespace bbxBE.Application.Queries.ViewModels
 			[ColumnLabel("Mennyiség")]
 			[Description("Mennyiség")]
 			public decimal Quantity { get; set; }
-			/*
-						#region UnitOfMeasure
-
-						[DataMember]
-						[ColumnLabel("Me.e")]
-						[Description("Mennyiségi egység")]
-						public string UnitOfMeasure { get; set; }
-
-						[ColumnLabel("Me.e név")]
-						[Description("Mennyiségi egység megnevezés")]
-						[DataMember]
-						[NotDBField]
-						public string UnitOfMeasureX { get; set; }
-						#endregion
-			*/
-
 			#region UnitOfMeasure
-			[IgnoreDataMember]
-			[NotDBField]
-			[NotModelField]
-			private enUnitOfMeasure _UnitOfMeasure { get; set; }
 
 			[DataMember]
 			[ColumnLabel("Me.e")]
 			[Description("Mennyiségi egység")]
-			public string UnitOfMeasure
-			{
-				get { return Enum.GetName(typeof(enUnitOfMeasure), _UnitOfMeasure); }
-				set
-				{
-					if ( !string.IsNullOrWhiteSpace(value))
-						_UnitOfMeasure = (enUnitOfMeasure)Enum.Parse(typeof(enUnitOfMeasure), value);
-					else
-						_UnitOfMeasure = enUnitOfMeasure.PIECE;
-				}
-			}
+			public string UnitOfMeasure { get; set; }
 
 			[ColumnLabel("Me.e név")]
 			[Description("Mennyiségi egység megnevezés")]
 			[DataMember]
 			[NotDBField]
-			public string UnitOfMeasureX { get { return Common.Utils.GetEnumDescription(_UnitOfMeasure); } }
+			public string UnitOfMeasureX { get; set; }
 			#endregion
 
 			[ColumnLabel("Ár")]
