@@ -25,51 +25,22 @@ namespace bbxBE.Application.Queries.ViewModels
         public string Description { get; set; }
         [ColumnLabel("Termékcsoport")]
         [Description("Termékcsoport")]
-        public string ProductGroup  { get; set; }
+        public string ProductGroup { get; set; }
         [ColumnLabel("Származási hely")]
         [Description("Származási hely")]
         public string Origin { get; set; }
 
-        /*  
-                #region UnitOfMeasure
-                [DataMember]
-                [ColumnLabel("Me.e")]
-                [Description("Mennyiségi egység")]
-                public string UnitOfMeasure { get; set; }
-
-                [ColumnLabel("Me.e név")]
-                [Description("Mennyiségi egység megnevezés")]
-                [DataMember]
-                [NotDBField]
-                public string UnitOfMeasureX { get; set; }
-                #endregion
-        */
         #region UnitOfMeasure
-        [IgnoreDataMember]
-        [NotDBField]
-        [NotModelField]
-        private enUnitOfMeasure _UnitOfMeasure { get; set; }
-
         [DataMember]
         [ColumnLabel("Me.e")]
         [Description("Mennyiségi egység")]
-        public string UnitOfMeasure
-        {
-            get { return Enum.GetName(typeof(enUnitOfMeasure), _UnitOfMeasure); }
-            set
-            {
-                if (value != null)
-                    _UnitOfMeasure = (enUnitOfMeasure)Enum.Parse(typeof(enUnitOfMeasure), value);
-                else
-                    _UnitOfMeasure = enUnitOfMeasure.PIECE;
-            }
-        }
+        public string UnitOfMeasure { get; set; }
 
         [ColumnLabel("Me.e név")]
         [Description("Mennyiségi egység megnevezés")]
         [DataMember]
         [NotDBField]
-        public string UnitOfMeasureX { get { return Common.Utils.GetEnumDescription(_UnitOfMeasure); } }
+        public string UnitOfMeasureX { get; set; }
         #endregion
 
         [ColumnLabel("Elad. ár1")]
@@ -86,7 +57,7 @@ namespace bbxBE.Application.Queries.ViewModels
         public decimal VatPercentage { get; set; }
         [ColumnLabel("Utolsó beszerzés")]
         [Description("Utolsó beszerzés dátuma")]
-          public decimal LatestSupplyPrice { get; set; }
+        public decimal LatestSupplyPrice { get; set; }
         [ColumnLabel("Készletes?")]
         [Description("Készletes?")]
         public bool IsStock { get; set; }

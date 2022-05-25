@@ -40,6 +40,7 @@ namespace bbxBE.Application.Queries.qProduct
      
             // query based on filter
             var entities = await _ProductRepository.QueryPagedProductAsync(validFilter);
+
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetProductViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 
