@@ -32,6 +32,14 @@ namespace bbxBE.Domain.Entities
 		[Description("A termék vagy szolgáltatás megnevezése")]
 		public string LineDescription { get; set; }
 
+		[ColumnLabel("Árengedmény %")]
+		[Description("Árengedmény %)")]
+		public decimal Discount { get; set; }
+		[ColumnLabel("Árengedmény megjelenítés?")]
+		[Description("Árengedmény megjelenítés)")]
+		public bool ShowDiscount { get; set; }
+
+
 		[ColumnLabel("Áfa ID")]
 		[Description("Áfa ID")]
 		public long VatRateID { get; set; }
