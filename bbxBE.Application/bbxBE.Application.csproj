@@ -31,8 +31,6 @@
     <PackageReference Include="MimeKit" Version="2.10.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
-    <PackageReference Include="Telerik.Reporting" Version="15.0.21.326" />
-    <PackageReference Include="Telerik.Reporting.WebServiceDataSource" Version="15.0.21.326" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +39,16 @@
 
   <ItemGroup>
     <Folder Include="Common\" />
+    <Folder Include="lib\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Telerik.Reporting">
+      <HintPath>lib\Telerik.Reporting.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Reporting.WebServiceDataSource">
+      <HintPath>lib\Telerik.Reporting.WebServiceDataSource.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
