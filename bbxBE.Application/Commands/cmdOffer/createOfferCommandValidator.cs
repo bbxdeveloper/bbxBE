@@ -51,6 +51,9 @@ namespace bbxBE.Application.Commands.cmdOffer
         {
             RuleFor(p => p.UnitOfMeasure)
                  .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.LineNumber, model.ProductCode, model.UnitOfMeasure));
+            RuleFor(p => p.Discount)
+               .InclusiveBetween(0, 100)
+               .WithMessage((model, field) => string.Format(bbxBEConsts.ERR_DETAIL_PREF, model.LineNumber, model.ProductCode) + bbxBEConsts.ERR_DISCOUNT);
         }
 
         public bool CheckUnitOfMEasure(string unitOfMeasure)

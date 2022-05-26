@@ -32,6 +32,8 @@ namespace bbxBE.Application.Consts
         public static string ERR_INVVATRATECODE = "{PropertyName}:  érvénytelen áfakód.";
         public static string ERR_INVUNITOFMEASURE = "{PropertyName}:  érvénytelen mennyiségi egység:{PropertyValue} ";
         public static string ERR_INVUNITOFMEASURE2 = "Sor: {0}, termék:{1} : érvénytelen mennyiségi egység:{2} ";
+        public static string ERR_DETAIL_PREF = "Sor: {0}, termék:{1}";
+        public static string ERR_DISCOUNT = "Sor: {0}, termék:{1}";
 
         public static string FV_INVPAYMENTMETHOD = "{PropertyName}:  érvénytelen fizetési mód:{PropertyValue} ";
         public static string FV_EXCHANGERATE = "{PropertyName}:  Érvénytelen árfolyam::{PropertyValue} ";
