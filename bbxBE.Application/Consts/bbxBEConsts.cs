@@ -35,8 +35,8 @@ namespace bbxBE.Application.Consts
         public static string ERR_DETAIL_PREF = "Sor: {0}, termék:{1}";
         public static string ERR_DISCOUNT = "Sor: {0}, termék:{1}";
 
-        public static string FV_INVPAYMENTMETHOD = "{PropertyName}:  érvénytelen fizetési mód:{PropertyValue} ";
-        public static string FV_EXCHANGERATE = "{PropertyName}:  Érvénytelen árfolyam::{PropertyValue} ";
+        public static string ERR_INVPAYMENTMETHOD = "{PropertyName}:  érvénytelen fizetési mód:{PropertyValue} ";
+        public static string ERR_EXCHANGERATE = "{PropertyName}:  Érvénytelen árfolyam::{PropertyValue} ";
         public static string FV_INVCURRENCY = "{PropertyName}:  érvénytelen pénznem:{PropertyValue}";
         public static string FV_PRODNOTFOUND = "Termék nem található, ID:{0} ";
         public static string FV_PRODCODENOTFOUND = "Termék nem található, kód:{0} ";
@@ -48,7 +48,10 @@ namespace bbxBE.Application.Consts
         public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb nem található, Kód:{0}, Raktár ID:{1} ";
         public static string FV_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
         public static string FV_ORIGINNOTFOUND = "Származási hely nem található, ID:{0} ";
+        public static string FV_OFFERNOTFOUND = "Árajánlat nem található, ID:{0} ";
+        public static string FV_INVOICENOTFOUND = "Számla nem található, ID:{0} ";
         public static string FV_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
+        public static string FV_USERNOTFOUND = "Felhasználó nem található, ID:{0} ";
         public static string FV_WAREHOUSENOTFOUND = "Raktár nem található, Kód:{0}";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";

@@ -15,6 +15,8 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Queries.qUSR_USER;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -62,6 +64,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var user = await GetByIdAsync(ID);
       
             var fields = requestParameter.Fields;
+
+            if (user == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_USERNOTFOUND, ID));
+            }
 
             // shape data
             var shapeData = _dataShaper.ShapeData(user, fields);

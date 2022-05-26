@@ -16,6 +16,8 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qWarehouse;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Application.Exceptions;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -63,6 +65,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var item = await GetByIdAsync(ID);
 
             //            var fields = requestParameter.Fields;
+
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_WAREHOUSENOTFOUND, ID));
+            }
 
             var itemModel = _mapper.Map<Warehouse, GetWarehouseViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetWarehouseViewModel>();

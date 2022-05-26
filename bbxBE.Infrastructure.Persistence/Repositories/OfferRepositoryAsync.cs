@@ -143,6 +143,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
               .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
               .Where(x => x.ID == ID).FirstOrDefaultAsync();
 
+            if( item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OFFERNOTFOUND, ID));
+            }
+
             var itemModel = _mapper.Map<Offer, GetOfferViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
 

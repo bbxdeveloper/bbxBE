@@ -122,7 +122,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 item = await _invoices.AsNoTracking()
                   .Where(x => x.ID == ID).FirstOrDefaultAsync();
             }
-            //            var fields = requestParameter.Fields;
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_INVOICENOTFOUND, ID));
+            }
 
             var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
