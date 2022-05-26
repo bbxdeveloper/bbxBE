@@ -43,6 +43,7 @@ namespace bxBE.Application.Commands.cmdOffer
 			[ColumnLabel("Árengedmény %")]
 			[Description("Árengedmény %)")]
 			public decimal Discount { get; set; }
+
 			[ColumnLabel("Árengedmény megjelenítés?")]
 			[Description("Árengedmény megjelenítés)")]
 			public bool ShowDiscount { get; set; }
@@ -89,6 +90,14 @@ namespace bxBE.Application.Commands.cmdOffer
 		[ColumnLabel("Megjegyzés")]
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }
+
+		[ColumnLabel("Verzió")]
+		[Description("Verzió")]
+		public short OfferVersion { get; set; }
+
+		[ColumnLabel("Új verzió?")]
+		[Description("Új verzió?")]
+		public bool NewOffer { get; set; } = false;
 
 		[ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
