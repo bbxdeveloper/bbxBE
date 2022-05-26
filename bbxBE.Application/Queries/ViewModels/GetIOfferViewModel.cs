@@ -83,6 +83,14 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Ár")]
 			public decimal UnitPrice { get; set; }
 
+			[ColumnLabel("Áfa értéke")]
+			[Description("Áfa értéke")]
+			public decimal UnitVat { get; set; }
+
+			[ColumnLabel("Bruttó ár")]
+			[Description("Bruttó ár")]
+			public decimal UnitGross { get; set; }
+
 		}
 
 
