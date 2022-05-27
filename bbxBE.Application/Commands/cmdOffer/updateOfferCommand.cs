@@ -21,11 +21,55 @@ using System.Threading.Tasks;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
-	public class UpdateOfferCommand2 : IRequest<Response<Offer>>
+
+	/*
+	 
+ {
+  "offerVersion": 1,
+  "newOffer": false,
+
+"id":1,
+"offerNumber": "AJ00005/22"
+"customerID": 5,
+  "offerIssueDate": "2022-05-20",
+  "offerVaidityDate": "2022-05-20",
+  "notice": "első MÓDOSITOTT ajánlat",
+  "offerLines": [
+    {
+"id":1,
+     "lineNumber": 1,
+      "productCode": "VEG-2973",
+      "lineDescription": "Boyler 600W fűtőbetét",
+"UnitOfMeasure" : "PIECE",
+     "vatRateCode": "27%",
+      "discount": 10,
+      "showDiscount": true,
+       "unitPrice": 10,
+      "unitVat": 2.7,
+      "unitGross": 12.7
+    },
+      {
+"id":2,
+     "lineNumber": 2,
+      "productCode": "IZZ-861",
+      "lineDescription": "HANDY 10139 Érvéghüvely prés MÓD",
+     "vatRateCode": "27%",
+"UnitOfMeasure" : "PIECE",
+      "discount": 10,
+      "showDiscount": true,
+       "unitPrice": 100,
+      "unitVat": 27,
+      "unitGross": 127
+    }
+  ]
+}
+
+	 */
+	public class UpdateOfferCommand : IRequest<Response<Offer>>
 	{
 
 		[Description("Árajánlat-sor")]
-		public class OfferLine2
+		public class OfferLine
 		{
 			public short ID { get; set; }
 
@@ -103,12 +147,12 @@ namespace bxBE.Application.Commands.cmdOffer
 
 		[ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
-		public List<UpdateOfferCommand2.OfferLine2> OfferLines { get; set; } = new List<UpdateOfferCommand2.OfferLine2>();
+		public List<UpdateOfferCommand.OfferLine> OfferLines { get; set; } = new List<UpdateOfferCommand.OfferLine>();
 
 	}
 
 
-	public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand2, Response<Offer>>
+	public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand, Response<Offer>>
     {
         private readonly IOfferRepositoryAsync _OfferRepository;
 		private readonly ICounterRepositoryAsync _CounterRepository;
@@ -136,12 +180,12 @@ namespace bxBE.Application.Commands.cmdOffer
             _configuration = configuration;
         }
 
-        public async Task<Response<Offer>> Handle(UpdateOfferCommand2 request, CancellationToken cancellationToken)
+        public async Task<Response<Offer>> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
         {
             var offer = _mapper.Map<Offer>(request);
 
 			//Egyelőre csak forintos ajántatokról van szó
-			offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
+		offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
 			offer.ExchangeRate = 1;
 
 
@@ -179,11 +223,11 @@ namespace bxBE.Application.Commands.cmdOffer
 					ln.UnitGrossHUF = ln.UnitGross * offer.ExchangeRate;
 				}
 
-		//		if (request.NewOffer)
+				if (request.NewOffer)
 				{
 					await _OfferRepository.AddOfferAsync(offer);
 				}
-//				else
+				else
 				{
 					await _OfferRepository.UpdateOfferAsync(offer);
 				}

@@ -92,12 +92,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var prevVerisons = await _Offers
                       .Where(x => x.OfferNumber == p_Offer.OfferNumber && x.OfferVersion < p_Offer.OfferVersion).ToListAsync();
                     prevVerisons.ForEach(i => i.LatestVersion = false);
+                    _Offers.UpdateRange(prevVerisons);
 
                     //Az aktuális minden esetben Latest!
                     p_Offer.LatestVersion = true;
-                    _Offers.Update(p_Offer);
+
+                    //Ha másolatot insert-elünk, a biztonság kedvéért kiürítjük az ID-ket
+                    p_Offer.OfferLines.ToList().ForEach(e => {
+                        e.OfferID = 0;
+                        e.ID = 0; }
+                    );
+                    p_Offer.ID = 0;
 
                     await _Offers.AddAsync(p_Offer);
+
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 
@@ -126,6 +134,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     //Az aktuális minden esetben Latest!
                     p_Offer.LatestVersion = true;
+
+
+                    var curentLines = await _OfferLines.Where(w => w.OfferID == p_Offer.ID).ToListAsync();
+                    foreach (var existingLine in curentLines)
+                    {
+                        if (!p_Offer.OfferLines.Any(a => a.ID == existingLine.ID))
+                            _OfferLines.Remove(existingLine);
+                    }
+
+                    p_Offer.OfferLines.ToList().ForEach(e => e.OfferID = p_Offer.ID);
+
+
                     _Offers.Update(p_Offer);
 
                     await _dbContext.SaveChangesAsync();

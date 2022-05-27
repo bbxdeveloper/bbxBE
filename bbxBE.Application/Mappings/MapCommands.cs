@@ -114,11 +114,11 @@ namespace bbxBE.Command.Mappings
             CreateMap<CreateOfferCommand.OfferLine, OfferLine>();
             CreateMap<CreateOfferCommand.OfferLine, OfferLine>().ReverseMap();
 
-            CreateMap<UpdateOfferCommand2, Offer>();
-            CreateMap<UpdateOfferCommand2, Offer>().ReverseMap();
+            CreateMap<UpdateOfferCommand, Offer>();
+            CreateMap<UpdateOfferCommand, Offer>().ReverseMap();
 
-            CreateMap<UpdateOfferCommand2.OfferLine2, OfferLine>();
-            CreateMap<UpdateOfferCommand2.OfferLine2, OfferLine>().ReverseMap();
+            CreateMap<UpdateOfferCommand.OfferLine, OfferLine>();
+            CreateMap<UpdateOfferCommand.OfferLine, OfferLine>().ReverseMap();
 
         }
     }

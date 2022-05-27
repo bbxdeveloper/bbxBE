@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace bbxBE.Application.Commands.cmdOffer
 {
 
-    public class updateCommandValidator : AbstractValidator<UpdateOfferCommand2>
+    public class updateCommandValidator : AbstractValidator<UpdateOfferCommand>
     {
         private readonly IOfferRepositoryAsync _OfferRepository;
 
@@ -48,7 +48,7 @@ namespace bbxBE.Application.Commands.cmdOffer
 
     }
 
-    public class UpdateOfferLinesCommandValidatror : AbstractValidator<UpdateOfferCommand2.OfferLine2>
+    public class UpdateOfferLinesCommandValidatror : AbstractValidator<UpdateOfferCommand.OfferLine>
     {
         public UpdateOfferLinesCommandValidatror()
         {

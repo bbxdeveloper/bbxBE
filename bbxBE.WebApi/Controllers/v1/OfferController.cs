@@ -59,7 +59,7 @@ namespace bbxBE.WebApi.Controllers.v1
 
         [HttpPut]
         //       [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(UpdateOfferCommand2 command)
+        public async Task<IActionResult> Update(UpdateOfferCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
