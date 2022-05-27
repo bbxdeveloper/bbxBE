@@ -27,6 +27,8 @@ namespace bxBE.Application.Commands.cmdOffer
 		[Description("Árajánlat-sor")]
 		public class OfferLine
 		{
+			public short ID { get; set; }
+
 			[ColumnLabel("#")]
 			[Description("Sor száma")]
 			public short LineNumber { get; set; }
@@ -68,7 +70,6 @@ namespace bxBE.Application.Commands.cmdOffer
 			[Description("Bruttó ár")]
 			public decimal UnitGross { get; set; }
 		}
-
 		public long ID { get; set; }
 
 		[ColumnLabel("Ügyfél ID")]
@@ -94,15 +95,14 @@ namespace bxBE.Application.Commands.cmdOffer
 		[ColumnLabel("Verzió")]
 		[Description("Verzió")]
 		public short OfferVersion { get; set; }
-
+		
 		[ColumnLabel("Új verzió?")]
 		[Description("Új verzió?")]
 		public bool NewOffer { get; set; } = false;
-
+		
 		[ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
 		public List<OfferLine> OfferLines { get; set; } = new List<OfferLine>();
-
 
 	}
 
@@ -143,16 +143,14 @@ namespace bxBE.Application.Commands.cmdOffer
 			offer.ExchangeRate = 1;
 
 
-			var counterCode = "";
 			try
 			{
 
-
+				
 				//Tételsorok
 				foreach (var ln in offer.OfferLines)
 				{
 					var rln = request.OfferLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
-
 
 					var prod = _ProductRepository.GetProductByProductCode(rln.ProductCode);
 					if (prod == null)
@@ -179,10 +177,14 @@ namespace bxBE.Application.Commands.cmdOffer
 					ln.UnitGrossHUF = ln.UnitGross * offer.ExchangeRate;
 				}
 
-
-
-				await _OfferRepository.AddOfferAsync(offer);
-
+				if (request.NewOffer)
+				{
+					await _OfferRepository.AddOfferAsync(offer);
+				}
+				else
+				{
+					await _OfferRepository.UpdateOfferAsync(offer);
+				}
 
 				return new Response<Offer>(offer);
 			}

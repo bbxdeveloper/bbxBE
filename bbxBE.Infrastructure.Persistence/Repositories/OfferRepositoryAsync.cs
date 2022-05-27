@@ -87,6 +87,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
 
+                    //Az előző verziók érvénytelenítése (abban az esetben, ha új verziót kértünk)
+                    // 
+                    var prevVerisons = await _Offers
+                      .Where(x => x.OfferNumber == p_Offer.OfferNumber && x.OfferVersion < p_Offer.OfferVersion).ToListAsync();
+                    prevVerisons.ForEach(i => i.LatestVersion = false);
+
+                    //Az aktuális minden esetben Latest!
+                    p_Offer.LatestVersion = true;
+                    _Offers.Update(p_Offer);
+
                     await _Offers.AddAsync(p_Offer);
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -102,9 +112,33 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return p_Offer;
         }
 
-        public async Task<Offer> UpdateOfferAsync(Offer p_Offer, List<OfferLine> p_OfferLines)
+        public async Task<Offer> UpdateOfferAsync(Offer p_Offer)
         {
-            throw new NotImplementedException("UpdateOfferAsync");
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    //Az előző verziók érvénytelenítése
+                    //
+                    var prevVerisons = await _Offers
+                      .Where(x => x.OfferNumber == p_Offer.OfferNumber && x.OfferVersion < p_Offer.OfferVersion).ToListAsync();
+                    prevVerisons.ForEach(i => i.LatestVersion = false);
+
+                    //Az aktuális minden esetben Latest!
+                    p_Offer.LatestVersion = true;
+                    _Offers.Update(p_Offer);
+
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
+            }
+            return p_Offer;
         }
 
         public async Task<Offer> DeleteOfferAsync(long ID)

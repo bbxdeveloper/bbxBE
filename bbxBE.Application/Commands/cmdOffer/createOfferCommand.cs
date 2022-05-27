@@ -59,6 +59,7 @@ namespace bxBE.Application.Commands.cmdOffer
 	public class CreateOfferCommand : IRequest<Response<Offer>>
 	{
 
+		
 		[Description("Árajánlat-sor")]
 		public class OfferLine
 		{
