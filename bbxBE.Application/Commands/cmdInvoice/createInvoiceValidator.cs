@@ -48,7 +48,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
 
             RuleFor(r => r.PaymentMethod)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .Must(CheckPaymentMethod).WithMessage(bbxBEConsts.FV_INVPAYMENTMETHOD);
+                .Must(CheckPaymentMethod).WithMessage(bbxBEConsts.ERR_INVPAYMENTMETHOD);
 
 
             RuleFor(r => r.CurrencyCode)
@@ -57,7 +57,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
 
 
             RuleFor(r => r.ExchangeRate)
-              .GreaterThan(0).WithMessage(bbxBEConsts.FV_EXCHANGERATE);
+              .GreaterThan(0).WithMessage(bbxBEConsts.ERR_EXCHANGERATE);
 
 
             RuleFor(p => new { p.InvoiceLines }).Must(m => m.InvoiceLines.Count > 0)

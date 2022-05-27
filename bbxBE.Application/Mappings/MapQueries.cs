@@ -93,7 +93,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
 
             CreateMap<Offer, GetOfferViewModel>()
-             .ForMember(dst => dst.OfferNumber, opt => opt.MapFrom((src, dest) =>
+             .ForMember(dst => dst.OfferNumberX, opt => opt.MapFrom((src, dest) =>
              {
                  return src.OfferVersion > 0 ? src.OfferNumber + "/" + src.OfferVersion : src.OfferNumber;
               }))

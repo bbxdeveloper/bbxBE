@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Commands.cmdUSR_USER;
+﻿using bbxBE.Application.Commands.cmdOffer;
+using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qOffer;
@@ -52,6 +53,13 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Create(CreateOfferCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpPut]
+        //       [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(UpdateOfferCommand command)
         {
             return Ok(await Mediator.Send(command));
         }

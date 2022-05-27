@@ -73,7 +73,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var item = await GetByIdAsync(ID);
 
-            //            var fields = requestParameter.Fields;
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATENOTFOUND, ID));
+            }
 
             var itemModel = _mapper.Map<VatRate, GetVatRateViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetVatRateViewModel>();

@@ -12,9 +12,8 @@ namespace bbxBE.Application.Interfaces.Repositories
     {
         Task<bool> SeedDataAsync(int rowCount);
         Task<Offer> AddOfferAsync(Offer p_Offer);
-        Task<Offer> UpdateOfferAsync(Offer p_Offer, List<OfferLine> p_OfferLines);
+        Task<Offer> UpdateOfferAsync(Offer p_Offer);
         Task<Offer> DeleteOfferAsync(long ID);
-
 
         Task<Entity> GetOfferAsync(GetOffer requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOfferAsync(QueryOffer requestParameters);

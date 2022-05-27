@@ -52,6 +52,7 @@ namespace bbxBE.Application.Commands.cmdOffer
     {
         public UpdateOfferLinesCommandValidatror()
         {
+            
             RuleFor(p => p.UnitOfMeasure)
                  .Must(CheckUnitOfMEasure).
                  WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.LineNumber, model.ProductCode, model.UnitOfMeasure));

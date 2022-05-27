@@ -21,12 +21,58 @@ using System.Threading.Tasks;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
+
+	/*
+	 
+ {
+  "offerVersion": 1,
+  "newOffer": false,
+
+"id":1,
+"offerNumber": "AJ00005/22"
+"customerID": 5,
+  "offerIssueDate": "2022-05-20",
+  "offerVaidityDate": "2022-05-20",
+  "notice": "első MÓDOSITOTT ajánlat",
+  "offerLines": [
+    {
+"id":1,
+     "lineNumber": 1,
+      "productCode": "VEG-2973",
+      "lineDescription": "Boyler 600W fűtőbetét",
+"UnitOfMeasure" : "PIECE",
+     "vatRateCode": "27%",
+      "discount": 10,
+      "showDiscount": true,
+       "unitPrice": 10,
+      "unitVat": 2.7,
+      "unitGross": 12.7
+    },
+      {
+"id":2,
+     "lineNumber": 2,
+      "productCode": "IZZ-861",
+      "lineDescription": "HANDY 10139 Érvéghüvely prés MÓD",
+     "vatRateCode": "27%",
+"UnitOfMeasure" : "PIECE",
+      "discount": 10,
+      "showDiscount": true,
+       "unitPrice": 100,
+      "unitVat": 27,
+      "unitGross": 127
+    }
+  ]
+}
+
+	 */
 	public class UpdateOfferCommand : IRequest<Response<Offer>>
 	{
 
 		[Description("Árajánlat-sor")]
 		public class OfferLine
 		{
+			public short ID { get; set; }
+
 			[ColumnLabel("#")]
 			[Description("Sor száma")]
 			public short LineNumber { get; set; }
@@ -68,7 +114,6 @@ namespace bxBE.Application.Commands.cmdOffer
 			[Description("Bruttó ár")]
 			public decimal UnitGross { get; set; }
 		}
-
 		public long ID { get; set; }
 
 		[ColumnLabel("Ügyfél ID")]
@@ -95,16 +140,17 @@ namespace bxBE.Application.Commands.cmdOffer
 		[Description("Verzió")]
 		public short OfferVersion { get; set; }
 
+
 		[ColumnLabel("Új verzió?")]
 		[Description("Új verzió?")]
 		public bool NewOffer { get; set; } = false;
 
 		[ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
-		public List<OfferLine> OfferLines { get; set; } = new List<OfferLine>();
-
+		public List<UpdateOfferCommand.OfferLine> OfferLines { get; set; } = new List<UpdateOfferCommand.OfferLine>();
 
 	}
+
 
 	public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand, Response<Offer>>
     {
@@ -139,20 +185,18 @@ namespace bxBE.Application.Commands.cmdOffer
             var offer = _mapper.Map<Offer>(request);
 
 			//Egyelőre csak forintos ajántatokról van szó
-			offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
+		offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
 			offer.ExchangeRate = 1;
 
 
-			var counterCode = "";
 			try
 			{
 
-
+				
 				//Tételsorok
 				foreach (var ln in offer.OfferLines)
 				{
 					var rln = request.OfferLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
-
 
 					var prod = _ProductRepository.GetProductByProductCode(rln.ProductCode);
 					if (prod == null)
@@ -179,10 +223,14 @@ namespace bxBE.Application.Commands.cmdOffer
 					ln.UnitGrossHUF = ln.UnitGross * offer.ExchangeRate;
 				}
 
-
-
-				await _OfferRepository.AddOfferAsync(offer);
-
+				if (request.NewOffer)
+				{
+					await _OfferRepository.AddOfferAsync(offer);
+				}
+				else
+				{
+					await _OfferRepository.UpdateOfferAsync(offer);
+				}
 
 				return new Response<Offer>(offer);
 			}

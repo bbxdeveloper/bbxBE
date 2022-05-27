@@ -102,6 +102,10 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Ajánlat száma")]
 		public string OfferNumber { get; set; }
 
+		[ColumnLabel("Ajánlat száma")]
+		[Description("Ajánlat száma verziózva")]
+		public string OfferNumberX { get; set; }
+
 		#region Customer
 		[ColumnLabel("Ügyfél ID")]
 		[Description("Ügyfél ID")]

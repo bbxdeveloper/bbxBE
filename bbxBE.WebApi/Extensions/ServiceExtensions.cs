@@ -60,6 +60,8 @@ namespace bbxBE.WebApi.Extensions
                         }, new List<string>()
                     },
                 });
+                c.CustomSchemaIds(x => x.FullName); //https://stackoverflow.com/questions/65196695/swagger-swashbuckle-does-not-support-nested-class-as-action-method-parameter
+
             });
         }
 
