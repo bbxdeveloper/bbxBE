@@ -21,11 +21,11 @@ using System.Threading.Tasks;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
-	public class UpdateOfferCommand : IRequest<Response<Offer>>
+	public class UpdateOfferCommand2 : IRequest<Response<Offer>>
 	{
 
 		[Description("Árajánlat-sor")]
-		public class OfferLine
+		public class OfferLine2
 		{
 			public short ID { get; set; }
 
@@ -95,18 +95,20 @@ namespace bxBE.Application.Commands.cmdOffer
 		[ColumnLabel("Verzió")]
 		[Description("Verzió")]
 		public short OfferVersion { get; set; }
-		
+
+
 		[ColumnLabel("Új verzió?")]
 		[Description("Új verzió?")]
 		public bool NewOffer { get; set; } = false;
-		
+
 		[ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
-		public List<OfferLine> OfferLines { get; set; } = new List<OfferLine>();
+		public List<UpdateOfferCommand2.OfferLine2> OfferLines { get; set; } = new List<UpdateOfferCommand2.OfferLine2>();
 
 	}
 
-	public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand, Response<Offer>>
+
+	public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand2, Response<Offer>>
     {
         private readonly IOfferRepositoryAsync _OfferRepository;
 		private readonly ICounterRepositoryAsync _CounterRepository;
@@ -134,7 +136,7 @@ namespace bxBE.Application.Commands.cmdOffer
             _configuration = configuration;
         }
 
-        public async Task<Response<Offer>> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Offer>> Handle(UpdateOfferCommand2 request, CancellationToken cancellationToken)
         {
             var offer = _mapper.Map<Offer>(request);
 
@@ -177,11 +179,11 @@ namespace bxBE.Application.Commands.cmdOffer
 					ln.UnitGrossHUF = ln.UnitGross * offer.ExchangeRate;
 				}
 
-				if (request.NewOffer)
+		//		if (request.NewOffer)
 				{
 					await _OfferRepository.AddOfferAsync(offer);
 				}
-				else
+//				else
 				{
 					await _OfferRepository.UpdateOfferAsync(offer);
 				}

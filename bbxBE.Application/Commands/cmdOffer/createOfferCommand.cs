@@ -130,7 +130,7 @@ namespace bxBE.Application.Commands.cmdOffer
 
 		[ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
-		public List<OfferLine> OfferLines { get; set; } = new List<OfferLine>();
+		public List<CreateOfferCommand.OfferLine> OfferLines { get; set; } = new List<CreateOfferCommand.OfferLine>();
 
 
 

@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Commands.cmdUSR_USER;
+﻿using bbxBE.Application.Commands.cmdOffer;
+using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qOffer;
@@ -58,7 +59,7 @@ namespace bbxBE.WebApi.Controllers.v1
 
         [HttpPut]
         //       [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(UpdateOfferCommand command)
+        public async Task<IActionResult> Update(UpdateOfferCommand2 command)
         {
             return Ok(await Mediator.Send(command));
         }
