@@ -17,7 +17,8 @@ namespace bbxBE.Application.Queries.qOffer
     public class GetOffer:  IRequest<Entity>
     {
         public long ID { get; set; }
-  //      public string Fields { get; set; }
+        //Teljes reációs szerkezet kell? I/N
+        public bool FullData { get; set; } = true;
     }
 
     public class GetOfferHandler : IRequestHandler<GetOffer, Entity>

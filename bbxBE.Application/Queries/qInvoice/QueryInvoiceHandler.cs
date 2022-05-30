@@ -47,6 +47,10 @@ namespace bbxBE.Application.Queries.qInvoice
         [ColumnLabel("Teljesítés ig")]
         [Description("Teljesítés dátumig")]
         public DateTime? InvoiceDeliveryDateTo { get; set; }
+
+        //Teljes reációs szerkezet kell? I/N
+        public bool FullData { get; set; } = true;
+
     }
 
     public class QueryInvoiceHandler : IRequestHandler<QueryInvoice, PagedResponse<IEnumerable<Entity>>>

@@ -171,15 +171,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 if (offer != null)
                 {
+                    offer.Deleted = true;
+                    _Offers.Update(offer);
 
-                    throw new NotImplementedException("DeleteOfferAsync");
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_ORIGINNOTFOUND, ID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OFFERNOTFOUND, ID));
                 }
             }
             return offer;
@@ -189,15 +190,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Entity> GetOfferAsync(GetOffer requestParameter)
         {
 
-
             var ID = requestParameter.ID;
+            var item = await GetOfferRecordAsync(ID, requestParameter.FullData);
 
-            var item = await _Offers.AsNoTracking()
-              .Include(c => c.Customer).AsNoTracking()
-              .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
-              .Where(x => x.ID == ID).FirstOrDefaultAsync();
-
-            if( item == null)
+            if ( item == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OFFERNOTFOUND, ID));
             }
@@ -210,6 +206,30 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
+        public async Task<Offer> GetOfferRecordAsync(long ID, bool FullData = true)
+        {
+
+
+            Offer item;
+
+            if (FullData)
+            {
+                item = await _Offers.AsNoTracking()
+                      .Include(c => c.Customer).AsNoTracking()
+                      .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
+                      .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
+            }
+            else
+            {
+                item = await _Offers.AsNoTracking()
+                      .Include(c => c.Customer).AsNoTracking()
+                      .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
+            }
+            return item;
+        }
+
+
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOfferAsync(QueryOffer requestParameter)
         {
             var pageNumber = requestParameter.PageNumber;
@@ -222,12 +242,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
 
-            //var query = _Offers//.AsNoTracking().AsExpandable()
-            //        .Include(i => i.Warehouse).AsQueryable();
-            var query = _Offers.AsNoTracking()
-             .Include(c => c.Customer).AsNoTracking()
-             .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking();
+            IQueryable<Offer> query;
+            if (requestParameter.FullData)
+            {
 
+                query = _Offers.AsNoTracking()
+                 .Include(c => c.Customer).AsNoTracking()
+                 .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking();
+            }
+            else
+            {
+                query = _Offers.AsNoTracking()
+                 .Include(c => c.Customer).AsNoTracking();
+            }
 
             // Count records total
             recordsTotal = await query.CountAsync();
@@ -298,7 +325,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             var predicate = PredicateBuilder.New<Offer>();
 
-           predicate = predicate.And(p => (CustomerID == 0 || CustomerID == p.CustomerID)
+           predicate = predicate.And(p => !p.Deleted && (CustomerID == 0 || CustomerID == p.CustomerID)
                            && (string.IsNullOrWhiteSpace(OfferNumber) || p.OfferNumber.ToUpper().Contains(OfferNumber.ToUpper()))
                            && (!OfferIssueDateFrom.HasValue || p.OfferIssueDate >= OfferIssueDateFrom.Value)
                            && (!OfferIssueDateTo.HasValue || p.OfferIssueDate <= OfferIssueDateTo.Value)
