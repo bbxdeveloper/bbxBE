@@ -71,7 +71,7 @@ namespace bxBE.Application.Commands.cmdOffer
 		[Description("Árajánlat-sor")]
 		public class OfferLine
 		{
-			public short ID { get; set; }
+			public long ID { get; set; }
 
 			[ColumnLabel("#")]
 			[Description("Sor száma")]

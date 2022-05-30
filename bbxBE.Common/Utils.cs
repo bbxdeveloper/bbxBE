@@ -723,6 +723,20 @@ namespace bbxBE.Common
             stream.Position = 0;
             return stream;
         }
+
+        public static string LoadEmbeddedResource(Stream stream)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            string result = "";
+//            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    result = reader.ReadToEnd();
+                }
+            }
+            return result;
+        }
     }
 
 }

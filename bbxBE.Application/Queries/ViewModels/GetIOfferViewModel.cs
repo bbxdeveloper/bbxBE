@@ -23,7 +23,7 @@ namespace bbxBE.Application.Queries.ViewModels
 		public class OfferLine
 		{
 			[MapToEntity("ID")]
-			public string ID { get; set; }
+			public long ID { get; set; }
 
 			[ColumnLabel("Árajánlat ID")]
 			[Description("Árajánlat ID")]

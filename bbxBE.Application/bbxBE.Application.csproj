@@ -8,11 +8,15 @@
 
   <ItemGroup>
     <None Remove="Reports\Invoice.trdx" />
+    <None Remove="Reports\Offer.trdx" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Reports\Invoice.trdx">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Offer.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 
