@@ -43,6 +43,9 @@ namespace bbxBE.Application.Queries.qOffer
         [ColumnLabel("Érvényességig")]
         [Description("Érvényesség dátumáig")]
         public DateTime? OfferVaidityDateTo { get; set; }
+
+        //Teljes reációs szerkezet kell? I/N
+        public bool FullData { get; set; } = true;
     }
 
     public class QueryOfferHandler : IRequestHandler<QueryOffer, PagedResponse<IEnumerable<Entity>>>

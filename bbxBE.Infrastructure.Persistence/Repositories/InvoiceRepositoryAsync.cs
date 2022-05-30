@@ -104,24 +104,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var ID = requestParameter.ID;
 
-            Invoice item;
+            Invoice item = await GetInvoiceRecordAsync(ID, requestParameter.FullData);
 
-            if (requestParameter.FullData)
-            {
-                item = await _invoices.AsNoTracking()
-                  .Include(w => w.Warehouse).AsNoTracking()
-                  .Include(s => s.Supplier).AsNoTracking()
-                  .Include(c => c.Customer).AsNoTracking()
-                  .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
-                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
-                  .Where(x => x.ID == ID).FirstOrDefaultAsync();
-            }
-            else
-            {
-                item = await _invoices.AsNoTracking()
-                  .Where(x => x.ID == ID).FirstOrDefaultAsync();
-            }
             if (item == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_INVOICENOTFOUND, ID));
@@ -156,6 +140,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             else
             {
                 item = await _invoices.AsNoTracking()
+                  .Include(w => w.Warehouse).AsNoTracking()
+                  .Include(s => s.Supplier).AsNoTracking()
+                  .Include(c => c.Customer).AsNoTracking()
+                  .Include(a => a.AdditionalInvoiceData).AsNoTracking()
                   .Where(x => x.ID == ID).FirstOrDefaultAsync();
             }
             return  item;
@@ -177,13 +165,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //var query = _invoices//.AsNoTracking().AsExpandable()
             //        .Include(i => i.Warehouse).AsQueryable();
-            var query = _invoices.AsNoTracking()
-             .Include(w => w.Warehouse).AsNoTracking()
-             .Include(s => s.Supplier).AsNoTracking()
-             .Include(c => c.Customer).AsNoTracking()
-             .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-             .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
-             .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking();
+
+            IQueryable<Invoice> query;
+            if (requestParameter.FullData)
+            {
+                query = _invoices.AsNoTracking()
+                 .Include(w => w.Warehouse).AsNoTracking()
+                 .Include(s => s.Supplier).AsNoTracking()
+                 .Include(c => c.Customer).AsNoTracking()
+                 .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+                 .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
+                 .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking();
+            }
+            else
+            {
+                query = _invoices.AsNoTracking()
+                 .Include(w => w.Warehouse).AsNoTracking()
+                 .Include(s => s.Supplier).AsNoTracking()
+                 .Include(c => c.Customer).AsNoTracking()
+                 .Include(a => a.AdditionalInvoiceData).AsNoTracking();
+
+            }
 
 
             // Count records total
