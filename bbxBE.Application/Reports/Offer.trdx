@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report DataSourceName="webServiceDataSource1" Width="190mm" UnitOfMeasure="Mm" SkipBlankPages="False" Name="Offer" Zoom="1.5" SnapGridSize="10mm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;@OfferID&quot;:&quot;2&quot;}" AuthParameterValues="null" ServiceUrl="https://bbxbe.azurewebsites.net/api/v1/Offer?ID=@OfferID" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;@OfferID&quot;:&quot;5&quot;}" AuthParameterValues="null" ServiceUrl="https://bbxbe.azurewebsites.net/api/v1/Offer?ID=@OfferID" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Inline" Name="@OfferID">
           <Value>
@@ -108,7 +108,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="5" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="18.21mm" Height="5mm" Left="0in" Top="0in" Value="=IIf(Fields.showDiscount, Fields.discount, &quot;&quot;)" Name="textBox23" StyleName="Normal.TableBody">
+                  <TextBox Width="18.21mm" Height="5mm" Left="0in" Top="0in" Value="=IIf(Fields.showDiscount = False Or Fields.discount = 0, &quot;&quot;, Fields.discount)" Name="textBox23" StyleName="Normal.TableBody">
                     <Style>
                       <Font Size="8pt" />
                     </Style>
@@ -348,7 +348,7 @@
   <ReportParameters>
     <ReportParameter Name="OfferID" Type="Integer" Visible="True" AllowBlank="False">
       <Value>
-        <String>2</String>
+        <String>5</String>
       </Value>
     </ReportParameter>
   </ReportParameters>
