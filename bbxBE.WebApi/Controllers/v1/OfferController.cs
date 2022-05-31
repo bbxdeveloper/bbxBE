@@ -26,12 +26,16 @@ namespace bbxBE.WebApi.Controllers.v1
 
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
+        private readonly IHttpContextAccessor _context;
+
         public OfferController(
            IWebHostEnvironment env,
-           IConfiguration conf)
+           IConfiguration conf,
+            IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
+            _context = context;
         }
 
         /// <summary>
@@ -80,6 +84,19 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Query([FromQuery] QueryOffer filter)
         {
             return Ok(await Mediator.Send(filter));
+        }
+
+        [HttpPost("print")]
+        public async Task<IActionResult> Print(PrintOfferCommand command)
+        {
+
+            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var result = await Mediator.Send(command);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
 

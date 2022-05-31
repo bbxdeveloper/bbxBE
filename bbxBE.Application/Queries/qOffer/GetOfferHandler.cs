@@ -33,7 +33,12 @@ namespace bbxBE.Application.Queries.qOffer
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<Entity> Handle(GetOffer request, CancellationToken cancellationToken)
         {
             var validFilter = request;

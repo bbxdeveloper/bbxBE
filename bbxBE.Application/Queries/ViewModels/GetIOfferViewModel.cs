@@ -2,6 +2,7 @@
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,7 +24,7 @@ namespace bbxBE.Application.Queries.ViewModels
 		public class OfferLine
 		{
 			[MapToEntity("ID")]
-			public string ID { get; set; }
+			public long ID { get; set; }
 
 			[ColumnLabel("Árajánlat ID")]
 			[Description("Árajánlat ID")]
@@ -176,6 +177,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
 		[ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
+		[MapToEntity("offerLines")]
 		public List<GetOfferViewModel.OfferLine> OfferLines { get; set; } = new List<GetOfferViewModel.OfferLine>();
 
 

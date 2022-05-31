@@ -50,7 +50,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
             InstanceReportSource reportSource = null;
             Telerik.Reporting.Report rep = null;
 
-            
+
 
             System.Xml.XmlReaderSettings settings = new System.Xml.XmlReaderSettings();
             settings.IgnoreWhitespace = true;
@@ -75,6 +75,8 @@ namespace bbxBE.Application.Commands.cmdInvoice
 
             if (result == null)
                 throw new Exception("Invoice report result is null!");
+            if (result.Errors.Length > 0)
+                throw new Exception("Invoice report finished with error:" + result.Errors[0].Message);
 
 
             Stream stream = new MemoryStream(result.DocumentBytes);
