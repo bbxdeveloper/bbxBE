@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report DataSourceName="webServiceDataSource1" Width="190mm" UnitOfMeasure="Mm" SkipBlankPages="False" Name="Offer" Zoom="1.5" SnapGridSize="10mm" xmlns="http://schemas.telerik.com/reporting/2020/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;@OfferID&quot;:&quot;5&quot;}" AuthParameterValues="null" ServiceUrl="https://bbxbe.azurewebsites.net/api/v1/Offer?ID=@OfferID" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;@OfferID&quot;:&quot;5&quot;,&quot;@baseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;}" AuthParameterValues="null" ServiceUrl="@baseURL/api/v1/Offer?ID=@OfferID" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Inline" Name="@OfferID">
           <Value>
             <String>= Parameters.OfferID.Value</String>
+          </Value>
+        </WebServiceParameter>
+        <WebServiceParameter WebServiceParameterType="Inline" Name="@baseURL">
+          <Value>
+            <String>= Parameters.baseURL.Value</String>
           </Value>
         </WebServiceParameter>
       </Parameters>
@@ -351,5 +356,6 @@
         <String>5</String>
       </Value>
     </ReportParameter>
+    <ReportParameter Name="baseURL" Mergeable="False" Visible="True" AllowBlank="False" />
   </ReportParameters>
 </Report>
