@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report DataSourceName="webServiceDataSource1" Width="190mm" UnitOfMeasure="Mm" SkipBlankPages="False" Name="Offer" Zoom="1.5" SnapGridSize="10mm" xmlns="http://schemas.telerik.com/reporting/2020/1.0">
+<Report DataSourceName="webServiceDataSource1" Width="190mm" UnitOfMeasure="Mm" Name="Offer" Zoom="1.5" SnapGridSize="10mm" xmlns="http://schemas.telerik.com/reporting/2020/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;@OfferID&quot;:&quot;5&quot;,&quot;@baseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;}" AuthParameterValues="null" ServiceUrl="@baseURL/api/v1/Offer?ID=@OfferID" Name="webServiceDataSource1">
+    <WebServiceDataSource ServiceUrl="@BaseURL/api/v1/Offer" Name="webServiceDataSource1" ParameterValues="{&quot;OfferID&quot;:&quot;2&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;&quot;,&quot;FullData&quot;:&quot;true&quot;}">
       <Parameters>
-        <WebServiceParameter WebServiceParameterType="Inline" Name="@OfferID">
+        <WebServiceParameter WebServiceParameterType="Query" Name="ID">
           <Value>
             <String>= Parameters.OfferID.Value</String>
           </Value>
         </WebServiceParameter>
-        <WebServiceParameter WebServiceParameterType="Inline" Name="@baseURL">
+        <WebServiceParameter WebServiceParameterType="Inline" Name="@BaseURL">
           <Value>
-            <String>= Parameters.baseURL.Value</String>
+            <String>= Parameters.BaseURL.Value</String>
+          </Value>
+        </WebServiceParameter>
+        <WebServiceParameter WebServiceParameterType="Inline" Name="JWT">
+          <Value>
+            <String>= Parameters.JWT.Value</String>
+          </Value>
+        </WebServiceParameter>
+        <WebServiceParameter WebServiceParameterType="Query" Name="FullData">
+          <Value>
+            <String>= Parameters.FullData.Value</String>
           </Value>
         </WebServiceParameter>
       </Parameters>
@@ -356,6 +366,20 @@
         <String>5</String>
       </Value>
     </ReportParameter>
-    <ReportParameter Name="baseURL" Mergeable="False" Visible="True" AllowBlank="False" />
+    <ReportParameter Name="BaseURL" Text="BaseURL" Visible="True">
+      <Value>
+        <String>https://bbxbe.azurewebsites.net</String>
+      </Value>
+    </ReportParameter>
+    <ReportParameter Name="JWT" Text="JWT" AllowNull="True">
+      <Value>
+        <String></String>
+      </Value>
+    </ReportParameter>
+    <ReportParameter Name="FullData" Type="Boolean" Text="FullData">
+      <Value>
+        <String>true</String>
+      </Value>
+    </ReportParameter>
   </ReportParameters>
 </Report>
