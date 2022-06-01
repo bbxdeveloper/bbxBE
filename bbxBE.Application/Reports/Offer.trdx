@@ -277,7 +277,7 @@
             </TableGroup>
           </ColumnGroups>
           <Bindings>
-            <Binding Path="DataSource" Expression="= Fields.OfferLines" />
+            <Binding Path="DataSource" Expression="= Fields.offerLines" />
           </Bindings>
         </Table>
       </Items>
