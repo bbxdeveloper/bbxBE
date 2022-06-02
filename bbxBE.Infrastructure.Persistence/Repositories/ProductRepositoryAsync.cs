@@ -162,47 +162,69 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
             {
+                ProductGroup pg;
                 if (_productGroupCacheService.IsCacheEmpty())
                 {
-                    p_product.ProductGroupID =  _ProductGroups.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                    pg = _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
+                    _dbContext.Entry(pg).State = EntityState.Unchanged;
                 }
                 else
                 {
                     var query = _productGroupCacheService.QueryCache();
-                    p_product.ProductGroupID = query.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode)?.ID;
+                    pg = query.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
+                }
+                if (pg != null)
+                {
+                    p_product.ProductGroupID = pg.ID;
+                    p_product.ProductGroup = pg;
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(p_OriginCode))
             {
+                Origin og;
                 if (_originCacheService.IsCacheEmpty())
                 {
-                    p_product.OriginID = _Origins.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                    og = _Origins.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
+                    _dbContext.Entry(og).State = EntityState.Unchanged;
                 }
                 else
                 {
                     var query = _originCacheService.QueryCache();
-                    p_product.OriginID = query.SingleOrDefault(x => x.OriginCode == p_OriginCode)?.ID;
+                   og = query.SingleOrDefault(x => x.OriginCode == p_OriginCode);
+                }
+                if ( og != null)
+                {
+                    p_product.OriginID = og.ID;
+                    p_product.Origin = og;
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(p_VatRateCode))
             {
-
+                VatRate vr;
                 if (_vatRateCacheService.IsCacheEmpty())
                 {
-                    p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID; 
+                    vr = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode); 
                 }
                 else
                 {
                     var query = _vatRateCacheService.QueryCache();
-                    p_product.VatRateID = query.SingleOrDefault(x => x.VatRateCode == p_VatRateCode).ID;
+                    vr = query.SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
                 }
 
+                if( vr == null) 
+                {
+                    vr = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
+                }
+
+                _dbContext.Entry(vr).State = EntityState.Unchanged;
+                p_product.VatRateID = vr.ID;
+                p_product.VatRate = vr;
             }
             else
             {
-                p_product.VatRateID = _VatRates.SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27).ID;
+                p_product.VatRateID = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27).ID;
             }
 
             foreach (var pc in p_product.ProductCodes)
