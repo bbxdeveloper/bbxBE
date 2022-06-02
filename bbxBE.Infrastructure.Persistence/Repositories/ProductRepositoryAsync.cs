@@ -200,9 +200,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
 
+            VatRate vr;
             if (!string.IsNullOrWhiteSpace(p_VatRateCode))
             {
-                VatRate vr;
                 if (_vatRateCacheService.IsCacheEmpty())
                 {
                     vr = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode); 
@@ -218,14 +218,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     vr = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
                 }
 
-                _dbContext.Entry(vr).State = EntityState.Unchanged;
-                p_product.VatRateID = vr.ID;
-                p_product.VatRate = vr;
             }
             else
             {
-                p_product.VatRateID = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27).ID;
+                vr = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
             }
+            _dbContext.Entry(vr).State = EntityState.Unchanged;
+            p_product.VatRateID = vr.ID;
+            p_product.VatRate = vr;
 
             foreach (var pc in p_product.ProductCodes)
             {
