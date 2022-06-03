@@ -99,6 +99,17 @@ namespace bbxBE.WebApi.Controllers.v1
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
+        [HttpGet("csv")]
+        public async Task<IActionResult> Csv([FromQuery] GetOfferCSV command)
+        {
+
+            var result = await Mediator.Send(command);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
+        }
 
     }
 }
