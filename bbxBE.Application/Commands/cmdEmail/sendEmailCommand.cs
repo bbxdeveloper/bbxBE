@@ -59,7 +59,7 @@ namespace bxBE.Application.Commands.cmdEmail
         {
             try
             {
-                var apiKey = "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"; //Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+                var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
                 var client = new SendGridClient(apiKey);
                 var from = request.From;
                 var subject = request.Subject;
