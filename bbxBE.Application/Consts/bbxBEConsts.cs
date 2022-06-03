@@ -103,6 +103,9 @@ namespace bbxBE.Application.Consts
         public static string DEF_OFFERCOUNTER = "AJ";
 
         public static string DEF_NOTICE = "Notice";
-        public static string DEF_NOTICEDESC = "Megjegyzés"; 
+        public static string DEF_NOTICEDESC = "Megjegyzés";
+
+
+        public static string EMAIL_FORMAT_ERROR = "{PropertyName}:  Hibás email cím!";
     }
 }
