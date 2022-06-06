@@ -160,6 +160,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return p_Offer;
         }
+        public async Task<Offer> UpdateOfferRecordAsync(Offer p_Offer)
+        {
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+      
+                    _Offers.Update(p_Offer);
+
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
+            }
+            return p_Offer;
+        }
 
         public async Task<Offer> DeleteOfferAsync(long ID)
         {

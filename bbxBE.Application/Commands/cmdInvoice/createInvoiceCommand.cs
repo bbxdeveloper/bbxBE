@@ -258,7 +258,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 				var invoiceType = (enInvoiceType)Enum.Parse(typeof(enInvoiceType), invoice.InvoiceType);
 				counterCode = bllCounter.GetCounterCode(invoiceType, invoice.Incoming, wh.ID);
 				invoice.InvoiceNumber = await _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
-
+				invoice.Copies = 1;
 
 				//Kiszámítható mezők kiszámolása
 				invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;

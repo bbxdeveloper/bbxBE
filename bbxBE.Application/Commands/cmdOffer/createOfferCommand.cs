@@ -182,6 +182,7 @@ namespace bxBE.Application.Commands.cmdOffer
 				//Árajánlatszám megállapítása
 				counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
 				offer.OfferNumber = await _CounterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);
+				offer.Copies = 1;
 
 				//Tételsorok
 				foreach (var ln in offer.OfferLines)

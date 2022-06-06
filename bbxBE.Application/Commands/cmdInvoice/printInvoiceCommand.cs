@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.Commands.cmdImport;
+using bbxBE.Application.Consts;
+using bbxBE.Application.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common;
@@ -45,6 +47,13 @@ namespace bbxBE.Application.Commands.cmdInvoice
         public async Task<FileStreamResult> Handle(PrintInvoiceCommand request, CancellationToken cancellationToken)
         {
 
+            var invoice = await _invoiceRepository.GetInvoiceRecordAsync(request.ID, false);
+            if (invoice == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_INVOICENOTFOUND, request.ID));
+            }
+
+
             var reportTRDX = loadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx");
 
             InstanceReportSource reportSource = null;
@@ -55,7 +64,6 @@ namespace bbxBE.Application.Commands.cmdInvoice
             System.Xml.XmlReaderSettings settings = new System.Xml.XmlReaderSettings();
             settings.IgnoreWhitespace = true;
             using (System.Xml.XmlReader xmlReader = XmlReader.Create(new StringReader(reportTRDX), settings))
-            //using (System.Xml.XmlReader xmlReader =   System.Xml.XmlReader.Create(@"Reports/Invoice.trdx", settings))
             {
                 ReportXmlSerializer xmlSerializer = new ReportXmlSerializer();
                 rep = (Telerik.Reporting.Report)xmlSerializer.Deserialize(xmlReader);
@@ -79,11 +87,17 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 throw new Exception("Invoice report finished with error:" + result.Errors[0].Message);
 
 
+            //Példányszám beállítása
+            //
+            invoice.Copies++;
+            await _invoiceRepository.UpdateInvoiceAsync(invoice);
+
             Stream stream = new MemoryStream(result.DocumentBytes);
-            string fileName = "Invoice.pdf";
+            string fileName = $"Invoice{invoice.InvoiceNumber.Replace("/", "-")}.pdf";
 
              
             var fsr = new FileStreamResult(stream, $"application/pdf") { FileDownloadName = fileName };
+
 
             return fsr;
         }
