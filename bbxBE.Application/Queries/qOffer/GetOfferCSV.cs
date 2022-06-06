@@ -57,7 +57,7 @@ namespace bbxBE.Application.Commands.cmdOffer
             string fileName = $"Offer{offer.OfferNumber.Replace("/", "-")}.csv";
 
 
-            var fsr = new FileStreamResult(stream, $"application/pdf") { FileDownloadName = fileName };
+            var fsr = new FileStreamResult(stream, $"application/csv") { FileDownloadName = fileName };
 
             return fsr;
         }

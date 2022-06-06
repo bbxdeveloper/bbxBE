@@ -93,9 +93,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return p_invoice;
         }
 
-        public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, List<InvoiceLine> p_invoiceLines, List<SummaryByVatRate> p_summaryByVatRate, List<AdditionalInvoiceData> p_additionalInvoiceData, List<AdditionalInvoiceLineData> p_additionalInvoiceLineData)
+        public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice)
         {
-            throw new NotImplementedException("UpdateInvoiceAsync");
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+
+                     _invoices.Update(p_invoice);
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
+                return p_invoice;
+            }
         }
 
         public async Task<Entity> GetInvoiceAsync(GetInvoice requestParameter)

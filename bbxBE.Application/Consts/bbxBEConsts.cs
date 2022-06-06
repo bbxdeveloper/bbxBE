@@ -49,7 +49,7 @@ namespace bbxBE.Application.Consts
         public static string FV_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
         public static string FV_ORIGINNOTFOUND = "Származási hely nem található, ID:{0} ";
         public static string FV_OFFERNOTFOUND = "Árajánlat nem található, ID:{0} ";
-        public static string FV_INVOICENOTFOUND = "Számla nem található, ID:{0} ";
+        public static string FV_INVOICENOTFOUND = "Számla/szállítólevél nem található, ID:{0} ";
         public static string FV_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
         public static string FV_USERNOTFOUND = "Felhasználó nem található, ID:{0} ";
         public static string FV_WAREHOUSENOTFOUND = "Raktár nem található, Kód:{0}";

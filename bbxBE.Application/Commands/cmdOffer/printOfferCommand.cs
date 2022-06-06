@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.Commands.cmdImport;
+using bbxBE.Application.Consts;
+using bbxBE.Application.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common;
@@ -45,6 +47,12 @@ namespace bbxBE.Application.Commands.cmdOffer
         public async Task<FileStreamResult> Handle(PrintOfferCommand request, CancellationToken cancellationToken)
         {
 
+            var offer = await _offerRepository.GetOfferRecordAsync(request.ID, false);
+            if (offer == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OFFERNOTFOUND, request.ID));
+            }
+
             var reportTRDX = loadEmbeddedResource("bbxBE.Application.Reports.Offer.trdx");
 
             InstanceReportSource reportSource = null;
@@ -76,11 +84,15 @@ namespace bbxBE.Application.Commands.cmdOffer
             if (result == null)
                 throw new Exception("Offer report result is null!");
 
+            //Példányszám beállítása
+            //
+            offer.Copies++;
+            await _offerRepository.UpdateOfferRecordAsync(offer);
 
             Stream stream = new MemoryStream(result.DocumentBytes);
-            string fileName = "Offer.pdf";
+            string fileName = $"Offer{offer.OfferNumber.Replace("/", "-")}.pdf";
 
-             
+
             var fsr = new FileStreamResult(stream, $"application/pdf") { FileDownloadName = fileName };
 
             return fsr;
