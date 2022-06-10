@@ -8,7 +8,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00012, "v00.00.01")]
+    [Migration(00012, "v00.00.01-Customer.IsOwnData")]
     public class InitialTables_00012 : Migration
     {
         public override void Down()

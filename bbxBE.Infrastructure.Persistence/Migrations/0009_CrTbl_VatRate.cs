@@ -7,7 +7,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00009, "v00.00.01")]
+    [Migration(00009, "v00.00.01-VatRate")]
     public class InitialTables_00009 : Migration
     {
         public override void Down()
