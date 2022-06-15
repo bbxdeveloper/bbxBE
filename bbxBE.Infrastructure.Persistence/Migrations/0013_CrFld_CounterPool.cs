@@ -8,7 +8,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00013, "v00.00.01")]
+    [Migration(00013, "v00.00.01-CounterPool")]
     public class InitialTables_00013 : Migration
     {
         public override void Down()

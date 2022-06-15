@@ -5,7 +5,7 @@ using FluentMigrator;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00008, "v00.00.01")]
+    [Migration(00008, "v00.00.01-INX_WarehouseCode")]
     public class CreateIndexes_00008 : Migration
     {
         public override void Down()

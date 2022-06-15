@@ -49,7 +49,7 @@ namespace bbxBE.Application.Commands.cmdOffer
             var offer = await _offerRepository.GetOfferRecordAsync(request.ID, true);
             if (offer == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OFFERNOTFOUND, request.ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OFFERNOTFOUND, request.ID));
             }
 
             string csv = String.Join(Environment.NewLine, offer.OfferLines.Select(x => x.ProductCode + ";" + x.UnitPrice.ToString().Replace(",", ".")).ToArray());

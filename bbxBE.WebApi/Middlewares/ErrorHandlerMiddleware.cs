@@ -80,28 +80,17 @@ namespace bbxBE.WebApi.Middlewares
                         {
                             response.StatusCode = (int)HttpStatusCode.BadRequest;
 
-                            var ae = e.InnerException as AggregateException;
-                            if (ae.Flatten().InnerExceptions.Count == 1)
-                            {
-                                //Ha csak egy inner exception akkor Message-ba berakjuk az InnerException-t
-                                //responseModel.Errors.Add(responseModel.Message);
-                                responseModel.Message = ae.Flatten().InnerExceptions.First().Message;
-                            }
-                            else
-                            {
-                                responseModel.Errors = new List<string>();
-                                foreach (var ie in ae.Flatten().InnerExceptions)
-                                {
-                                    responseModel.Errors.Add(ie.Message);
-                                }
-                            }
+                            processInnerExceptions(e, responseModel);
                         }
                         else
                         {
                             response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         }
                         break;
-
+                    case Exception e:
+                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        processInnerExceptions(e, responseModel);
+                        break;
                     default:
                         // unhandled error
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -112,6 +101,28 @@ namespace bbxBE.WebApi.Middlewares
   //              _logger.LogError(error, error.Message);
                 await response.WriteAsync(result);
                 throw;
+            }
+        }
+
+        private void processInnerExceptions( Exception e, Response<string> responseModel)
+        {
+            if (e.InnerException != null)
+            {
+                var ae = e.InnerException as AggregateException;
+                if (ae.Flatten().InnerExceptions.Count == 1)
+                {
+                    //Ha csak egy inner exception akkor Message-ba berakjuk az InnerException-t
+                    //responseModel.Errors.Add(responseModel.Message);
+                    responseModel.Message = ae.Flatten().InnerExceptions.First().Message;
+                }
+                else
+                {
+                    responseModel.Errors = new List<string>();
+                    foreach (var ie in ae.Flatten().InnerExceptions)
+                    {
+                        responseModel.Errors.Add(ie.Message);
+                    }
+                }
             }
         }
     }

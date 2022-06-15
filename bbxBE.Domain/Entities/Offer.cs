@@ -5,6 +5,7 @@ using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -74,11 +75,13 @@ namespace bbxBE.Domain.Entities
 		[ForeignKey("CustomerID")]
 		[ColumnLabel("Ügyfél")]
 		[Description("Ügyfél")]
-		public Customer Customer { get; set; }
+		[Required] 
+		public virtual Customer Customer { get; set; }
 
 		[ColumnLabel("Árajánlat-sorok")]
 		[Description("Árajánlat-sorok")]
-		public ICollection<OfferLine> OfferLines { get; set; }
+		[Required]
+		public virtual ICollection<OfferLine> OfferLines { get; set; }
 
 	}
 }

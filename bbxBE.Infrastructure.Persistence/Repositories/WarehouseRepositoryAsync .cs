@@ -68,7 +68,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (item == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_WAREHOUSENOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, ID));
             }
 
             var itemModel = _mapper.Map<Warehouse, GetWarehouseViewModel>(item);

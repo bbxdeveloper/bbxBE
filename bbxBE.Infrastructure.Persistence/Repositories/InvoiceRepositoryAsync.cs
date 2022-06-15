@@ -124,7 +124,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (item == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_INVOICENOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, ID));
             }
 
             var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);

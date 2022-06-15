@@ -75,7 +75,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (item == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATENOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATENOTFOUND, ID));
             }
 
             var itemModel = _mapper.Map<VatRate, GetVatRateViewModel>(item);
@@ -122,7 +122,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             else
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATENOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATENOTFOUND, ID));
             }
 
             return vr;
