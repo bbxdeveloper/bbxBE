@@ -234,7 +234,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 				var wh = await _WarehouseRepository.GetWarehouseByCodeAsync(request.WarehouseCode);
 				if (wh == null)
 				{
-					throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_WAREHOUSENOTFOUND, request.WarehouseCode));
+					throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
 				}
 				invoice.WarehouseID = wh.ID;
 

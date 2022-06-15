@@ -50,7 +50,7 @@ namespace bbxBE.Application.Commands.cmdOffer
             var offer = await _offerRepository.GetOfferRecordAsync(request.ID, false);
             if (offer == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OFFERNOTFOUND, request.ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OFFERNOTFOUND, request.ID));
             }
 
             var reportTRDX = loadEmbeddedResource("bbxBE.Application.Reports.Offer.trdx");

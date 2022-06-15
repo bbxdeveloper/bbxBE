@@ -201,7 +201,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OFFERNOTFOUND, ID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OFFERNOTFOUND, ID));
                 }
             }
             return offer;
@@ -216,7 +216,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if ( item == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OFFERNOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OFFERNOTFOUND, ID));
             }
 
             var itemModel = _mapper.Map<Offer, GetOfferViewModel>(item);

@@ -52,7 +52,7 @@ namespace bxBE.Application.Commands.cmdCounter
             var wh = await _WarehouseRepositoryAsync.GetWarehouseByCodeAsync(request.WarehouseCode);
             if(wh == null) 
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_WAREHOUSENOTFOUND, request.WarehouseCode));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
             }
 
             var next = await _CounterRepository.GetNextValueAsync(request.CounterCode, wh.ID);

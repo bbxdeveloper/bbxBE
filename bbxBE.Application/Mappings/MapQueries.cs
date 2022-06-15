@@ -110,6 +110,11 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver( src.UnitOfMeasure)))
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
 
+            CreateMap<Stock, GetStockViewModel>()
+             .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
+             .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.Product.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
+             .ForMember(dst => dst.Description, opt => opt.MapFrom(src => src.Product.Description));
+
         }
 
         private static string enUnitOfMeasureNameResolver(string UnitOfMeasure)

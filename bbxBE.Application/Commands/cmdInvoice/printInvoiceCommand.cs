@@ -50,7 +50,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
             var invoice = await _invoiceRepository.GetInvoiceRecordAsync(request.ID, false);
             if (invoice == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_INVOICENOTFOUND, request.ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
             }
 
 

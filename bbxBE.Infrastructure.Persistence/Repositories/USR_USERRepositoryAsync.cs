@@ -67,7 +67,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (user == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_USERNOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_USERNOTFOUND, ID));
             }
 
             // shape data

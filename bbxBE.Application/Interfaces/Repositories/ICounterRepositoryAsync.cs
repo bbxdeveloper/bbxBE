@@ -19,6 +19,6 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<string> GetNextValueAsync(string CounterCode, long WarehouseID, bool useCounterPool = true);
         Task<bool> FinalizeValueAsync(string CounterCode, long WarehouseID, string counterValue);
         Task<bool> RollbackValueAsync(string CounterCode, long WarehouseID, string counterValue);
-    Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCounterAsync(QueryCounter requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCounterAsync(QueryCounter requestParameters);
     }
 }

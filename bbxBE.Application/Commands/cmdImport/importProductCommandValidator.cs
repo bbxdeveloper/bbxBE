@@ -25,11 +25,11 @@ namespace bbxBE.Application.Commands.cmdProduct
 
         public importProductCommandValidator()
         {
-            RuleFor(f => f.ProductFiles).NotNull().WithMessage(bbxBEConsts.FV_FILELISTISNULL).NotEmpty().WithMessage(bbxBEConsts.FV_FILELISTISEMPTY);
+            RuleFor(f => f.ProductFiles).NotNull().WithMessage(bbxBEConsts.ERR_FILELISTISNULL).NotEmpty().WithMessage(bbxBEConsts.ERR_FILELISTISEMPTY);
 
-            RuleFor(f => f.ProductFiles).Must(CheckFileCount).WithMessage(bbxBEConsts.FV_FILELISTCONUTER);
+            RuleFor(f => f.ProductFiles).Must(CheckFileCount).WithMessage(bbxBEConsts.ERR_FILELISTCONUTER);
 
-            RuleFor(f => f.ProductFiles).Must(CheckFileLength).WithMessage(bbxBEConsts.FV_FILESIZE);
+            RuleFor(f => f.ProductFiles).Must(CheckFileLength).WithMessage(bbxBEConsts.ERR_FILESIZE);
         }
 
         private bool CheckFileCount(List<IFormFile> productFiles)

@@ -16,9 +16,9 @@ namespace bbxBE.Application.Consts
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
         public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
-        public static string FV_LEN1 = "{PropertyName}:  mező karakterek száma:1.";
-        public static string FV_LEN2 = "{PropertyName}:  mező karakterek száma:2.";
-        public static string FV_LEN8 = "{PropertyName}:  mező karakterek száma:8.";
+        public static string ERR_LEN1 = "{PropertyName}:  mező karakterek száma:1.";
+        public static string ERR_LEN2 = "{PropertyName}:  mező karakterek száma:2.";
+        public static string ERR_LEN8 = "{PropertyName}:  mező karakterek száma:8.";
 
         public static string ERR_MAXLEN = "{PropertyName}:  mező mérete nem lehet több, mint {MaxLength}.";
         public static string ERR_RANGE = "{PropertyName}:  mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
@@ -48,18 +48,19 @@ namespace bbxBE.Application.Consts
         public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb nem található, Kód:{0}, Raktár ID:{1} ";
         public static string FV_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
         public static string FV_ORIGINNOTFOUND = "Származási hely nem található, ID:{0} ";
-        public static string FV_OFFERNOTFOUND = "Árajánlat nem található, ID:{0} ";
-        public static string FV_INVOICENOTFOUND = "Számla/szállítólevél nem található, ID:{0} ";
-        public static string FV_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
-        public static string FV_USERNOTFOUND = "Felhasználó nem található, ID:{0} ";
-        public static string FV_WAREHOUSENOTFOUND = "Raktár nem található, Kód:{0}";
+        public static string ERR_OFFERNOTFOUND = "Árajánlat nem található, ID:{0} ";
+        public static string ERR_INVOICENOTFOUND = "Számla/szállítólevél nem található, ID:{0} ";
+        public static string ERR_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
+        public static string ERR_USERNOTFOUND = "Felhasználó nem található, ID:{0} ";
+        public static string ERR_WAREHOUSENOTFOUND = "Raktár nem található, Kód:{0}";
+        public static string ERR_STOCKNOTFOUND = "Raktárkészlet nem található, ID:{0} ";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 
-        public static string FV_FILELISTISNULL = "A File lista nem lehet üres!";
-        public static string FV_FILELISTISEMPTY = "A File lista nem lehet NULL!";
-        public static string FV_FILELISTCONUTER = "2 File-t kell feltölteni!";
-        public static string FV_FILESIZE = "Üres file lett feltöltve!";
+        public static string ERR_FILELISTISNULL = "A File lista nem lehet üres!";
+        public static string ERR_FILELISTISEMPTY = "A File lista nem lehet NULL!";
+        public static string ERR_FILELISTCONUTER = "2 File-t kell feltölteni!";
+        public static string ERR_FILESIZE = "Üres file lett feltöltve!";
 
 
         public static string ERR_NOCACHEQUERY = "Nincs lekérdezés a gyorstótárhoz!";
