@@ -99,22 +99,22 @@ namespace bbxBE.Domain.Entities
         [ForeignKey("StockID")]
         [ColumnLabel("Készlet")]
         [Description("Készlet")]
-        public Stock Stock { get; set; }
+        public virtual Stock Stock { get; set; }
 
 
         [ForeignKey("UserID")]
         [ColumnLabel("Felhasználó")]
         [Description("Felhasználó")]
-        public USR_USER User { get; set; }
+        public virtual USR_USER User { get; set; }
 
         [ForeignKey("InvoiceLineID")]
         [ColumnLabel("Számlasor")]
         [Description("Számlasor")]
-        public InvoiceLine InvoiceLine { get; set; }
+        public virtual InvoiceLine InvoiceLine { get; set; }
 
         [ForeignKey("CustomerID")]
         [ColumnLabel("Partner")]
         [Description("Partner")]
-        public Customer Customer { get; set; }
+        public virtual Customer Customer { get; set; }
     }
 }

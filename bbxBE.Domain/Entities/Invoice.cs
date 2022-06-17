@@ -5,6 +5,7 @@ using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -197,35 +198,38 @@ namespace bbxBE.Domain.Entities
 		[ForeignKey("WarehouseID")]
 		[ColumnLabel("Raktár")]
 		[Description("Raktár")]
-		public Warehouse Warehouse { get; set; }
+		public virtual Warehouse Warehouse { get; set; }
 
 		[ForeignKey("SupplierID")]
 		[ColumnLabel("Szállító")]
 		[Description("Szállító")]
-		public Customer Supplier { get; set; }
+		public virtual Customer Supplier { get; set; }
 
 
 		[ForeignKey("CustomerID")]
 		[ColumnLabel("Ügyfél")]
 		[Description("Ügyfél")]
-		public Customer Customer { get; set; }
+		public virtual Customer Customer { get; set; }
 
 		[ForeignKey("OriginalInvoiceID")]
 		[ColumnLabel("Eredeti számla")]
 		[Description("Eredeti számla")]
-		public Invoice OriginalInvoice { get; set; }
+		public virtual Invoice OriginalInvoice { get; set; }
 
 		[ColumnLabel("Egyéb adat")]
 		[Description("A számlára vonatkozó egyéb adat")]
-		public ICollection<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
+//		[InverseProperty("ID")]
+		public virtual ICollection<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
 
 		[ColumnLabel("Áfa összesítő")]
 		[Description("Összesítés áfa-mérték szerint")]
-		public ICollection<SummaryByVatRate> SummaryByVatRates { get; set; }
+//		[InverseProperty("ID")]
+		public virtual ICollection<SummaryByVatRate> SummaryByVatRates { get; set; }
 
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
-		public ICollection<InvoiceLine> InvoiceLines { get; set; }
+//		[InverseProperty("ID")]
+		public virtual ICollection<InvoiceLine> InvoiceLines { get; set; }
 
 	}
 }

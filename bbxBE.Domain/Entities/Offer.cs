@@ -75,12 +75,11 @@ namespace bbxBE.Domain.Entities
 		[ForeignKey("CustomerID")]
 		[ColumnLabel("Ügyfél")]
 		[Description("Ügyfél")]
-		[Required] 
 		public virtual Customer Customer { get; set; }
 
 		[ColumnLabel("Árajánlat-sorok")]
 		[Description("Árajánlat-sorok")]
-		[Required]
+//		[InverseProperty("ID")]
 		public virtual ICollection<OfferLine> OfferLines { get; set; }
 
 	}

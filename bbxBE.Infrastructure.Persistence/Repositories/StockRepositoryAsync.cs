@@ -54,25 +54,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 if (invoiceLine.ProductID.HasValue && invoiceLine.Product.IsStock)
                 {
+           
                     var stock = await _Stocks
-                                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.FirstOrDefault(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() && pc.ProductCodeValue == invoiceLine.ProductCode)).AsNoTracking()
-                                .Where(x => x.WarehouseID == invoice.WarehouseID && !x.Deleted).FirstOrDefaultAsync();
+                                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                                .Where(x => x.WarehouseID == invoice.WarehouseID && !x.Deleted
+                                &&  x.Product.ProductCodes.Any( pc=>pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() && pc.ProductCodeValue == invoiceLine.ProductCode)).FirstOrDefaultAsync();
+                    var bNew = false;
                     if (stock == null)
                     {
+                        bNew = true;
                         stock = new Stock()
                         {
                             WarehouseID = invoice.WarehouseID,
-                            Warehouse = invoice.Warehouse,
+                            //Warehouse = invoice.Warehouse,
                             ProductID = invoiceLine.ProductID.Value,
-                            Product = invoiceLine.Product
+                            //Product = invoiceLine.Product,
+                            AvgCost = invoiceLine.UnitPrice
                         };
                     }
 
-                    if( invoice.Incoming)
+                    if (invoice.Incoming)
                     {
                         stock.CalcQty += invoiceLine.Quantity;
                         stock.RealQty += invoiceLine.Quantity;
                         stock.LatestIn = DateTime.UtcNow;
+
+                        stock.AvgCost = bllStock.GetNewAvgCost(stock.AvgCost, stock.RealQty, invoiceLine.Quantity, invoiceLine.UnitPrice);
                     }
                     else
                     {
@@ -81,6 +88,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         stock.LatestOut = DateTime.UtcNow;
                     }
 
+                    if (bNew)
+                    {
+                        await _Stocks.AddAsync(stock);
+                    }
+                    else
+                    {
+                        _Stocks.Update(stock);
+                    }
                     ret.Add(stock);
                 }
 

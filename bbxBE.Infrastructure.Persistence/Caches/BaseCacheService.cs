@@ -20,7 +20,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class BaseCacheService<T> : ICacheService<T> where T : BaseEntity
     {
-        private System.Collections.Concurrent.ConcurrentDictionary<long, T> _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, T>();
+        public System.Collections.Concurrent.ConcurrentDictionary<long, T> Cache { get; private set; } = new System.Collections.Concurrent.ConcurrentDictionary<long, T>();
         private IQueryable<T> _cacheQuery = null;
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
@@ -39,30 +39,31 @@ namespace bbxBE.Infrastructure.Persistence.Caches
         public bool TryGetValue(long ID, out T value)
         {
             value = null;
-            return _cache.TryGetValue(ID, out value);
+            return Cache.TryGetValue(ID, out value);
         }
+
         public T AddOrUpdate(T value)
         {
             T prod = null;
-            prod = _cache.AddOrUpdate(value.ID, value, (key, oldValue) => value);
+            prod = Cache.AddOrUpdate(value.ID, value, (key, oldValue) => value);
             return prod;
         }
 
         public bool TryRemove(T value)
         {
             bool succeed = false;
-            succeed = _cache.TryRemove(value.ID, out value);
+            succeed = Cache.TryRemove(value.ID, out value);
             return succeed;
         }
 
         public bool IsCacheEmpty()
         {
-            return _cache == null || _cache.Count() == 0;
+            return Cache == null || Cache.Count() == 0;
         }
 
         public IQueryable<T> QueryCache()
         {
-            return _cache.Values.AsQueryable();
+            return Cache.Values.AsQueryable();
         }
 
         private static LockProvider<string> CacheLockProvider = new LockProvider<string>();
@@ -95,7 +96,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
                         throw new NoCacheQueryException(bbxBEConsts.ERR_NOCACHEQUERY);
                 }
                 var result = await _cacheQuery.ToDictionaryAsync(i => i.ID);
-                _cache = new System.Collections.Concurrent.ConcurrentDictionary<long, T>(result);
+                Cache = new System.Collections.Concurrent.ConcurrentDictionary<long, T>(result);
             }
             finally
             {

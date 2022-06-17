@@ -58,7 +58,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             VatRate vr = null;
 
-            vr = await _VatRates.AsNoTracking().Where(x => x.VatRateCode.ToUpper() == vatRateCode.ToUpper()).FirstOrDefaultAsync();
+            var query = _cacheService.QueryCache();
+            vr = query.Where(x => x.VatRateCode.ToUpper() == vatRateCode.ToUpper()).FirstOrDefault();
             return vr;
         }
 
@@ -71,7 +72,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var ID = requestParameter.ID;
 
-            var item = await GetByIdAsync(ID);
+            var query = _cacheService.QueryCache();
+            var item = query.Where(x => x.ID== ID).FirstOrDefault();
 
             if (item == null)
             {

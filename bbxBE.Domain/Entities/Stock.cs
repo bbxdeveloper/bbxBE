@@ -49,12 +49,12 @@ namespace bbxBE.Domain.Entities
         [ForeignKey("WarehouseID")]
         [ColumnLabel("Raktár")]
         [Description("Raktár")]
-        public Warehouse Warehouse { get; set; }
+        public virtual Warehouse Warehouse { get; set; }
 
         [ForeignKey("ProductID")]
         [ColumnLabel("Termék")]
         [Description("Termék")]
-        public Product Product { get; set; }
+        public virtual Product Product { get; set; }
 
 
     }

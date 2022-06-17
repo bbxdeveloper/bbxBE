@@ -108,20 +108,27 @@ namespace bbxBE.WebApi.Middlewares
         {
             if (e.InnerException != null)
             {
-                var ae = e.InnerException as AggregateException;
-                if (ae.Flatten().InnerExceptions.Count == 1)
+                if (e is AggregateException ae)
                 {
-                    //Ha csak egy inner exception akkor Message-ba berakjuk az InnerException-t
-                    //responseModel.Errors.Add(responseModel.Message);
-                    responseModel.Message = ae.Flatten().InnerExceptions.First().Message;
+                    if (ae.Flatten().InnerExceptions.Count == 1)
+                    {
+                        //Ha csak egy inner exception akkor Message-ba berakjuk az InnerException-t
+                        //responseModel.Errors.Add(responseModel.Message);
+                        responseModel.Message = ae.Flatten().InnerExceptions.First().Message;
+                    }
+                    else
+                    {
+                        responseModel.Errors = new List<string>();
+                        foreach (var ie in ae.Flatten().InnerExceptions)
+                        {
+                            responseModel.Errors.Add(ie.Message);
+                        }
+                    }
                 }
                 else
                 {
                     responseModel.Errors = new List<string>();
-                    foreach (var ie in ae.Flatten().InnerExceptions)
-                    {
-                        responseModel.Errors.Add(ie.Message);
-                    }
+                    responseModel.Errors.Add(e.InnerException.Message);
                 }
             }
         }

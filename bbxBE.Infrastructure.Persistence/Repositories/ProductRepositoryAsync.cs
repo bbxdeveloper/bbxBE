@@ -41,7 +41,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private readonly ICacheService<Product> _cacheService;
+        private readonly ICacheService<Product> _productcacheService;
         private readonly ICacheService<ProductGroup> _productGroupCacheService;
         private readonly ICacheService<Origin> _originCacheService;
         private readonly ICacheService<VatRate> _vatRateCacheService;
@@ -70,7 +70,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IDataShapeHelper<Product> dataShaperProduct,
             IDataShapeHelper<GetProductViewModel> dataShaperGetProductViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            ICacheService<Product> cacheService,
+            ICacheService<Product> productCacheService,
             ICacheService<ProductGroup> productGroupCacheService,
             ICacheService<Origin> originCacheService,
             ICacheService<VatRate> vatRateCacheService
@@ -88,7 +88,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _cacheService = cacheService;
+            _productcacheService = productCacheService;
             _productGroupCacheService = productGroupCacheService;
             _originCacheService = originCacheService;
             _vatRateCacheService = vatRateCacheService;
@@ -111,7 +111,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 && !p.Deleted && (ProductID == null || p.ProductID != ProductID.Value));
             */
 
-            var query = _cacheService.QueryCache();
+            var query = _productcacheService.QueryCache();
             return !query.ToList().Any(p => p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()
                && a.ProductCodeValue.ToUpper() == ProductCode.ToUpper())
                 && !p.Deleted && (ProductID == null || p.ID != ProductID.Value));
@@ -248,7 +248,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 await _dbContext.SaveChangesAsync();
 
                 await dbContextTransaction.CommitAsync();
-                _cacheService.AddOrUpdate(p_product);
+                _productcacheService.AddOrUpdate(p_product);
             }
             return p_product;
         }
@@ -296,7 +296,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private Product PrepareUpdateProduct(Product p_productUpd, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
             Product prodOri = null;
-            if (!_cacheService.TryGetValue(p_productUpd.ID, out prodOri))
+            if (!_productcacheService.TryGetValue(p_productUpd.ID, out prodOri))
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, p_productUpd.ID));
 
             /*
@@ -440,7 +440,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 _Products.Update(p_product);
                 await _dbContext.SaveChangesAsync();
                 await dbContextTransaction.CommitAsync();
-                _cacheService.AddOrUpdate(p_product);
+                _productcacheService.AddOrUpdate(p_product);
 
 
             }
@@ -504,7 +504,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                         _ProductCodes.RemoveRange(prod.ProductCodes.ToList());
                     }
-                    _cacheService.TryRemove(prod);
+                    _productcacheService.TryRemove(prod);
 
                     _Products.Remove(prod);
 
@@ -526,7 +526,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var ID = requestParameter.ID;
 
             Product prod = null;
-            if (!_cacheService.TryGetValue(ID, out prod))
+            if (!_productcacheService.TryGetValue(ID, out prod))
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, ID));
 
 
@@ -541,7 +541,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Product GetProductByProductCode(string productCode)
         {
 
-            var query = _cacheService.QueryCache();
+            var query = _productcacheService.QueryCache();
 
             var prod = query.Where(i => i.ProductCodes.Any(c => c.ProductCodeValue.ToUpper() == productCode.ToUpper()
                                                                    && c.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).FirstOrDefault();
@@ -580,7 +580,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
 
-            var query = _cacheService.QueryCache();
+            var query = _productcacheService.QueryCache();
 
             // Count records total
             recordsTotal = query.Count();
@@ -672,9 +672,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task RefreshProductCache(bool force = false)
         {
-      //      using (var lockObj = new ProductCacheLock(Common.Globals.GlobalLockObjs.ProductCacheLocker))
+            //      using (var lockObj = new ProductCacheLock(Common.Globals.GlobalLockObjs.ProductCacheLocker))
             {
-                   if (_cacheService.IsCacheEmpty() || force)
+                if (_productcacheService.IsCacheEmpty() || force)
                 {
 
                     var q = _Products.AsNoTracking()
@@ -682,11 +682,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          .Include(pg => pg.ProductGroup).AsNoTracking()
                          .Include(o => o.Origin).AsNoTracking()
                          .Include(v => v.VatRate).AsNoTracking();
-                    await _cacheService.RefreshCache(q);
+                    await _productcacheService.RefreshCache(q);
 
+                    /*
+                    foreach (var entry in _productcacheService.Cache)
+                    {
+                        var prod = (Product)entry.Value;
+                        _dbContext.Entry(prod).State = EntityState.Detached;
+                        _dbContext.Entry(prod.VatRate).State = EntityState.Detached;
+                    }
+                    */
                 }
             }
         }
+
         public async Task RefreshVatRateCache()
         {
 
@@ -697,7 +706,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .AsNoTracking()
                 .AsExpandable();
                 await _vatRateCacheService.RefreshCache(q);
-
+/*
+                foreach (var entry in _vatRateCacheService.Cache)
+                {
+                    _dbContext.Entry(entry.Value).State = EntityState.Detached;
+                }
+*/
             }
         }
     }
