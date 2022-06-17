@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace bbxBE.Application.Interfaces
 {
-    public interface ICacheService<T>   where T : BaseEntity
+    public interface ICacheService<T> where T : BaseEntity
     {
+        public System.Collections.Concurrent.ConcurrentDictionary<long, T> Cache { get; }
+
         public bool TryGetValue(long ID, out T value);
         public T AddOrUpdate(T value);
         public bool TryRemove(T value);

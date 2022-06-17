@@ -60,21 +60,21 @@ namespace bbxBE.Domain.Entities
         [ForeignKey("ProductGroupID")]
         [ColumnLabel("Termékcsoport")]
         [Description("Termékcsoport")]
-        public ProductGroup ProductGroup { get; set; }
+        public virtual ProductGroup ProductGroup { get; set; }
 
         [ForeignKey("OriginID")]
         [ColumnLabel("Származási hely")]
         [Description("Származási hely")]
-        public Origin Origin { get; set; }
+        public virtual Origin Origin { get; set; }
 
         [ForeignKey("VatRateID")]
         [ColumnLabel("Áfa leíró")]
         [Description("Áfa leíró")]
-        public VatRate VatRate { get; set; }
+        public virtual VatRate VatRate { get; set; }
 
         [ColumnLabel("Termékkódok")]
         [Description("Termékkódok")]
-    //    [InverseProperty("Product")]
-        public ICollection<ProductCode> ProductCodes { get; set; }
+        //    [InverseProperty("Product")]
+        public virtual ICollection<ProductCode> ProductCodes { get; set; }
     }
 }

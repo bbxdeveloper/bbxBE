@@ -39,14 +39,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly IStockRepositoryAsync _StockRepository;
 
         public InvoiceRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Invoice> dataShaperInvoice,
+
+
+        IDataShapeHelper<Invoice> dataShaperInvoice,
             IDataShapeHelper<GetInvoiceViewModel> dataShaperGetInvoiceViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            IStockRepositoryAsync StockRepository
+            ) : base(dbContext)
         {
             _dbContext = dbContext;
-    
+
             _invoices = dbContext.Set<Invoice>();
             _invoiceLines = dbContext.Set<InvoiceLine>();
             _summaryByVatRates = dbContext.Set<SummaryByVatRate>();
@@ -61,6 +66,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _StockRepository = StockRepository;
         }
 
 
@@ -79,6 +85,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
 
                     await _invoices.AddAsync(p_invoice);
+                    await _StockRepository.MaintainStockByInvoiceAsync(p_invoice);
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 
@@ -92,6 +99,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return p_invoice;
         }
+
+        public async Task<Invoice> InitInvoiceAsync(Invoice p_invoice)
+        {
+            throw new NotImplementedException("InitInvoiceAsync");
+        }
+
 
         public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice)
         {
@@ -135,6 +148,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
+
 
         public async Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true)
         {

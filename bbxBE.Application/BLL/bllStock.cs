@@ -7,9 +7,11 @@ namespace bbxBE.Application.BLL
 {
     public static class bllStock
     {
-        public static decimal GetNewAvgCost( decimal oldAvgCost, decimal oldQty, decimal newQty)
+        public static decimal GetNewAvgCost(decimal currAvgCost, decimal currQty, decimal chgQty, decimal newPrice)
         {
-            return 0;
+            //Ez tűnik a legjobb megközelítésnek (a negatív készlet miatt)
+
+            return (Math.Abs(currAvgCost * currQty) + (chgQty * newPrice)) / (Math.Abs(currQty) + chgQty);
         }
     }
 }

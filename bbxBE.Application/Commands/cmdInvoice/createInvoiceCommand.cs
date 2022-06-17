@@ -11,6 +11,7 @@ using bbxBE.Common.Attributes;
 using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -155,6 +156,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 		private readonly ICustomerRepositoryAsync _CustomerRepository;
 		private readonly IProductRepositoryAsync _ProductRepository;
 		private readonly IVatRateRepositoryAsync _VatRateRepository;
+		private readonly IStockRepositoryAsync _StockRepository;
 		private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
@@ -164,6 +166,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			ICustomerRepositoryAsync CustomerRepository,
 			IProductRepositoryAsync ProductRepository,
 			IVatRateRepositoryAsync VatRateRepository,
+			IStockRepositoryAsync StockRepository,
 			IMapper mapper, IConfiguration configuration)
         {
             _InvoiceRepository = InvoiceRepository;
@@ -172,6 +175,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			_CustomerRepository = CustomerRepository;
 			_ProductRepository = ProductRepository;
 			_VatRateRepository = VatRateRepository;
+			_StockRepository = StockRepository;
 			_mapper = mapper;
             _configuration = configuration;
         }
@@ -278,6 +282,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 					{
 						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODCODENOTFOUND, rln.ProductCode));
 					}
+
 					var vatRate = await _VatRateRepository.GetVatRateByCodeAsync(rln.VatRateCode);
 					if (vatRate == null)
 					{
@@ -287,12 +292,14 @@ namespace bxBE.Application.Commands.cmdInvoice
 					//	ln.Product = prod;
 					ln.ProductID = prod.ID;
 					ln.ProductCode = rln.ProductCode;
+					ln.Product = prod;
 					ln.VTSZ = prod.ProductCodes.FirstOrDefault(c => c.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ProductCodeValue;
 					ln.LineDescription = prod.Description;
 
 					//	ln.VatRate = vatRate;
 					ln.VatRateID = vatRate.ID;
 					ln.VatPercentage = vatRate.VatPercentage;
+					ln.VatRate = vatRate;
 
 					ln.LineNatureIndicator = prod.NatureIndicator;
 
@@ -324,6 +331,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 				await _InvoiceRepository.AddInvoiceAsync(invoice);
 				await _CounterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
 
+					
 				invoice.InvoiceLines.Clear();
 				invoice.SummaryByVatRates.Clear();
 				if(invoice.AdditionalInvoiceData != null) 

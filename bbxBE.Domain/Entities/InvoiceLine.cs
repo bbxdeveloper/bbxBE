@@ -3,6 +3,7 @@ using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -145,17 +146,20 @@ namespace bbxBE.Domain.Entities
 		[ForeignKey("InvoiceID")]
 		[ColumnLabel("Számla")]
 		[Description("Számla")]
-		public Invoice Invoice { get; set; }
+		[Required]
+		public virtual Invoice Invoice { get; set; }
 
 		[ForeignKey("ProductID")]
 		[ColumnLabel("Termék")]
 		[Description("Termék")]
-		public Product Product { get; set; }
+		[Required]
+		public virtual Product Product { get; set; }
 
 		[ForeignKey("VatRateID")]
 		[ColumnLabel("Áfakulcs")]
 		[Description("Áfakulcs")]
-		public VatRate VatRate { get; set; }
+		[Required]
+		public virtual VatRate VatRate { get; set; }
 
 	}
 }
