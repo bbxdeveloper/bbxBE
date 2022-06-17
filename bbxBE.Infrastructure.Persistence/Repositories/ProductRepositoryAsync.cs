@@ -684,10 +684,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          .Include(v => v.VatRate).AsNoTracking();
                     await _productcacheService.RefreshCache(q);
 
+                    /*
                     foreach (var entry in _productcacheService.Cache)
                     {
-                        _dbContext.Entry(entry.Value).State = EntityState.Detached;
+                        var prod = (Product)entry.Value;
+                        _dbContext.Entry(prod).State = EntityState.Detached;
+                        _dbContext.Entry(prod.VatRate).State = EntityState.Detached;
                     }
+                    */
                 }
             }
         }
@@ -702,12 +706,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .AsNoTracking()
                 .AsExpandable();
                 await _vatRateCacheService.RefreshCache(q);
-
+/*
                 foreach (var entry in _vatRateCacheService.Cache)
                 {
                     _dbContext.Entry(entry.Value).State = EntityState.Detached;
                 }
-
+*/
             }
         }
     }

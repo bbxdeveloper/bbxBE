@@ -13,10 +13,12 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
+
             builder
             .HasMany<ProductCode>(g => g.ProductCodes)
             .WithOne(s => s.Product)
             .HasForeignKey(s => s.ProductID);
         }
+        
     }
 }

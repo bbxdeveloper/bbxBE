@@ -299,7 +299,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 					//	ln.VatRate = vatRate;
 					ln.VatRateID = vatRate.ID;
 					ln.VatPercentage = vatRate.VatPercentage;
-					ln.VatRate = vatRate;
+					//ln.VatRate = vatRate;
 
 					ln.LineNatureIndicator = prod.NatureIndicator;
 

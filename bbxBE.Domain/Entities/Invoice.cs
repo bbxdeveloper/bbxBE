@@ -198,20 +198,17 @@ namespace bbxBE.Domain.Entities
 		[ForeignKey("WarehouseID")]
 		[ColumnLabel("Raktár")]
 		[Description("Raktár")]
-		[Required]
 		public virtual Warehouse Warehouse { get; set; }
 
 		[ForeignKey("SupplierID")]
 		[ColumnLabel("Szállító")]
 		[Description("Szállító")]
-		[Required]
 		public virtual Customer Supplier { get; set; }
 
 
 		[ForeignKey("CustomerID")]
 		[ColumnLabel("Ügyfél")]
 		[Description("Ügyfél")]
-		[Required]
 		public virtual Customer Customer { get; set; }
 
 		[ForeignKey("OriginalInvoiceID")]
@@ -221,16 +218,17 @@ namespace bbxBE.Domain.Entities
 
 		[ColumnLabel("Egyéb adat")]
 		[Description("A számlára vonatkozó egyéb adat")]
+//		[InverseProperty("ID")]
 		public virtual ICollection<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
 
 		[ColumnLabel("Áfa összesítő")]
 		[Description("Összesítés áfa-mérték szerint")]
-		[Required]
+//		[InverseProperty("ID")]
 		public virtual ICollection<SummaryByVatRate> SummaryByVatRates { get; set; }
 
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
-		[Required]
+//		[InverseProperty("ID")]
 		public virtual ICollection<InvoiceLine> InvoiceLines { get; set; }
 
 	}

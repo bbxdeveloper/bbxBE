@@ -84,8 +84,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
 
-                    await _invoices.AddAsync(p_invoice);
+ 
                     await _StockRepository.MaintainStockByInvoiceAsync(p_invoice);
+
+                    //c# how to disable save related entity in EF ???
+                    //TODO: ideiglenes megoldás, relációban álló objektumok kitörlése hogy ne akarja menteni azokat az EF 
+                    p_invoice.Customer = null;
+                    p_invoice.Supplier = null;
+                    foreach (var il in p_invoice.InvoiceLines)
+                    {
+                        il.Product = null;
+                        il.VatRate = null;
+                    }
+
+                    await _invoices.AddAsync(p_invoice);
+
+
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 

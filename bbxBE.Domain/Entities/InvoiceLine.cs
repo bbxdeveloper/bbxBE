@@ -146,19 +146,16 @@ namespace bbxBE.Domain.Entities
 		[ForeignKey("InvoiceID")]
 		[ColumnLabel("Számla")]
 		[Description("Számla")]
-		[Required]
 		public virtual Invoice Invoice { get; set; }
 
 		[ForeignKey("ProductID")]
 		[ColumnLabel("Termék")]
 		[Description("Termék")]
-		[Required]
 		public virtual Product Product { get; set; }
 
 		[ForeignKey("VatRateID")]
 		[ColumnLabel("Áfakulcs")]
 		[Description("Áfakulcs")]
-		[Required]
 		public virtual VatRate VatRate { get; set; }
 
 	}

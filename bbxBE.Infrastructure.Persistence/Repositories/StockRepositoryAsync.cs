@@ -56,8 +56,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
            
                     var stock = await _Stocks
-                                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.FirstOrDefault(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() && pc.ProductCodeValue == invoiceLine.ProductCode)).AsNoTracking()
-                                .Where(x => x.WarehouseID == invoice.WarehouseID && !x.Deleted).FirstOrDefaultAsync();
+                                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                                .Where(x => x.WarehouseID == invoice.WarehouseID && !x.Deleted
+                                &&  x.Product.ProductCodes.Any( pc=>pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() && pc.ProductCodeValue == invoiceLine.ProductCode)).FirstOrDefaultAsync();
                     var bNew = false;
                     if (stock == null)
                     {
@@ -65,9 +66,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         stock = new Stock()
                         {
                             WarehouseID = invoice.WarehouseID,
-                            Warehouse = invoice.Warehouse,
+                            //Warehouse = invoice.Warehouse,
                             ProductID = invoiceLine.ProductID.Value,
-                            Product = invoiceLine.Product,
+                            //Product = invoiceLine.Product,
                             AvgCost = invoiceLine.UnitPrice
                         };
                     }
