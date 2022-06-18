@@ -123,7 +123,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Offer> UpdateOfferAsync(Offer p_Offer)
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
-            {
+                {
                 try
                 {
                     //Az előző verziók érvénytelenítése
