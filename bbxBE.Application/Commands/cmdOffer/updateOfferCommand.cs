@@ -153,8 +153,8 @@ namespace bxBE.Application.Commands.cmdOffer
 
 
 	public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand, Response<Offer>>
-    {
-        private readonly IOfferRepositoryAsync _OfferRepository;
+	{
+		private readonly IOfferRepositoryAsync _OfferRepository;
 		private readonly ICounterRepositoryAsync _CounterRepository;
 		private readonly ICustomerRepositoryAsync _CustomerRepository;
 		private readonly IProductRepositoryAsync _ProductRepository;
@@ -162,14 +162,14 @@ namespace bxBE.Application.Commands.cmdOffer
 		private readonly IMapper _mapper;
 		private readonly IConfiguration _configuration;
 
-        public UpdateOfferCommandHandler(IOfferRepositoryAsync OfferRepository,
+		public UpdateOfferCommandHandler(IOfferRepositoryAsync OfferRepository,
 						ICounterRepositoryAsync CounterRepository,
 						ICustomerRepositoryAsync CustomerRepository,
 						IProductRepositoryAsync ProductRepository,
 						IVatRateRepositoryAsync VatRateRepository,
 						IMapper mapper, IConfiguration configuration)
-        {
-            _OfferRepository = OfferRepository;
+		{
+			_OfferRepository = OfferRepository;
 			_CounterRepository = CounterRepository;
 			_CustomerRepository = CustomerRepository;
 			_ProductRepository = ProductRepository;
@@ -177,22 +177,24 @@ namespace bxBE.Application.Commands.cmdOffer
 
 
 			_mapper = mapper;
-            _configuration = configuration;
-        }
+			_configuration = configuration;
+		}
 
-        public async Task<Response<Offer>> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
-        {
-            var offer = _mapper.Map<Offer>(request);
+		public async Task<Response<Offer>> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
+		{
+			var offer = _mapper.Map<Offer>(request);
 
 			//Egyelőre csak forintos ajántatokról van szó
-		offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
+			offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
 			offer.ExchangeRate = 1;
 
+			var counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
+			var newOfferNumber = "";
 
 			try
 			{
 
-				
+
 				//Tételsorok
 				foreach (var ln in offer.OfferLines)
 				{
@@ -225,7 +227,12 @@ namespace bxBE.Application.Commands.cmdOffer
 
 				if (request.NewOffer)
 				{
+
+					newOfferNumber = await _CounterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);
+					offer.OfferNumber = newOfferNumber;
+
 					await _OfferRepository.AddOfferAsync(offer);
+					await _CounterRepository.FinalizeValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, offer.OfferNumber);
 				}
 				else
 				{
@@ -236,6 +243,10 @@ namespace bxBE.Application.Commands.cmdOffer
 			}
 			catch (Exception ex)
 			{
+				if (request.NewOffer && !string.IsNullOrWhiteSpace(newOfferNumber) && !string.IsNullOrWhiteSpace(counterCode))
+				{
+					await _CounterRepository.RollbackValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, newOfferNumber);
+				}
 				throw;
 			}
 		}
