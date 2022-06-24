@@ -53,7 +53,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			public string UnitOfMeasure { get; set; }
 			[ColumnLabel("Ár")]
 			[Description("Ár")]
-			public decimal Price { get; set; }
+			public decimal UnitPrice { get; set; }
 			
 			[ColumnLabel("Nettó érték")]
 			[Description("Ár a számla pénznemében")]
@@ -111,6 +111,9 @@ namespace bxBE.Application.Commands.cmdInvoice
 		[Description("Ügyfél ID")]
 		public long CustomerID { get; set; }
 
+		[ColumnLabel("Kapcsolódó számla")]
+		[Description("Bevételhez kapcsolódó számla")]
+		public string CustomerInvoiceNumber { get; set; }
 
 		[ColumnLabel("Fiz.mód")]
 		[Description("Fizetési mód")]
@@ -200,7 +203,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			  "vatRateCode": "27%",
 			  "quantity": 1,
 			  "unitOfMeasure": "PIECE",
-			  "price": 10,
+			  "unitPrice": 10,
 			  "lineNetAmount": 10,
 			  "lineVatAmount": 27,
 			  "lineGrossAmount": 127
@@ -211,7 +214,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			  "vatRateCode": "27%",
 			  "quantity": 1,
 			  "unitOfMeasure": "PIECE",
-			  "price": 100,
+			  "unitPrice": 100,
 			  "lineNetAmount": 100,
 			  "lineVatAmount": 270,
 			  "lineGrossAmount": 1270

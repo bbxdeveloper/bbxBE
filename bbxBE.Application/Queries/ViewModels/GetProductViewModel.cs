@@ -56,7 +56,7 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
         public decimal VatPercentage { get; set; }
         [ColumnLabel("Utolsó beszerzés")]
-        [Description("Utolsó beszerzés dátuma")]
+        [Description("Utolsó beszerzési ár")]
         public decimal LatestSupplyPrice { get; set; }
         [ColumnLabel("Készletes?")]
         [Description("Készletes?")]

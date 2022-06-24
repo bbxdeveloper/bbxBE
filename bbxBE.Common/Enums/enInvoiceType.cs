@@ -10,6 +10,8 @@ namespace bbxBE.Common.Enums
         [Description("Számla")]
         INV,
         [Description("Szállítólevél")]
-        DLV
+        DLV,
+        [Description("Bevételezés")]
+        INC
     }
 }

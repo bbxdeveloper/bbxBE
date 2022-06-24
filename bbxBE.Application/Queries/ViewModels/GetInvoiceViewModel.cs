@@ -241,6 +241,9 @@ namespace bbxBE.Application.Queries.ViewModels
 		public string PaymentMethodX { get; set; }
 		#endregion
 
+		[ColumnLabel("Eredeti.biz")]
+		[Description("Bevételhez eredeti bizonylata")]
+		public string CustomerInvoiceNumber { get; set; }
 
 		[ColumnLabel("Megjegyzés")]
 		[Description("Megjegyzés")]
