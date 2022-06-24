@@ -173,6 +173,10 @@ namespace bbxBE.Domain.Entities
 		[Description("Megrendelés száma")]
 		public string OrderNumber { get; set; }
 
+		[ColumnLabel("Kapcsolódó számla")]
+		[Description("Bevételhez kapcsolódó számla")]
+		public string CustomerInvoiceNumber { get; set; }
+
 		[ColumnLabel("Nettó")]
 		[Description("A számla nettó összege a számla pénznemében")]
 		public decimal InvoiceNetAmount { get; set; }
