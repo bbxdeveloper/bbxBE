@@ -1,16 +1,13 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Common.Enums;
-using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace bbxBE.Domain.Entities
+namespace bbxBE.Application.Queries.ViewModels
 {
-    [Description("Készletkarton")]
-    public class StockCard : BaseEntity
+    public class GetStockCardViewModel
     {
         [ColumnLabel("Raktárkészlet ID")]
         [Description("Raktárkészlet ID")]
@@ -20,39 +17,51 @@ namespace bbxBE.Domain.Entities
         [Description("Raktár ID")]
         public long WarehouseID { get; set; }
 
-        [ColumnLabel("Termék ID")]
-        [Description("Termék ID")]
-        public long? ProductID { get; set; }
+        [ColumnLabel("Raktár")]
+        [Description("Raktár")]
+        public string Warehouse { get; set; }
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long UserID { get; set; }
 
+        [ColumnLabel("Felhasználó")]
+        [Description("Felhasználó")]
+        [MapToEntity("Name")]
+        public string USR_NAME { get; set; }
+
         [ColumnLabel("Számlasor ID")]
         [Description("Számlasor ID")]
         public long? InvoiceLineID { get; set; }
+
+        [ColumnLabel("Termékkód")]
+        [Description("Termékkód")]
+        public string ProductCode { get; set; }
+
+        [ColumnLabel("Megnevezés")]
+        [Description("A termék vagy szolgáltatás megnevezése")]
+        public string LineDescription { get; set; }
 
         [ColumnLabel("Partner ID")]
         [Description("Partner ID")]
         public long? CustomerID { get; set; }
 
-        #region ScType
-        private enStockCardTypes scType;
+        [ColumnLabel("Ügyfélnév")]
+        [Description("Ügyfélnév")]
+        public string CustomerName { get; set; }
+
+        [ColumnLabel("Város")]
+        [Description("Ügyfél város")]
+        public string CustomerCity { get; set; }
+
+        [ColumnLabel("Cím")]
+        [Description("Ügyfélcím")]
+        public string CustomerAdditionalAddressDetail { get; set; }
+
 
         [ColumnLabel("Típus")]
         [Description("Típus")]
-        public string ScType
-        {
-            get { return Enum.GetName(typeof(enStockCardTypes), scType); }
-            set
-            {
-                if (value != null)
-                    scType = (enStockCardTypes)Enum.Parse(typeof(enStockCardTypes), value);
-                else
-                    scType = enStockCardTypes.INIT;
-            }
-        }
-        #endregion 
+        public string ScType { get; set; }
 
         [ColumnLabel("E.Krt")]
         [Description("Eredeti karton szerinti mennyiség")]
@@ -102,36 +111,5 @@ namespace bbxBE.Domain.Entities
         [Description("Kapcsolódó adatok")]
         public string XRel { get; set; }
 
-
-        //Relációk
-        [ForeignKey("StockID")]
-        [ColumnLabel("Készlet")]
-        [Description("Készlet")]
-        public virtual Stock Stock { get; set; }
-
-        [ForeignKey("WarehouseID")]
-        [ColumnLabel("Raktár")]
-        [Description("Raktár")]
-        public virtual Warehouse Warehouse { get; set; }
-
-        [ForeignKey("ProductID")]
-        [ColumnLabel("Termék")]
-        [Description("Termék")]
-        public virtual Product Product { get; set; }
-
-        [ForeignKey("UserID")]
-        [ColumnLabel("Felhasználó")]
-        [Description("Felhasználó")]
-        public virtual USR_USER User { get; set; }
-
-        [ForeignKey("InvoiceLineID")]
-        [ColumnLabel("Számlasor")]
-        [Description("Számlasor")]
-        public virtual InvoiceLine InvoiceLine { get; set; }
-
-        [ForeignKey("CustomerID")]
-        [ColumnLabel("Partner")]
-        [Description("Partner")]
-        public virtual Customer Customer { get; set; }
     }
 }

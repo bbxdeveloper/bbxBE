@@ -42,6 +42,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<Offer> Offer { get; set; }
         public DbSet<OfferLine> OfferLine { get; set; }
         public DbSet<Stock> Stock { get; set; }
+        public DbSet<StockCard> StockCard { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
