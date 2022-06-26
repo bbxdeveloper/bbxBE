@@ -23,7 +23,7 @@ namespace bbxBE.Application.Queries.qStockCard
 
         [ColumnLabel("Raktár")]
         [Description("Raktár")]
-        public string WarehouseCode { get; set; }
+        public long? WarehouseID { get; set; }
 
         [ColumnLabel("Dátumtól")]
         [Description("Dátumtól")]
@@ -31,16 +31,16 @@ namespace bbxBE.Application.Queries.qStockCard
 
         [ColumnLabel("Dátumig")]
         [Description("Dátumig")]
-        public DateTime? StockCardIssueDateTo { get; set; }
+        public DateTime? StockCardDateTo { get; set; }
 
 
         [ColumnLabel("Számlaszám")]
         [Description("Számla sorszáma")]
         public string InvoiceNumber { get; set; }
 
-        [ColumnLabel("Termékkód")]
-        [Description("Termékkód")]
-        public string ProductCode { get; set; }
+        [ColumnLabel("Termék")]
+        [Description("Termék")]
+        public long? ProductID { get; set; }
 
 
     }

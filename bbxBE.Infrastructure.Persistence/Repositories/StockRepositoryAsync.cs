@@ -151,7 +151,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await result.CountAsync();
 
             // filter data
-            FilterBySearchString(ref result, requestParameter.WarehouseID, requestParameter.ProductID);
+            FilterByParameters(ref result, requestParameter.WarehouseID, requestParameter.ProductID);
 
             // Count records after filter
             recordsFiltered = await result.CountAsync();
@@ -196,7 +196,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Stock> p_item, long p_warehouseID, long p_productID)
+        private void FilterByParameters(ref IQueryable<Stock> p_item, long p_warehouseID, long p_productID)
         {
             if (!p_item.Any())
                 return;

@@ -12,6 +12,10 @@ namespace bbxBE.Domain.Entities
     [Description("Készletkarton")]
     public class StockCard : BaseEntity
     {
+        [ColumnLabel("Dátum")]
+        [Description("Dátum")]
+        public DateTime StockCardDate { get; set; }
+
         [ColumnLabel("Raktárkészlet ID")]
         [Description("Raktárkészlet ID")]
         public long StockID { get; set; }
@@ -24,6 +28,7 @@ namespace bbxBE.Domain.Entities
         [Description("Termék ID")]
         public long? ProductID { get; set; }
 
+ 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long UserID { get; set; }

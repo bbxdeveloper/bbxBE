@@ -51,10 +51,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<List<StockCard>> MaintainStockCardByInvoiceAsync(Invoice invoice)
         {
             throw new NotImplementedException("MaintainStockCardByInvoiceAsync");
-                }
-   
+        }
 
-    public async Task<Entity> GetStockCardAsync(GetStockCard requestParameter)
+
+        public async Task<Entity> GetStockCardAsync(GetStockCard requestParameter)
         {
 
             var ID = requestParameter.ID;
@@ -68,7 +68,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (item == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_StockCardNOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_STOCKCARDNOTFOUND, ID));
             }
 
             var itemModel = _mapper.Map<StockCard, GetStockCardViewModel>(item);
@@ -101,7 +101,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await result.CountAsync();
 
             // filter data
-            FilterBySearchString(ref result, requestParameter.WarehouseID, requestParameter.ProductID);
+
+     
+
+        FilterBy(ref result, requestParameter.WarehouseID, requestParameter.StockCardDateFrom, requestParameter.StockCardDateTo, requestParameter.InvoiceNumber, requestParameter.ProductID);
 
             // Count records after filter
             recordsFiltered = await result.CountAsync();
@@ -146,22 +149,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<StockCard> p_item, long p_warehouseID, long p_productID)
+        private void FilterBy(ref IQueryable<StockCard> p_item,
+            long? WarehouseID, DateTime? StockCardDateFrom, DateTime? StockCardDateTo, string InvoiceNumber, long? ProductID)
+
+
         {
             if (!p_item.Any())
                 return;
 
-            if ( p_warehouseID == 0 && p_productID == 0)
-                return;
 
             var predicate = PredicateBuilder.New<StockCard>();
-            if (p_warehouseID > 0)
+            if (WarehouseID.HasValue && WarehouseID.Value > 0)
             {
-                predicate = predicate.And(p => p.WarehouseID == p_warehouseID);
+                predicate = predicate.And(p => p.WarehouseID == WarehouseID.Value);
             }
-            if (p_productID > 0)
+            if (StockCardDateFrom.HasValue)
             {
-                predicate = predicate.And(p => p.ProductID == p_productID);
+                predicate = predicate.And(p => p.StockCardDate >= StockCardDateFrom.Value);
+            }
+            if (StockCardDateTo.HasValue)
+            {
+                predicate = predicate.And(p => p.StockCardDate <= StockCardDateTo.Value);
+            }
+            if (ProductID.HasValue && ProductID.Value > 0)
+            {
+                predicate = predicate.And(p => p.ProductID == ProductID.Value);
             }
 
 

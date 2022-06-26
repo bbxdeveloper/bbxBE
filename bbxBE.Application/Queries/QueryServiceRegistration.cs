@@ -52,6 +52,9 @@ namespace bbxBE.Application.Queries
 
             services.AddScoped<IDataShapeHelper<Stock>, DataShapeHelper<Stock>>();
             services.AddScoped<IDataShapeHelper<GetStockViewModel>, DataShapeHelper<GetStockViewModel>>();
+            
+            services.AddScoped<IDataShapeHelper<StockCard>, DataShapeHelper<StockCard>>();
+            services.AddScoped<IDataShapeHelper<GetStockCardViewModel>, DataShapeHelper<GetStockCardViewModel>>();
 
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>
             {
