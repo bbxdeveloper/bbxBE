@@ -19,6 +19,7 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Exceptions;
 using bbxBE.Application.Consts;
 using static bbxBE.Common.NAV.NAV_enums;
+using bbxBE.Common.Enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -48,10 +49,45 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
         }
 
-        public async Task<List<StockCard>> MaintainStockCardByInvoiceAsync(Invoice invoice)
+      
+        public async Task<StockCard> CreateStockCard(DateTime StockCardDate, long StockID,
+            long WarehouseID, long? ProductID, long? UserID, long? InvoiceLineID, long? CustomerID,
+            enStockCardTypes ScType,
+            decimal OCalcQty, decimal ORealQty,
+            decimal XCalcQty, decimal XRealQty,
+            decimal OAvgCost, decimal NAvgCost,
+            string XRel)
+
+
+
         {
-            throw new NotImplementedException("MaintainStockCardByInvoiceAsync");
+            var sc = new StockCard()
+            {
+                StockCardDate = StockCardDate,
+                StockID = StockID,
+                WarehouseID = WarehouseID,
+                ProductID = ProductID,
+                UserID = UserID,
+                InvoiceLineID = InvoiceLineID,
+                CustomerID = CustomerID,
+                ScType = ScType.ToString(),
+                OCalcQty = OCalcQty,
+                ORealQty = ORealQty,
+                OOutQty = 0,                //ha lesz árukiadás, töltjük!
+                XCalcQty = XCalcQty,
+                XRealQty = XRealQty,
+                XOutQty = 0,                //ha lesz árukiadás, töltjük!
+                NCalcQty = OCalcQty + XCalcQty,
+                NRealQty = ORealQty + XRealQty,
+                NOutQty = 0,                //ha lesz árukiadás, töltjük!
+                OAvgCost = OAvgCost,
+                NAvgCost = NAvgCost,
+                XRel = XRel
+            };
+            await _StockCards.AddAsync(sc);
+            return sc;
         }
+
 
 
         public async Task<Entity> GetStockCardAsync(GetStockCard requestParameter)

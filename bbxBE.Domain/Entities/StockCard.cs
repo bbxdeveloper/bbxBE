@@ -31,7 +31,7 @@ namespace bbxBE.Domain.Entities
  
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
-        public long UserID { get; set; }
+        public long? UserID { get; set; }
 
         [ColumnLabel("Számlasor ID")]
         [Description("Számlasor ID")]

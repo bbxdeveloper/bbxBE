@@ -193,6 +193,9 @@ namespace bbxBE.Domain.Entities
 		[Description("A számla végösszege forintban")]
 		public decimal invoiceGrossAmountHUF { get; set; }
 
+		[ColumnLabel("Felhasználó ID")]
+		[Description("Felhasználó ID")]
+		public long UserID { get; set; } = 0;
 
 		//relációk
 		[ForeignKey("WarehouseID")]

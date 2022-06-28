@@ -9,7 +9,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00016, "v00.00.01-Stock")]
+    [Migration(00016, "v00.00.01-Stock,StockCard")]
     public class InitialTables_00016 : Migration
     {
 
@@ -48,9 +48,9 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
                     .WithColumn("StockCardDate").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-                    .WithColumn("StockID").AsInt64().ForeignKey()
-                    .WithColumn("WarehouseID").AsInt64().ForeignKey()
-                    .WithColumn("ProductID").AsInt64().ForeignKey()
+                    .WithColumn("StockID").AsInt64().NotNullable().ForeignKey()
+                    .WithColumn("WarehouseID").AsInt64().NotNullable().ForeignKey()
+                    .WithColumn("ProductID").AsInt64().NotNullable().ForeignKey()
                     .WithColumn("InvoiceLineID").AsInt64().Nullable().ForeignKey()
                     .WithColumn("CustomerID").AsInt64().Nullable().ForeignKey()
                     .WithColumn("UserID").AsInt64().ForeignKey()
