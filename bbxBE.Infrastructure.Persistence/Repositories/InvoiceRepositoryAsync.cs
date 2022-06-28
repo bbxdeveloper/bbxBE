@@ -40,7 +40,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly IStockRepositoryAsync _StockRepository;
-
         public InvoiceRepositoryAsync(ApplicationDbContext dbContext,
 
 
@@ -84,8 +83,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
 
- 
-                    await _StockRepository.MaintainStockByInvoiceAsync(p_invoice);
+
+                    var stockList = await _StockRepository.MaintainStockByInvoiceAsync(p_invoice);
 
                     //c# how to disable save related entity in EF ???
                     //TODO: ideiglenes megoldás, relációban álló objektumok kitörlése hogy ne akarja menteni azokat az EF 

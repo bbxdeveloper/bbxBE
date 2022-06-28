@@ -54,6 +54,7 @@ namespace bbxBE.Application.Consts
         public static string ERR_USERNOTFOUND = "Felhasználó nem található, ID:{0} ";
         public static string ERR_WAREHOUSENOTFOUND = "Raktár nem található, Kód:{0}";
         public static string ERR_STOCKNOTFOUND = "Raktárkészlet nem található, ID:{0} ";
+        public static string ERR_STOCKCARDNOTFOUND = "Készletkarton nem található, ID:{0} ";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 

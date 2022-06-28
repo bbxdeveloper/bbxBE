@@ -31,11 +31,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly IStockCardRepositoryAsync _StockCardRepository;
 
         public StockRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Stock> dataShaperStock,
             IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            IStockCardRepositoryAsync StockCardRepository
+            ) : base(dbContext)
         {
             _dbContext = dbContext;
             _Stocks = dbContext.Set<Stock>();
@@ -44,6 +47,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _StockCardRepository = StockCardRepository;
         }
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
@@ -60,6 +64,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 .Where(x => x.WarehouseID == invoice.WarehouseID && !x.Deleted
                                 &&  x.Product.ProductCodes.Any( pc=>pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() && pc.ProductCodeValue == invoiceLine.ProductCode)).FirstOrDefaultAsync();
                     var bNew = false;
+
+                    decimal OCalcQty = 0;
+                    decimal ORealQty = 0;
+                    decimal OAvgCost = 0;
+
+
                     if (stock == null)
                     {
                         bNew = true;
@@ -73,8 +83,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         };
                     }
 
+                    OCalcQty = stock.CalcQty;
+                    ORealQty = stock.RealQty;
+                    OAvgCost = stock.AvgCost;
+
                     if (invoice.Incoming)
                     {
+
                         stock.CalcQty += invoiceLine.Quantity;
                         stock.RealQty += invoiceLine.Quantity;
                         stock.LatestIn = DateTime.UtcNow;
@@ -96,6 +111,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         _Stocks.Update(stock);
                     }
+
+                    var sc = await _StockCardRepository.CreateStockCard(
+                        invoice.InvoiceDeliveryDate,
+                        stock.ID,
+                        invoice.WarehouseID,
+                         invoiceLine.ProductID,
+                         invoice.UserID,
+                         invoiceLine.ID,
+                         (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
+                         Common.Enums.enStockCardTypes.INVOICE,
+                         OCalcQty, ORealQty,
+                         invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
+                         invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
+                         OAvgCost, stock.AvgCost,
+                         invoice.InvoiceNumber);
                     ret.Add(stock);
                 }
 
@@ -151,7 +181,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await result.CountAsync();
 
             // filter data
-            FilterBySearchString(ref result, requestParameter.WarehouseID, requestParameter.ProductID);
+            FilterByParameters(ref result, requestParameter.WarehouseID, requestParameter.ProductID);
 
             // Count records after filter
             recordsFiltered = await result.CountAsync();
@@ -196,7 +226,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Stock> p_item, long p_warehouseID, long p_productID)
+        private void FilterByParameters(ref IQueryable<Stock> p_item, long p_warehouseID, long p_productID)
         {
             if (!p_item.Any())
                 return;

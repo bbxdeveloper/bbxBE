@@ -9,9 +9,16 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00016, "v00.00.01-Stock")]
+    [Migration(00016, "v00.00.01-Stock,StockCard")]
     public class InitialTables_00016 : Migration
     {
+
+        /*
+              delete VersionInfo where Version = 16
+              --drop table Stock
+              drop table StockCard
+
+           */
         public override void Down()
         {
             Delete.Table("Stock");
@@ -40,7 +47,10 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
-                    .WithColumn("StockID").AsInt64().ForeignKey()
+                    .WithColumn("StockCardDate").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
+                    .WithColumn("StockID").AsInt64().NotNullable().ForeignKey()
+                    .WithColumn("WarehouseID").AsInt64().NotNullable().ForeignKey()
+                    .WithColumn("ProductID").AsInt64().NotNullable().ForeignKey()
                     .WithColumn("InvoiceLineID").AsInt64().Nullable().ForeignKey()
                     .WithColumn("CustomerID").AsInt64().Nullable().ForeignKey()
                     .WithColumn("UserID").AsInt64().ForeignKey()
@@ -57,6 +67,19 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("OAvgCost").AsDecimal().NotNullable().WithDefaultValue(0)        //átlagolt beszerzési egységár
                     .WithColumn("NAvgCost").AsDecimal().NotNullable().WithDefaultValue(0)        //átlagolt beszerzési egységár
                     .WithColumn("XRel").AsString().Nullable();                                   //Kapcsolt biyonylat száma, aznosítója, egyéb kapcsolt adatok
+
+            Create.Index("INX_StockCardWarehouse")
+                         .OnTable("StockCard")
+                         .OnColumn("WarehouseID").Ascending()
+                         .WithOptions().NonClustered();
+            Create.Index("INX_ProductDate")
+                         .OnTable("StockCard")
+                         .OnColumn("ProductID").Ascending()
+                         .WithOptions().NonClustered();
+            Create.Index("INX_StockCardDate")
+                         .OnTable("StockCard")
+                         .OnColumn("StockCardDate").Ascending()
+                         .WithOptions().NonClustered();
 
         }
     }
