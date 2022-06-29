@@ -173,10 +173,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
+            
             var result = _Stocks.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.FirstOrDefault(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking();
-
+                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                        .Include(w => w.Warehouse).AsNoTracking()
+                        .Where( w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
+            /*
+            var result = _Stocks.AsNoTracking()
+                            .Include(p => p.Product).AsNoTracking()
+                            .Include(w => w.Warehouse).AsNoTracking()
+                            ;
+            */
             // Count records total
             recordsTotal = await result.CountAsync();
 

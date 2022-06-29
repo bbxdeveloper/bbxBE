@@ -179,6 +179,34 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.StockCardController.Get(bbxBE.Application.Queries.qStockCard.GetStockCard)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.StockCardController.Query(bbxBE.Application.Queries.qStockCard.QueryStockCard)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.StockController.Get(bbxBE.Application.Queries.qStock.GetStock)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.StockController.Query(bbxBE.Application.Queries.qStock.QueryStock)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Get(bbxBE.Application.Queries.qUSR_USER.GetUSR_USER)">
             <summary>
             GET: api/controller
