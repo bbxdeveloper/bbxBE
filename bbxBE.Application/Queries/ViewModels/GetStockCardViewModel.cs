@@ -9,6 +9,9 @@ namespace bbxBE.Application.Queries.ViewModels
 {
     public class GetStockCardViewModel
     {
+        [MapToEntity("ID")]
+        public long ID { get; set; }
+
         [ColumnLabel("Raktárkészlet ID")]
         [Description("Raktárkészlet ID")]
         public long StockID { get; set; }

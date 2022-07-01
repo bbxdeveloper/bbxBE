@@ -2,12 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
     public class GetStockViewModel
     {
+        [MapToEntity("ID")]
+        public long ID { get; set; }
+
         [ColumnLabel("Raktár ID")]
         [Description("Raktár ID")]
         public long WarehouseID { get; set; }
@@ -24,8 +28,7 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Termékkód")]
         public string ProductCode { get; set; }
 
-        [ColumnLabel("Termék")]
-        [Description("Termék")]
+        [IgnoreDataMember]
         public string Product { get; set; }
 
         [ColumnLabel("Megnevezés")]

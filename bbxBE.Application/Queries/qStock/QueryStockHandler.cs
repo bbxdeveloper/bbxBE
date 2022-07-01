@@ -24,9 +24,8 @@ namespace bbxBE.Application.Queries.qStock
         [Description("Raktár ID")]
         public long WarehouseID { get; set; }
 
-        [ColumnLabel("Termék ID")]
-        [Description("Termék ID")]
-        public long ProductID { get; set; }
+        [ColumnLabel("Termék kereső sztring")]
+        public string SearchString { get; set; }
     }
 
     public class QueryStockHandler : IRequestHandler<QueryStock, PagedResponse<IEnumerable<Entity>>>

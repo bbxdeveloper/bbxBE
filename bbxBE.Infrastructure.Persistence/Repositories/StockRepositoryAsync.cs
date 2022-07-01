@@ -140,9 +140,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var ID = requestParameter.ID;
 
             var item = await _Stocks.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.FirstOrDefault(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking()
-                        .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
+             .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+             .Include(w => w.Warehouse).AsNoTracking()
+             .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
+                        && w.ID == ID && !w.Deleted).FirstOrDefaultAsync();
 
             //            var fields = requestParameter.Fields;
 
@@ -174,7 +175,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // Setup IQueryable
             
-            var result = _Stocks.AsNoTracking()
+            var query = _Stocks.AsNoTracking()
                         .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
                         .Include(w => w.Warehouse).AsNoTracking()
                         .Where( w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
@@ -185,13 +186,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             ;
             */
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterByParameters(ref result, requestParameter.WarehouseID, requestParameter.ProductID);
+            FilterByParameters(ref query, requestParameter.WarehouseID, requestParameter.SearchString);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = await query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -203,21 +204,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
+                {
+                    //Kis heka...
+                    query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else
+                {
+                    query = query.OrderBy(orderBy);
+                }
             }
+
+
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<Stock>("new(" + fields + ")");
+                query = query.Select<Stock>("new(" + fields + ")");
             }
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = await query.ToListAsync();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetStockViewModel>();
@@ -233,12 +245,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterByParameters(ref IQueryable<Stock> p_item, long p_warehouseID, long p_productID)
+        private void FilterByParameters(ref IQueryable<Stock> p_item, long p_warehouseID, string p_searchString)
         {
             if (!p_item.Any())
                 return;
 
-            if ( p_warehouseID == 0 && p_productID == 0)
+            if ( p_warehouseID == 0 && string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
             var predicate = PredicateBuilder.New<Stock>();
@@ -246,9 +258,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 predicate = predicate.And(p => p.WarehouseID == p_warehouseID);
             }
-            if (p_productID > 0)
+            p_searchString = p_searchString.ToUpper();
+            if (!string.IsNullOrWhiteSpace(p_searchString))
             {
-                predicate = predicate.And(p => p.ProductID == p_productID);
+                predicate = predicate.And(p => p.Product.Description.ToUpper().Contains(p_searchString) ||
+                        p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                        a.ProductCodeValue.ToUpper().Contains(p_searchString)));
             }
 
 
