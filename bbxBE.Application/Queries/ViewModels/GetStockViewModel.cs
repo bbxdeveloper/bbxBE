@@ -28,12 +28,9 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Termékkód")]
         public string ProductCode { get; set; }
 
-        [IgnoreDataMember]
-        public string Product { get; set; }
-
         [ColumnLabel("Megnevezés")]
-        [Description("Megnevezés, leírás")]
-        public string Description { get; set; }
+        [Description("Termékmegnevezés, leírás")]
+        public string Product { get; set; }
 
         [ColumnLabel("Krt.")]
         [Description("Karton szerinti mennyiség")]

@@ -49,7 +49,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
         }
 
-      
+
         public async Task<StockCard> CreateStockCard(DateTime StockCardDate, long StockID,
             long WarehouseID, long? ProductID, long? UserID, long? InvoiceLineID, long? CustomerID,
             enStockCardTypes ScType,
@@ -96,9 +96,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var ID = requestParameter.ID;
 
             var item = await _StockCards.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.FirstOrDefault(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking()
-                        .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
+                    .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                    .Include(w => w.Warehouse).AsNoTracking()
+                    .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
+                    && w.ID == ID && !w.Deleted).FirstOrDefaultAsync();
 
             //            var fields = requestParameter.Fields;
 
@@ -129,21 +130,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _StockCards.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.FirstOrDefault(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking();
+            var query = _StockCards.AsNoTracking()
+                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                        .Include(w => w.Warehouse).AsNoTracking()
+                        .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
 
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = await query.CountAsync();
 
             // filter data
 
-     
 
-        FilterBy(ref result, requestParameter.WarehouseID, requestParameter.StockCardDateFrom, requestParameter.StockCardDateTo, requestParameter.InvoiceNumber, requestParameter.ProductID);
+
+            FilterBy(ref query, requestParameter.WarehouseID, requestParameter.StockCardDateFrom, requestParameter.StockCardDateTo, requestParameter.InvoiceNumber, requestParameter.ProductID);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = await query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -155,21 +157,30 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
+                {
+                    //Kis heka...
+                    query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else
+                {
+                    query = query.OrderBy(orderBy);
+                }
             }
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<StockCard>("new(" + fields + ")");
+                query = query.Select<StockCard>("new(" + fields + ")");
             }
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = await query.ToListAsync();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetStockCardViewModel>();
@@ -190,9 +201,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
         {
-            if (!p_item.Any())
+            if (!p_item.Any() ||
+                (!WarehouseID.HasValue && !StockCardDateFrom.HasValue && !StockCardDateTo.HasValue && !ProductID.HasValue))
                 return;
-
 
             var predicate = PredicateBuilder.New<StockCard>();
             if (WarehouseID.HasValue && WarehouseID.Value > 0)
@@ -220,7 +231,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
-
-
     }
 }

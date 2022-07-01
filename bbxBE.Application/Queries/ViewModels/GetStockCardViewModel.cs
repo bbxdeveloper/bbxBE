@@ -37,13 +37,17 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Számlasor ID")]
         public long? InvoiceLineID { get; set; }
 
+        [ColumnLabel("Termék ID")]
+        [Description("Termék ID")]
+        public long ProductID { get; set; }
+
         [ColumnLabel("Termékkód")]
         [Description("Termékkód")]
         public string ProductCode { get; set; }
 
         [ColumnLabel("Megnevezés")]
-        [Description("A termék vagy szolgáltatás megnevezése")]
-        public string LineDescription { get; set; }
+        [Description("Termékmegnevezés, leírás")]
+        public string Product { get; set; }
 
         [ColumnLabel("Partner ID")]
         [Description("Partner ID")]
