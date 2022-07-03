@@ -42,19 +42,19 @@ namespace bbxBE.Domain.Entities
         public long? CustomerID { get; set; }
 
         #region ScType
-        private enStockCardTypes scType;
+        private enStockCardType scType;
 
         [ColumnLabel("Típus")]
         [Description("Típus")]
         public string ScType
         {
-            get { return Enum.GetName(typeof(enStockCardTypes), scType); }
+            get { return Enum.GetName(typeof(enStockCardType), scType); }
             set
             {
                 if (value != null)
-                    scType = (enStockCardTypes)Enum.Parse(typeof(enStockCardTypes), value);
+                    scType = (enStockCardType)Enum.Parse(typeof(enStockCardType), value);
                 else
-                    scType = enStockCardTypes.INIT;
+                    scType = enStockCardType.INIT;
             }
         }
         #endregion 

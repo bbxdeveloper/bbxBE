@@ -120,7 +120,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          invoice.UserID,
                          invoiceLine.ID,
                          (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
-                         Common.Enums.enStockCardTypes.INVOICE,
+                         Common.Enums.enStockCardType.INVOICE,
                          OCalcQty, ORealQty,
                          invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
                          invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),

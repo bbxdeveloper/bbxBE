@@ -54,7 +54,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("InvoiceLineID").AsInt64().Nullable().ForeignKey()
                     .WithColumn("CustomerID").AsInt64().Nullable().ForeignKey()
                     .WithColumn("UserID").AsInt64().ForeignKey()
-                    .WithColumn("ScType").AsString().NotNullable().WithDefaultValue(enStockCardTypes.INIT.ToString())
+                    .WithColumn("ScType").AsString().NotNullable().WithDefaultValue(enStockCardType.INIT.ToString())
                     .WithColumn("OCalcQty").AsDecimal().NotNullable().WithDefaultValue(0)
                     .WithColumn("ORealQty").AsDecimal().NotNullable().WithDefaultValue(0)
                     .WithColumn("OOutQty").AsDecimal().NotNullable().WithDefaultValue(0)

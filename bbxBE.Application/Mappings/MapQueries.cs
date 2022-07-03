@@ -116,11 +116,21 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description));
 
             CreateMap<StockCard, GetStockCardViewModel>()
+             .ForMember(dst => dst.ScTypeX, opt => opt.MapFrom(src => enStockCardTypeNameResolver(src.ScType)))
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
              .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.Product.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description));
 
 
+        }
+        private static string enStockCardTypeNameResolver(string ScType)
+        {
+            if (!string.IsNullOrWhiteSpace(ScType))
+            {
+                var _scType = (enStockCardType)Enum.Parse(typeof(enStockCardType), ScType);
+                return Common.Utils.GetEnumDescription(_scType);
+            }
+            return "";
         }
 
         private static string enUnitOfMeasureNameResolver(string UnitOfMeasure)

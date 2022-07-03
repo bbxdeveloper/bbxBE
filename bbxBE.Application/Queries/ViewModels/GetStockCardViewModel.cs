@@ -3,6 +3,7 @@ using bbxBE.Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace bbxBE.Application.Queries.ViewModels
@@ -30,7 +31,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [ColumnLabel("Felhasználó")]
         [Description("Felhasználó")]
-        [MapToEntity("Name")]
+        [MapToEntity("UserName")]
         public string USR_NAME { get; set; }
 
         [ColumnLabel("Számlasor ID")]
@@ -65,10 +66,25 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Ügyfélcím")]
         public string CustomerAdditionalAddressDetail { get; set; }
 
+        [ColumnLabel("Dátum")]
+        [Description("Dátum")]
+        public DateTime StockCardDate { get; set; }
 
+        #region ScType
+
+        [DataMember]
         [ColumnLabel("Típus")]
         [Description("Típus")]
         public string ScType { get; set; }
+
+
+        [ColumnLabel("Típus")]
+        [Description("Típus megnevezés")]
+        [DataMember]
+        [NotDBField]
+        public string ScTypeX { get; set; }
+        #endregion
+
 
         [ColumnLabel("E.Krt")]
         [Description("Eredeti karton szerinti mennyiség")]
@@ -98,12 +114,12 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Új karton szerinti mennyiség")]
         public decimal NCalcQty { get; set; }
 
-        [ColumnLabel("Új valós")]
-        [Description("Új valós mennyiség")]
+        [ColumnLabel("Új Valós")]
+        [Description("Új Valós mennyiség")]
         public decimal NRealQty { get; set; }
 
-        [ColumnLabel("Új kiadott")]
-        [Description("Új kiadott mennyiség")]
+        [ColumnLabel("Új Kiadott")]
+        [Description("Új Kiadott mennyiség")]
         public decimal NOutQty { get; set; }
 
         [ColumnLabel("Eredeti ELÁBÉ")]

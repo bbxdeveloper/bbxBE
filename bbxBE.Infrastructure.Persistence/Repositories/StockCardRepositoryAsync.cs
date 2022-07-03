@@ -52,7 +52,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<StockCard> CreateStockCard(DateTime StockCardDate, long StockID,
             long WarehouseID, long? ProductID, long? UserID, long? InvoiceLineID, long? CustomerID,
-            enStockCardTypes ScType,
+            enStockCardType ScType,
             decimal OCalcQty, decimal ORealQty,
             decimal XCalcQty, decimal XRealQty,
             decimal OAvgCost, decimal NAvgCost,
