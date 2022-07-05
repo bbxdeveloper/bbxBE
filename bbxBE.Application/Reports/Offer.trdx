@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report DataSourceName="webServiceDataSource1" Width="190mm" UnitOfMeasure="Mm" Name="Offer" SnapGridSize="10mm" xmlns="http://schemas.telerik.com/reporting/2020/1.0">
+<Report DataSourceName="webServiceDataSource1" Width="190mm" UnitOfMeasure="Mm" Name="Offer" SnapGridSize="10mm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
     <WebServiceDataSource ParameterValues="{&quot;ID&quot;:,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;&quot;,&quot;FullData&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Offer" Name="webServiceDataSource1">
       <Parameters>
@@ -43,11 +43,9 @@
           </Style>
         </TextBox>
         <TextBox Width="169.99mm" Height="6mm" Left="20mm" Top="34mm" Value="= Fields.customerAdditionalAddressDetail" Name="textBox8" />
-        <TextBox Width="169.99mm" Height="15.99mm" Left="20mm" Top="40mm" Value="= Fields.customerComment" Name="textBox9" />
         <TextBox Width="36.81mm" Height="6mm" Left="153.19mm" Top="15.99mm" Value="= Fields.offerIssueDate" Format="{0:yyyy.MM.dd}" Name="textBox10" />
         <TextBox Width="36.81mm" Height="6mm" Left="153.19mm" Top="21.99mm" Value="= Fields.offerVaidityDate" Format="{0:yyyy.MM.dd}" Name="textBox11" />
         <TextBox Width="36.81mm" Height="6mm" Left="153.19mm" Top="28mm" Value="= Fields.copies" Name="textBox12" />
-        <TextBox Width="170mm" Height="24.59mm" Left="20mm" Top="55.99mm" Value="=Fields.notice" Name="textBox13" />
         <TextBox Width="23.19mm" Height="6mm" Left="130mm" Top="15.99mm" Value="= &quot;Dátum:&quot;" Format="{0:yyyy.MM.dd}" Name="textBox34">
           <Style TextAlign="Right">
             <Font Bold="True" />
@@ -93,6 +91,8 @@
             <Font Bold="True" />
           </Style>
         </TextBox>
+        <HtmlTextBox Width="169.46mm" Height="24.01mm" Left="20.27mm" Top="55.99mm" Value="=Fields.notice" Name="htmlTextBox2" />
+        <TextBox Width="169.99mm" Height="15.99mm" Left="20mm" Top="40mm" Value="= Fields.customerComment" Name="textBox9" />
       </Items>
     </PageHeaderSection>
     <DetailSection Height="0.764in" Name="detailSection1">
@@ -111,7 +111,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="27.68mm" Height="5mm" Left="0in" Top="0in" Value="= Fields.productCode" Name="textBox17" StyleName="Normal.TableBody">
+                  <TextBox Width="30.06mm" Height="5mm" Left="0in" Top="0in" Value="= Fields.productCode" Name="textBox17" StyleName="Normal.TableBody">
                     <Style>
                       <Font Size="8pt" />
                     </Style>
@@ -156,7 +156,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="6" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="22.36mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.unitPrice" Format="{0:## ### ##0.00}" Name="textBox27" StyleName="Normal.TableBody">
+                  <TextBox Width="22.35mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.unitPrice" Format="{0:## ### ##0.00}" Name="textBox27" StyleName="Normal.TableBody">
                     <Style TextAlign="Right">
                       <Font Size="8pt" />
                     </Style>
@@ -165,7 +165,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="7" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="11.62mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.unitVat" Format="{0:## ### ##0.00}" Name="textBox29" StyleName="Normal.TableBody">
+                  <TextBox Width="9.24mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.unitVat" Format="{0:## ### ##0.00}" Name="textBox29" StyleName="Normal.TableBody">
                     <Style TextAlign="Right">
                       <Font Size="8pt" />
                     </Style>
@@ -184,13 +184,13 @@
             </Cells>
             <Columns>
               <Column Width="6.96mm" />
-              <Column Width="27.68mm" />
+              <Column Width="30.06mm" />
               <Column Width="66.06mm" />
               <Column Width="8.38mm" />
               <Column Width="14.19mm" />
               <Column Width="11.03mm" />
               <Column Width="22.35mm" />
-              <Column Width="11.62mm" />
+              <Column Width="9.24mm" />
               <Column Width="21.46mm" />
             </Columns>
             <Rows>
@@ -220,7 +220,7 @@
             </TableGroup>
             <TableGroup Name="group1">
               <ReportItem>
-                <TextBox Width="27.68mm" Height="5mm" Left="0in" Top="0in" Value="Termék kód" Name="textBox16" StyleName="Normal.TableHeader">
+                <TextBox Width="30.06mm" Height="5mm" Left="0in" Top="0in" Value="Termék kód" Name="textBox16" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217">
                     <Font Size="9pt" Bold="True" />
                   </Style>
@@ -265,7 +265,7 @@
             </TableGroup>
             <TableGroup Name="group6">
               <ReportItem>
-                <TextBox Width="22.36mm" Height="5mm" Left="0in" Top="0in" Value="Nettó" Name="textBox26" StyleName="Normal.TableHeader">
+                <TextBox Width="22.35mm" Height="5mm" Left="0in" Top="0in" Value="Nettó" Name="textBox26" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217">
                     <Font Size="9pt" Bold="True" />
                   </Style>
@@ -274,7 +274,7 @@
             </TableGroup>
             <TableGroup Name="group7">
               <ReportItem>
-                <TextBox Width="11.62mm" Height="5mm" Left="0in" Top="0in" Value="Áfa" Name="textBox28" StyleName="Normal.TableHeader">
+                <TextBox Width="9.24mm" Height="5mm" Left="0in" Top="0in" Value="Áfa" Name="textBox28" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217">
                     <Font Size="9pt" Bold="True" />
                   </Style>
