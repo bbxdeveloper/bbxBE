@@ -90,18 +90,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //Ha van előző elem, akkor azt vesszük a számítás alapjának
             if (prevItem != null)
             {
-                OCalcQty = prevItem.OCalcQty;
-                ORealQty = prevItem.ORealQty;
-                OOutQty = prevItem.OOutQty;                //ha lesz árukiadás, töltjük!
-                OAvgCost = prevItem.OAvgCost;
+                OCalcQty = prevItem.NCalcQty;
+                ORealQty = prevItem.NRealQty;
+                OOutQty = prevItem.NOutQty;                //ha lesz árukiadás, töltjük!
+                OAvgCost = prevItem.NAvgCost;
 
             }
             else
             {
-                //Ha nincs előző elem, akkor a raktárkészletből indulunk ki
+                //Ha nincs előző elem, elég spec helyzet, legyenek a készletek 0-ák
+                /*
                 OCalcQty = p_Stock.CalcQty;
                 ORealQty = p_Stock.RealQty;
                 OOutQty = p_Stock.OutQty;                //ha lesz árukiadás, töltjük!
+                */
+
+                OCalcQty = 0;
+                ORealQty = 0;
+                OOutQty = 0;                //ha lesz árukiadás, töltjük!
+
                 OAvgCost = p_Stock.AvgCost;
             }
 
