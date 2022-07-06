@@ -13,12 +13,13 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
     {
         public void Configure(EntityTypeBuilder<Invoice> builder)
         {
+            /*
             builder
             .HasMany<InvoiceLine>(i => i.InvoiceLines)
             .WithOne(c => c.Invoice)
             .HasForeignKey(s => s.InvoiceID)
             .IsRequired();
-
+            */
             
 
         }

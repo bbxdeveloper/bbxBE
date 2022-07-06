@@ -58,21 +58,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 if (invoiceLine.ProductID.HasValue && invoiceLine.Product.IsStock)
                 {
-           
+
                     var stock = await _Stocks
-                                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
-                                .Where(x => x.WarehouseID == invoice.WarehouseID && !x.Deleted
-                                &&  x.Product.ProductCodes.Any( pc=>pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() && pc.ProductCodeValue == invoiceLine.ProductCode)).FirstOrDefaultAsync();
-                    var bNew = false;
-
-                    decimal OCalcQty = 0;
-                    decimal ORealQty = 0;
-                    decimal OAvgCost = 0;
-
+                                .Where(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID && !x.Deleted)
+                                .FirstOrDefaultAsync();
 
                     if (stock == null)
                     {
-                        bNew = true;
                         stock = new Stock()
                         {
                             WarehouseID = invoice.WarehouseID,
@@ -81,11 +73,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             //Product = invoiceLine.Product,
                             AvgCost = invoiceLine.UnitPrice
                         };
+                        await _Stocks.AddAsync(stock);
+                        await _dbContext.SaveChangesAsync();
                     }
 
-                    OCalcQty = stock.CalcQty;
-                    ORealQty = stock.RealQty;
-                    OAvgCost = stock.AvgCost;
+                    var latestStockCard = await _StockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
+                                invoice.WarehouseID, invoiceLine.ProductID, invoice.UserID, invoiceLine.ID,
+                                (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
+                                Common.Enums.enStockCardType.INVOICE,
+                                invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
+                                invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
+                                0, invoiceLine.UnitPrice,
+                                invoice.InvoiceNumber);
+
 
                     if (invoice.Incoming)
                     {
@@ -94,7 +94,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         stock.RealQty += invoiceLine.Quantity;
                         stock.LatestIn = DateTime.UtcNow;
 
-                        stock.AvgCost = bllStock.GetNewAvgCost(stock.AvgCost, stock.RealQty, invoiceLine.Quantity, invoiceLine.UnitPrice);
                     }
                     else
                     {
@@ -102,30 +101,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         stock.RealQty -= invoiceLine.Quantity;
                         stock.LatestOut = DateTime.UtcNow;
                     }
+                    stock.AvgCost = latestStockCard.NAvgCost;
 
-                    if (bNew)
-                    {
-                        await _Stocks.AddAsync(stock);
-                    }
-                    else
-                    {
-                        _Stocks.Update(stock);
-                    }
 
-                    var sc = await _StockCardRepository.CreateStockCard(
-                        invoice.InvoiceDeliveryDate,
-                        stock.ID,
-                        invoice.WarehouseID,
-                         invoiceLine.ProductID,
-                         invoice.UserID,
-                         invoiceLine.ID,
-                         (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
-                         Common.Enums.enStockCardType.INVOICE,
-                         OCalcQty, ORealQty,
-                         invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
-                         invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
-                         OAvgCost, stock.AvgCost,
-                         invoice.InvoiceNumber);
+                    _Stocks.Update(stock);
+
                     ret.Add(stock);
                 }
 

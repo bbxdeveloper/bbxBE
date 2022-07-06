@@ -122,6 +122,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Új Kiadott mennyiség")]
         public decimal NOutQty { get; set; }
 
+        [ColumnLabel("Ár")]
+        [Description("Ár")]
+        public decimal UnitPrice { get; set; }
+
         [ColumnLabel("Eredeti ELÁBÉ")]
         [Description("Eredeti átlagolt beszerzési egységár")]
         public decimal OAvgCost { get; set; }

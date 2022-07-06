@@ -64,6 +64,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("NCalcQty").AsDecimal().NotNullable().WithDefaultValue(0)
                     .WithColumn("NRealQty").AsDecimal().NotNullable().WithDefaultValue(0)
                     .WithColumn("NOutQty").AsDecimal().NotNullable().WithDefaultValue(0)
+                    .WithColumn("UnitPrice").AsDecimal().NotNullable().WithDefaultValue(0)       //ár
                     .WithColumn("OAvgCost").AsDecimal().NotNullable().WithDefaultValue(0)        //átlagolt beszerzési egységár
                     .WithColumn("NAvgCost").AsDecimal().NotNullable().WithDefaultValue(0)        //átlagolt beszerzési egységár
                     .WithColumn("XRel").AsString().Nullable();                                   //Kapcsolt biyonylat száma, aznosítója, egyéb kapcsolt adatok
@@ -72,7 +73,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                          .OnTable("StockCard")
                          .OnColumn("WarehouseID").Ascending()
                          .WithOptions().NonClustered();
-            Create.Index("INX_ProductDate")
+            Create.Index("INX_ProductID")
                          .OnTable("StockCard")
                          .OnColumn("ProductID").Ascending()
                          .WithOptions().NonClustered();

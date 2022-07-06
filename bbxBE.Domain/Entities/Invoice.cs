@@ -199,7 +199,7 @@ namespace bbxBE.Domain.Entities
 
 		[ColumnLabel("Felhasználó ID")]
 		[Description("Felhasználó ID")]
-		public long UserID { get; set; } = 0;
+		public long? UserID { get; set; } = 0;
 
 		//relációk
 		[ForeignKey("WarehouseID")]
