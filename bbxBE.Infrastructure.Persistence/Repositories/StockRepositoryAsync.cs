@@ -84,7 +84,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
                                 0, invoiceLine.UnitPrice,
-                                invoice.InvoiceNumber);
+                                invoice.InvoiceNumber + ( invoice.Incoming ? ";" + invoice.CustomerInvoiceNumber : "" ));
 
 
                     if (invoice.Incoming)
