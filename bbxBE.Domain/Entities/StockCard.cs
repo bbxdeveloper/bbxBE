@@ -42,19 +42,19 @@ namespace bbxBE.Domain.Entities
         public long? CustomerID { get; set; }
 
         #region ScType
-        private enStockCardTypes scType;
+        private enStockCardType scType;
 
         [ColumnLabel("Típus")]
         [Description("Típus")]
         public string ScType
         {
-            get { return Enum.GetName(typeof(enStockCardTypes), scType); }
+            get { return Enum.GetName(typeof(enStockCardType), scType); }
             set
             {
                 if (value != null)
-                    scType = (enStockCardTypes)Enum.Parse(typeof(enStockCardTypes), value);
+                    scType = (enStockCardType)Enum.Parse(typeof(enStockCardType), value);
                 else
-                    scType = enStockCardTypes.INIT;
+                    scType = enStockCardType.INIT;
             }
         }
         #endregion 
@@ -94,6 +94,10 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Új kiadott")]
         [Description("Új kiadott mennyiség")]
         public decimal NOutQty { get; set; }
+
+        [ColumnLabel("Ár")]
+        [Description("Ár")]
+        public decimal UnitPrice { get; set; }
 
         [ColumnLabel("Eredeti ELÁBÉ")]
         [Description("Eredeti átlagolt beszerzési egységár")]

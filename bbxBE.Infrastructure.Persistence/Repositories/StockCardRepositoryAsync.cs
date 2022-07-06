@@ -49,43 +49,186 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
         }
 
-      
-        public async Task<StockCard> CreateStockCard(DateTime StockCardDate, long StockID,
-            long WarehouseID, long? ProductID, long? UserID, long? InvoiceLineID, long? CustomerID,
-            enStockCardTypes ScType,
-            decimal OCalcQty, decimal ORealQty,
-            decimal XCalcQty, decimal XRealQty,
-            decimal OAvgCost, decimal NAvgCost,
-            string XRel)
 
-
-
+        public async Task<StockCard> CreateStockCard(Stock p_Stock, DateTime p_StockCardDate,
+            long p_WarehouseID, long? p_ProductID, long? p_UserID, long? p_InvoiceLineID, long? p_CustomerID,
+            enStockCardType p_ScType,
+            decimal p_XCalcQty, decimal p_XRealQty, decimal p_XOutQty, decimal p_UnitPrice,
+            string p_XRel)
         {
+            StockCard latestStockCard = null;
+            decimal OCalcQty = 0;
+            decimal ORealQty = 0;
+            decimal OOutQty = 0;                //ha lesz árukiadás, töltjük!
+            decimal OAvgCost = 0;
+
             var sc = new StockCard()
             {
-                StockCardDate = StockCardDate,
-                StockID = StockID,
-                WarehouseID = WarehouseID,
-                ProductID = ProductID,
-                UserID = UserID,
-                InvoiceLineID = InvoiceLineID,
-                CustomerID = CustomerID,
-                ScType = ScType.ToString(),
-                OCalcQty = OCalcQty,
-                ORealQty = ORealQty,
-                OOutQty = 0,                //ha lesz árukiadás, töltjük!
-                XCalcQty = XCalcQty,
-                XRealQty = XRealQty,
-                XOutQty = 0,                //ha lesz árukiadás, töltjük!
-                NCalcQty = OCalcQty + XCalcQty,
-                NRealQty = ORealQty + XRealQty,
-                NOutQty = 0,                //ha lesz árukiadás, töltjük!
-                OAvgCost = OAvgCost,
-                NAvgCost = NAvgCost,
-                XRel = XRel
+                StockID = p_Stock.ID,
+                StockCardDate = p_StockCardDate.Date,
+                WarehouseID = p_WarehouseID,
+                ProductID = p_ProductID,
+                UserID = p_UserID,
+                InvoiceLineID = p_InvoiceLineID,
+                CustomerID = p_CustomerID,
+                ScType = p_ScType.ToString(),
+                XCalcQty = p_XCalcQty,
+                XRealQty = p_XRealQty,
+                XOutQty = p_XOutQty,               //ha lesz árukiadás, töltjük!
+                UnitPrice = p_UnitPrice,
+                XRel = p_XRel
             };
+            latestStockCard = sc;
+
+            var prevItem = await _StockCards.AsNoTracking()
+                    .Where(w => w.WarehouseID == p_WarehouseID && w.ProductID == p_ProductID &&
+                            w.StockCardDate <= p_StockCardDate)
+                     .OrderByDescending(o1 => o1.StockCardDate)
+                     .ThenByDescending(o2 => o2.ID)
+                     .FirstOrDefaultAsync();
+
+            //Ha van előző elem, akkor azt vesszük a számítás alapjának
+            if (prevItem != null)
+            {
+                OCalcQty = prevItem.OCalcQty;
+                ORealQty = prevItem.ORealQty;
+                OOutQty = prevItem.OOutQty;                //ha lesz árukiadás, töltjük!
+                OAvgCost = prevItem.OAvgCost;
+
+            }
+            else
+            {
+                //Ha nincs előző elem, akkor a raktárkészletből indulunk ki
+                OCalcQty = p_Stock.CalcQty;
+                ORealQty = p_Stock.RealQty;
+                OOutQty = p_Stock.OutQty;                //ha lesz árukiadás, töltjük!
+                OAvgCost = p_Stock.AvgCost;
+            }
+
+            //és ez alapján beupdate-eljük a currStockCard -ot
+            sc.OCalcQty = OCalcQty;
+            sc.ORealQty = ORealQty;
+            sc.OOutQty = OOutQty;                //ha lesz árukiadás, töltjük!
+            sc.OAvgCost = OAvgCost;
+
+            sc.NCalcQty = OCalcQty + p_XCalcQty;
+            sc.NRealQty = ORealQty + p_XRealQty;
+            sc.NOutQty = OOutQty + p_XOutQty;                //ha lesz árukiadás, töltjük!
+
+            sc.NAvgCost = (p_XCalcQty >= 0 || p_XRealQty > 0 ?
+                            bllStock.GetNewAvgCost(OAvgCost, (ORealQty + p_XRealQty), p_XRealQty, p_UnitPrice) :
+                            OAvgCost);
             await _StockCards.AddAsync(sc);
-            return sc;
+
+            OCalcQty = sc.NCalcQty;
+            ORealQty = sc.NRealQty;
+            OOutQty = sc.NOutQty;                //ha lesz árukiadás, töltjük!
+            OAvgCost = sc.NAvgCost;
+
+
+            //Ezután az utána következő, többi elemet számoljuk át
+
+            var furtherItems = await _StockCards
+                     .Where(w => w.WarehouseID == p_WarehouseID && w.ProductID == p_ProductID &&
+                             w.StockCardDate > p_StockCardDate)
+                      .OrderBy(o1 => o1.StockCardDate)
+                      .ThenBy(o2 => o2.ID).ToListAsync();
+            foreach (var f in furtherItems)
+            {
+                var XCalcQty = f.NCalcQty - f.OCalcQty;
+                var XRealQty = f.NRealQty - f.ORealQty;
+                var XOutQty = f.NOutQty - f.OOutQty;
+
+                f.OCalcQty = OCalcQty;
+                f.ORealQty = ORealQty;
+                f.OOutQty = OOutQty;                //ha lesz árukiadás, töltjük!
+                f.OAvgCost = OAvgCost;
+
+                f.NCalcQty = OCalcQty + XCalcQty;
+                f.NRealQty = ORealQty + XRealQty;
+                f.NOutQty = OOutQty + XOutQty;                //ha lesz árukiadás, töltjük!
+
+                f.NAvgCost = (XCalcQty >= 0 || XRealQty > 0 ?
+                                bllStock.GetNewAvgCost(OAvgCost, (ORealQty + XRealQty), XRealQty, f.UnitPrice) :
+                                OAvgCost);
+
+                _StockCards.Update(f);
+
+                OCalcQty = f.NCalcQty;
+                ORealQty = f.NRealQty;
+                OOutQty = f.NOutQty;                //ha lesz árukiadás, töltjük!
+                OAvgCost = f.NAvgCost;
+
+                latestStockCard = f;
+            }
+
+            return latestStockCard;
+        }
+
+        public async Task<bool> MaintainStockCard_deprecated(StockCard currStockCard)
+        {
+
+
+            var OCalcQty = currStockCard.OCalcQty;
+            var ORealQty = currStockCard.ORealQty;
+            var OOutQty = currStockCard.OOutQty;                //ha lesz árukiadás, töltjük!
+            var XCalcQty = currStockCard.XCalcQty;
+            var XRealQty = currStockCard.XRealQty;
+            var XOutQty = currStockCard.XOutQty;                //ha lesz árukiadás, töltjük!
+            var NCalcQty = currStockCard.NCalcQty;
+            var NRealQty = currStockCard.NRealQty;
+            var NOutQty = currStockCard.NOutQty;                //ha lesz árukiadás, töltjük!
+            var OAvgCost = currStockCard.OAvgCost;
+            var NAvgCost = currStockCard.NAvgCost;
+
+            var prevItem = await _StockCards.AsNoTracking()
+                    .Where(w => w.WarehouseID == currStockCard.WarehouseID && w.ProductID == currStockCard.ProductID &&
+                            w.StockCardDate <= currStockCard.StockCardDate)
+                     .OrderByDescending(o1 => o1.StockCardDate)
+                     .ThenByDescending(o2 => o2.ID)
+                     .FirstOrDefaultAsync();
+
+            //Ha van előző elem, akkor azt vesszük a számítás alapjának
+            if (prevItem != null)
+            {
+                OCalcQty = prevItem.OCalcQty;
+                ORealQty = prevItem.ORealQty;
+                OOutQty = prevItem.OOutQty;                //ha lesz árukiadás, töltjük!
+                XCalcQty = prevItem.XCalcQty;
+                XRealQty = prevItem.XRealQty;
+                XOutQty = prevItem.XOutQty;                //ha lesz árukiadás, töltjük!
+                NCalcQty = prevItem.NCalcQty;
+                NRealQty = prevItem.NRealQty;
+                NOutQty = prevItem.NOutQty;                //ha lesz árukiadás, töltjük!
+                OAvgCost = prevItem.OAvgCost;
+                NAvgCost = prevItem.NAvgCost;
+
+                //és ez alapján beupdate-eljük a currStockCard -ot
+                currStockCard.OCalcQty = prevItem.OCalcQty;
+                currStockCard.ORealQty = prevItem.ORealQty;
+                currStockCard.OOutQty = prevItem.OOutQty;                //ha lesz árukiadás, töltjük!
+
+                currStockCard.NCalcQty = prevItem.NCalcQty + currStockCard.XCalcQty;
+                currStockCard.NRealQty = prevItem.NRealQty + currStockCard.XRealQty;
+                currStockCard.NOutQty = prevItem.NOutQty + currStockCard.XOutQty;                //ha lesz árukiadás, töltjük!
+
+                currStockCard.OAvgCost = prevItem.OAvgCost;
+                //           currStockCard.NAvgCost = bllStock.GetNewAvgCost(stock.AvgCost, stock.RealQty, invoiceLine.Quantity, invoiceLine.UnitPrice);
+                ;
+            }
+
+
+
+            var latterItems = await _StockCards.AsNoTracking()
+                    .Where(w => w.WarehouseID == currStockCard.WarehouseID && w.ProductID == currStockCard.ProductID &&
+                            w.StockCardDate > currStockCard.StockCardDate).ToListAsync();
+
+
+            foreach (var item in latterItems)
+            {
+
+            }
+            return true;
         }
 
 
@@ -96,9 +239,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var ID = requestParameter.ID;
 
             var item = await _StockCards.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.FirstOrDefault(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking()
-                        .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
+                    .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                    .Include(w => w.Warehouse).AsNoTracking()
+                    .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
+                    && w.ID == ID && !w.Deleted).FirstOrDefaultAsync();
 
             //            var fields = requestParameter.Fields;
 
@@ -129,21 +273,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _StockCards.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.FirstOrDefault(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking();
+            var query = _StockCards.AsNoTracking()
+                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                        .Include(w => w.Warehouse).AsNoTracking()
+                        .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
 
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = await query.CountAsync();
 
             // filter data
 
-     
 
-        FilterBy(ref result, requestParameter.WarehouseID, requestParameter.StockCardDateFrom, requestParameter.StockCardDateTo, requestParameter.InvoiceNumber, requestParameter.ProductID);
+
+            FilterBy(ref query, requestParameter.WarehouseID, requestParameter.StockCardDateFrom, requestParameter.StockCardDateTo, requestParameter.InvoiceNumber, requestParameter.ProductID);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = await query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -155,21 +300,30 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
+                {
+                    //Kis heka...
+                    query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else
+                {
+                    query = query.OrderBy(orderBy);
+                }
             }
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<StockCard>("new(" + fields + ")");
+                query = query.Select<StockCard>("new(" + fields + ")");
             }
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = await query.ToListAsync();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetStockCardViewModel>();
@@ -190,9 +344,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
         {
-            if (!p_item.Any())
+            if (!p_item.Any() ||
+                (!WarehouseID.HasValue && !StockCardDateFrom.HasValue && !StockCardDateTo.HasValue && !ProductID.HasValue))
                 return;
-
 
             var predicate = PredicateBuilder.New<StockCard>();
             if (WarehouseID.HasValue && WarehouseID.Value > 0)
@@ -220,7 +374,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
-
-
     }
 }

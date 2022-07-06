@@ -58,21 +58,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 if (invoiceLine.ProductID.HasValue && invoiceLine.Product.IsStock)
                 {
-           
+
                     var stock = await _Stocks
-                                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
-                                .Where(x => x.WarehouseID == invoice.WarehouseID && !x.Deleted
-                                &&  x.Product.ProductCodes.Any( pc=>pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() && pc.ProductCodeValue == invoiceLine.ProductCode)).FirstOrDefaultAsync();
-                    var bNew = false;
-
-                    decimal OCalcQty = 0;
-                    decimal ORealQty = 0;
-                    decimal OAvgCost = 0;
-
+                                .Where(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID && !x.Deleted)
+                                .FirstOrDefaultAsync();
 
                     if (stock == null)
                     {
-                        bNew = true;
                         stock = new Stock()
                         {
                             WarehouseID = invoice.WarehouseID,
@@ -81,11 +73,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             //Product = invoiceLine.Product,
                             AvgCost = invoiceLine.UnitPrice
                         };
+                        await _Stocks.AddAsync(stock);
+                        await _dbContext.SaveChangesAsync();
                     }
 
-                    OCalcQty = stock.CalcQty;
-                    ORealQty = stock.RealQty;
-                    OAvgCost = stock.AvgCost;
+                    var latestStockCard = await _StockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
+                                invoice.WarehouseID, invoiceLine.ProductID, invoice.UserID, invoiceLine.ID,
+                                (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
+                                Common.Enums.enStockCardType.INVOICE,
+                                invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
+                                invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
+                                0, invoiceLine.UnitPrice,
+                                invoice.InvoiceNumber);
+
 
                     if (invoice.Incoming)
                     {
@@ -94,7 +94,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         stock.RealQty += invoiceLine.Quantity;
                         stock.LatestIn = DateTime.UtcNow;
 
-                        stock.AvgCost = bllStock.GetNewAvgCost(stock.AvgCost, stock.RealQty, invoiceLine.Quantity, invoiceLine.UnitPrice);
                     }
                     else
                     {
@@ -102,30 +101,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         stock.RealQty -= invoiceLine.Quantity;
                         stock.LatestOut = DateTime.UtcNow;
                     }
+                    stock.AvgCost = latestStockCard.NAvgCost;
 
-                    if (bNew)
-                    {
-                        await _Stocks.AddAsync(stock);
-                    }
-                    else
-                    {
-                        _Stocks.Update(stock);
-                    }
 
-                    var sc = await _StockCardRepository.CreateStockCard(
-                        invoice.InvoiceDeliveryDate,
-                        stock.ID,
-                        invoice.WarehouseID,
-                         invoiceLine.ProductID,
-                         invoice.UserID,
-                         invoiceLine.ID,
-                         (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
-                         Common.Enums.enStockCardTypes.INVOICE,
-                         OCalcQty, ORealQty,
-                         invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
-                         invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
-                         OAvgCost, stock.AvgCost,
-                         invoice.InvoiceNumber);
+                    _Stocks.Update(stock);
+
                     ret.Add(stock);
                 }
 
@@ -140,9 +120,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var ID = requestParameter.ID;
 
             var item = await _Stocks.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.FirstOrDefault(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking()
-                        .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
+             .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+             .Include(w => w.Warehouse).AsNoTracking()
+             .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
+                        && w.ID == ID && !w.Deleted).FirstOrDefaultAsync();
 
             //            var fields = requestParameter.Fields;
 
@@ -173,18 +154,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
+            
+            var query = _Stocks.AsNoTracking()
+                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                        .Include(w => w.Warehouse).AsNoTracking()
+                        .Where( w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
+            /*
             var result = _Stocks.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.FirstOrDefault(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking();
-
+                            .Include(p => p.Product).AsNoTracking()
+                            .Include(w => w.Warehouse).AsNoTracking()
+                            ;
+            */
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterByParameters(ref result, requestParameter.WarehouseID, requestParameter.ProductID);
+            FilterByParameters(ref query, requestParameter.WarehouseID, requestParameter.SearchString);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = await query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -196,21 +184,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
+                {
+                    //Kis heka...
+                    query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else
+                {
+                    query = query.OrderBy(orderBy);
+                }
             }
+
+
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<Stock>("new(" + fields + ")");
+                query = query.Select<Stock>("new(" + fields + ")");
             }
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = await query.ToListAsync();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetStockViewModel>();
@@ -226,12 +225,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterByParameters(ref IQueryable<Stock> p_item, long p_warehouseID, long p_productID)
+        private void FilterByParameters(ref IQueryable<Stock> p_item, long p_warehouseID, string p_searchString)
         {
             if (!p_item.Any())
                 return;
 
-            if ( p_warehouseID == 0 && p_productID == 0)
+            if ( p_warehouseID == 0 && string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
             var predicate = PredicateBuilder.New<Stock>();
@@ -239,9 +238,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 predicate = predicate.And(p => p.WarehouseID == p_warehouseID);
             }
-            if (p_productID > 0)
+            p_searchString = p_searchString.ToUpper();
+            if (!string.IsNullOrWhiteSpace(p_searchString))
             {
-                predicate = predicate.And(p => p.ProductID == p_productID);
+                predicate = predicate.And(p => p.Product.Description.ToUpper().Contains(p_searchString) ||
+                        p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                        a.ProductCodeValue.ToUpper().Contains(p_searchString)));
             }
 
 

@@ -13,13 +13,11 @@ namespace bbxBE.Application.Interfaces.Repositories
 {
     public interface IStockCardRepositoryAsync : IGenericRepositoryAsync<StockCard>
     {
-        Task<StockCard> CreateStockCard(DateTime StockCardDate, long StockID,
-            long WarehouseID, long? ProductID, long? UserID, long? InvoiceLineID, long? CustomerID,
-            enStockCardTypes ScType,
-            decimal OCalcQty, decimal ORealQty,
-            decimal XCalcQty, decimal XRealQty,
-            decimal OAvgCost, decimal NAvgCost,
-            string XRel);
+        Task<StockCard> CreateStockCard(Stock p_Stock, DateTime p_StockCardDate,
+            long p_WarehouseID, long? p_ProductID, long? p_UserID, long? p_InvoiceLineID, long? p_CustomerID,
+            enStockCardType p_ScType,
+            decimal p_XCalcQty, decimal p_XRealQty, decimal p_XOutQty, decimal p_UnitPrice,
+            string p_XRel);
         Task<Entity> GetStockCardAsync(GetStockCard requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockCardAsync(QueryStockCard requestParameters);
     }

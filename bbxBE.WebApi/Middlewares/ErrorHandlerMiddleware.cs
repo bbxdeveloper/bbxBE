@@ -72,7 +72,7 @@ namespace bbxBE.WebApi.Middlewares
 
                     case LockedCacheException e:
                         // parsing problem
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        response.StatusCode = (int)HttpStatusCode.NonAuthoritativeInformation;
                         break;
 
                     case InvalidOperationException e:

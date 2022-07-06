@@ -5,7 +5,7 @@ using System.Text;
 
 namespace bbxBE.Common.Enums
 {
-    public enum enStockCardTypes
+    public enum enStockCardType
     {
         [Description("Kezdőállapot")]
         INIT,

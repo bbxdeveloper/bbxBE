@@ -83,23 +83,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
 
-
-                    var stockList = await _StockRepository.MaintainStockByInvoiceAsync(p_invoice);
-
                     //c# how to disable save related entity in EF ???
-                    //TODO: ideiglenes megoldás, relációban álló objektumok kitörlése hogy ne akarja menteni azokat az EF 
-                    p_invoice.Customer = null;
-                    p_invoice.Supplier = null;
+                    //TODO: ideiglenes megoldás, relációban álló objektumok Detach-olása hogy ne akarja menteni azokat az EF 
+                    if (p_invoice.Customer != null)
+                        _dbContext.Entry(p_invoice.Customer).State = EntityState.Unchanged;
+                    if (p_invoice.Supplier != null)
+                        _dbContext.Entry(p_invoice.Supplier).State = EntityState.Unchanged;
                     foreach (var il in p_invoice.InvoiceLines)
                     {
-                        il.Product = null;
-                        il.VatRate = null;
+                        /*
+                        _dbContext.Entry(il.Product.ProductGroup).State = EntityState.Detached;
+                        _dbContext.Entry(il.Product.VatRate).State = EntityState.Detached;
+                        */
+                        //              il.Product.ProductGroup = null;
+                        //              il.Product.VatRate = null;
+                        _dbContext.Entry(il.Product).State = EntityState.Unchanged;
+
+                        if (il.VatRate != null)
+                            _dbContext.Entry(il.VatRate).State = EntityState.Unchanged;
                     }
 
                     await _invoices.AddAsync(p_invoice);
-
-
                     await _dbContext.SaveChangesAsync();
+
+                    var stockList = await _StockRepository.MaintainStockByInvoiceAsync(p_invoice);
+                    await _dbContext.SaveChangesAsync();
+
                     await dbContextTransaction.CommitAsync();
 
                 }
@@ -126,7 +135,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
 
-                     _invoices.Update(p_invoice);
+                    _invoices.Update(p_invoice);
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 
@@ -190,7 +199,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                   .Include(a => a.AdditionalInvoiceData).AsNoTracking()
                   .Where(x => x.ID == ID).FirstOrDefaultAsync();
             }
-            return  item;
+            return item;
         }
 
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
@@ -236,9 +245,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterBy(ref query, requestParameter.Incoming, requestParameter.WarehouseCode, requestParameter.InvoiceNumber, 
+            
+            FilterBy(ref query, requestParameter.Incoming, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
                     requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
                     requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo);
+            
 
             // Count records after filter
             recordsFiltered = await query.CountAsync();
@@ -286,8 +297,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBy(ref IQueryable<Invoice> p_items, bool Incoming,  string WarehouseCode, string InvoiceNumber, 
-                                DateTime? InvoiceIssueDateFrom, DateTime? InvoiceIssueDateTo, 
+        private void FilterBy(ref IQueryable<Invoice> p_items, bool Incoming, string WarehouseCode, string InvoiceNumber,
+                                DateTime? InvoiceIssueDateFrom, DateTime? InvoiceIssueDateTo,
                                 DateTime? InvoiceDeliveryDateFrom, DateTime? InvoiceDeliveryDateTo)
         {
             if (!p_items.Any())
@@ -301,13 +312,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             var predicate = PredicateBuilder.New<Invoice>();
 
-           predicate = predicate.And(p => p.Incoming == Incoming
-                           && (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
-                           && (InvoiceNumber == null || p.InvoiceNumber.Contains(InvoiceNumber))
-                           && (!InvoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= InvoiceIssueDateFrom.Value)
-                           && (!InvoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= InvoiceIssueDateTo.Value)
-                           && (!InvoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= InvoiceDeliveryDateFrom.Value)
-                           && (!InvoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= InvoiceDeliveryDateTo.Value)
+            predicate = predicate.And(p => p.Incoming == Incoming
+                            && (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
+                            && (InvoiceNumber == null || p.InvoiceNumber.Contains(InvoiceNumber))
+                            && ( !InvoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= InvoiceIssueDateFrom.Value)
+                            && ( !InvoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= InvoiceIssueDateTo.Value)
+                            && ( !InvoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= InvoiceDeliveryDateFrom.Value)
+                            && (!InvoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= InvoiceDeliveryDateTo.Value)
                            );
 
             p_items = p_items.Where(predicate);
