@@ -111,5 +111,16 @@ namespace bbxBE.WebApi.Controllers.v1
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
+        /// <summary>
+        /// POST - Send email with: @from, @to, @subject, @plainTextBody, @htmlBody parameters
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("SendOfferEmail")]
+        public async Task<IActionResult> SendOfferEmail(sendOfferEmailCommand command)
+        {
+            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            return Ok(await Mediator.Send(command));
+        }
     }
 }

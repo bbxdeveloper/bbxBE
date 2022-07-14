@@ -62,17 +62,5 @@ namespace bbxBE.Application.Commands.cmdOffer
             return fsr;
         }
 
-
-        protected string loadEmbeddedResource(string resourceName)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            string result = "";
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                result = reader.ReadToEnd();
-            }
-            return result;
-        }
     }
 }

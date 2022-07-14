@@ -54,7 +54,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
             }
 
 
-            var reportTRDX = loadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx");
+            var reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
 
             InstanceReportSource reportSource = null;
             Telerik.Reporting.Report rep = null;
@@ -101,18 +101,5 @@ namespace bbxBE.Application.Commands.cmdInvoice
 
             return fsr;
         }
-
-        protected string loadEmbeddedResource(string resourceName)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            string result = "";
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                result = reader.ReadToEnd();
-            }
-            return result;
-        }
-
     }
 }

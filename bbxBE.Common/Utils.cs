@@ -465,6 +465,21 @@ namespace bbxBE.Common
 
             return Convert.ToBase64String(bytes);
         }
+
+        public static string ConvertStreamToBase64(this Stream stream)
+        {
+            if (stream is MemoryStream memoryStream)
+            {
+                return Convert.ToBase64String(memoryStream.ToArray());
+            }
+
+            var bytes = new Byte[(int)stream.Length];
+
+            stream.Seek(0, SeekOrigin.Begin);
+            stream.Read(bytes, 0, (int)stream.Length);
+
+            return Convert.ToBase64String(bytes);
+        }
         public static string ConvertToHexString(string p_str, Encoding p_enc = null)
         {
             var sb = new StringBuilder();
@@ -724,9 +739,8 @@ namespace bbxBE.Common
             return stream;
         }
 
-        public static string LoadEmbeddedResource(Stream stream)
+        public static string LoadEmbeddedResource(Stream stream, Assembly assembly)
         {
-            var assembly = Assembly.GetExecutingAssembly();
             string result = "";
 //            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
@@ -734,6 +748,17 @@ namespace bbxBE.Common
                 {
                     result = reader.ReadToEnd();
                 }
+            }
+            return result;
+        }
+
+        public static string LoadEmbeddedResource(string resourceName, Assembly assembly)
+        {
+            string result = "";
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                result = reader.ReadToEnd();
             }
             return result;
         }
