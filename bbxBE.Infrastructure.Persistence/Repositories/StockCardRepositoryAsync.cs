@@ -292,7 +292,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
 
-            FilterBy(ref query, requestParameter.WarehouseID, requestParameter.StockCardDateFrom, requestParameter.StockCardDateTo, requestParameter.InvoiceNumber, requestParameter.ProductID);
+            FilterBy(ref query, requestParameter.WarehouseID, requestParameter.StockCardDateFrom, requestParameter.StockCardDateTo, requestParameter.XRel, requestParameter.ProductID);
 
             // Count records after filter
             recordsFiltered = await query.CountAsync();
@@ -347,12 +347,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
         private void FilterBy(ref IQueryable<StockCard> p_item,
-            long? WarehouseID, DateTime? StockCardDateFrom, DateTime? StockCardDateTo, string InvoiceNumber, long? ProductID)
+            long? WarehouseID, DateTime? StockCardDateFrom, DateTime? StockCardDateTo, string XRel, long? ProductID)
 
 
         {
             if (!p_item.Any() ||
-                (!WarehouseID.HasValue && !StockCardDateFrom.HasValue && !StockCardDateTo.HasValue && !ProductID.HasValue))
+                (!WarehouseID.HasValue && !StockCardDateFrom.HasValue && !StockCardDateTo.HasValue && XRel == null && !ProductID.HasValue))
                 return;
 
             var predicate = PredicateBuilder.New<StockCard>();
@@ -367,6 +367,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (StockCardDateTo.HasValue)
             {
                 predicate = predicate.And(p => p.StockCardDate <= StockCardDateTo.Value);
+            }
+            if (XRel != null)
+            {
+                XRel = XRel.ToUpper();
+                predicate = predicate.And(p => p.XRel.ToUpper().Contains(XRel));
             }
             if (ProductID.HasValue && ProductID.Value > 0)
             {

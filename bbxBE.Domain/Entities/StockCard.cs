@@ -107,8 +107,8 @@ namespace bbxBE.Domain.Entities
         [Description("Eredeti átlagolt beszerzési egységár")]
         public decimal NAvgCost { get; set; }
 
-        [ColumnLabel("Kapcsolódó adatok")]
-        [Description("Kapcsolódó adatok")]
+        [ColumnLabel("Kapcsolt bizonylat")]
+        [Description("Kapcsolt bizonylat")]
         public string XRel { get; set; }
 
 
