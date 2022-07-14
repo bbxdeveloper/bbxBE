@@ -38,9 +38,9 @@ namespace bbxBE.Application.Queries.qStockCard
         public DateTime? StockCardDateTo { get; set; }
 
 
-        [ColumnLabel("Számlaszám")]
-        [Description("Számla sorszáma")]
-        public string InvoiceNumber { get; set; }
+        [ColumnLabel("Kapcsolt bizonylat")]
+        [Description("Kapcsolt bizonylat")]
+        public string XRel { get; set; }
 
 
 
