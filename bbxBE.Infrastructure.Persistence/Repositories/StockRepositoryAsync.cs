@@ -238,9 +238,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 predicate = predicate.And(p => p.WarehouseID == p_warehouseID);
             }
-            p_searchString = p_searchString.ToUpper();
             if (!string.IsNullOrWhiteSpace(p_searchString))
             {
+                p_searchString = p_searchString.ToUpper();
                 predicate = predicate.And(p => p.Product.Description.ToUpper().Contains(p_searchString) ||
                         p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
                         a.ProductCodeValue.ToUpper().Contains(p_searchString)));
