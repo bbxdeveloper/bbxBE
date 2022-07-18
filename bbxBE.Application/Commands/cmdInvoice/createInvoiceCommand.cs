@@ -245,13 +245,23 @@ namespace bxBE.Application.Commands.cmdInvoice
 				}
 				invoice.WarehouseID = wh.ID;
 
-				var supplier =  _CustomerRepository.GetOwnData();
-				if (supplier == null)
+				var ownData = _CustomerRepository.GetOwnData();
+				if (ownData == null)
 				{
 					throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OWNNOTFOUND));
 				}
-				invoice.SupplierID = supplier.ID;
-				
+
+				if (request.Incoming)
+				{
+					invoice.SupplierID = request.CustomerID;
+					invoice.CustomerID = ownData.ID;
+				}
+				else
+                {
+					invoice.SupplierID = ownData.ID;
+					invoice.CustomerID = request.CustomerID;
+				}
+
 
 				//Megjegyzés
 				if (!string.IsNullOrWhiteSpace(request.Notice))
