@@ -119,7 +119,8 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.ScTypeX, opt => opt.MapFrom(src => enStockCardTypeNameResolver(src.ScType)))
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
              .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.Product.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
-             .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description));
+             .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description))
+             .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Customer.CustomerName));
 
 
         }

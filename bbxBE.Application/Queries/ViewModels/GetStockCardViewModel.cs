@@ -56,7 +56,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [ColumnLabel("Ügyfélnév")]
         [Description("Ügyfélnév")]
-        public string CustomerName { get; set; }
+        public string Customer { get; set; }
 
         [ColumnLabel("Város")]
         [Description("Ügyfél város")]
