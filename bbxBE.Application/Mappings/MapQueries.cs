@@ -122,6 +122,8 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description))
              .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Customer.CustomerName));
 
+            CreateMap<InvCtrlPeriod, GetInvCtrlPeriodViewModel>()
+             .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription));
 
         }
         private static string enStockCardTypeNameResolver(string ScType)

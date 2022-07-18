@@ -12,6 +12,7 @@ using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCounter;
 using bxBE.Application.Commands.cmdCustomer;
+using bxBE.Application.Commands.cmdInvCtrlPeriod;
 using bxBE.Application.Commands.cmdInvoice;
 using bxBE.Application.Commands.cmdOffer;
 using bxBE.Application.Commands.cmdOrigin;
@@ -119,6 +120,10 @@ namespace bbxBE.Command.Mappings
 
             CreateMap<UpdateOfferCommand.OfferLine, OfferLine>();
             CreateMap<UpdateOfferCommand.OfferLine, OfferLine>().ReverseMap();
+
+            CreateMap<CreateInvCtrlPeriodCommand, InvCtrlPeriod>();
+            CreateMap<CreateInvCtrlPeriodCommand, InvCtrlPeriod>().ReverseMap();
+
 
         }
     }

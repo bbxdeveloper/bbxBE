@@ -55,6 +55,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IOfferRepositoryAsync, OfferRepositoryAsync>();
             services.AddTransient<IStockRepositoryAsync, StockRepositoryAsync>();
             services.AddTransient<IStockCardRepositoryAsync, StockCardRepositoryAsync>();
+            services.AddTransient<IInvCtrlPeriodRepositoryAsync, InvCtrlPeriodRepositoryAsync>();
 
             services.AddSingleton<ICacheService<Product>, ProductCacheService>();
             services.AddSingleton<ICacheService<Customer>, CustomerCacheService>();

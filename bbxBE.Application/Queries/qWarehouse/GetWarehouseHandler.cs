@@ -22,13 +22,13 @@ namespace bbxBE.Application.Queries.qWarehouse
 
     public class GetWarehouseHandler : IRequestHandler<GetWarehouse, Entity>
     {
-        private readonly IWarehouseRepositoryAsync _positionRepository;
+        private readonly IWarehouseRepositoryAsync _warehouseRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetWarehouseHandler(IWarehouseRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetWarehouseHandler(IWarehouseRepositoryAsync warehouseRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _warehouseRepository = warehouseRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -40,7 +40,7 @@ namespace bbxBE.Application.Queries.qWarehouse
           
 
             // query based on filter
-            var entityPositions = await _positionRepository.GetWarehouseAsync(validFilter);
+            var entityPositions = await _warehouseRepository.GetWarehouseAsync(validFilter);
             var data = entityPositions.MapItemFieldsByMapToAnnotation<GetWarehouseViewModel>();
 
             // response wrapper

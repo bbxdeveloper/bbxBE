@@ -12,27 +12,27 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
 
-namespace bbxBE.Application.Queries.qWarehouse
+namespace bbxBE.Application.Queries.qInvCtrlPeriod
 {
-    public class QueryWarehouse : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
+    public class QueryInvCtrlPeriod : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
         public string SearchString { get; set; }
     }
 
-    public class QueryWarehouseHandler : IRequestHandler<QueryWarehouse, PagedResponse<IEnumerable<Entity>>>
+    public class QueryInvCtrlPeriodHandler : IRequestHandler<QueryInvCtrlPeriod, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly IWarehouseRepositoryAsync _warehouseRepository;
+        private readonly IInvCtrlPeriodRepositoryAsync _InvCtrlPeriodRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public QueryWarehouseHandler(IWarehouseRepositoryAsync WarehouseRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryInvCtrlPeriodHandler(IInvCtrlPeriodRepositoryAsync InvCtrlPeriodRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _WarehouseRepository = WarehouseRepository;
+            _InvCtrlPeriodRepository = InvCtrlPeriodRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryWarehouse request, CancellationToken cancellationToken)
+        public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryInvCtrlPeriod request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;
@@ -42,20 +42,20 @@ namespace bbxBE.Application.Queries.qWarehouse
             if (!string.IsNullOrEmpty(validFilter.Fields))
             {
                 //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetWarehouseViewModel, Warehouse>(validFilter.Fields);
+                validFilter.Fields = _modelHelper.ValidateModelFields<GetInvCtrlPeriodViewModel, InvCtrlPeriod>(validFilter.Fields);
             }
   
             if (string.IsNullOrEmpty(validFilter.Fields))
             {
                 //default fields from view model
-                validFilter.Fields = _modelHelper.GetQueryableFields<GetWarehouseViewModel, Warehouse>();
+                validFilter.Fields = _modelHelper.GetQueryableFields<GetInvCtrlPeriodViewModel, InvCtrlPeriod>();
             }
             */
 
 
             // query based on filter
-            var entities = await _WarehouseRepository.QueryPagedWarehouseAsync(validFilter);
-            var data = entities.data.MapItemsFieldsByMapToAnnotation<GetWarehouseViewModel>();
+            var entities = await _InvCtrlPeriodRepository.QueryPagedInvCtrlPeriodAsync(validFilter);
+            var data = entities.data.MapItemsFieldsByMapToAnnotation<GetInvCtrlPeriodViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 
             // response wrapper
