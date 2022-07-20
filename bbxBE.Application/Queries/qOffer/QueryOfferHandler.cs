@@ -63,6 +63,13 @@ namespace bbxBE.Application.Queries.qOffer
 
         public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryOffer request, CancellationToken cancellationToken)
         {
+
+            //Heka
+            request.OfferIssueDateFrom = (request.OfferIssueDateFrom.HasValue ? request.OfferIssueDateFrom.Value.Date.AddDays(1) : request.OfferIssueDateFrom);
+            request.OfferIssueDateTo = (request.OfferIssueDateTo.HasValue ? request.OfferIssueDateTo.Value.Date.AddDays(1) : request.OfferIssueDateTo);
+            request.OfferVaidityDateForm = (request.OfferVaidityDateForm.HasValue ? request.OfferVaidityDateForm.Value.Date.AddDays(1) : request.OfferVaidityDateForm);
+            request.OfferVaidityDateTo = (request.OfferVaidityDateTo.HasValue ? request.OfferVaidityDateTo.Value.Date.AddDays(1) : request.OfferVaidityDateTo);
+
             var validFilter = request;
             var pagination = request;
 
