@@ -90,8 +90,8 @@ namespace bbxBE.Command.Mappings
             CreateMap<UpdateOriginCommand, Origin>();
             CreateMap<DeleteOriginCommand, Origin>();
 
-            CreateMap<CreateProductCommand, Product>().ReverseMap();
-            CreateMap<UpdateProductCommand, Product>().ReverseMap();
+            CreateMap<CreateProductCommand, Product>();
+            CreateMap<UpdateProductCommand, Product>();
             CreateMap<DeleteProductCommand, Product>();
             CreateMap<CreateProductCommand, UpdateProductCommand>().ReverseMap();
 
@@ -103,23 +103,25 @@ namespace bbxBE.Command.Mappings
             CreateMap<UpdateCounterCommand, Counter>();
             CreateMap<DeleteCounterCommand, Counter>();
 
-            CreateMap<CreateInvoiceCommand, Invoice>();
-            CreateMap<CreateInvoiceCommand, Invoice>().ReverseMap();
+            CreateMap<CreateInvoiceCommand, Invoice>()
+               .ForMember(dst => dst.InvoiceIssueDate, opt => opt.MapFrom(src => src.InvoiceIssueDate.Date))
+               .ForMember(dst => dst.InvoiceDeliveryDate, opt => opt.MapFrom(src => src.InvoiceDeliveryDate.Date))
+               .ForMember(dst => dst.PaymentDate, opt => opt.MapFrom(src => src.PaymentDate.Date));
+;
 
             CreateMap<CreateInvoiceCommand.InvoiceLine, InvoiceLine>();
-            CreateMap<CreateInvoiceCommand.InvoiceLine, InvoiceLine>().ReverseMap();
 
-            CreateMap<CreateOfferCommand, Offer>();
-            CreateMap<CreateOfferCommand, Offer>().ReverseMap();
+            CreateMap<CreateOfferCommand, Offer>()
+               .ForMember(dst => dst.OfferIssueDate, opt => opt.MapFrom(src => src.OfferIssueDate.Date))
+               .ForMember(dst => dst.OfferVaidityDate, opt => opt.MapFrom(src => src.OfferVaidityDate.Date));
 
             CreateMap<CreateOfferCommand.OfferLine, OfferLine>();
-            CreateMap<CreateOfferCommand.OfferLine, OfferLine>().ReverseMap();
 
-            CreateMap<UpdateOfferCommand, Offer>();
-            CreateMap<UpdateOfferCommand, Offer>().ReverseMap();
+            CreateMap<UpdateOfferCommand, Offer>()
+               .ForMember(dst => dst.OfferIssueDate, opt => opt.MapFrom(src => src.OfferIssueDate.Date))
+               .ForMember(dst => dst.OfferVaidityDate, opt => opt.MapFrom(src => src.OfferVaidityDate.Date));
 
             CreateMap<UpdateOfferCommand.OfferLine, OfferLine>();
-            CreateMap<UpdateOfferCommand.OfferLine, OfferLine>().ReverseMap();
 
             CreateMap<CreateInvCtrlPeriodCommand, InvCtrlPeriod>();
             CreateMap<CreateInvCtrlPeriodCommand, InvCtrlPeriod>().ReverseMap();
