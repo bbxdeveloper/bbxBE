@@ -22,13 +22,13 @@ namespace bbxBE.Application.Queries.qOrigin
 
     public class GetOriginHandler : IRequestHandler<GetOrigin, Entity>
     {
-        private readonly IOriginRepositoryAsync _positionRepository;
+        private readonly IOriginRepositoryAsync _originRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetOriginHandler(IOriginRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetOriginHandler(IOriginRepositoryAsync originRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _originRepository = originRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -40,7 +40,7 @@ namespace bbxBE.Application.Queries.qOrigin
           
 
             // query based on filter
-            var entityPositions =  _positionRepository.GetOrigin(validFilter);
+            var entityPositions =  _originRepository.GetOrigin(validFilter);
             var data = entityPositions.MapItemFieldsByMapToAnnotation<Origin>();
 
             // response wrapper

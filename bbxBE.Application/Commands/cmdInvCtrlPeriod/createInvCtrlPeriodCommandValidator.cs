@@ -2,6 +2,7 @@
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Enums;
+using bxBE.Application.Commands.cmdInvCtrlPeriod;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -24,43 +25,36 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
         {
             this._InvCtrlPeriodRepository = InvCtrlPeriodRepository;
 
-            RuleFor(r => r.CustomerID)
+            RuleFor(r => r.WarehouseID)
+             .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
+
+            RuleFor(r => r.DateFrom)
+                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                  .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                  .MustAsync(
+                        async (model, Name, cancellation) =>
+                        {
+                            return await IsOverLappedPeriodAsync(model.DateFrom, model.DateTo, cancellation);
+                        }
+                    ).WithMessage(bbxBEConsts.ERR_INVCTRLPERIOD_DATE2);
+
+            RuleFor(r => r.DateTo)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
-            RuleFor(r => r.InvCtrlPeriodIssueDate)
-                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
-
-            RuleFor(r => r.InvCtrlPeriodVaidityDate)
-                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
+            // RuleFor(r => r.UserID)
+            // .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
 
-            RuleFor(r => new { r.InvCtrlPeriodIssueDate, r.InvCtrlPeriodVaidityDate}).Must(m => m.InvCtrlPeriodIssueDate <= m.InvCtrlPeriodVaidityDate)
-                .WithMessage(bbxBEConsts.ERR_InvCtrlPeriod_DATE1);
+            RuleFor(r => new { r.DateFrom, r.DateTo }).Must(m => m.DateFrom <= m.DateTo)
+                .WithMessage(bbxBEConsts.ERR_INVCTRLPERIOD_DATE1);
+
+        }
 
 
-
-            RuleForEach(r => r.InvCtrlPeriodLines)
-                .SetValidator(model => new CreateInvCtrlPeriodLinesCommandValidatror());
+        private async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, CancellationToken cancellationToken)
+        {
+            return await _InvCtrlPeriodRepository.IsOverLappedPeriodAsync(DateFrom, DateTo);
         }
 
     }
-    public class CreateInvCtrlPeriodLinesCommandValidatror : AbstractValidator<CreateInvCtrlPeriodCommand.InvCtrlPeriodLine>
-    {
-        public CreateInvCtrlPeriodLinesCommandValidatror()
-        {
-            RuleFor(p => p.UnitOfMeasure)
-                 .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.LineNumber, model.ProductCode, model.UnitOfMeasure));
-            RuleFor(p => p.Discount)
-               .InclusiveBetween(0, 100)
-               .WithMessage((model, field) => string.Format(bbxBEConsts.ERR_DETAIL_PREF, model.LineNumber, model.ProductCode) + bbxBEConsts.ERR_DISCOUNT);
-        }
-
-        public bool CheckUnitOfMEasure(string unitOfMeasure)
-        {
-            var valid = Enum.TryParse(unitOfMeasure, out enUnitOfMeasure uom);
-            return valid;
-        }
-
-    }
-
 }

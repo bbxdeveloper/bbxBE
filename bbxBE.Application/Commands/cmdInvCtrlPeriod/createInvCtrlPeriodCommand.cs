@@ -22,48 +22,51 @@ using System.Threading.Tasks;
 namespace bxBE.Application.Commands.cmdInvCtrlPeriod
 {
 
+
+	[Description("Leltáridőszak")]
 	public class CreateInvCtrlPeriodCommand : IRequest<Response<InvCtrlPeriod>>
 	{
 
+		[ColumnLabel("Raktár ID")]
+		[Description("Raktár ID")]
+		public long WarehouseID { get; set; }
 
-		[Description("Leltáridőszak")]
-		public class InvCtrlPeriodLine
+		[ColumnLabel("Kezdődátum")]
+		[Description("Kezdődátum")]
+		public DateTime DateFrom { get; set; }
+
+		[ColumnLabel("Végdátum")]
+		[Description("Végdátum")]
+		public DateTime DateTo { get; set; }
+
+		[ColumnLabel("Felhasználó ID")]
+		[Description("Felhasználó ID")]
+		public long? UserID { get; set; } = 0;
+
+	}
+
+	public class CreateInvCtrlPeriodCommandHandler : IRequestHandler<CreateInvCtrlPeriodCommand, Response<InvCtrlPeriod>>
+	{
+		private readonly IInvCtrlPeriodRepositoryAsync _invCtrlPeriodRepository;
+		private readonly IMapper _mapper;
+		private readonly IConfiguration _configuration;
+
+		public CreateInvCtrlPeriodCommandHandler(IInvCtrlPeriodRepositoryAsync InvCtrlPeriodRepository,
+						IMapper mapper, IConfiguration configuration)
 		{
-			[ColumnLabel("Kezdődátum")]
-			[Description("Kezdődátum")]
-			public DateTime DateFrom { get; set; }
+			_invCtrlPeriodRepository = InvCtrlPeriodRepository;
 
-			[ColumnLabel("Végdátum")]
-			[Description("Végdátum")]
-			public DateTime DateTo { get; set; }
 
-			[ColumnLabel("Felhasználó ID")]
-			[Description("Felhasználó ID")]
-			public long? UserID { get; set; } = 0;
-
+			_mapper = mapper;
+			_configuration = configuration;
 		}
 
-		public class CreateInvCtrlPeriodCommandHandler : IRequestHandler<CreateInvCtrlPeriodCommand, Response<InvCtrlPeriod>>
+		public async Task<Response<InvCtrlPeriod>> Handle(CreateInvCtrlPeriodCommand request, CancellationToken cancellationToken)
 		{
-			private readonly IInvCtrlPeriodRepositoryAsync _InvCtrlPeriodRepository;
-			private readonly IMapper _mapper;
-			private readonly IConfiguration _configuration;
+			var InvCtrlPeriod = _mapper.Map<InvCtrlPeriod>(request);
+			await _invCtrlPeriodRepository.AddInvCtrlPeriodAsync(InvCtrlPeriod);
+			return new Response<InvCtrlPeriod>(InvCtrlPeriod);
 
-			public CreateInvCtrlPeriodCommandHandler(IInvCtrlPeriodRepositoryAsync InvCtrlPeriodRepository,
-							IMapper mapper, IConfiguration configuration)
-			{
-				_InvCtrlPeriodRepository = InvCtrlPeriodRepository;
-
-
-				_mapper = mapper;
-				_configuration = configuration;
-			}
-
-			public async Task<Response<InvCtrlPeriod>> Handle(CreateInvCtrlPeriodCommand request, CancellationToken cancellationToken)
-			{
-				var InvCtrlPeriod = _mapper.Map<InvCtrlPeriod>(request);
-
-			}
 		}
 	}
 }

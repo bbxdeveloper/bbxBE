@@ -44,10 +44,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
         }
-
-
-
-
+        public async Task<InvCtrlPeriod> AddInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
+        {
+            await _InvCtrlPeriods.AddAsync(p_invCtrlPeriod);
+            await _dbContext.SaveChangesAsync();
+            return p_invCtrlPeriod;
+        }
         public async Task<Entity> GetInvCtrlPeriodAsync(GetInvCtrlPeriod requestParameter)
         {
 
@@ -60,7 +62,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (item == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_InvCtrlPeriodNOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, ID));
             }
 
             var itemModel = _mapper.Map<InvCtrlPeriod, GetInvCtrlPeriodViewModel>(item);
@@ -86,8 +88,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _InvCtrlPeriods
-                .AsNoTracking()
+            var result = _InvCtrlPeriods.AsNoTracking()
+                .Include(w => w.Warehouse).AsNoTracking()
                 .AsExpandable();
 
             // Count records total
@@ -158,6 +160,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-   
+        public async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo)
+        {
+            var result = await _InvCtrlPeriods.AnyAsync(w => w.DateFrom < DateTo && DateFrom < w.DateTo);
+            return result;
+        }
     }
 }

@@ -53,6 +53,27 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlPeriodController.Get(bbxBE.Application.Queries.qInvCtrlPeriod.GetInvCtrlPeriod)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlPeriodController.Query(bbxBE.Application.Queries.qInvCtrlPeriod.QueryInvCtrlPeriod)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlPeriodController.Create(bxBE.Application.Commands.cmdInvCtrlPeriod.CreateInvCtrlPeriodCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.Get(bbxBE.Application.Queries.qInvoice.GetInvoice)">
             <summary>
             GET: api/controller

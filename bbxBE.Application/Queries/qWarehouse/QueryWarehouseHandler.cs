@@ -27,7 +27,7 @@ namespace bbxBE.Application.Queries.qWarehouse
 
         public QueryWarehouseHandler(IWarehouseRepositoryAsync WarehouseRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _WarehouseRepository = WarehouseRepository;
+            _warehouseRepository = WarehouseRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -54,7 +54,7 @@ namespace bbxBE.Application.Queries.qWarehouse
 
 
             // query based on filter
-            var entities = await _WarehouseRepository.QueryPagedWarehouseAsync(validFilter);
+            var entities = await _warehouseRepository.QueryPagedWarehouseAsync(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetWarehouseViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 

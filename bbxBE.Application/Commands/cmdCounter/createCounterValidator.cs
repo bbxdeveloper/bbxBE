@@ -26,13 +26,13 @@ namespace bbxBE.Application.Commands.cmdCounter
             RuleFor(p => p.CounterCode)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                    .MustAsync(
-                         async (model, Name, cancellation) =>
-                         {
-                             return await IsUniqueCounterCodeAsync(Name, cancellation);
-                         }
-                     ).WithMessage(bbxBEConsts.ERR_EXISTS)
-                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
+                 .MustAsync(
+                        async (model, Name, cancellation) =>
+                        {
+                            return await IsUniqueCounterCodeAsync(Name, cancellation);
+                        }
+                    ).WithMessage(bbxBEConsts.ERR_EXISTS)
+                .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.CounterDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)

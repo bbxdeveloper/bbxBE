@@ -21,13 +21,13 @@ namespace bbxBE.Application.Queries.qInvCtrlPeriod
 
     public class GetInvCtrlPeriodHandler : IRequestHandler<GetInvCtrlPeriod, Entity>
     {
-        private readonly IInvCtrlPeriodRepositoryAsync _positionRepository;
+        private readonly IInvCtrlPeriodRepositoryAsync _invCtrlPeriodRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetInvCtrlPeriodHandler(IInvCtrlPeriodRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetInvCtrlPeriodHandler(IInvCtrlPeriodRepositoryAsync invCtrlPeriodRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _invCtrlPeriodRepository = invCtrlPeriodRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -39,7 +39,7 @@ namespace bbxBE.Application.Queries.qInvCtrlPeriod
           
 
             // query based on filter
-            var entityPositions = await _positionRepository.GetInvCtrlPeriodAsync(validFilter);
+            var entityPositions = await _invCtrlPeriodRepository.GetInvCtrlPeriodAsync(validFilter);
             var data = entityPositions.MapItemFieldsByMapToAnnotation<GetInvCtrlPeriodViewModel>();
 
             // response wrapper
