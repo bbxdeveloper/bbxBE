@@ -18,7 +18,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> CanDeleteAsync(long ID);
         Task<bool> CanCloseAsync(long ID);
         Task<bool> CanUpdateAsync(long ID);
-        Task<Entity> GetInvCtrlPeriodAsync(GetInvCtrlPeriod requestParameter);
+        Entity GetInvCtrlPeriod(GetInvCtrlPeriod requestParameter);
         Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID);
         Task<bool> SeedDataAsync(int rowCount);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlPeriodAsync(QueryInvCtrlPeriod requestParameters);

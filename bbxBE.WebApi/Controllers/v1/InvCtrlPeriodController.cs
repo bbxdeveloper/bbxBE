@@ -70,13 +70,20 @@ namespace bbxBE.WebApi.Controllers.v1
         {
             return Ok(await Mediator.Send(command));
         }
-/*
+
         // GET: USRController/Delete/5
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] DeleteInvCtrlPeriodCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
-        */
+
+        [HttpPatch]
+        //       [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Close(CloseInvCtrlPeriodCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
     }
 }
