@@ -51,6 +51,7 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Termékértékesítés/szolgáltatásnyújtás")]
         [Description("Termékértékesítés vagy szolgáltatásnyújtás jelölése (egyelőre csak PRODUCT)")]
         public string NatureIndicator { get; set; }
+
         [ColumnLabel("Aktív?")]
         [Description("Aktív?")]
         public bool Active { get; set; }

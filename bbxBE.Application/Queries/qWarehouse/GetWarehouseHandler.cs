@@ -12,36 +12,36 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
 
-namespace bbxBE.Application.Queries.qOrigin
+namespace bbxBE.Application.Queries.qWarehouse
 {
-    public class GetOrigin:  IRequest<Entity>
+    public class GetWarehouse:  IRequest<Entity>
     {
         public long ID { get; set; }
   //      public string Fields { get; set; }
     }
 
-    public class GetOriginHandler : IRequestHandler<GetOrigin, Entity>
+    public class GetWarehouseHandler : IRequestHandler<GetWarehouse, Entity>
     {
-        private readonly IOriginRepositoryAsync _originRepository;
+        private readonly IWarehouseRepositoryAsync _warehouseRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetOriginHandler(IOriginRepositoryAsync originRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetWarehouseHandler(IWarehouseRepositoryAsync warehouseRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _originRepository = originRepository;
+            _warehouseRepository = warehouseRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<Entity> Handle(GetOrigin request, CancellationToken cancellationToken)
+        public async Task<Entity> Handle(GetWarehouse request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;
           
 
             // query based on filter
-            var entityPositions =  _originRepository.GetOrigin(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<Origin>();
+            var entityPositions = await _warehouseRepository.GetWarehouseAsync(validFilter);
+            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetWarehouseViewModel>();
 
             // response wrapper
             return data;

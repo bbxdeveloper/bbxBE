@@ -58,7 +58,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
 
             RuleFor(r => r.CurrencyCode)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .Must(CheckCurrency).WithMessage(bbxBEConsts.FV_INVCURRENCY);
+                .Must(CheckCurrency).WithMessage(bbxBEConsts.ERR_INVCURRENCY);
 
 
             RuleFor(r => r.ExchangeRate)

@@ -12,36 +12,35 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
 
-namespace bbxBE.Application.Queries.qWarehouse
+namespace bbxBE.Application.Queries.qInvCtrlPeriod
 {
-    public class GetWarehouse:  IRequest<Entity>
+    public class GetInvCtrlPeriod:  IRequest<Entity>
     {
         public long ID { get; set; }
-  //      public string Fields { get; set; }
     }
 
-    public class GetWarehouseHandler : IRequestHandler<GetWarehouse, Entity>
+    public class GetInvCtrlPeriodHandler : IRequestHandler<GetInvCtrlPeriod, Entity>
     {
-        private readonly IWarehouseRepositoryAsync _positionRepository;
+        private readonly IInvCtrlPeriodRepositoryAsync _invCtrlPeriodRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetWarehouseHandler(IWarehouseRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetInvCtrlPeriodHandler(IInvCtrlPeriodRepositoryAsync invCtrlPeriodRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _invCtrlPeriodRepository = invCtrlPeriodRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<Entity> Handle(GetWarehouse request, CancellationToken cancellationToken)
+        public async Task<Entity> Handle(GetInvCtrlPeriod request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;
           
 
             // query based on filter
-            var entityPositions = await _positionRepository.GetWarehouseAsync(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetWarehouseViewModel>();
+            var entityPositions = _invCtrlPeriodRepository.GetInvCtrlPeriod(validFilter);
+            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetInvCtrlPeriodViewModel>();
 
             // response wrapper
             return data;

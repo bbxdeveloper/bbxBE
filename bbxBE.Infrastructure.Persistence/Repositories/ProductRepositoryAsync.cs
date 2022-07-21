@@ -297,7 +297,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             Product prodOri = null;
             if (!_productcacheService.TryGetValue(p_productUpd.ID, out prodOri))
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, p_productUpd.ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, p_productUpd.ID));
 
             /*
             var prod = _Products.AsNoTracking()
@@ -419,7 +419,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             else
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, p_productUpd.ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, p_productUpd.ID));
             }
 
             return p_productUpd;
@@ -514,7 +514,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, ID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, ID));
                 }
             }
             return prod;
@@ -527,7 +527,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             Product prod = null;
             if (!_productcacheService.TryGetValue(ID, out prod))
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODNOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, ID));
 
 
             var itemModel = _mapper.Map<Product, GetProductViewModel>(prod);

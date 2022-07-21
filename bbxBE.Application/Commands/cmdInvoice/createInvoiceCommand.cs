@@ -299,7 +299,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 					var prod = _ProductRepository.GetProductByProductCode(rln.ProductCode);
 					if (prod == null)
 					{
-						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODCODENOTFOUND, rln.ProductCode));
+						throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
 					}
 
 					var vatRate = await _VatRateRepository.GetVatRateByCodeAsync(rln.VatRateCode);

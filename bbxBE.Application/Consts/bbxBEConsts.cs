@@ -37,9 +37,9 @@ namespace bbxBE.Application.Consts
 
         public static string ERR_INVPAYMENTMETHOD = "{PropertyName}:  érvénytelen fizetési mód:{PropertyValue} ";
         public static string ERR_EXCHANGERATE = "{PropertyName}:  Érvénytelen árfolyam::{PropertyValue} ";
-        public static string FV_INVCURRENCY = "{PropertyName}:  érvénytelen pénznem:{PropertyValue}";
-        public static string FV_PRODNOTFOUND = "Termék nem található, ID:{0} ";
-        public static string FV_PRODCODENOTFOUND = "Termék nem található, kód:{0} ";
+        public static string ERR_INVCURRENCY = "{PropertyName}:  érvénytelen pénznem:{PropertyValue}";
+        public static string ERR_PRODNOTFOUND = "Termék nem található, ID:{0} ";
+        public static string ERR_PRODCODENOTFOUND = "Termék nem található, kód:{0} ";
         public static string FV_VATRATECODENOTFOUND = "Áfakód található, kód:{0} ";
         public static string FV_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
         public static string FV_OWNNOTFOUND = "Saját adat nem található!";
@@ -79,7 +79,12 @@ namespace bbxBE.Application.Consts
 
         public static string NAV_INVDIRECTION = "{PropertyName}:  érvénytelen biyonylatirány:{PropertyValue} ";
 
-  
+        public static string ERR_INVCTRLPERIOD_DATE1 = "{PropertyName}| Helytelen leltáridőszak!";
+        public static string ERR_INVCTRLPERIOD_DATE2 = "{PropertyName}| A megadott leltáridőszak ütközik más időszakkal!";
+        public static string ERR_INVCTRLPERIODNOTFOUND = "Leltáridőszak nem található, ID:{0} ";
+        public static string ERR_INVCTRLPERIOD_CANTBEDELETED = "{PropertyName}| A leltáridőszak már nem módosítható!";
+        public static string ERR_INVCTRLPERIOD_CANTBECLOSED = "A leltáridőszak nem zárható le!";
+
         public static string NAV_TOKENEXCHANGE_ERR = "{0} NAV tokenExchange error result:{1}";
 
         public static string NAV_QINVDIGEST_OK = "{0} NAV queryInvoiceDigest OK, invoiceDirection:{1}, issue:{2}, dateFromUTC:{3}, dateToUTC:{4}";
