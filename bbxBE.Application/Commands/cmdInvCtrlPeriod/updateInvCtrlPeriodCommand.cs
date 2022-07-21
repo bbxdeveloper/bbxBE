@@ -24,8 +24,11 @@ namespace bxBE.Application.Commands.cmdInvCtrlPeriod
 
 
 	[Description("Leltáridőszak")]
-	public class CreateInvCtrlPeriodCommand : IRequest<Response<InvCtrlPeriod>>
+	public class UpdateInvCtrlPeriodCommand : IRequest<Response<InvCtrlPeriod>>
 	{
+		[ColumnLabel("ID")]
+		[Description("ID")]
+		public long ID { get; set; }
 
 		[ColumnLabel("Raktár ID")]
 		[Description("Raktár ID")]
@@ -45,13 +48,13 @@ namespace bxBE.Application.Commands.cmdInvCtrlPeriod
 
 	}
 
-	public class CreateInvCtrlPeriodCommandHandler : IRequestHandler<CreateInvCtrlPeriodCommand, Response<InvCtrlPeriod>>
+	public class UpdateInvCtrlPeriodCommandHandler : IRequestHandler<UpdateInvCtrlPeriodCommand, Response<InvCtrlPeriod>>
 	{
 		private readonly IInvCtrlPeriodRepositoryAsync _invCtrlPeriodRepository;
 		private readonly IMapper _mapper;
 		private readonly IConfiguration _configuration;
 
-		public CreateInvCtrlPeriodCommandHandler(IInvCtrlPeriodRepositoryAsync InvCtrlPeriodRepository,
+		public UpdateInvCtrlPeriodCommandHandler(IInvCtrlPeriodRepositoryAsync InvCtrlPeriodRepository,
 						IMapper mapper, IConfiguration configuration)
 		{
 			_invCtrlPeriodRepository = InvCtrlPeriodRepository;
@@ -61,11 +64,10 @@ namespace bxBE.Application.Commands.cmdInvCtrlPeriod
 			_configuration = configuration;
 		}
 
-		public async Task<Response<InvCtrlPeriod>> Handle(CreateInvCtrlPeriodCommand request, CancellationToken cancellationToken)
+		public async Task<Response<InvCtrlPeriod>> Handle(UpdateInvCtrlPeriodCommand request, CancellationToken cancellationToken)
 		{
 			var InvCtrlPeriod = _mapper.Map<InvCtrlPeriod>(request);
-			InvCtrlPeriod.Closed = false;
-			await _invCtrlPeriodRepository.AddInvCtrlPeriodAsync(InvCtrlPeriod);
+			await _invCtrlPeriodRepository.UpdateInvCtrlPeriodAsync(InvCtrlPeriod);
 			return new Response<InvCtrlPeriod>(InvCtrlPeriod);
 
 		}

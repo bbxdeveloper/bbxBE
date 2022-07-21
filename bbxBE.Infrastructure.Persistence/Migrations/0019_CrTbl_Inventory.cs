@@ -33,6 +33,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("WarehouseID").AsInt64().ForeignKey()
                     .WithColumn("DateFrom").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("DateTo").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
+                    .WithColumn("Closed").AsBoolean().NotNullable().WithDefaultValue(false)
                     .WithColumn("UserID").AsInt64().Nullable().WithDefaultValue(0);
             
 

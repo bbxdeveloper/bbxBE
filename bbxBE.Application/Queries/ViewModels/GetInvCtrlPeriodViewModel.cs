@@ -29,5 +29,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Végdátum")]
         [Description("Végdátum")]
         public DateTime DateTo { get; set; }
+ 
+        [ColumnLabel("Lezárt?")]
+        [Description("Lezárt?")]
+        public bool Closed { get; set; }
+
     }
 }

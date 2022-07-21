@@ -63,15 +63,14 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
-        /*
-        // POST: USRController/Edit/5
+        
         [HttpPut]
  //       [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UpdateInvCtrlPeriodCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
-
+/*
         // GET: USRController/Delete/5
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] DeleteInvCtrlPeriodCommand command)

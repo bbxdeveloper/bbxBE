@@ -23,6 +23,10 @@ namespace bbxBE.Domain.Entities
         [Description("Végdátum")]
         public DateTime DateTo { get; set; }
 
+        [ColumnLabel("Lezárt?")]
+        [Description("Lezárt?")]
+        public bool Closed { get; set; }
+
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long? UserID { get; set; } = 0;

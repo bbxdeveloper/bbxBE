@@ -124,7 +124,7 @@ namespace bbxBE.Command.Mappings
             CreateMap<UpdateOfferCommand.OfferLine, OfferLine>();
 
             CreateMap<CreateInvCtrlPeriodCommand, InvCtrlPeriod>();
-            CreateMap<CreateInvCtrlPeriodCommand, InvCtrlPeriod>().ReverseMap();
+            CreateMap<UpdateInvCtrlPeriodCommand, InvCtrlPeriod>();
 
 
         }

@@ -50,6 +50,48 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
             return p_invCtrlPeriod;
         }
+
+        public async Task<InvCtrlPeriod> UpdateInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
+        {
+            _InvCtrlPeriods.Update(p_invCtrlPeriod);
+            await _dbContext.SaveChangesAsync();
+            return p_invCtrlPeriod;
+        }
+        public async Task<InvCtrlPeriod> DeleteInvCtrlPeriodAsync(long ID)
+        {
+
+            InvCtrlPeriod icp = null;
+
+            icp = _InvCtrlPeriods.AsNoTracking().Where(x => x.ID == ID).FirstOrDefault();
+
+            if (icp != null)
+            {
+
+
+                _InvCtrlPeriods.Remove(icp);
+                await _dbContext.SaveChangesAsync();
+
+            }
+            else
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, ID));
+            }
+
+            return icp;
+        }
+
+        public async Task<bool> CanDeleteAsync(long ID)
+        {
+            return true;
+        }
+        public async Task<bool> CanCloseAsync(long ID)
+        {
+            return true;
+        }
+        public async Task<bool> CanUpdateAsync(long ID)
+        {
+            return true;
+        }
         public async Task<Entity> GetInvCtrlPeriodAsync(GetInvCtrlPeriod requestParameter)
         {
 
@@ -160,10 +202,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-        public async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo)
+        public async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID)
         {
-            var result = await _InvCtrlPeriods.AnyAsync(w => w.DateFrom < DateTo && DateFrom < w.DateTo);
-            return result;
+            var result = await _InvCtrlPeriods.AnyAsync(w => !w.Deleted && ( ID == null || w.ID != ID.Value) && w.DateFrom < DateTo && DateFrom < w.DateTo);
+            return !result;
         }
+
+  
     }
 }
