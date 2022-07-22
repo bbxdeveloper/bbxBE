@@ -80,7 +80,8 @@ namespace bbxBE.WebApi.Controllers.v1
 
         [HttpPatch]
         //       [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Close(CloseInvCtrlPeriodCommand command)
+        [HttpGet("close")]
+        public async Task<IActionResult> Close([FromQuery] CloseInvCtrlPeriodCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
