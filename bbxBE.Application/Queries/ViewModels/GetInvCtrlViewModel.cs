@@ -1,29 +1,49 @@
-﻿using bbxBE.Common.Attributes;
-using bbxBE.Domain.Common;
+﻿using AutoMapper.Configuration.Conventions;
+using bbxBE.Common.Attributes;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
-namespace bbxBE.Domain.Entities
+namespace bbxBE.Application.Queries.ViewModels
 {
-    [Description("Leltár")]
-    public class InvCtrl : BaseEntity
+    /// <summary>
+    /// MapToEntity properties marks the names in the output Entity
+    /// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
+    /// In this case, <see cref="GetInvCtrlViewModel"/> will be the value for the TDestination parameter.
+    /// </summary>
+    public class GetInvCtrlViewModel
     {
+        [MapToEntity("ID")]
+        public long ID { get; set; }
         [ColumnLabel("Raktár ID")]
         [Description("Raktár ID")]
         public long WarehouseID { get; set; }
 
+        [ColumnLabel("Raktár")]
+        [Description("Raktár")]
+        public string Warehouse { get; set; }
+
         [ColumnLabel("Leltáridőszak ID")]
-        [Description("Leltáridőszak ID")]       
+        [Description("Leltáridőszak ID")]
         public long? InvCtlPeriodID { get; set; }       //Opcionális, hogy a folyamatos leltárat is kezelni lehessen
+
+        [ColumnLabel("Leltáridőszak")]
+        [Description("Leltáridőszak")]
+        public string InvCtlPeriod { get; set; }       //Opcionális, hogy a folyamatos leltárat is kezelni lehessen
 
         [ColumnLabel("Termék ID")]
         [Description("Termék ID")]
         public long ProductID { get; set; }
 
- 
+        [ColumnLabel("Termékkód")]
+        [Description("Termékkód")]
+        public string ProductCode { get; set; }         
+
+
+        [ColumnLabel("Termék")]
+        [Description("Termék")]
+        public string Product { get; set; }
+
+
         [ColumnLabel("Leltározás dátuma")]
         [Description("Leltározás dátuma")]
         public DateTime InvCtrlDate { get; set; }
@@ -53,23 +73,5 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long? UserID { get; set; } = 0;
-
-        //relációk
-        [ForeignKey("WarehouseID")]
-        [ColumnLabel("Raktár")]
-        [Description("Raktár")]
-        public virtual Warehouse Warehouse { get; set; }
-
-        [ForeignKey("InvCtlPeriodID")]
-        [ColumnLabel("Leltáridőszak")]
-        [Description("Leltáridőszak")]
-        public virtual InvCtrlPeriod InvCtrlPeriod { get; set; }
-
-
-        [ForeignKey("ProductID")]
-        [ColumnLabel("Termék")]
-        [Description("Termék")]
-        public virtual Product Product { get; set; }
-
     }
 }

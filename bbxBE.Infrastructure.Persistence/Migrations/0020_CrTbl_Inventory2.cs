@@ -33,7 +33,6 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("WarehouseID").AsInt64().ForeignKey()
                     .WithColumn("InvCtlPeriodID").AsInt64().Nullable().ForeignKey()     //Opcionális, mert később lehetséges a folyamatos leltár beveeztése is!
                     .WithColumn("ProductID").AsInt64().ForeignKey()
-                    .WithColumn("ProductCode").AsString()
 
                     .WithColumn("InvCtrlDate").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
 

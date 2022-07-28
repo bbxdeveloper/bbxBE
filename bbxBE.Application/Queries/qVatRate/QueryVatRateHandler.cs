@@ -37,22 +37,6 @@ namespace bbxBE.Application.Queries.qVatRate
             var validFilter = request;
             var pagination = request;
             
-            /* TODO: törölni
-            //filtered fields security
-            if (!string.IsNullOrEmpty(validFilter.Fields))
-            {
-                //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetVatRateViewModel, VatRate>(validFilter.Fields);
-            }
-  
-            if (string.IsNullOrEmpty(validFilter.Fields))
-            {
-                //default fields from view model
-                validFilter.Fields = _modelHelper.GetQueryableFields<GetVatRateViewModel, VatRate>();
-            }
-            */
-
-
             // query based on filter
             var entities = _VatRateRepository.QueryPagedVatRate(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetVatRateViewModel>();

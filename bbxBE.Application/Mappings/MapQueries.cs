@@ -125,7 +125,12 @@ namespace bbxBE.Queries.Mappings
             CreateMap<InvCtrlPeriod, GetInvCtrlPeriodViewModel>()
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription));
 
+            CreateMap<InvCtrl, GetInvCtrlViewModel>()
+             .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
+             .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.Product.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
+             .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description));
         }
+
         private static string enStockCardTypeNameResolver(string ScType)
         {
             if (!string.IsNullOrWhiteSpace(ScType))

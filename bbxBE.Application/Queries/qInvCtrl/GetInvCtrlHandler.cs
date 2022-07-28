@@ -11,39 +11,36 @@ using System.Threading.Tasks;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Application.Commands.cmdImport;
 
-namespace bbxBE.Application.Queries.qCustomer
+namespace bbxBE.Application.Queries.qInvCtrl
 {
-    public class GetCustomer:  IRequest<Entity>
+    public class GetInvCtrl:  IRequest<Entity>
     {
         public long ID { get; set; }
-  //      public string Fields { get; set; }
     }
 
-    public class GetCustomerHandler : IRequestHandler<GetCustomer, Entity>
+    public class GetInvCtrlHandler : IRequestHandler<GetInvCtrl, Entity>
     {
-        private readonly ICustomerRepositoryAsync _positionRepository;
+        private readonly IInvCtrlRepositoryAsync _InvCtrlRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetCustomerHandler(ICustomerRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetInvCtrlHandler(IInvCtrlRepositoryAsync InvCtrlRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _InvCtrlRepository = InvCtrlRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<Entity> Handle(GetCustomer request, CancellationToken cancellationToken)
+        public async Task<Entity> Handle(GetInvCtrl request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;
           
+
             // query based on filter
-            var entityPositions = _positionRepository.GetCustomer(validFilter);
-
-
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetCustomerViewModel>();
+            var entityPositions = _InvCtrlRepository.GetInvCtrl(validFilter);
+            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetInvCtrlViewModel>();
 
             // response wrapper
             return data;

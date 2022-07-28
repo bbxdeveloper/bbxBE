@@ -59,6 +59,9 @@ namespace bbxBE.Application.Queries
             services.AddScoped<IDataShapeHelper<InvCtrlPeriod>, DataShapeHelper<InvCtrlPeriod>>();
             services.AddScoped<IDataShapeHelper<GetInvCtrlPeriodViewModel>, DataShapeHelper<GetInvCtrlPeriodViewModel>>();
 
+            services.AddScoped<IDataShapeHelper<InvCtrl>, DataShapeHelper<InvCtrl>>();
+            services.AddScoped<IDataShapeHelper<GetInvCtrlViewModel>, DataShapeHelper<GetInvCtrlViewModel>>();
+
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>
             {
                 services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);

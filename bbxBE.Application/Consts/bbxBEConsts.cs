@@ -85,6 +85,9 @@ namespace bbxBE.Application.Consts
         public static string ERR_INVCTRLPERIOD_CANTBEDELETED = "{PropertyName}| A leltáridőszak már nem módosítható!";
         public static string ERR_INVCTRLPERIOD_CANTBECLOSED = "A leltáridőszak nem zárható le!";
 
+        public static string ERR_INVCTRLNOTFOUND = "Leltári tétel nem található, ID:{0} ";
+
+
         public static string NAV_TOKENEXCHANGE_ERR = "{0} NAV tokenExchange error result:{1}";
 
         public static string NAV_QINVDIGEST_OK = "{0} NAV queryInvoiceDigest OK, invoiceDirection:{1}, issue:{2}, dateFromUTC:{3}, dateToUTC:{4}";
@@ -114,5 +117,6 @@ namespace bbxBE.Application.Consts
 
 
         public static string EMAIL_FORMAT_ERROR = "{PropertyName}:  Hibás email cím!";
+
     }
 }

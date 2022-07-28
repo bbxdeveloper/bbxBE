@@ -37,22 +37,6 @@ namespace bbxBE.Application.Queries.qWarehouse
             var validFilter = request;
             var pagination = request;
             
-            /* TODO: törölni
-            //filtered fields security
-            if (!string.IsNullOrEmpty(validFilter.Fields))
-            {
-                //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetWarehouseViewModel, Warehouse>(validFilter.Fields);
-            }
-  
-            if (string.IsNullOrEmpty(validFilter.Fields))
-            {
-                //default fields from view model
-                validFilter.Fields = _modelHelper.GetQueryableFields<GetWarehouseViewModel, Warehouse>();
-            }
-            */
-
-
             // query based on filter
             var entities = await _warehouseRepository.QueryPagedWarehouseAsync(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetWarehouseViewModel>();

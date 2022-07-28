@@ -46,21 +46,6 @@ namespace bbxBE.Application.Queries.qStock
             var validFilter = request;
             var pagination = request;
 
-            /* TODO: törölni
-            //filtered fields security
-            if (!string.IsNullOrEmpty(validFilter.Fields))
-            {
-                //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetStockViewModel, Stock>(validFilter.Fields);
-            }
-  
-            if (string.IsNullOrEmpty(validFilter.Fields))
-            {
-                //default fields from view model
-                validFilter.Fields = _modelHelper.GetQueryableFields<GetStockViewModel, Stock>();
-            }
-            */
-
 
             // query based on filter
             var entities = await _StockRepository.QueryPagedStockAsync(validFilter);
