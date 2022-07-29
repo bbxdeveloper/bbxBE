@@ -86,6 +86,7 @@ namespace bbxBE.Application.Consts
         public static string ERR_INVCTRLPERIOD_CANTBECLOSED = "A leltáridőszak nem zárható le!";
 
         public static string ERR_INVCTRLNOTFOUND = "Leltári tétel nem található, ID:{0} ";
+        public static string ERR_INVCTRL_DATE = "{PropertyName}| Helytelen leltárdátum!";
 
 
         public static string NAV_TOKENEXCHANGE_ERR = "{0} NAV tokenExchange error result:{1}";

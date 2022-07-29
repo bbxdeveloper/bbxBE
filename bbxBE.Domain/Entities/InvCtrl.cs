@@ -1,4 +1,5 @@
 ﻿using bbxBE.Common.Attributes;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,25 @@ namespace bbxBE.Domain.Entities
     [Description("Leltár")]
     public class InvCtrl : BaseEntity
     {
+        #region InvCtrlType
+        private enInvCtrlType invCtrlType;
+
+        [ColumnLabel("Típus")]
+        [Description("Típus")]
+        public string InvCtrlType
+        {
+            get { return Enum.GetName(typeof(enInvCtrlType), invCtrlType); }
+            set
+            {
+                if (value != null)
+                    invCtrlType = (enInvCtrlType)Enum.Parse(typeof(enInvCtrlType), value);
+                else
+                    invCtrlType = enInvCtrlType.ICP;
+            }
+        }
+        #endregion
+
+
         [ColumnLabel("Raktár ID")]
         [Description("Raktár ID")]
         public long WarehouseID { get; set; }

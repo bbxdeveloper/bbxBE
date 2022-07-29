@@ -82,15 +82,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CanDeleteAsync(long ID)
         {
-            return true;
+            return await Task.FromResult(true);
         }
         public async Task<bool> CanCloseAsync(long ID)
         {
-            return true;
+            return await Task.FromResult(true);
         }
         public async Task<bool> CanUpdateAsync(long ID)
         {
-            return true;
+            return await Task.FromResult(true);
         }
         public Entity GetInvCtrlPeriod(GetInvCtrlPeriod requestParameter)
         {
@@ -118,8 +118,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlPeriodAsync(QueryInvCtrlPeriod requestParameter)
         {
 
-            var searchString = requestParameter.SearchString;
-
             var pageNumber = requestParameter.PageNumber;
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
@@ -138,7 +136,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await result.CountAsync();
 
             // filter data
-            FilterBySearchString(ref result, searchString);
+            // nincs keresőfilter FilterBySearchString(ref result, searchString);
 
             // Count records after filter
             recordsFiltered = await result.CountAsync();

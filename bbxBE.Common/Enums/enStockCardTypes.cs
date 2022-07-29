@@ -10,9 +10,9 @@ namespace bbxBE.Common.Enums
         [Description("Kezdőállapot")]
         INIT,
         [Description("Leltár")]         
-        INVC,                           //inventory control
+        ICP,                           //inventory control
         [Description("Foly.lelt")]  
-        INVC_C,                         //inventory control continous (egyelőre nics megvalósítva)
+        ICC,                           //inventory control continous (egyelőre nics megvalósítva)
         [Description("Klt.diekt")]
         DIRECT,
         [Description("Szla/Száll")]

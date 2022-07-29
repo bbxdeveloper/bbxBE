@@ -33,31 +33,29 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
             RuleFor(r => r.InvCtrlDate)
                   .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                   .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                  .Must(
-                         (model, Name) =>
-                         {
-                             return model.DateFrom <= model.DateTo;
-                         }
-                    ).WithMessage(bbxBEConsts.ERR_InvCtrl_DATE1)
                   .MustAsync(
                         async (model, Name, cancellation) =>
                         {
-                            return await IsOverLappedPeriodAsync(model.DateFrom, model.DateTo, cancellation);
+                            //egyelőre csak leltáridőszaki leltárt kezelünk
+                            return await CheckInvCtrlDateAsync(enInvCtrlType.ICP.ToString(), model.InvCtlPeriodID.Value, model.InvCtrlDate, cancellation);
                         }
-                    ).WithMessage(bbxBEConsts.ERR_InvCtrl_DATE2);
-
+                    ).WithMessage(bbxBEConsts.ERR_INVCTRL_DATE);
 
             // RuleFor(r => r.UserID)
             // .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
-
-
-      
         }
 
 
-        private async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, CancellationToken cancellationToken)
+        private async Task<bool> CheckInvCtrlDateAsync(string InvCtrlType,  long InvCtlPeriodID, DateTime InvCtrlDate, CancellationToken cancellationToken)
         {
-            return await _InvCtrlRepository.IsOverLappedPeriodAsync(DateFrom, DateTo, null);
+            if (InvCtrlType == enInvCtrlType.ICP.ToString())    //leltáridőszaki leltár
+            {
+                return await _InvCtrlRepository.CheckInvCtrlDateAsync(InvCtlPeriodID, InvCtrlDate);
+            }
+            else
+            {
+                return true;        //folyamatos leltár
+            }
         }
 
     }

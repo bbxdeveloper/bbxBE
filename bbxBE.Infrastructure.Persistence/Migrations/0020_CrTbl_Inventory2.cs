@@ -30,6 +30,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
 
+                    .WithColumn("InvCtrlType").AsString().NotNullable().WithDefaultValue(enInvCtrlType.ICP.ToString())
                     .WithColumn("WarehouseID").AsInt64().ForeignKey()
                     .WithColumn("InvCtlPeriodID").AsInt64().Nullable().ForeignKey()     //Opcionális, mert később lehetséges a folyamatos leltár beveeztése is!
                     .WithColumn("ProductID").AsInt64().ForeignKey()
@@ -49,7 +50,8 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
 
 
             Create.Index("INX_InvCtrl")
-                         .OnTable("InvCtrlPeriod")
+                         .OnTable("InvCtrl")
+                         .OnColumn("InvCtrlType").Ascending()
                          .OnColumn("WarehouseID").Ascending()
                          .OnColumn("ProductID").Ascending()
                          .OnColumn("InvCtlPeriodID").Ascending()     //Opcionális, mert később lehetséges a folyamatos leltár beveeztése is!

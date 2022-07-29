@@ -80,18 +80,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return icp;
         }
 
-        public async Task<bool> CanDeleteAsync(long ID)
+        public async Task<bool> CheckInvCtrlDateAsync(long InvCtlPeriodID, DateTime InvCtrlDate)
         {
-            return true;
+            return await Task.FromResult(true);
         }
-        public async Task<bool> CanCloseAsync(long ID)
-        {
-            return true;
-        }
-        public async Task<bool> CanUpdateAsync(long ID)
-        {
-            return true;
-        }
+
         public Entity GetInvCtrl(GetInvCtrl requestParameter)
         {
             var ID = requestParameter.ID;
@@ -202,12 +195,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-        public async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID)
-        {
-            var result = await _InvCtrls.AnyAsync(w => !w.Deleted && ( ID == null || w.ID != ID.Value) && w.DateFrom < DateTo && DateFrom < w.DateTo);
-            return !result;
-        }
-
-  
     }
 }

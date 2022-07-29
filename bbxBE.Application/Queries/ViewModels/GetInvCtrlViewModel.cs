@@ -2,6 +2,7 @@
 using bbxBE.Common.Attributes;
 using System;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -13,6 +14,23 @@ namespace bbxBE.Application.Queries.ViewModels
     public class GetInvCtrlViewModel
     {
         [MapToEntity("ID")]
+
+        #region InvCtrlType
+
+        [DataMember]
+        [ColumnLabel("Típus")]
+        [Description("Típus")]
+        public string InvCtrlType { get; set; }
+
+
+        [ColumnLabel("Típus")]
+        [Description("Típus megnevezés")]
+        [DataMember]
+        [NotDBField]
+        public string InvCtrlTypeX { get; set; }
+        #endregion
+
+
         public long ID { get; set; }
         [ColumnLabel("Raktár ID")]
         [Description("Raktár ID")]

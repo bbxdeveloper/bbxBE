@@ -1,10 +1,9 @@
 ﻿using System;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace bbxBE.Application.Enums
+namespace bbxBE.Common.Enums
 {
     public enum enCountries
     {
