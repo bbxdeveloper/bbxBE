@@ -18,12 +18,14 @@ using bbxBE.Application.Queries.qInvCtrl;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Exceptions;
 using bbxBE.Application.Consts;
+using bbxBE.Common.Enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class InvCtrlRepositoryAsync : GenericRepositoryAsync<InvCtrl>, IInvCtrlRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly DbSet<InvCtrlPeriod> _InvCtrlPeriods;
         private readonly DbSet<InvCtrl> _InvCtrls;
         private IDataShapeHelper<InvCtrl> _dataShaperInvCtrl;
         private IDataShapeHelper<GetInvCtrlViewModel> _dataShaperGetInvCtrlViewModel;
@@ -37,7 +39,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _InvCtrls = dbContext.Set<InvCtrl>();
+            _InvCtrlPeriods = dbContext.InvCtrlPeriod;
+            _InvCtrls = dbContext.InvCtrl;
             _dataShaperInvCtrl = dataShaperInvCtrl;
             _dataShaperGetInvCtrlViewModel = dataShaperGetInvCtrlViewModel;
             _modelHelper = modelHelper;
@@ -82,6 +85,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CheckInvCtrlDateAsync(long InvCtlPeriodID, DateTime InvCtrlDate)
         {
+           //itt tartok
+
             return await Task.FromResult(true);
         }
 
@@ -108,6 +113,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
+        public Task<InvCtrl> GetInvCtrlICPRecord(long WarehouseID, long ProductID, long InvCtlPeriodID)
+        {
+            var item = _InvCtrls.AsNoTracking()
+                .Where(x => x.InvCtrlType == enInvCtrlType.ICP.ToString() &&
+                        x.WarehouseID == WarehouseID &&
+                        x.ProductID == ProductID &&
+                        x.InvCtlPeriodID == InvCtlPeriodID &&
+                        !x.Deleted).SingleOrDefaultAsync();
+            return item;
+        }
+
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameter)
         {
 

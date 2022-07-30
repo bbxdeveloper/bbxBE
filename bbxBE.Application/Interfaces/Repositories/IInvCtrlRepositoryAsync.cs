@@ -18,6 +18,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> CheckInvCtrlDateAsync(long InvCtlPeriodID, DateTime InvCtrlDate);
 
         Entity GetInvCtrl(GetInvCtrl requestParameter);
+        Task<InvCtrl> GetInvCtrlICPRecord(long WarehouseID, long ProductID, long InvCtlPeriodID);
+
         Task<bool> SeedDataAsync(int rowCount);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameters);
     }

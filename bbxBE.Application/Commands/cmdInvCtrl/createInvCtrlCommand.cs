@@ -27,31 +27,39 @@ namespace bxBE.Application.Commands.cmdInvCtrl
 	public class CreateInvCtrlCommand : IRequest<Response<InvCtrl>>
 	{
 
-        [ColumnLabel("Raktár ID")]
-        [Description("Raktár ID")]
-        public long WarehouseID { get; set; }
+		public class InvCtrlItem
+		{
 
-        [ColumnLabel("Leltáridőszak ID")]
-        [Description("Leltáridőszak ID")]
-        public long? InvCtlPeriodID { get; set; }       //Opcionális, hogy a folyamatos leltárat is kezelni lehessen
 
-        [ColumnLabel("Termék ID")]
-        [Description("Termék ID")]
-        public long ProductID { get; set; }
+			[ColumnLabel("Raktár ID")]
+			[Description("Raktár ID")]
+			public long WarehouseID { get; set; }
 
-        [ColumnLabel("Leltározás dátuma")]
-        [Description("Leltározás dátuma")]
-        public DateTime InvCtrlDate { get; set; }
+			[ColumnLabel("Leltáridőszak ID")]
+			[Description("Leltáridőszak ID")]
+			public long? InvCtlPeriodID { get; set; }       //Opcionális, hogy a folyamatos leltárat is kezelni lehessen
 
-        [ColumnLabel("Új valós")]
-        [Description("Új valós mennyiség")]
-        public decimal NRealQty { get; set; }
+			[ColumnLabel("Termék ID")]
+			[Description("Termék ID")]
+			public long ProductID { get; set; }
 
-        [ColumnLabel("Felhasználó ID")]
-        [Description("Felhasználó ID")]
-        public long? UserID { get; set; } = 0;
+			[ColumnLabel("Leltározás dátuma")]
+			[Description("Leltározás dátuma")]
+			public DateTime InvCtrlDate { get; set; }
 
-    }
+			[ColumnLabel("Új valós")]
+			[Description("Új valós mennyiség")]
+			public decimal NRealQty { get; set; }
+
+			[ColumnLabel("Felhasználó ID")]
+			[Description("Felhasználó ID")]
+			public long? UserID { get; set; } = 0;
+
+		}
+
+		public List<InvCtrlItem> Items { get; set; } = new List<InvCtrlItem>();
+
+	}
 
     public class CreateInvCtrlCommandHandler : IRequestHandler<CreateInvCtrlCommand, Response<InvCtrl>>
 	{
@@ -71,8 +79,24 @@ namespace bxBE.Application.Commands.cmdInvCtrl
 
 		public async Task<Response<InvCtrl>> Handle(CreateInvCtrlCommand request, CancellationToken cancellationToken)
 		{
-			var InvCtrl = _mapper.Map<InvCtrl>(request);
+			var InvCtrlItems = new List<InvCtrl>();
+			var tasks = request.Items.Select(async  i =>
+				{
+					var InvCtrl = _mapper.Map<InvCtrl>(i);
+					var InvCtlOri = _InvCtrlRepository.AddInvCtrlAsync(InvCtrl)
+
+					InvCtrlItems.Add(InvCtrl);
+				}
+			);
+
+			var tasks = someList.Select(async item =>
+			{
+				item.someValue = await asdf.Where(() => SomeMethod(item)).FirstOrDefaultAsync();
+			});
+			await Task.WhenAll(tasks);
+
 			await _InvCtrlRepository.AddInvCtrlAsync(InvCtrl);
+
 			return new Response<InvCtrl>(InvCtrl);
 
 		}

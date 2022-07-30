@@ -17,11 +17,27 @@ using System.Threading.Tasks;
 namespace bbxBE.Application.Commands.cmdInvCtrl
 {
 
+
     public class createInvCtrlCommandValidator : AbstractValidator<CreateInvCtrlCommand>
     {
         private readonly IInvCtrlRepositoryAsync _InvCtrlRepository;
 
         public createInvCtrlCommandValidator(IInvCtrlRepositoryAsync InvCtrlRepository)
+        {
+
+            _InvCtrlRepository = InvCtrlRepository;
+
+            RuleForEach(r => r.Items)
+                 .SetValidator(model => new createInvCtrlItemValidator(_InvCtrlRepository));
+        }
+    }
+
+
+    public class createInvCtrlItemValidator : AbstractValidator<CreateInvCtrlCommand.InvCtrlItem>
+    {
+        private readonly IInvCtrlRepositoryAsync _InvCtrlRepository;
+
+        public createInvCtrlItemValidator(IInvCtrlRepositoryAsync InvCtrlRepository)
         {
             this._InvCtrlRepository = InvCtrlRepository;
 

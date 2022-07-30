@@ -132,7 +132,7 @@ namespace bbxBE.Command.Mappings
                .ForMember(dst => dst.DateFrom, opt => opt.MapFrom(src => src.DateFrom.Date))
                .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateTo.Date));
 
-            CreateMap<CreateInvCtrlCommand, InvCtrl>()
+            CreateMap<CreateInvCtrlCommand.InvCtrlItem, InvCtrl>()
                .ForMember(dst => dst.InvCtrlDate, opt => opt.MapFrom(src => src.InvCtrlDate.Date));
         //    CreateMap<UpdateInvCtrlCommand, InvCtrl>();
 
