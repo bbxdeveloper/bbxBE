@@ -53,6 +53,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
             return p_InvCtrl;
         }
+        public async Task<bool> AddRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl)
+        {
+            await _InvCtrls.AddRangeAsync(p_InvCtrl);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
 
         public async Task<InvCtrl> UpdateInvCtrlAsync(InvCtrl p_InvCtrl)
         {
@@ -60,6 +66,67 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
             return p_InvCtrl;
         }
+        public async Task<bool> UpdateRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl)
+        {
+            _InvCtrls.UpdateRange(p_InvCtrl);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> AddOrUpdateRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl)
+        {
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+
+
+                    var AddInvCtrlItems = new List<InvCtrl>();
+                    var UpdInvCtrlItems = new List<InvCtrl>();
+
+                    var tasks = p_InvCtrl.Select(async i =>
+                    {
+                        var InvCtrl = _mapper.Map<InvCtrl>(i);
+                        var existing = await GetInvCtrlICPRecordAsync(InvCtrl.WarehouseID,
+                            InvCtrl.ProductID, InvCtrl.InvCtlPeriodID.Value);
+                        if (existing != null)
+                        {
+                            InvCtrl.ID = existing.ID;
+                            _dbContext.Entry(InvCtrl).State = EntityState.Modified;
+                            UpdInvCtrlItems.Add(InvCtrl);
+                        }
+                        else
+                        {
+                            AddInvCtrlItems.Add(InvCtrl);
+                        }
+                    }
+                    );
+
+                    await Task.WhenAll(tasks);
+
+                    if (AddInvCtrlItems.Count > 0)
+                    {
+                        await _InvCtrls.AddRangeAsync(AddInvCtrlItems);
+                    }
+                    if (UpdInvCtrlItems.Count > 0)
+                    {
+                        _InvCtrls.UpdateRange(UpdInvCtrlItems);
+                    }
+
+
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
+            }
+            return true;
+        }
+
+
         public async Task<InvCtrl> DeleteInvCtrlAsync(long ID)
         {
 
@@ -85,9 +152,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CheckInvCtrlDateAsync(long InvCtlPeriodID, DateTime InvCtrlDate)
         {
-           //itt tartok
-
-            return await Task.FromResult(true);
+            var res = await _InvCtrlPeriods.AnyAsync(a => !a.Closed && a.DateFrom >= InvCtrlDate && a.DateTo <= InvCtrlDate);
+            return await Task.FromResult(res);
         }
 
         public Entity GetInvCtrl(GetInvCtrl requestParameter)
@@ -114,7 +180,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return shapeData;
         }
 
-        public Task<InvCtrl> GetInvCtrlICPRecord(long WarehouseID, long ProductID, long InvCtlPeriodID)
+        public Task<InvCtrl> GetInvCtrlICPRecordAsync(long WarehouseID, long ProductID, long InvCtlPeriodID)
         {
             var item = _InvCtrls.AsNoTracking()
                 .Where(x => x.InvCtrlType == enInvCtrlType.ICP.ToString() &&

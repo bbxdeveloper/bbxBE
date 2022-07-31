@@ -61,7 +61,7 @@ namespace bxBE.Application.Commands.cmdInvCtrl
 
 	}
 
-    public class CreateInvCtrlCommandHandler : IRequestHandler<CreateInvCtrlCommand, Response<InvCtrl>>
+    public class CreateInvCtrlCommandHandler : IRequestHandler<CreateInvCtrlCommand, Response<List<InvCtrl>>>
 	{
 		private readonly IInvCtrlRepositoryAsync _InvCtrlRepository;
 		private readonly IMapper _mapper;
@@ -77,27 +77,18 @@ namespace bxBE.Application.Commands.cmdInvCtrl
 			_configuration = configuration;
 		}
 
-		public async Task<Response<InvCtrl>> Handle(CreateInvCtrlCommand request, CancellationToken cancellationToken)
+		public async Task<Response<List<InvCtrl>>> Handle(CreateInvCtrlCommand request, CancellationToken cancellationToken)
 		{
 			var InvCtrlItems = new List<InvCtrl>();
-			var tasks = request.Items.Select(async  i =>
+			request.Items.ForEach(i =>
 				{
 					var InvCtrl = _mapper.Map<InvCtrl>(i);
-					var InvCtlOri = _InvCtrlRepository.AddInvCtrlAsync(InvCtrl)
-
 					InvCtrlItems.Add(InvCtrl);
 				}
 			);
 
-			var tasks = someList.Select(async item =>
-			{
-				item.someValue = await asdf.Where(() => SomeMethod(item)).FirstOrDefaultAsync();
-			});
-			await Task.WhenAll(tasks);
-
-			await _InvCtrlRepository.AddInvCtrlAsync(InvCtrl);
-
-			return new Response<InvCtrl>(InvCtrl);
+			await _InvCtrlRepository.AddOrUpdateRangeInvCtrlAsync(InvCtrlItems);
+;			return new Response<List<InvCtrl>>(InvCtrlItems);
 
 		}
 	}
