@@ -45,9 +45,9 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("record")]
-        public async Task<IActionResult> GetRecord([FromQuery] GetInvCtrlICPRecord filter)
+        public async Task<IActionResult> GetRecord([FromQuery] GetInvCtrlICPRecord req)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(req));
         }
 
 

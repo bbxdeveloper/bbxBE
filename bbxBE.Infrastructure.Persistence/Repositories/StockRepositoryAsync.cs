@@ -140,6 +140,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
+        public async Task<Stock> GetStockRecordAsync(GetStockRecord request)
+        {
+            var item = await _Stocks.AsNoTracking()
+             .Where(w => w.WarehouseID == request.WarehouseID && w.ProductID == request.ProductID && !w.Deleted).FirstOrDefaultAsync();
+            return item;
+        }
+
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameter)
         {
 

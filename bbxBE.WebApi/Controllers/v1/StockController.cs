@@ -37,7 +37,12 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(filter));
         }
 
-    
+
+        [HttpGet("record")]
+        public async Task<IActionResult> GetRecord([FromQuery] GetStockRecord req)
+        {
+            return Ok(await Mediator.Send(req));
+        }
 
         /// <summary>
         /// GET: api/controller
