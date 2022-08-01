@@ -40,8 +40,8 @@ namespace bbxBE.Application.Queries.qCounter
           
 
             // query based on filter
-            var entityPositions = await _positionRepository.GetCounterAsync(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetCounterViewModel>();
+            var entityPosition = await _positionRepository.GetCounterAsync(validFilter);
+            var data = entityPosition.MapItemFieldsByMapToAnnotation<GetCounterViewModel>();
 
             // response wrapper
             return data;

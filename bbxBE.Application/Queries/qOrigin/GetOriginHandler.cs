@@ -40,8 +40,8 @@ namespace bbxBE.Application.Queries.qOrigin
           
 
             // query based on filter
-            var entityPositions =  _originRepository.GetOrigin(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<Origin>();
+            var entity =  _originRepository.GetOrigin(validFilter);
+            var data = entity.MapItemFieldsByMapToAnnotation<Origin>();
 
             // response wrapper
             return data;

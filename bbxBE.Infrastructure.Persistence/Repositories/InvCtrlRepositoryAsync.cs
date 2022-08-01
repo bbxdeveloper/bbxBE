@@ -83,9 +83,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var AddInvCtrlItems = new List<InvCtrl>();
                     var UpdInvCtrlItems = new List<InvCtrl>();
 
-                    var tasks = p_InvCtrl.Select(async i =>
+                    foreach( var invCtrlItem in p_InvCtrl)
                     {
-                        var InvCtrl = _mapper.Map<InvCtrl>(i);
+                        var InvCtrl = _mapper.Map<InvCtrl>(invCtrlItem);
                         var existing = await GetInvCtrlICPRecordAsync(InvCtrl.WarehouseID,
                             InvCtrl.ProductID, InvCtrl.InvCtlPeriodID.Value);
                         if (existing != null)
@@ -93,16 +93,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             InvCtrl.ID = existing.ID;
                             _dbContext.Entry(InvCtrl).State = EntityState.Modified;
                             UpdInvCtrlItems.Add(InvCtrl);
+
                         }
                         else
                         {
                             AddInvCtrlItems.Add(InvCtrl);
                         }
                     }
-                    );
-
-                    await Task.WhenAll(tasks);
-
+                    
                     if (AddInvCtrlItems.Count > 0)
                     {
                         await _InvCtrls.AddRangeAsync(AddInvCtrlItems);
@@ -152,7 +150,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CheckInvCtrlDateAsync(long InvCtlPeriodID, DateTime InvCtrlDate)
         {
-            var res = await _InvCtrlPeriods.AnyAsync(a => !a.Closed && a.DateFrom >= InvCtrlDate && a.DateTo <= InvCtrlDate);
+            var res = await _InvCtrlPeriods.AnyAsync(a => a.ID == InvCtlPeriodID && !a.Closed && a.DateFrom <= InvCtrlDate && a.DateTo >= InvCtrlDate);
             return await Task.FromResult(res);
         }
 

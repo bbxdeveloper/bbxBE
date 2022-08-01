@@ -40,10 +40,8 @@ namespace bbxBE.Application.Queries.qCustomer
             var pagination = request;
           
             // query based on filter
-            var entityPositions = _positionRepository.GetCustomer(validFilter);
-
-
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetCustomerViewModel>();
+            var entity = _positionRepository.GetCustomer(validFilter);
+            var data = entity.MapItemFieldsByMapToAnnotation<GetCustomerViewModel>();
 
             // response wrapper
             return data;

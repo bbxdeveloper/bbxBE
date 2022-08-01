@@ -52,10 +52,10 @@ namespace bbxBE.Application.Queries.qUSR_USER
             }
 */
             // query based on filter
-            var entityPositions = await _positionRepository.GetUSR_USERAsync(validFilter);
+            var entity = await _positionRepository.GetUSR_USERAsync(validFilter);
 
 
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetUSR_USERViewModel>();
+            var data = entity.MapItemFieldsByMapToAnnotation<GetUSR_USERViewModel>();
 
             // response wrapper
             return data;

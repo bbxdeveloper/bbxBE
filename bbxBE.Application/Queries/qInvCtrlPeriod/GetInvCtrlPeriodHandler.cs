@@ -39,8 +39,8 @@ namespace bbxBE.Application.Queries.qInvCtrlPeriod
           
 
             // query based on filter
-            var entityPositions = _invCtrlPeriodRepository.GetInvCtrlPeriod(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetInvCtrlPeriodViewModel>();
+            var entity = _invCtrlPeriodRepository.GetInvCtrlPeriod(validFilter);
+            var data = entity.MapItemFieldsByMapToAnnotation<GetInvCtrlPeriodViewModel>();
 
             // response wrapper
             return data;

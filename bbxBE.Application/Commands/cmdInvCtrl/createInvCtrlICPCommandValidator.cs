@@ -18,11 +18,11 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
 {
 
 
-    public class createInvCtrlCommandValidator : AbstractValidator<CreateInvCtrlCommand>
+    public class createInvCtrlICPCommandValidator : AbstractValidator<createInvCtrlICPCommand>
     {
         private readonly IInvCtrlRepositoryAsync _InvCtrlRepository;
 
-        public createInvCtrlCommandValidator(IInvCtrlRepositoryAsync InvCtrlRepository)
+        public createInvCtrlICPCommandValidator(IInvCtrlRepositoryAsync InvCtrlRepository)
         {
 
             _InvCtrlRepository = InvCtrlRepository;
@@ -33,7 +33,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
     }
 
 
-    public class createInvCtrlItemValidator : AbstractValidator<CreateInvCtrlCommand.InvCtrlItem>
+    public class createInvCtrlItemValidator : AbstractValidator<createInvCtrlICPCommand.InvCtrlItem>
     {
         private readonly IInvCtrlRepositoryAsync _InvCtrlRepository;
 

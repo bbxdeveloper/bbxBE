@@ -44,8 +44,8 @@ namespace bbxBE.Application.Queries.qStock
 
 
             // query based on filter
-            var entityStocks = await _StockRepository.GetStockAsync(validFilter);
-            var data = entityStocks.MapItemFieldsByMapToAnnotation<GetStockViewModel>();
+            var entity = await _StockRepository.GetStockAsync(validFilter);
+            var data = entity.MapItemFieldsByMapToAnnotation<GetStockViewModel>();
 
             // response wrapper
             return data;

@@ -14,36 +14,31 @@ using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Application.Queries.qInvCtrl
 {
-    public class GetInvCtrl:  IRequest<Entity>
+    public class GetInvCtrlICPRecord:  IRequest<InvCtrl>
     {
-        public long ID { get; set; }
+        public long WarehouseID { get; set; }
+        public long ProductID { get; set; }
+        public long InvCtlPeriodID { get; set; }
     }
 
-    public class GetInvCtrlHandler : IRequestHandler<GetInvCtrl, Entity>
+    public class GetInvCtrlICPRecordHandler : IRequestHandler<GetInvCtrlICPRecord, InvCtrl>
     {
         private readonly IInvCtrlRepositoryAsync _InvCtrlRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetInvCtrlHandler(IInvCtrlRepositoryAsync InvCtrlRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetInvCtrlICPRecordHandler(IInvCtrlRepositoryAsync InvCtrlRepository, IMapper mapper, IModelHelper modelHelper)
         {
             _InvCtrlRepository = InvCtrlRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<Entity> Handle(GetInvCtrl request, CancellationToken cancellationToken)
+        public async Task<InvCtrl> Handle(GetInvCtrlICPRecord request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
-
-            // query based on filter
-            var entity = _InvCtrlRepository.GetInvCtrl(validFilter);
-            var data = entity.MapItemFieldsByMapToAnnotation<GetInvCtrlViewModel>();
-
-            // response wrapper
-            return data;
+            var record = await _InvCtrlRepository.GetInvCtrlICPRecordAsync(request.WarehouseID, request.ProductID, request.InvCtlPeriodID);
+            return record;
         }
+
     }
 }

@@ -24,7 +24,7 @@ namespace bxBE.Application.Commands.cmdInvCtrl
 
 
 	[Description("Leltári tétel")]
-	public class CreateInvCtrlCommand : IRequest<Response<InvCtrl>>
+	public class createInvCtrlICPCommand : IRequest<Response<List<InvCtrl>>>
 	{
 
 		public class InvCtrlItem
@@ -61,7 +61,7 @@ namespace bxBE.Application.Commands.cmdInvCtrl
 
 	}
 
-    public class CreateInvCtrlCommandHandler : IRequestHandler<CreateInvCtrlCommand, Response<List<InvCtrl>>>
+    public class CreateInvCtrlCommandHandler : IRequestHandler<createInvCtrlICPCommand, Response<List<InvCtrl>>>
 	{
 		private readonly IInvCtrlRepositoryAsync _InvCtrlRepository;
 		private readonly IMapper _mapper;
@@ -77,7 +77,7 @@ namespace bxBE.Application.Commands.cmdInvCtrl
 			_configuration = configuration;
 		}
 
-		public async Task<Response<List<InvCtrl>>> Handle(CreateInvCtrlCommand request, CancellationToken cancellationToken)
+		public async Task<Response<List<InvCtrl>>> Handle(createInvCtrlICPCommand request, CancellationToken cancellationToken)
 		{
 			var InvCtrlItems = new List<InvCtrl>();
 			request.Items.ForEach(i =>
