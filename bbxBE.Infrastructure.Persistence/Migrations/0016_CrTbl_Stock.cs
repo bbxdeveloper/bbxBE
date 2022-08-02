@@ -14,7 +14,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
     {
 
         /*
-              delete VersionInfo where Version = 16
+              delete VersionInfo where Version in ( 16, 21)
               --drop table Stock
               drop table StockCard
 

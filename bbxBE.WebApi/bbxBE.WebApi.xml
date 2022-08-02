@@ -53,6 +53,34 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlICPController.Get(bbxBE.Application.Queries.qInvCtrl.GetInvCtrl)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlICPController.GetRecord(bbxBE.Application.Queries.qInvCtrl.GetInvCtrlICPRecord)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlICPController.Query(bbxBE.Application.Queries.qInvCtrl.QueryInvCtrl)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlICPController.Create(bxBE.Application.Commands.cmdInvCtrl.createInvCtrlICPCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlPeriodController.Get(bbxBE.Application.Queries.qInvCtrlPeriod.GetInvCtrlPeriod)">
             <summary>
             GET: api/controller

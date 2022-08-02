@@ -43,8 +43,8 @@ namespace bbxBE.Application.Queries.qInvoice
           
 
             // query based on filter
-            var entityInvoices = await _invoiceRepository.GetInvoiceAsync(validFilter);
-            var data = entityInvoices.MapItemFieldsByMapToAnnotation<GetInvoiceViewModel>();
+            var entity = await _invoiceRepository.GetInvoiceAsync(validFilter);
+            var data = entity.MapItemFieldsByMapToAnnotation<GetInvoiceViewModel>();
 
             // response wrapper
             return data;

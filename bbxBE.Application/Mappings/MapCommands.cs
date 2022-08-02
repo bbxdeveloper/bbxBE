@@ -12,6 +12,7 @@ using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCounter;
 using bxBE.Application.Commands.cmdCustomer;
+using bxBE.Application.Commands.cmdInvCtrl;
 using bxBE.Application.Commands.cmdInvCtrlPeriod;
 using bxBE.Application.Commands.cmdInvoice;
 using bxBE.Application.Commands.cmdOffer;
@@ -123,9 +124,17 @@ namespace bbxBE.Command.Mappings
 
             CreateMap<UpdateOfferCommand.OfferLine, OfferLine>();
 
-            CreateMap<CreateInvCtrlPeriodCommand, InvCtrlPeriod>();
-            CreateMap<UpdateInvCtrlPeriodCommand, InvCtrlPeriod>();
+            CreateMap<CreateInvCtrlPeriodCommand, InvCtrlPeriod>()
+               .ForMember(dst => dst.DateFrom, opt => opt.MapFrom(src => src.DateFrom.Date))
+               .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateTo.Date));
 
+            CreateMap<UpdateInvCtrlPeriodCommand, InvCtrlPeriod>()
+               .ForMember(dst => dst.DateFrom, opt => opt.MapFrom(src => src.DateFrom.Date))
+               .ForMember(dst => dst.DateTo, opt => opt.MapFrom(src => src.DateTo.Date));
+
+            CreateMap<createInvCtrlICPCommand.InvCtrlItem, InvCtrl>()
+               .ForMember(dst => dst.InvCtrlDate, opt => opt.MapFrom(src => src.InvCtrlDate.Date));
+        //    CreateMap<UpdateInvCtrlCommand, InvCtrl>();
 
         }
     }

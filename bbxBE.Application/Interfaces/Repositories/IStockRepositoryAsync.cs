@@ -13,6 +13,7 @@ namespace bbxBE.Application.Interfaces.Repositories
     {
         Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice);
         Task<Entity> GetStockAsync(GetStock requestParameters);
+        Task<Stock> GetStockRecordAsync(GetStockRecord requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameters);
     }
 }

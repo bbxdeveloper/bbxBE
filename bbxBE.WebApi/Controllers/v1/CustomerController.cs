@@ -1,11 +1,11 @@
 ﻿using bbxBE.Application.Commands.cmdCustomer;
 using bbxBE.Application.Commands.cmdImport;
 using bbxBE.Application.Commands.cmdUSR_USER;
-using bbxBE.Application.Enums;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCustomer;
 using MediatR;

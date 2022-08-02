@@ -67,23 +67,27 @@ namespace bbxBE.Application.Consts
         public static string ERR_NOCACHEQUERY = "Nincs lekérdezés a gyorstótárhoz!";
         public static string ERR_LOCKEDCACHE = "Gyorsítótár feltöltés alatt ! A műveletet később végrehajtható.";
 
-        public static string ERR_INV_DATE1 = "{PropertyName}| A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
-        public static string ERR_INV_DATE2 = "{PropertyName}| A számla dátuma nem lehet későbbi, mint a fizetési határidő";
-        public static string ERR_INV_LINES = "{PropertyName}| A számlán nincs tételsor";
-        public static string ERR_INV_VATSUMS = "{PropertyName}| A számlán nincs áfánkénti összesítő";
+        public static string ERR_INV_DATE1 = "{PropertyName}: A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
+        public static string ERR_INV_DATE2 = "{PropertyName}: A számla dátuma nem lehet későbbi, mint a fizetési határidő";
+        public static string ERR_INV_LINES = "{PropertyName}: A számlán nincs tételsor";
+        public static string ERR_INV_VATSUMS = "{PropertyName}: A számlán nincs áfánkénti összesítő";
 
         public static string ERR_CST_OWNEXISTS = "{PropertyName}:  Saját adat már létezik.";
 
 
-        public static string ERR_OFFER_DATE1 = "{PropertyName}| A lejárati dátum nem lehet korábbi, mint a ajánlat kibocsátásának dátuma!";
+        public static string ERR_OFFER_DATE1 = "{PropertyName}: A lejárati dátum nem lehet korábbi, mint a ajánlat kibocsátásának dátuma!";
 
         public static string NAV_INVDIRECTION = "{PropertyName}:  érvénytelen biyonylatirány:{PropertyValue} ";
 
-        public static string ERR_INVCTRLPERIOD_DATE1 = "{PropertyName}| Helytelen leltáridőszak!";
-        public static string ERR_INVCTRLPERIOD_DATE2 = "{PropertyName}| A megadott leltáridőszak ütközik más időszakkal!";
+        public static string ERR_INVCTRLPERIOD_DATE1 = "{PropertyName}: Helytelen leltáridőszak!";
+        public static string ERR_INVCTRLPERIOD_DATE2 = "{PropertyName}: A megadott leltáridőszak ütközik más időszakkal!";
         public static string ERR_INVCTRLPERIODNOTFOUND = "Leltáridőszak nem található, ID:{0} ";
-        public static string ERR_INVCTRLPERIOD_CANTBEDELETED = "{PropertyName}| A leltáridőszak már nem módosítható!";
+        public static string ERR_INVCTRLPERIOD_CANTBEDELETED = "{PropertyName}: A leltáridőszak már nem módosítható!";
         public static string ERR_INVCTRLPERIOD_CANTBECLOSED = "A leltáridőszak nem zárható le!";
+
+        public static string ERR_INVCTRLNOTFOUND = "Leltári tétel nem található, ID:{0} ";
+        public static string ERR_INVCTRL_DATE = "{PropertyName}:Helytelen leltárdátum!";
+
 
         public static string NAV_TOKENEXCHANGE_ERR = "{0} NAV tokenExchange error result:{1}";
 
@@ -114,5 +118,6 @@ namespace bbxBE.Application.Consts
 
 
         public static string EMAIL_FORMAT_ERROR = "{PropertyName}:  Hibás email cím!";
+
     }
 }

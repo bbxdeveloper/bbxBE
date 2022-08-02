@@ -40,8 +40,8 @@ namespace bbxBE.Application.Queries.qProduct
           
 
             // query based on filter
-            var entityPositions = _productRepository.GetProduct(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetProductViewModel>();
+            var entity = _productRepository.GetProduct(validFilter);
+            var data = entity.MapItemFieldsByMapToAnnotation<GetProductViewModel>();
 
             // response wrapper
             return data;

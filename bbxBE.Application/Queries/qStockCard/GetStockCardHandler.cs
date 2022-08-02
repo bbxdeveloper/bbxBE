@@ -39,8 +39,8 @@ namespace bbxBE.Application.Queries.qStockCard
           
 
             // query based on filter
-            var entityStockCards = await _StockCardRepository.GetStockCardAsync(validFilter);
-            var data = entityStockCards.MapItemFieldsByMapToAnnotation<GetStockCardViewModel>();
+            var entity = await _StockCardRepository.GetStockCardAsync(validFilter);
+            var data = entity.MapItemFieldsByMapToAnnotation<GetStockCardViewModel>();
 
             // response wrapper
             return data;

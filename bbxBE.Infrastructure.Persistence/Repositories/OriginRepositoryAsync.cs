@@ -41,7 +41,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _Origins = dbContext.Set<Origin>();
+            _Origins = dbContext.Origin;
             _dataShaperOrigin = dataShaperOrigin;
             _dataShaperGetOriginViewModel = dataShaperGetOriginViewModel;
             _modelHelper = modelHelper;

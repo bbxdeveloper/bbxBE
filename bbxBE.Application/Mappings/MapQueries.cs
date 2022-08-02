@@ -125,7 +125,13 @@ namespace bbxBE.Queries.Mappings
             CreateMap<InvCtrlPeriod, GetInvCtrlPeriodViewModel>()
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription));
 
+            CreateMap<InvCtrl, GetInvCtrlViewModel>()
+             .ForMember(dst => dst.InvCtrlTypeX, opt => opt.MapFrom(src => InvCtrlTypeNameResolver(src.InvCtrlType)))
+             .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
+             .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.Product.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
+             .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description));
         }
+
         private static string enStockCardTypeNameResolver(string ScType)
         {
             if (!string.IsNullOrWhiteSpace(ScType))
@@ -155,5 +161,16 @@ namespace bbxBE.Queries.Mappings
             }
             return "";
         }
+
+        private static string InvCtrlTypeNameResolver(string InvCtrlType)
+        {
+            if (!string.IsNullOrWhiteSpace(InvCtrlType))
+            {
+                var _invCtrlType = (enInvCtrlType)Enum.Parse(typeof(enInvCtrlType), InvCtrlType);
+                return Common.Utils.GetEnumDescription(_invCtrlType);
+            }
+            return "";
+        }
+
     }
 }

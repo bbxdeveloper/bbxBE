@@ -14,18 +14,19 @@ using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Application.Queries.qStock
 {
-    public class GetStock : IRequest<Entity>
+    public class GetStockRecord : IRequest<Stock>
     {
-        public long ID { get; set; }
+        public long WarehouseID { get; set; }
+        public long ProductID { get; set; }
     }
 
-    public class GetStockHandler : IRequestHandler<GetStock, Entity>
+    public class GetStockRecordHandler : IRequestHandler<GetStockRecord, Stock>
     {
         private readonly IStockRepositoryAsync _StockRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetStockHandler(IStockRepositoryAsync StockRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetStockRecordHandler(IStockRepositoryAsync StockRepository, IMapper mapper, IModelHelper modelHelper)
         {
             _StockRepository = StockRepository;
             _mapper = mapper;
@@ -37,18 +38,11 @@ namespace bbxBE.Application.Queries.qStock
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<Entity> Handle(GetStock request, CancellationToken cancellationToken)
+        public async Task<Stock> Handle(GetStockRecord request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-
-
-            // query based on filter
-            var entity = await _StockRepository.GetStockAsync(validFilter);
-            var data = entity.MapItemFieldsByMapToAnnotation<GetStockViewModel>();
-
-            // response wrapper
-            return data;
+            var entity = await _StockRepository.GetStockRecordAsync(request);
+            return entity;
         }
-    }
+
+       }
 }

@@ -34,11 +34,11 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("DateFrom").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("DateTo").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
                     .WithColumn("Closed").AsBoolean().NotNullable().WithDefaultValue(false)
-                    .WithColumn("UserID").AsInt64().Nullable().WithDefaultValue(0);
+                    .WithColumn("UserID").AsInt64().ForeignKey().Nullable().WithDefaultValue(0);
             
 
 
-            Create.Index("INX_InvCtrlPeriodr")
+            Create.Index("INX_InvCtrlPeriod")
                          .OnTable("InvCtrlPeriod")
                          .OnColumn("WarehouseID").Ascending()
                          .OnColumn("DateFrom").Ascending()

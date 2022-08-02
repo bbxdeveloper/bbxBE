@@ -40,8 +40,8 @@ namespace bbxBE.Application.Queries.qVatRate
           
 
             // query based on filter
-            var entityPositions = await _vatRateRepository.GetVatRateAsync(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetVatRateViewModel>();
+            var entity = await _vatRateRepository.GetVatRateAsync(validFilter);
+            var data = entity.MapItemFieldsByMapToAnnotation<GetVatRateViewModel>();
 
             // response wrapper
             return data;

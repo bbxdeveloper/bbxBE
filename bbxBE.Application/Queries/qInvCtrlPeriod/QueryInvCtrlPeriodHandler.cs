@@ -16,7 +16,6 @@ namespace bbxBE.Application.Queries.qInvCtrlPeriod
 {
     public class QueryInvCtrlPeriod : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
-        public string SearchString { get; set; }
     }
 
     public class QueryInvCtrlPeriodHandler : IRequestHandler<QueryInvCtrlPeriod, PagedResponse<IEnumerable<Entity>>>
@@ -37,20 +36,6 @@ namespace bbxBE.Application.Queries.qInvCtrlPeriod
             var validFilter = request;
             var pagination = request;
             
-            /* TODO: törölni
-            //filtered fields security
-            if (!string.IsNullOrEmpty(validFilter.Fields))
-            {
-                //limit to fields in view model
-                validFilter.Fields = _modelHelper.ValidateModelFields<GetInvCtrlPeriodViewModel, InvCtrlPeriod>(validFilter.Fields);
-            }
-  
-            if (string.IsNullOrEmpty(validFilter.Fields))
-            {
-                //default fields from view model
-                validFilter.Fields = _modelHelper.GetQueryableFields<GetInvCtrlPeriodViewModel, InvCtrlPeriod>();
-            }
-            */
 
 
             // query based on filter

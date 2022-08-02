@@ -37,7 +37,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _Warehouses = dbContext.Set<Warehouse>();
+            _Warehouses = dbContext.Warehouse;
             _dataShaperWarehouse = dataShaperWarehouse;
             _dataShaperGetWarehouseViewModel = dataShaperGetWarehouseViewModel;
             _modelHelper = modelHelper;

@@ -40,8 +40,8 @@ namespace bbxBE.Application.Queries.qWarehouse
           
 
             // query based on filter
-            var entityPositions = await _warehouseRepository.GetWarehouseAsync(validFilter);
-            var data = entityPositions.MapItemFieldsByMapToAnnotation<GetWarehouseViewModel>();
+            var entity = await _warehouseRepository.GetWarehouseAsync(validFilter);
+            var data = entity.MapItemFieldsByMapToAnnotation<GetWarehouseViewModel>();
 
             // response wrapper
             return data;

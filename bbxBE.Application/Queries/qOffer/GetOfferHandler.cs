@@ -46,8 +46,8 @@ namespace bbxBE.Application.Queries.qOffer
           
 
             // query based on filter
-                var entityOffers = await _OfferRepository.GetOfferAsync(validFilter);
-            var data = entityOffers.MapItemFieldsByMapToAnnotation<GetOfferViewModel>();
+                var entityOffer = await _OfferRepository.GetOfferAsync(validFilter);
+            var data = entityOffer.MapItemFieldsByMapToAnnotation<GetOfferViewModel>();
 
             // response wrapper
             return data;
