@@ -24,8 +24,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class VatRateRepositoryAsync : GenericRepositoryAsync<VatRate>, IVatRateRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<VatRate> _VatRates;
-        private readonly DbSet<Product> _Products;
         private IDataShapeHelper<VatRate> _dataShaperVatRate;
         private IDataShapeHelper<GetVatRateViewModel> _dataShaperGetVatRateViewModel;
         private readonly IMockService _mockData;
@@ -40,8 +38,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ICacheService<VatRate> cacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _VatRates = dbContext.Set<VatRate>();
-            _Products = dbContext.Set<Product>();
             _dataShaperVatRate = dataShaperVatRate;
             _dataShaperGetVatRateViewModel = dataShaperGetVatRateViewModel;
             _modelHelper = modelHelper;
@@ -93,7 +89,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
 
-            await _VatRates.AddAsync(p_vatRate);
+            await _dbContext.VatRate.AddAsync(p_vatRate);
             await _dbContext.SaveChangesAsync();
 
             _cacheService.AddOrUpdate(p_vatRate);
@@ -102,7 +98,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<VatRate> UpdateVatRateAsync(VatRate p_vatRate)
         {
             _cacheService.AddOrUpdate(p_vatRate);
-            _VatRates.Update(p_vatRate);
+            _dbContext.VatRate.Update(p_vatRate);
             await _dbContext.SaveChangesAsync();
             return p_vatRate;
         }
@@ -111,14 +107,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             VatRate vr = null;
 
-            vr = _VatRates.AsNoTracking().Where(x => x.ID == ID).FirstOrDefault();
+            vr = _dbContext.VatRate.AsNoTracking().Where(x => x.ID == ID).FirstOrDefault();
 
             if (vr != null)
             {
 
 
                 _cacheService.TryRemove(vr);
-                _VatRates.Remove(vr);
+                _dbContext.VatRate.Remove(vr);
                 await _dbContext.SaveChangesAsync();
 
             }
@@ -222,7 +218,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (_cacheService.IsCacheEmpty())
             {
 
-                var q = _VatRates
+                var q = _dbContext.VatRate
                 .AsNoTracking()
                 .AsExpandable();
                 await _cacheService.RefreshCache(q);

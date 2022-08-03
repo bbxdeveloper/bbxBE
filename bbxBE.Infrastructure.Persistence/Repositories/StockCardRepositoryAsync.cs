@@ -26,8 +26,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class StockCardRepositoryAsync : GenericRepositoryAsync<StockCard>, IStockCardRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Stock> _Stocks;
-        private readonly DbSet<StockCard> _StockCards;
         private IDataShapeHelper<StockCard> _dataShaperStockCard;
         private IDataShapeHelper<GetStockCardViewModel> _dataShaperGetStockCardViewModel;
         private readonly IMockService _mockData;
@@ -40,8 +38,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _StockCards = dbContext.Set<StockCard>();
-            _Stocks = dbContext.Set<Stock>();
             _dataShaperStockCard = dataShaperStockCard;
             _dataShaperGetStockCardViewModel = dataShaperGetStockCardViewModel;
             _modelHelper = modelHelper;
@@ -80,7 +76,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             };
             latestStockCard = sc;
 
-            var prevItem = await _StockCards.AsNoTracking()
+            var prevItem = await _dbContext.StockCard.AsNoTracking()
                     .Where(w => w.WarehouseID == p_WarehouseID && w.ProductID == p_ProductID &&
                             w.StockCardDate <= p_StockCardDate)
                      .OrderByDescending(o1 => o1.StockCardDate)
@@ -125,7 +121,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             sc.NAvgCost = (p_XCalcQty >= 0 || p_XRealQty > 0 ?
                             bllStock.GetNewAvgCost(OAvgCost, (ORealQty + p_XRealQty), p_XRealQty, p_UnitPrice) :
                             OAvgCost);
-            await _StockCards.AddAsync(sc);
+            await _dbContext.StockCard.AddAsync(sc);
 
             OCalcQty = sc.NCalcQty;
             ORealQty = sc.NRealQty;
@@ -135,7 +131,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //Ezután az utána következő, többi elemet számoljuk át
 
-            var furtherItems = await _StockCards
+            var furtherItems = await _dbContext.StockCard
                      .Where(w => w.WarehouseID == p_WarehouseID && w.ProductID == p_ProductID &&
                              w.StockCardDate > p_StockCardDate)
                       .OrderBy(o1 => o1.StockCardDate)
@@ -159,7 +155,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 bllStock.GetNewAvgCost(OAvgCost, (ORealQty + XRealQty), XRealQty, f.UnitPrice) :
                                 OAvgCost);
 
-                _StockCards.Update(f);
+                _dbContext.StockCard.Update(f);
 
                 OCalcQty = f.NCalcQty;
                 ORealQty = f.NRealQty;
@@ -177,7 +173,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var ID = requestParameter.ID;
 
-            var item = await _StockCards.AsNoTracking()
+            var item = await _dbContext.StockCard.AsNoTracking()
                     .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
                     .Include(w => w.Warehouse).AsNoTracking()
                     .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
@@ -212,7 +208,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var query = _StockCards.AsNoTracking()
+            var query = _dbContext.StockCard.AsNoTracking()
                         .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
                         .Include(w => w.Warehouse).AsNoTracking()
                         .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));

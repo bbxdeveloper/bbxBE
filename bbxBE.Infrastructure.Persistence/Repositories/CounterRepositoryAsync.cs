@@ -24,8 +24,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class CounterRepositoryAsync : GenericRepositoryAsync<Counter>, ICounterRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Counter> _Counters;
-        private readonly DbSet<Warehouse> _Warehouses;
         private IDataShapeHelper<Counter> _dataShaperCounter;
         private IDataShapeHelper<GetCounterViewModel> _dataShaperGetCounterViewModel;
         private readonly IMockService _mockData;
@@ -38,8 +36,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _Counters = dbContext.Set<Counter>();
-            _Warehouses = dbContext.Set<Warehouse>();
             _dataShaperCounter = dataShaperCounter;
             _dataShaperGetCounterViewModel = dataShaperGetCounterViewModel;
             _modelHelper = modelHelper;
@@ -50,7 +46,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsUniqueCounterCodeAsync(string CounterCode, long? ID = null)
         {
-            return !await _Counters.AnyAsync(p => p.CounterCode == CounterCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+            return !await _dbContext.Counter.AnyAsync(p => p.CounterCode == CounterCode && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
         public async Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode)
@@ -60,13 +56,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
                 {
-                    var wh = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
+                    var wh = _dbContext.Warehouse.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
                     p_Counter.WarehouseID = wh.ID;
                     p_Counter.Warehouse = wh;
 
                 }
 
-                _Counters.Add(p_Counter);
+                _dbContext.Counter.Add(p_Counter);
                 await _dbContext.SaveChangesAsync();
                 await dbContextTransaction.CommitAsync();
 
@@ -80,18 +76,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
-                var cnt = _Counters.Where(x => x.ID == p_Counter.ID).FirstOrDefault();
+                var cnt = _dbContext.Counter.Where(x => x.ID == p_Counter.ID).FirstOrDefault();
 
                 if (cnt != null)
                 {
                     if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
                     {
-                        var wh = _Warehouses.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
+                        var wh = _dbContext.Warehouse.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
                         p_Counter.WarehouseID = wh.ID;
                         p_Counter.Warehouse = wh;
                     }
 
-                    _Counters.Update(p_Counter);
+                    _dbContext.Counter.Update(p_Counter);
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 
@@ -110,7 +106,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             var ID = requestParameter.ID;
-            var item  = await _Counters//.AsNoTracking().AsExpandable()
+            var item  = await _dbContext.Counter//.AsNoTracking().AsExpandable()
                     .Include(i => i.Warehouse).SingleOrDefaultAsync(s=>s.ID == ID);
 
             //            var item = await GetByIdAsync(ID);
@@ -133,7 +129,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var NextValue = "";
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var counter = await _Counters.AsNoTracking()
+                var counter = await _dbContext.Counter.AsNoTracking()
                     .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefaultAsync();
 
                 if (counter != null)
@@ -166,7 +162,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             counter.CounterPool.Add(new CounterPoolItem() { CounterValue = NextValue, Ticks = DateTime.UtcNow.Ticks });
                         }
                     }
-                    _Counters.Update(counter);
+                    _dbContext.Counter.Update(counter);
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -184,7 +180,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var result = false;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var counter = await _Counters.AsNoTracking()
+                var counter = await _dbContext.Counter.AsNoTracking()
                     .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefaultAsync();
 
                 if (counter != null)
@@ -200,7 +196,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         counter.CounterPool = counter.CounterPool.Where(w => w .CounterValue != counterValue).ToList();
                         //       _dbContext.Entry<Counter>(counter).State = EntityState.Modified;
-                        _Counters.Update(counter);
+                        _dbContext.Counter.Update(counter);
 
                         await _dbContext.SaveChangesAsync();
                         await dbContextTransaction.CommitAsync();
@@ -224,7 +220,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 try
                 {
-                    var counter = await _Counters.AsNoTracking()
+                    var counter = await _dbContext.Counter.AsNoTracking()
                         .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefaultAsync();
 
                     if (counter != null)
@@ -239,7 +235,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             if (c != null)
                             {
                                 c.Ticks = 0;
-                                _Counters.Update(counter);
+                                _dbContext.Counter.Update(counter);
                                 await _dbContext.SaveChangesAsync();
                                 await dbContextTransaction.CommitAsync();
                                 result = true;
@@ -276,7 +272,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
 
-            var query = _Counters//.AsNoTracking().AsExpandable()
+            var query = _dbContext.Counter//.AsNoTracking().AsExpandable()
                     .Include(i => i.Warehouse).AsQueryable();
 
 

@@ -25,7 +25,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class CustomerRepositoryAsync : GenericRepositoryAsync<Customer>, ICustomerRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Customer> _customers;
         private IDataShapeHelper<Customer> _dataShaperCustomer;
         private IDataShapeHelper<GetCustomerViewModel> _dataShaperGetCustomerViewModel;
         private readonly IMockService _mockData;
@@ -40,7 +39,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ICacheService<Customer> customerCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _customers = dbContext.Set<Customer>();
             _dataShaperCustomer = dataShaperCustomer;
             _dataShaperGetCustomerViewModel = dataShaperGetCustomerViewModel;
             _modelHelper = modelHelper;
@@ -77,7 +75,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Customer> AddCustomerAsync(Customer p_customer)
         {
 
-            await _customers.AddAsync(p_customer);
+            await _dbContext.Customer.AddAsync(p_customer);
             //            _dbContext.ChangeTracker.AcceptAllChanges();
             await _dbContext.SaveChangesAsync();
 
@@ -105,7 +103,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Customer> UpdateCustomerAsync(Customer p_customer)
         {
             _cacheService.AddOrUpdate(p_customer);
-            _customers.Update(p_customer);
+            _dbContext.Customer.Update(p_customer);
             await _dbContext.SaveChangesAsync();
             return p_customer;
         }
@@ -116,7 +114,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             Customer cust = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                cust = await _customers.Where(x => x.ID == ID).FirstOrDefaultAsync();
+                cust = await _dbContext.Customer.Where(x => x.ID == ID).FirstOrDefaultAsync();
 
                 if (cust != null)
                 {
@@ -124,7 +122,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     _cacheService.TryRemove(cust);
 
-                    _customers.Remove(cust);
+                    _dbContext.Customer.Remove(cust);
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -274,7 +272,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             if (_cacheService.IsCacheEmpty())
             {
-                var q = _customers
+                var q = _dbContext.Customer
                 .AsNoTracking()
                 .AsExpandable();
                 await _cacheService.RefreshCache(q);
