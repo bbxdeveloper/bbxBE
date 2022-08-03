@@ -90,13 +90,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             return await Task.FromResult(true);
         }
-        public Entity GetInvCtrlPeriod(GetInvCtrlPeriod requestParameter)
+        public async Task<Entity> GetInvCtrlPeriod(GetInvCtrlPeriod requestParameter)
         {
             var ID = requestParameter.ID;
-            var item = _dbContext.InvCtrlPeriod.AsNoTracking()
+            var item = await _dbContext.InvCtrlPeriod.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking()
                 .AsExpandable()
-                .Where(x => x.ID == ID).SingleOrDefault();
+                .Where(x => x.ID == ID).SingleOrDefaultAsync();
 
             //        var item = await _dbContext.InvCtrlPeriod.FindAsync(ID);
 

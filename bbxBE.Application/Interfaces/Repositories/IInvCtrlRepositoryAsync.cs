@@ -21,7 +21,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<InvCtrl> DeleteInvCtrlAsync(long ID);
         Task<bool> CheckInvCtrlDateAsync(long InvCtlPeriodID, DateTime InvCtrlDate);
 
-        Entity GetInvCtrl(GetInvCtrl requestParameter);
+        Task<Entity> GetInvCtrl(GetInvCtrl requestParameter);
         Task<InvCtrl> GetInvCtrlICPRecordAsync(long WarehouseID, long ProductID, long InvCtlPeriodID);
 
         Task<bool> SeedDataAsync(int rowCount);
