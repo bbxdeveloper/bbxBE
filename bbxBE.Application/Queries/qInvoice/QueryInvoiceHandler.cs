@@ -69,12 +69,7 @@ namespace bbxBE.Application.Queries.qInvoice
         public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryInvoice request, CancellationToken cancellationToken)
         {
 
-            //Heka
-            request.InvoiceDeliveryDateFrom = (request.InvoiceDeliveryDateFrom.HasValue ? request.InvoiceDeliveryDateFrom.Value.Date.AddDays(1) : request.InvoiceDeliveryDateFrom);
-            request.InvoiceDeliveryDateTo = (request.InvoiceDeliveryDateTo.HasValue ? request.InvoiceDeliveryDateTo.Value.Date.AddDays(1) : request.InvoiceDeliveryDateTo);
-            request.InvoiceIssueDateFrom = (request.InvoiceIssueDateFrom.HasValue ? request.InvoiceIssueDateFrom.Value.Date.AddDays(1) : request.InvoiceIssueDateFrom);
-            request.InvoiceIssueDateTo = (request.InvoiceIssueDateTo.HasValue ? request.InvoiceIssueDateTo.Value.Date.AddDays(1) : request.InvoiceIssueDateTo);
-
+ 
             var validFilter = request; 
             var pagination = request;
 

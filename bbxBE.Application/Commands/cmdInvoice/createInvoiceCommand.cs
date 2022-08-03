@@ -262,13 +262,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 					invoice.CustomerID = request.CustomerID;
 				}
 
-				//heka
-				invoice.InvoiceIssueDate = invoice.InvoiceIssueDate.AddDays(1);
-				invoice.InvoiceDeliveryDate = invoice.InvoiceDeliveryDate.AddDays(1);
-				invoice.PaymentDate = invoice.PaymentDate.AddDays(1);
-
-
-
 				//Megjegyzés
 				if (!string.IsNullOrWhiteSpace(request.Notice))
 				{
