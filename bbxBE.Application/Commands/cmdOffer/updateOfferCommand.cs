@@ -191,10 +191,6 @@ namespace bxBE.Application.Commands.cmdOffer
 			var counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
 			var newOfferNumber = "";
 
-			//heka
-			offer.OfferIssueDate = offer.OfferIssueDate.AddDays(1);
-			offer.OfferVaidityDate = offer.OfferVaidityDate.AddDays(1);
-
 			try
 			{
 

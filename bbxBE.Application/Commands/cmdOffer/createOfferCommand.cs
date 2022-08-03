@@ -172,11 +172,7 @@ namespace bxBE.Application.Commands.cmdOffer
 			//Egyelőre csak forintos ajántatokról van szó
 			offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
 			offer.ExchangeRate = 1;
-
-			//heka
-			offer.OfferIssueDate = offer.OfferIssueDate.AddDays(1);
-			offer.OfferVaidityDate = offer.OfferVaidityDate.AddDays(1);
-
+			
 			var counterCode = "";
 			try
 			{
