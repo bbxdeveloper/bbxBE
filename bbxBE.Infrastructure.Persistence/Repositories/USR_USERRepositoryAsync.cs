@@ -23,7 +23,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class USR_USERRepositoryAsync : GenericRepositoryAsync<USR_USER>, IUSR_USERRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<USR_USER> _users;
         private IDataShapeHelper<USR_USER> _dataShaper;
         private readonly IModelHelper _modelHelper;
         private readonly IMockService _mockData;
@@ -32,7 +31,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IDataShapeHelper<USR_USER> dataShaper, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _users = dbContext.Set<USR_USER>();
             _dataShaper = dataShaper;
             _modelHelper = modelHelper;
             _mockData = mockData;
@@ -41,7 +39,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
  
         public async Task<bool> IsUniqueNameAsync(string USR_NAME, long? ID = null)
         {
-            return !await _users.AnyAsync(p => p.USR_NAME == USR_NAME && p.USR_ACTIVE && (ID == null || p.ID != ID.Value));
+            return !await _dbContext.USR_USER.AnyAsync(p => p.USR_NAME == USR_NAME && p.USR_ACTIVE && (ID == null || p.ID != ID.Value));
          }
 
 
@@ -88,7 +86,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _users
+            var result = _dbContext.USR_USER
                 .AsNoTracking()
                 .AsExpandable();
 

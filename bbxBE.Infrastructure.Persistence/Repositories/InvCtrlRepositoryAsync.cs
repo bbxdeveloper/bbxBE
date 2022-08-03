@@ -25,8 +25,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class InvCtrlRepositoryAsync : GenericRepositoryAsync<InvCtrl>, IInvCtrlRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<InvCtrlPeriod> _InvCtrlPeriods;
-        private readonly DbSet<InvCtrl> _InvCtrls;
         private IDataShapeHelper<InvCtrl> _dataShaperInvCtrl;
         private IDataShapeHelper<GetInvCtrlViewModel> _dataShaperGetInvCtrlViewModel;
         private readonly IMockService _mockData;
@@ -39,8 +37,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _InvCtrlPeriods = dbContext.InvCtrlPeriod;
-            _InvCtrls = dbContext.InvCtrl;
             _dataShaperInvCtrl = dataShaperInvCtrl;
             _dataShaperGetInvCtrlViewModel = dataShaperGetInvCtrlViewModel;
             _modelHelper = modelHelper;
@@ -49,26 +45,26 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<InvCtrl> AddInvCtrlAsync(InvCtrl p_InvCtrl)
         {
-            await _InvCtrls.AddAsync(p_InvCtrl);
+            await _dbContext.InvCtrl.AddAsync(p_InvCtrl);
             await _dbContext.SaveChangesAsync();
             return p_InvCtrl;
         }
         public async Task<bool> AddRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl)
         {
-            await _InvCtrls.AddRangeAsync(p_InvCtrl);
+            await _dbContext.InvCtrl.AddRangeAsync(p_InvCtrl);
             await _dbContext.SaveChangesAsync();
             return true;
         }
 
         public async Task<InvCtrl> UpdateInvCtrlAsync(InvCtrl p_InvCtrl)
         {
-            _InvCtrls.Update(p_InvCtrl);
+            _dbContext.InvCtrl.Update(p_InvCtrl);
             await _dbContext.SaveChangesAsync();
             return p_InvCtrl;
         }
         public async Task<bool> UpdateRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl)
         {
-            _InvCtrls.UpdateRange(p_InvCtrl);
+            _dbContext.InvCtrl.UpdateRange(p_InvCtrl);
             await _dbContext.SaveChangesAsync();
             return true;
         }
@@ -103,11 +99,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     
                     if (AddInvCtrlItems.Count > 0)
                     {
-                        await _InvCtrls.AddRangeAsync(AddInvCtrlItems);
+                        await _dbContext.InvCtrl.AddRangeAsync(AddInvCtrlItems);
                     }
                     if (UpdInvCtrlItems.Count > 0)
                     {
-                        _InvCtrls.UpdateRange(UpdInvCtrlItems);
+                        _dbContext.InvCtrl.UpdateRange(UpdInvCtrlItems);
                     }
 
 
@@ -130,13 +126,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             InvCtrl icp = null;
 
-            icp = _InvCtrls.AsNoTracking().Where(x => x.ID == ID).FirstOrDefault();
+            icp = _dbContext.InvCtrl.AsNoTracking().Where(x => x.ID == ID).FirstOrDefault();
 
             if (icp != null)
             {
 
 
-                _InvCtrls.Remove(icp);
+                _dbContext.InvCtrl.Remove(icp);
                 await _dbContext.SaveChangesAsync();
 
             }
@@ -150,19 +146,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CheckInvCtrlDateAsync(long InvCtlPeriodID, DateTime InvCtrlDate)
         {
-            var res = await _InvCtrlPeriods.AnyAsync(a => a.ID == InvCtlPeriodID && !a.Closed && a.DateFrom <= InvCtrlDate && a.DateTo >= InvCtrlDate);
+            var res = await _dbContext.InvCtrlPeriod.AnyAsync(a => a.ID == InvCtlPeriodID && !a.Closed && a.DateFrom <= InvCtrlDate && a.DateTo >= InvCtrlDate);
             return await Task.FromResult(res);
         }
 
         public Entity GetInvCtrl(GetInvCtrl requestParameter)
         {
             var ID = requestParameter.ID;
-            var item = _InvCtrls.AsNoTracking()
+            var item = _dbContext.InvCtrl.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking()
                 .AsExpandable()
                 .Where(x => x.ID == ID).SingleOrDefault();
 
-            //        var item = await _InvCtrls.FindAsync(ID);
+            //        var item = await _dbContext.InvCtrl.FindAsync(ID);
 
             if (item == null)
             {
@@ -180,7 +176,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public Task<InvCtrl> GetInvCtrlICPRecordAsync(long WarehouseID, long ProductID, long InvCtlPeriodID)
         {
-            var item = _InvCtrls.AsNoTracking()
+            var item = _dbContext.InvCtrl.AsNoTracking()
                 .Where(x => x.InvCtrlType == enInvCtrlType.ICP.ToString() &&
                         x.WarehouseID == WarehouseID &&
                         x.ProductID == ProductID &&
@@ -204,7 +200,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _InvCtrls.AsNoTracking()
+            var result = _dbContext.InvCtrl.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking()
                 .AsExpandable();
 

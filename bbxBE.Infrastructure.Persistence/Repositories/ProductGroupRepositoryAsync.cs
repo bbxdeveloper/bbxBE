@@ -24,7 +24,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class ProductGroupRepositoryAsync : GenericRepositoryAsync<ProductGroup>, IProductGroupRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<ProductGroup> _productGroups;
         private IDataShapeHelper<ProductGroup> _dataShaperProductGroup;
         private IDataShapeHelper<GetProductGroupViewModel> _dataShaperGetProductGroupViewModel;
         private readonly IMockService _mockData;
@@ -39,7 +38,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ICacheService<ProductGroup> productGroupCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _productGroups = dbContext.Set<ProductGroup>();
             _dataShaperProductGroup = dataShaperProductGroup;
             _dataShaperGetProductGroupViewModel = dataShaperGetProductGroupViewModel;
             _modelHelper = modelHelper;
@@ -62,7 +60,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
 
-            await _productGroups.AddAsync(p_productGroup);
+            await _dbContext.ProductGroup.AddAsync(p_productGroup);
             await _dbContext.SaveChangesAsync();
 
             _cacheService.AddOrUpdate(p_productGroup);
@@ -73,7 +71,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
 
-                await _productGroups.AddRangeAsync(p_productGroupList);
+                await _dbContext.ProductGroup.AddRangeAsync(p_productGroupList);
                 await _dbContext.SaveChangesAsync();
 
                 await RefreshProductGroupCache();
@@ -83,14 +81,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<ProductGroup> UpdateProductGroupAsync(ProductGroup p_productGroup)
         {
             _cacheService.AddOrUpdate(p_productGroup);
-            _productGroups.Update(p_productGroup);
+            _dbContext.ProductGroup.Update(p_productGroup);
             await _dbContext.SaveChangesAsync();
             return p_productGroup;
         }
 
         public async Task<long> UpdateProductGroupRangeAsync(List<ProductGroup> p_productGroupList)
         {
-            _productGroups.UpdateRange(p_productGroupList);
+            _dbContext.ProductGroup.UpdateRange(p_productGroupList);
             await _dbContext.SaveChangesAsync();
             await RefreshProductGroupCache();
             return p_productGroupList.Count;
@@ -102,7 +100,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ProductGroup pg = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                pg = await _productGroups.Where(x => x.ID == ID).FirstOrDefaultAsync();
+                pg = await _dbContext.ProductGroup.Where(x => x.ID == ID).FirstOrDefaultAsync();
 
                 if (pg != null)
                 {
@@ -110,7 +108,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     _cacheService.TryRemove(pg);
 
-                    _productGroups.Remove(pg);
+                    _dbContext.ProductGroup.Remove(pg);
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -236,7 +234,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             if (_cacheService.IsCacheEmpty())
             {
-                var q = _productGroups
+                var q = _dbContext.ProductGroup
                 .AsNoTracking()
                 .AsExpandable();
                 await _cacheService.RefreshCache(q);

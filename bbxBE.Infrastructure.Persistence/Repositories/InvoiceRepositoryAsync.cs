@@ -24,16 +24,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class InvoiceRepositoryAsync : GenericRepositoryAsync<Invoice>, IInvoiceRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Invoice> _invoices;
-        private readonly DbSet<InvoiceLine> _invoiceLines;
-        private readonly DbSet<SummaryByVatRate> _summaryByVatRates;
-        private readonly DbSet<AdditionalInvoiceData> _additionalInvoiceData;
-        private readonly DbSet<AdditionalInvoiceLineData> _additionalInvoiceLineData;
-
-        private readonly DbSet<Customer> _customers;
-        private readonly DbSet<VatRate> _vatRates;
-        private readonly DbSet<Warehouse> _warehouses;
-
         private IDataShapeHelper<Invoice> _dataShaperInvoice;
         private IDataShapeHelper<GetInvoiceViewModel> _dataShaperGetInvoiceViewModel;
         private readonly IMockService _mockData;
@@ -44,21 +34,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
         IDataShapeHelper<Invoice> dataShaperInvoice,
-            IDataShapeHelper<GetInvoiceViewModel> dataShaperGetInvoiceViewModel,
+              IDataShapeHelper<GetInvoiceViewModel> dataShaperGetInvoiceViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             IStockRepositoryAsync StockRepository
             ) : base(dbContext)
         {
             _dbContext = dbContext;
-
-            _invoices = dbContext.Set<Invoice>();
-            _invoiceLines = dbContext.Set<InvoiceLine>();
-            _summaryByVatRates = dbContext.Set<SummaryByVatRate>();
-            _additionalInvoiceData = dbContext.Set<AdditionalInvoiceData>();
-            _additionalInvoiceLineData = dbContext.Set<AdditionalInvoiceLineData>();
-            _customers = dbContext.Set<Customer>();
-            _vatRates = dbContext.Set<VatRate>();
-            _warehouses = dbContext.Set<Warehouse>();
 
             _dataShaperInvoice = dataShaperInvoice;
             _dataShaperGetInvoiceViewModel = dataShaperGetInvoiceViewModel;
@@ -71,7 +52,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsUniqueInvoiceNumberAsync(string InvoiceNumber, long? ID = null)
         {
-            return !await _invoices.AnyAsync(p => p.InvoiceNumber == InvoiceNumber && !p.Deleted && (ID == null || p.ID != ID.Value));
+            return !await _dbContext.Invoice.AnyAsync(p => p.InvoiceNumber == InvoiceNumber && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
 
@@ -103,7 +84,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             _dbContext.Entry(il.VatRate).State = EntityState.Unchanged;
                     }
 
-                    await _invoices.AddAsync(p_invoice);
+                    await _dbContext.Invoice.AddAsync(p_invoice);
                     await _dbContext.SaveChangesAsync();
 
                     var stockList = await _StockRepository.MaintainStockByInvoiceAsync(p_invoice);
@@ -135,7 +116,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
 
-                    _invoices.Update(p_invoice);
+                    _dbContext.Invoice.Update(p_invoice);
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 
@@ -181,7 +162,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (FullData)
             {
-                item = await _invoices.AsNoTracking()
+                item = await _dbContext.Invoice.AsNoTracking()
                   .Include(w => w.Warehouse).AsNoTracking()
                   .Include(s => s.Supplier).AsNoTracking()
                   .Include(c => c.Customer).AsNoTracking()
@@ -192,7 +173,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             else
             {
-                item = await _invoices.AsNoTracking()
+                item = await _dbContext.Invoice.AsNoTracking()
                   .Include(w => w.Warehouse).AsNoTracking()
                   .Include(s => s.Supplier).AsNoTracking()
                   .Include(c => c.Customer).AsNoTracking()
@@ -216,13 +197,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
 
-            //var query = _invoices//.AsNoTracking().AsExpandable()
+            //var query = _dbContext.Invoice//.AsNoTracking().AsExpandable()
             //        .Include(i => i.Warehouse).AsQueryable();
 
             IQueryable<Invoice> query;
             if (requestParameter.FullData)
             {
-                query = _invoices.AsNoTracking()
+                query = _dbContext.Invoice.AsNoTracking()
                  .Include(w => w.Warehouse).AsNoTracking()
                  .Include(s => s.Supplier).AsNoTracking()
                  .Include(c => c.Customer).AsNoTracking()
@@ -232,7 +213,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             else
             {
-                query = _invoices.AsNoTracking()
+                query = _dbContext.Invoice.AsNoTracking()
                  .Include(w => w.Warehouse).AsNoTracking()
                  .Include(s => s.Supplier).AsNoTracking()
                  .Include(c => c.Customer).AsNoTracking()

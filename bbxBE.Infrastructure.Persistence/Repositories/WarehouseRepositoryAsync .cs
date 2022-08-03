@@ -24,7 +24,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class WarehouseRepositoryAsync : GenericRepositoryAsync<Warehouse>, IWarehouseRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Warehouse> _Warehouses;
         private IDataShapeHelper<Warehouse> _dataShaperWarehouse;
         private IDataShapeHelper<GetWarehouseViewModel> _dataShaperGetWarehouseViewModel;
         private readonly IMockService _mockData;
@@ -37,7 +36,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _Warehouses = dbContext.Warehouse;
             _dataShaperWarehouse = dataShaperWarehouse;
             _dataShaperGetWarehouseViewModel = dataShaperGetWarehouseViewModel;
             _modelHelper = modelHelper;
@@ -48,11 +46,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsUniqueWarehouseCodeAsync(string WarehouseCode, long? ID = null)
         {
-            return !await _Warehouses.AsNoTracking().AnyAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+            return !await _dbContext.Warehouse.AsNoTracking().AnyAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
         public async Task<Warehouse> GetWarehouseByCodeAsync(string WarehouseCode)
         {
-            return await _Warehouses.AsNoTracking().FirstOrDefaultAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted );
+            return await _dbContext.Warehouse.AsNoTracking().FirstOrDefaultAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted );
         }
 
 
@@ -94,7 +92,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _Warehouses
+            var result = _dbContext.Warehouse
                 .AsNoTracking()
                 .AsExpandable();
 

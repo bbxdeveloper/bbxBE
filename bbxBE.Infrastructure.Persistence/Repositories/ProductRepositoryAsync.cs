@@ -31,11 +31,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class ProductRepositoryAsync : GenericRepositoryAsync<Product>, IProductRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Product> _Products;
-        private readonly DbSet<ProductCode> _ProductCodes;
-        private readonly DbSet<Origin> _Origins;
-        private readonly DbSet<ProductGroup> _ProductGroups;
-        private readonly DbSet<VatRate> _VatRates;
         private IDataShapeHelper<Product> _dataShaperProduct;
         private IDataShapeHelper<GetProductViewModel> _dataShaperGetProductViewModel;
         private readonly IMockService _mockData;
@@ -77,11 +72,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ) : base(dbContext)
         {
             _dbContext = dbContext;
-            _Products = dbContext.Set<Product>();
-            _ProductCodes = dbContext.Set<ProductCode>();
-            _Origins = dbContext.Set<Origin>();
-            _ProductGroups = dbContext.Set<ProductGroup>();
-            _VatRates = dbContext.Set<VatRate>();
 
             _dataShaperProduct = dataShaperProduct;
             _dataShaperGetProductViewModel = dataShaperGetProductViewModel;
@@ -106,7 +96,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             /*
-            return !await _ProductCodes.AnyAsync(p => p.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()
+            return !await _dbContext.ProductCode.AnyAsync(p => p.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()
                 && p.ProductCodeValue.ToUpper() == ProductCode.ToUpper()
                 && !p.Deleted && (ProductID == null || p.ProductID != ProductID.Value));
             */
@@ -123,7 +113,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             if (_productGroupCacheService.IsCacheEmpty())
             {
-                return await _ProductGroups.AnyAsync(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted);
+                return await _dbContext.ProductGroup.AnyAsync(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted);
             }
             else
             {
@@ -136,7 +126,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             if (_originCacheService.IsCacheEmpty())
             {
-                return await _Origins.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted);
+                return await _dbContext.Origin.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted);
             }
             else
             {
@@ -149,7 +139,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             if (_vatRateCacheService.IsCacheEmpty())
             {
-                return await _VatRates.AnyAsync(p => p.VatRateCode == VatRateCode && !p.Deleted);
+                return await _dbContext.VatRate.AnyAsync(p => p.VatRateCode == VatRateCode && !p.Deleted);
             }
             else
             {
@@ -165,7 +155,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 ProductGroup pg;
                 if (_productGroupCacheService.IsCacheEmpty())
                 {
-                    pg = _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
+                    pg = _dbContext.ProductGroup.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
                     _dbContext.Entry(pg).State = EntityState.Unchanged;
                 }
                 else
@@ -185,7 +175,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 Origin og;
                 if (_originCacheService.IsCacheEmpty())
                 {
-                    og = _Origins.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
+                    og = _dbContext.Origin.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
                     _dbContext.Entry(og).State = EntityState.Unchanged;
                 }
                 else
@@ -205,7 +195,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 if (_vatRateCacheService.IsCacheEmpty())
                 {
-                    vr = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode); 
+                    vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode); 
                 }
                 else
                 {
@@ -215,13 +205,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 if( vr == null) 
                 {
-                    vr = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
+                    vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
                 }
 
             }
             else
             {
-                vr = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
+                vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
             }
             _dbContext.Entry(vr).State = EntityState.Unchanged;
             p_product.VatRateID = vr.ID;
@@ -243,7 +233,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
 
-                await _Products.AddAsync(p_product);
+                await _dbContext.Product.AddAsync(p_product);
 
                 await _dbContext.SaveChangesAsync();
 
@@ -300,7 +290,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, p_productUpd.ID));
 
             /*
-            var prod = _Products.AsNoTracking()
+            var prod = _dbContext.Product.AsNoTracking()
                         .Include(p => p.ProductCodes).AsNoTracking()
                         .Include(pg => pg.ProductGroup).AsNoTracking()
                         .Include(o => o.Origin).AsNoTracking()
@@ -318,7 +308,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     if (_productGroupCacheService.IsCacheEmpty())
                     {
 
-                        pg =  _ProductGroups.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
+                        pg =  _dbContext.ProductGroup.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
                     }
                     else
                     {
@@ -339,7 +329,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     if (_originCacheService.IsCacheEmpty())
                     {
 
-                        origin = _Origins.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
+                        origin = _dbContext.Origin.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
                     }
                     else
                     {
@@ -361,7 +351,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     if (_vatRateCacheService.IsCacheEmpty())
                     {
 
-                        vatRate = _VatRates.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
+                        vatRate = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
                     }
                     else
                     {
@@ -408,7 +398,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                        //ez nem akar működni egyelőre nem kell
                        //_dbContext.Entry(eanOrig).State = EntityState.Deleted;
 
-                        //_ProductCodes.Remove(eanOrig);
+                        //_dbContext.ProductCode.Remove(eanOrig);
                     }
                 }
 
@@ -437,7 +427,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
 
-                _Products.Update(p_product);
+                _dbContext.Product.Update(p_product);
                 await _dbContext.SaveChangesAsync();
                 await dbContextTransaction.CommitAsync();
                 _productcacheService.AddOrUpdate(p_product);
@@ -494,7 +484,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             Product prod = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                prod = await _Products.Include(p => p.ProductCodes).Where(x => x.ID == ID).FirstOrDefaultAsync();
+                prod = await _dbContext.Product.Include(p => p.ProductCodes).Where(x => x.ID == ID).FirstOrDefaultAsync();
 
                 if (prod != null)
                 {
@@ -502,11 +492,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     if (prod.ProductCodes != null)
                     {
 
-                        _ProductCodes.RemoveRange(prod.ProductCodes.ToList());
+                        _dbContext.ProductCode.RemoveRange(prod.ProductCodes.ToList());
                     }
                     _productcacheService.TryRemove(prod);
 
-                    _Products.Remove(prod);
+                    _dbContext.Product.Remove(prod);
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -663,7 +653,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<List<Product>> GetAllProductsFromDBAsync()
         {
-            return await _Products.AsNoTracking()
+            return await _dbContext.Product.AsNoTracking()
                  .Include(p => p.ProductCodes).AsNoTracking()
                  .Include(pg => pg.ProductGroup).AsNoTracking()
                  .Include(o => o.Origin).AsNoTracking()
@@ -677,7 +667,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (_productcacheService.IsCacheEmpty() || force)
                 {
 
-                    var q = _Products.AsNoTracking()
+                    var q = _dbContext.Product.AsNoTracking()
                          .Include(p => p.ProductCodes).AsNoTracking()
                          .Include(pg => pg.ProductGroup).AsNoTracking()
                          .Include(o => o.Origin).AsNoTracking()
@@ -702,7 +692,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (_vatRateCacheService.IsCacheEmpty())
             {
 
-                var q = _VatRates
+                var q = _dbContext.VatRate
                 .AsNoTracking()
                 .AsExpandable();
                 await _vatRateCacheService.RefreshCache(q);

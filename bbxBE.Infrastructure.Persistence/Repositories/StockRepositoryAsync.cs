@@ -25,7 +25,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class StockRepositoryAsync : GenericRepositoryAsync<Stock>, IStockRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Stock> _Stocks;
         private IDataShapeHelper<Stock> _dataShaperStock;
         private IDataShapeHelper<GetStockViewModel> _dataShaperGetStockViewModel;
         private readonly IMockService _mockData;
@@ -41,7 +40,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ) : base(dbContext)
         {
             _dbContext = dbContext;
-            _Stocks = dbContext.Set<Stock>();
             _dataShaperStock = dataShaperStock;
             _dataShaperGetStockViewModel = dataShaperGetStockViewModel;
             _modelHelper = modelHelper;
@@ -59,7 +57,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (invoiceLine.ProductID.HasValue && invoiceLine.Product.IsStock)
                 {
 
-                    var stock = await _Stocks
+                    var stock = await _dbContext.Stock
                                 .Where(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID && !x.Deleted)
                                 .FirstOrDefaultAsync();
 
@@ -73,7 +71,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             //Product = invoiceLine.Product,
                             AvgCost = invoiceLine.UnitPrice
                         };
-                        await _Stocks.AddAsync(stock);
+                        await _dbContext.Stock.AddAsync(stock);
                         await _dbContext.SaveChangesAsync();
                     }
 
@@ -104,7 +102,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     stock.AvgCost = latestStockCard.NAvgCost;
 
 
-                    _Stocks.Update(stock);
+                    _dbContext.Stock.Update(stock);
 
                     ret.Add(stock);
                 }
@@ -119,7 +117,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var ID = requestParameter.ID;
 
-            var item = await _Stocks.AsNoTracking()
+            var item = await _dbContext.Stock.AsNoTracking()
              .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
              .Include(w => w.Warehouse).AsNoTracking()
              .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
@@ -143,7 +141,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Stock> GetStockRecordAsync(GetStockRecord request)
         {
-            var item = await _Stocks.AsNoTracking()
+            var item = await _dbContext.Stock.AsNoTracking()
              .Where(w => w.WarehouseID == request.WarehouseID && w.ProductID == request.ProductID && !w.Deleted).FirstOrDefaultAsync();
             return item;
         }
@@ -163,12 +161,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // Setup IQueryable
             
-            var query = _Stocks.AsNoTracking()
+            var query = _dbContext.Stock.AsNoTracking()
                         .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
                         .Include(w => w.Warehouse).AsNoTracking()
                         .Where( w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
             /*
-            var result = _Stocks.AsNoTracking()
+            var result = _dbContext.Stock.AsNoTracking()
                             .Include(p => p.Product).AsNoTracking()
                             .Include(w => w.Warehouse).AsNoTracking()
                             ;

@@ -24,7 +24,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class OriginRepositoryAsync : GenericRepositoryAsync<Origin>, IOriginRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Origin> _Origins;
         private IDataShapeHelper<Origin> _dataShaperOrigin;
         private IDataShapeHelper<GetOriginViewModel> _dataShaperGetOriginViewModel;
         private readonly IMockService _mockData;
@@ -41,7 +40,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _Origins = dbContext.Origin;
             _dataShaperOrigin = dataShaperOrigin;
             _dataShaperGetOriginViewModel = dataShaperGetOriginViewModel;
             _modelHelper = modelHelper;
@@ -64,7 +62,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Origin> AddOriginAsync(Origin p_origin)
         {
 
-            await _Origins.AddAsync(p_origin);
+            await _dbContext.Origin.AddAsync(p_origin);
             await _dbContext.SaveChangesAsync();
 
             _cacheService.AddOrUpdate(p_origin);
@@ -77,7 +75,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
 
 
-                await _Origins.AddRangeAsync(p_originList);
+                await _dbContext.Origin.AddRangeAsync(p_originList);
                 await _dbContext.SaveChangesAsync();
 
                 await dbContextTransaction.CommitAsync();
@@ -88,7 +86,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Origin> UpdateOriginAsync(Origin p_origin)
         {
-            _Origins.Update(p_origin);
+            _dbContext.Origin.Update(p_origin);
             await _dbContext.SaveChangesAsync();
             //                await dbContextTransaction.CommitAsync();
 
@@ -110,7 +108,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<long> UpdateOriginRangeAsync(List<Origin> p_originList)
         {
-            _Origins.UpdateRange(p_originList);
+            _dbContext.Origin.UpdateRange(p_originList);
             await _dbContext.SaveChangesAsync();
             //                await dbContextTransaction.CommitAsync();
 
@@ -130,12 +128,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             Origin origin = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                origin = _Origins.Where(x => x.ID == ID).FirstOrDefault();
+                origin = _dbContext.Origin.Where(x => x.ID == ID).FirstOrDefault();
 
                 if (origin != null)
                 {
 
-                    _Origins.Remove(origin);
+                    _dbContext.Origin.Remove(origin);
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -287,7 +285,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             if (_cacheService.IsCacheEmpty())
             {
-                var q = _Origins
+                var q = _dbContext.Origin
                 .AsNoTracking()
                 .AsExpandable();
                 await _cacheService.RefreshCache(q);

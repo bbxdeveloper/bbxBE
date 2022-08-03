@@ -24,7 +24,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class InvCtrlPeriodRepositoryAsync : GenericRepositoryAsync<InvCtrlPeriod>, IInvCtrlPeriodRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<InvCtrlPeriod> _InvCtrlPeriods;
         private IDataShapeHelper<InvCtrlPeriod> _dataShaperInvCtrlPeriod;
         private IDataShapeHelper<GetInvCtrlPeriodViewModel> _dataShaperGetInvCtrlPeriodViewModel;
         private readonly IMockService _mockData;
@@ -37,7 +36,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _InvCtrlPeriods = dbContext.Set<InvCtrlPeriod>();
             _dataShaperInvCtrlPeriod = dataShaperInvCtrlPeriod;
             _dataShaperGetInvCtrlPeriodViewModel = dataShaperGetInvCtrlPeriodViewModel;
             _modelHelper = modelHelper;
@@ -46,14 +44,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<InvCtrlPeriod> AddInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
         {
-            await _InvCtrlPeriods.AddAsync(p_invCtrlPeriod);
+            await _dbContext.InvCtrlPeriod.AddAsync(p_invCtrlPeriod);
             await _dbContext.SaveChangesAsync();
             return p_invCtrlPeriod;
         }
 
         public async Task<InvCtrlPeriod> UpdateInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
         {
-            _InvCtrlPeriods.Update(p_invCtrlPeriod);
+            _dbContext.InvCtrlPeriod.Update(p_invCtrlPeriod);
             await _dbContext.SaveChangesAsync();
             return p_invCtrlPeriod;
         }
@@ -62,13 +60,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             InvCtrlPeriod icp = null;
 
-            icp = _InvCtrlPeriods.AsNoTracking().Where(x => x.ID == ID).FirstOrDefault();
+            icp = _dbContext.InvCtrlPeriod.AsNoTracking().Where(x => x.ID == ID).FirstOrDefault();
 
             if (icp != null)
             {
 
 
-                _InvCtrlPeriods.Remove(icp);
+                _dbContext.InvCtrlPeriod.Remove(icp);
                 await _dbContext.SaveChangesAsync();
 
             }
@@ -95,12 +93,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Entity GetInvCtrlPeriod(GetInvCtrlPeriod requestParameter)
         {
             var ID = requestParameter.ID;
-            var item = _InvCtrlPeriods.AsNoTracking()
+            var item = _dbContext.InvCtrlPeriod.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking()
                 .AsExpandable()
                 .Where(x => x.ID == ID).SingleOrDefault();
 
-            //        var item = await _InvCtrlPeriods.FindAsync(ID);
+            //        var item = await _dbContext.InvCtrlPeriod.FindAsync(ID);
 
             if (item == null)
             {
@@ -128,7 +126,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _InvCtrlPeriods.AsNoTracking()
+            var result = _dbContext.InvCtrlPeriod.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking()
                 .AsExpandable();
 
@@ -202,7 +200,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID)
         {
-            var result = await _InvCtrlPeriods.AnyAsync(w => !w.Deleted && ( ID == null || w.ID != ID.Value) && w.DateFrom < DateTo && DateFrom < w.DateTo);
+            var result = await _dbContext.InvCtrlPeriod.AnyAsync(w => !w.Deleted && ( ID == null || w.ID != ID.Value) && w.DateFrom < DateTo && DateFrom < w.DateTo);
             return !result;
         }
 

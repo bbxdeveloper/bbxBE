@@ -47,11 +47,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class OfferRepositoryAsync : GenericRepositoryAsync<Offer>, IOfferRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Offer> _Offers;
-        private readonly DbSet<OfferLine> _OfferLines;
-
-        private readonly DbSet<Customer> _customers;
-        private readonly DbSet<VatRate> _vatRates;
 
         private IDataShapeHelper<Offer> _dataShaperOffer;
         private IDataShapeHelper<GetOfferViewModel> _dataShaperGetOfferViewModel;
@@ -66,11 +61,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             _dbContext = dbContext;
     
-            _Offers = dbContext.Set<Offer>();
-            _OfferLines = dbContext.Set<OfferLine>();
-            _customers = dbContext.Set<Customer>();
-            _vatRates = dbContext.Set<VatRate>();
-
             _dataShaperOffer = dataShaperOffer;
             _dataShaperGetOfferViewModel = dataShaperGetOfferViewModel;
             _modelHelper = modelHelper;
@@ -100,7 +90,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     );
                     p_Offer.ID = 0;
 
-                    await _Offers.AddAsync(p_Offer);
+                    await _dbContext.Offer.AddAsync(p_Offer);
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -124,7 +114,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     //Az előző verziók érvénytelenítése
                     //
-                    var prevVerisons = await _Offers
+                    var prevVerisons = await _dbContext.Offer
                       .Where(x => x.OfferNumber == p_Offer.OfferNumber && x.OfferVersion < p_Offer.OfferVersion).ToListAsync();
                     prevVerisons.ForEach(i => i.LatestVersion = false);
 
@@ -132,17 +122,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     p_Offer.LatestVersion = true;
 
 
-                    var curentLines = await _OfferLines.Where(w => w.OfferID == p_Offer.ID).ToListAsync();
+                    var curentLines = await _dbContext.OfferLine.Where(w => w.OfferID == p_Offer.ID).ToListAsync();
                     foreach (var existingLine in curentLines)
                     {
                         if (!p_Offer.OfferLines.Any(a => a.ID == existingLine.ID))
-                            _OfferLines.Remove(existingLine);
+                            _dbContext.OfferLine.Remove(existingLine);
                     }
 
                     p_Offer.OfferLines.ToList().ForEach(e => e.OfferID = p_Offer.ID);
 
 
-                    _Offers.Update(p_Offer);
+                    _dbContext.Offer.Update(p_Offer);
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -163,7 +153,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
       
-                    _Offers.Update(p_Offer);
+                    _dbContext.Offer.Update(p_Offer);
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -184,12 +174,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             Offer offer = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                offer = await _Offers.Where(x => x.ID == ID).FirstOrDefaultAsync();
+                offer = await _dbContext.Offer.Where(x => x.ID == ID).FirstOrDefaultAsync();
 
                 if (offer != null)
                 {
                     offer.Deleted = true;
-                    _Offers.Update(offer);
+                    _dbContext.Offer.Update(offer);
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -232,14 +222,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (FullData)
             {
-                item = await _Offers.AsNoTracking()
+                item = await _dbContext.Offer.AsNoTracking()
                       .Include(c => c.Customer).AsNoTracking()
                       .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
                       .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
             }
             else
             {
-                item = await _Offers.AsNoTracking()
+                item = await _dbContext.Offer.AsNoTracking()
                       .Include(c => c.Customer).AsNoTracking()
                       .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
             }
@@ -263,13 +253,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (requestParameter.FullData)
             {
 
-                query = _Offers.AsNoTracking()
+                query = _dbContext.Offer.AsNoTracking()
                  .Include(c => c.Customer).AsNoTracking()
                  .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking();
             }
             else
             {
-                query = _Offers.AsNoTracking()
+                query = _dbContext.Offer.AsNoTracking()
                  .Include(c => c.Customer).AsNoTracking();
             }
 
