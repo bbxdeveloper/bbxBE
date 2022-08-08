@@ -19,6 +19,7 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Exceptions;
 using bbxBE.Application.Consts;
 using bbxBE.Common.Enums;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -150,15 +151,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return await Task.FromResult(res);
         }
 
-        public Entity GetInvCtrl(GetInvCtrl requestParameter)
+        public async Task<Entity> GetInvCtrl(GetInvCtrl requestParameter)
         {
             var ID = requestParameter.ID;
-            var item = _dbContext.InvCtrl.AsNoTracking()
-                .Include(w => w.Warehouse).AsNoTracking()
-                .AsExpandable()
-                .Where(x => x.ID == ID).SingleOrDefault();
-
-            //        var item = await _dbContext.InvCtrl.FindAsync(ID);
+            var item =  await _dbContext.InvCtrl.AsNoTracking()
+                .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
+                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                .Where(w => w.ID == ID && w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
+                        && !w.Deleted).SingleOrDefaultAsync();
 
             if (item == null)
             {
@@ -188,6 +188,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameter)
         {
 
+            var InvCtrlPeriodID = requestParameter.InvCtrlPeriodID;
             var searchString = requestParameter.SearchString;
 
             var pageNumber = requestParameter.PageNumber;
@@ -202,13 +203,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // Setup IQueryable
             var result = _dbContext.InvCtrl.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking()
-                .AsExpandable();
+                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
+                        && !w.Deleted);
+
 
             // Count records total
             recordsTotal = await result.CountAsync();
 
             // filter data
-            FilterBySearchString(ref result, searchString);
+            FilterBy(ref result, InvCtrlPeriodID, searchString);
 
             // Count records after filter
             recordsFiltered = await result.CountAsync();
@@ -252,17 +256,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return (shapeData, recordsCount);
         }
-
-        private void FilterBySearchString(ref IQueryable<InvCtrl> p_item, string p_searchString)
+        private void FilterBy(ref IQueryable<InvCtrl> p_item, long? InvCtrlPeriodID, string p_searchString)
         {
             if (!p_item.Any())
                 return;
 
-            if (string.IsNullOrWhiteSpace(p_searchString))
+            if (!InvCtrlPeriodID.HasValue && string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
             var predicate = PredicateBuilder.New<InvCtrl>();
 
+            if (InvCtrlPeriodID.HasValue)
+            {
+                predicate = predicate.And(p => p.InvCtlPeriodID == InvCtrlPeriodID.Value);
+            }
+            if (!string.IsNullOrWhiteSpace(p_searchString))
+            {
+                p_searchString = p_searchString.ToUpper();
+                predicate = predicate.And(p => p.Product.Description.ToUpper().Contains(p_searchString) ||
+                        p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                        a.ProductCodeValue.ToUpper().Contains(p_searchString)));
+            }
 
             p_item = p_item.Where(predicate);
         }

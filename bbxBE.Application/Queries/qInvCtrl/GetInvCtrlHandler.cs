@@ -39,7 +39,7 @@ namespace bbxBE.Application.Queries.qInvCtrl
           
 
             // query based on filter
-            var entity = _InvCtrlRepository.GetInvCtrl(validFilter);
+            var entity = await _InvCtrlRepository.GetInvCtrl(validFilter);
             var data = entity.MapItemFieldsByMapToAnnotation<GetInvCtrlViewModel>();
 
             // response wrapper

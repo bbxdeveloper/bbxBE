@@ -13,7 +13,6 @@ namespace bbxBE.Application.Queries.ViewModels
     /// </summary>
     public class GetInvCtrlViewModel
     {
-        [MapToEntity("ID")]
 
         #region InvCtrlType
 
@@ -31,7 +30,9 @@ namespace bbxBE.Application.Queries.ViewModels
         #endregion
 
 
+        [MapToEntity("ID")]
         public long ID { get; set; }
+ 
         [ColumnLabel("Raktár ID")]
         [Description("Raktár ID")]
         public long WarehouseID { get; set; }
