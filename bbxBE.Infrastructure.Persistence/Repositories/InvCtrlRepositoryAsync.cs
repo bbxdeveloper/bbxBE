@@ -202,7 +202,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // Setup IQueryable
             var result = _dbContext.InvCtrl.AsNoTracking()
-                .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
+                .Include(w => w.Warehouse).AsNoTracking()
                 .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
                 .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
                         && !w.Deleted);
