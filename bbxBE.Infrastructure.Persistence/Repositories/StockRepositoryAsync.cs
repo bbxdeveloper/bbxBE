@@ -256,6 +256,97 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             p_item = p_item.Where(predicate);
         }
 
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryInvCtrlStockAbsentAsync(QueryInvCtrlStockAbsent requestParameter)
+        {
+
+
+            var pageNumber = requestParameter.PageNumber;
+            var pageSize = requestParameter.PageSize;
+            var orderBy = requestParameter.OrderBy;
+            //      var fields = requestParameter.Fields;
+            var fields = _modelHelper.GetQueryableFields<GetStockViewModel, Stock>();
+
+
+            int recordsTotal, recordsFiltered;
+
+            // Setup IQueryable
+
+            var query = _dbContext.Stock.AsNoTracking()
+                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                        .Include(w => w.Warehouse).AsNoTracking()
+                        .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
+
+            var queryProd = _dbContext.Stock.AsNoTracking()
+                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+                        .Include(w => w.Warehouse).AsNoTracking()
+                        .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
+
+            /*
+            var result = _dbContext.Stock.AsNoTracking()
+                            .Include(p => p.Product).AsNoTracking()
+                            .Include(w => w.Warehouse).AsNoTracking()
+                            ;
+            */
+            // Count records total
+            recordsTotal = await query.CountAsync();
+
+            // filter data
+        //    FilterByParameters(ref query, requestParameter.WarehouseID, requestParameter.SearchString);
+
+            // Count records after filter
+            recordsFiltered = await query.CountAsync();
+
+            //set Record counts
+            var recordsCount = new RecordsCount
+            {
+                RecordsFiltered = recordsFiltered,
+                RecordsTotal = recordsTotal
+            };
+
+            // set order by
+            if (!string.IsNullOrWhiteSpace(orderBy))
+            {
+                if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
+                {
+                    //Kis heka...
+                    query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else
+                {
+                    query = query.OrderBy(orderBy);
+                }
+            }
+
+
+
+            // select columns
+            if (!string.IsNullOrWhiteSpace(fields))
+            {
+                query = query.Select<Stock>("new(" + fields + ")");
+            }
+            // paging
+            query = query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+            // retrieve data to list
+            var resultData = await query.ToListAsync();
+
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetStockViewModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+               _mapper.Map<Stock, GetStockViewModel>(i))
+            );
+
+
+            var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
+
+            var shapeData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+
+            return (shapeData, recordsCount);
+        }
+
         public Task<bool> SeedDataAsync(int rowCount)
         {
             throw new System.NotImplementedException();

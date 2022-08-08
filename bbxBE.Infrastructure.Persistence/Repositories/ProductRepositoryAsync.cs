@@ -83,7 +83,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _originCacheService = originCacheService;
             _vatRateCacheService = vatRateCacheService;
 
-            Task.Run(() => this.RefreshProductCache()).Wait();
             //RefreshProductCache();
             //t.GetAwaiter().GetResult();
 
@@ -92,7 +91,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // t2.GetAwaiter().GetResult();
         }
 
-        public bool IsUniqueProductCode(string ProductCode, long? ProductID = null)
+       
+
+
+            public bool IsUniqueProductCode(string ProductCode, long? ProductID = null)
         {
 
             /*
