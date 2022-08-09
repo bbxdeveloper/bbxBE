@@ -45,6 +45,8 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
              .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(r => r.ProductID)
              .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
+            RuleFor(r => r.InvCtlPeriodID)
+             .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(r => r.InvCtrlDate)
                   .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)

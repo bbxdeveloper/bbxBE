@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using bbxBE.Application.Consts;
 
 namespace bbxBE.WebApi.Middlewares
 {
@@ -73,14 +74,26 @@ namespace bbxBE.WebApi.Middlewares
                     case LockedCacheException e:
                         // parsing problem
                         response.StatusCode = (int)HttpStatusCode.NonAuthoritativeInformation;
+                        responseModel.Message = e.Message;
+                        responseModel.Errors.Clear();
                         break;
 
                     case InvalidOperationException e:
                         if (e.InnerException != null && e.InnerException.GetType() == typeof(AggregateException))
                         {
-                            response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            if (e.InnerException.InnerException != null && e.InnerException.InnerException is LockedCacheException)
+                            {
+                                response.StatusCode = (int)HttpStatusCode.NonAuthoritativeInformation;
+                                responseModel.Message = e.InnerException.InnerException.Message;
 
-                            processInnerExceptions(e, responseModel);
+                            }
+                            else
+                            {
+
+                                response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+                                processInnerExceptions(e, responseModel);
+                            }
                         }
                         else
                         {
