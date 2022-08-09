@@ -76,8 +76,8 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             var waitForCacheInSeconds = _configuration
                 .GetRequiredSection(bbxBEConsts.CONF_CacheSettings).GetValue<int>(bbxBEConsts.CONF_WaitForCacheInSeconds);
 
-            bool locked = await CacheLockProvider.WaitAsync(_cacheID, waitForCacheInSeconds * 1000);
-            if (!locked)
+            bool bOK = await CacheLockProvider.WaitAsync(_cacheID, waitForCacheInSeconds * 1000);
+            if (!bOK)
             {
                 _logger.LogError($"{className} cache LOCKED");
                 throw new LockedCacheException(string.Format($"{className}:"+bbxBEConsts.ERR_LOCKEDCACHE));
