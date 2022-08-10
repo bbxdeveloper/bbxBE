@@ -652,7 +652,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
+        public async Task<List<GetProductViewModel>> GetAllProductsFromCacheAsync()
+        {
+            var resultData = await _productcacheService.QueryCache().ToListAsync();
 
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetProductViewModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+                _mapper.Map<Product, GetProductViewModel>(i))
+            );
+            return resultDataModel;
+        }
         public async Task<List<Product>> GetAllProductsFromDBAsync()
         {
             return await _dbContext.Product.AsNoTracking()

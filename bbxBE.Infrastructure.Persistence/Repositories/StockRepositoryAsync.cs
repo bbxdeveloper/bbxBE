@@ -30,13 +30,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private readonly IStockCardRepositoryAsync _StockCardRepository;
+        private readonly IStockCardRepositoryAsync _stockCardRepository;
+        private readonly IProductRepositoryAsync _productRepository;
+        private readonly IInvCtrlPeriodRepositoryAsync _invCtrlPeriodRepository;
+        private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
 
         public StockRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Stock> dataShaperStock,
             IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IStockCardRepositoryAsync StockCardRepository
+            IStockCardRepositoryAsync stockCardRepository,
+            IProductRepositoryAsync productRepository,
+--itt tartok
+            IInvCtrlRepositoryAsync invCtrlRepository
             ) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -45,7 +51,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _StockCardRepository = StockCardRepository;
+            _stockCardRepository = stockCardRepository;
+            _productRepository = productRepository;
+            _invCtrlRepository = invCtrlRepository;
         }
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
@@ -75,7 +83,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         await _dbContext.SaveChangesAsync();
                     }
 
-                    var latestStockCard = await _StockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
+                    var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
                                 invoice.WarehouseID, invoiceLine.ProductID, invoice.UserID, invoiceLine.ID,
                                 (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
                                 Common.Enums.enStockCardType.INVOICE,
@@ -161,6 +169,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // Setup IQueryable
             
+      
             var query = _dbContext.Stock.AsNoTracking()
                         .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
                         .Include(w => w.Warehouse).AsNoTracking()
@@ -269,7 +278,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             int recordsTotal, recordsFiltered;
 
-            // Setup IQueryable
+
+            var InvCtrlItems = await _dbContext.InvCtrl.AsNoTracking()
+                .Where(w => w.InvCtlPeriodID == requestParameter.InvCtrlPeriodID).ToListAsync();
+            var prodItems = await _productRepository.GetAllProductsFromCacheAsync();
+            var stockItems = await _productRepository.GetAllProductsFromCacheAsync();
+
+
+
 
             var query = _dbContext.Stock.AsNoTracking()
                         .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()

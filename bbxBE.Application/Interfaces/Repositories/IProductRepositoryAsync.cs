@@ -3,6 +3,7 @@ using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qProduct;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Entity GetProductByProductCode(GetProductByProductCode requestParameter);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductAsync(QueryProduct requestParameters);
         Task<List<Product>> GetAllProductsFromDBAsync();
+        Task<List<GetProductViewModel>> GetAllProductsFromCacheAsync();
 
         Task RefreshProductCache(bool force = false);
 
