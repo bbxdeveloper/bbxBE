@@ -37,8 +37,6 @@
     <PackageReference Include="SendGrid" Version="9.28.0" />
     <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="1.0.1" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
-    <PackageReference Include="Telerik.Reporting" Version="15.0.21.326" />
-    <PackageReference Include="Telerik.Reporting.WebServiceDataSource" Version="15.0.21.326" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +46,33 @@
   <ItemGroup>
     <Folder Include="Common\" />
     <Folder Include="lib\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Telerik.Reporting">
+      <HintPath>lib\Telerik.Reporting.dll</HintPath>
+      <CopyLocal>True</CopyLocal>
+    </Reference>
+    <Reference Include="Telerik.Reporting.OpenXmlRendering.2.7.2">
+      <HintPath>lib\Telerik.Reporting.OpenXmlRendering.2.7.2.dll</HintPath>
+      <CopyLocal>True</CopyLocal>
+    </Reference>
+    <Reference Include="Telerik.Reporting.WebServiceDataSource">
+      <HintPath>lib\Telerik.Reporting.WebServiceDataSource.dll</HintPath>
+      <CopyLocal>True</CopyLocal>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="lib\Telerik.Reporting.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\Telerik.Reporting.OpenXmlRendering.2.7.2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\Telerik.Reporting.WebServiceDataSource.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
