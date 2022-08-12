@@ -83,8 +83,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     foreach( var invCtrlItem in p_InvCtrl)
                     {
                         var InvCtrl = _mapper.Map<InvCtrl>(invCtrlItem);
-                        var existing = await GetInvCtrlICPRecordAsync(InvCtrl.WarehouseID,
-                            InvCtrl.ProductID, InvCtrl.InvCtlPeriodID.Value);
+                        var existing = await GetInvCtrlICPRecordAsync(InvCtrl.InvCtlPeriodID.Value, InvCtrl.ProductID);
                         if (existing != null)
                         {
                             InvCtrl.ID = existing.ID;

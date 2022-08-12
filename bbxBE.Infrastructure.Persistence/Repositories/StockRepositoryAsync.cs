@@ -279,7 +279,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             int recordsTotal, recordsFiltered;
 
-            var invCtrlPeriod = await _invCtrlPeriodRepository.GetInvCtrlPeriodRecord(requestParameter.InvCtrlPeriodID);
+            var invCtrlPeriod = await _invCtrlPeriodRepository.GetInvCtrlPeriodRecordAsync(requestParameter.InvCtrlPeriodID);
             var invCtrlItems = await _invCtrlRepository.GetInvCtrlICPRecordsByPeriodAsync(requestParameter.InvCtrlPeriodID);
             var prodItems = await _productRepository.GetAllProductsFromCacheAsync();
             var stockItems = await _dbContext.Stock.AsNoTracking()
@@ -298,15 +298,38 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //Hozzácsapjuk a absenedItems2-ből azokat a termékeket, amelyeknek nincs készletrekordja
             // itt tartok...
+            var product2 = prodItems.Where(p => !stockItems.Any(s => s.ProductID == p.ID)).ToList();
+            product2.ForEach(p =>
+            {
+                absenedItems2.Add(new Stock()
+               {
+                   WarehouseID = invCtrlPeriod.WarehouseID,
+                   ProductID = p.ID,
+                   CalcQty = 0,
+                   RealQty = 0,
+                   OutQty = 0,
+                   AvgCost = 0,
+                   LatestIn = null,
+                   LatestOut = null,
+                   Warehouse = invCtrlPeriod.Warehouse,
+                   Product = _mapper.Map<GetProductViewModel, Product>(p)
+               });
+
+           });
 
             // Count records total
-            recordsTotal =  absenedItems.Count();
+            recordsTotal = absenedItems2.Count();
 
             // filter data
-        //    FilterByParameters(ref query, requestParameter.WarehouseID, requestParameter.SearchString);
+            if( !string.IsNullOrEmpty(requestParameter.SearchString))
+            {
+                absenedItems2 = absenedItems2.Where(p => p.Product.Description.ToUpper().Contains(requestParameter.SearchString) ||
+                        p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                        a.ProductCodeValue.ToUpper().Contains(requestParameter.SearchString))).ToList();
+            }    
 
             // Count records after filter
-            recordsFiltered = query.CountAsync();
+            recordsFiltered = absenedItems2.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -316,42 +339,33 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             };
 
             // set order by
+            IOrderedEnumerable<Stock> absenedItems21;
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
                 if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
                 {
                     //Kis heka...
-                    query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                    absenedItems21 = absenedItems2.OrderBy(o => o.Product.ProductCodes.Single(s =>
                                 s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
                 }
                 else
                 {
-                    query = query.OrderBy(orderBy);
+   //                 absenedItems21 = absenedItems2.OrderBy(orderBy);
                 }
             }
 
 
-
-            // select columns
-            if (!string.IsNullOrWhiteSpace(fields))
-            {
-                query = query.Select<Stock>("new(" + fields + ")");
-            }
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
+    //        var absenedItems211 = absenedItems21.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
             // retrieve data to list
-            var resultData = await query.ToListAsync();
-
+          
             //TODO: szebben megoldani
             var resultDataModel = new List<GetStockViewModel>();
-            resultData.ForEach(i => resultDataModel.Add(
+            /*
+            resultDataModel.ForEach(i => resultDataModel.Add(
                _mapper.Map<Stock, GetStockViewModel>(i))
             );
-
-
+            */
             var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
 
             var shapeData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));

@@ -23,6 +23,7 @@ namespace bbxBE.Application.Queries.qStock
         public long InvCtrlPeriodID { get; set; }
         public bool IsInStock { get; set; }
 
+        public string SearchString { get; set; }
 
     }
 

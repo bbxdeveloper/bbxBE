@@ -36,7 +36,7 @@ namespace bbxBE.Application.Queries.qInvCtrl
 
         public async Task<InvCtrl> Handle(GetInvCtrlICPRecord request, CancellationToken cancellationToken)
         {
-            var record = await _InvCtrlRepository.GetInvCtrlICPRecordAsync(request.WarehouseID, request.ProductID, request.InvCtlPeriodID);
+            var record = await _InvCtrlRepository.GetInvCtrlICPRecordAsync(request.InvCtlPeriodID, request.ProductID);
             return record;
         }
 
