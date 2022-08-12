@@ -113,6 +113,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+        public async Task<InvCtrlPeriod> GetInvCtrlPeriodRecord(long ID)
+        {
+            var item = await _dbContext.InvCtrlPeriod.AsNoTracking()
+                .Include(w => w.Warehouse).AsNoTracking()
+                .AsExpandable()
+                .Where(x => x.ID == ID).SingleOrDefaultAsync();
+            return item;
+        }
+
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlPeriodAsync(QueryInvCtrlPeriod requestParameter)
         {
 

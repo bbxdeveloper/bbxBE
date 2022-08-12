@@ -41,7 +41,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             IStockCardRepositoryAsync stockCardRepository,
             IProductRepositoryAsync productRepository,
---itt tartok
+            IInvCtrlPeriodRepositoryAsync invCtrlPeriodRepository,
             IInvCtrlRepositoryAsync invCtrlRepository
             ) : base(dbContext)
         {
@@ -53,6 +53,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
             _stockCardRepository = stockCardRepository;
             _productRepository = productRepository;
+            _invCtrlPeriodRepository = invCtrlPeriodRepository;
             _invCtrlRepository = invCtrlRepository;
         }
 
@@ -278,39 +279,34 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             int recordsTotal, recordsFiltered;
 
-
-            var InvCtrlItems = await _dbContext.InvCtrl.AsNoTracking()
-                .Where(w => w.InvCtlPeriodID == requestParameter.InvCtrlPeriodID).ToListAsync();
+            var invCtrlPeriod = await _invCtrlPeriodRepository.GetInvCtrlPeriodRecord(requestParameter.InvCtrlPeriodID);
+            var invCtrlItems = await _invCtrlRepository.GetInvCtrlICPRecordsByPeriodAsync(requestParameter.InvCtrlPeriodID);
             var prodItems = await _productRepository.GetAllProductsFromCacheAsync();
-            var stockItems = await _productRepository.GetAllProductsFromCacheAsync();
+            var stockItems = await _dbContext.Stock.AsNoTracking()
+                                .Where(w => w.WarehouseID == invCtrlPeriod.WarehouseID && !w.Deleted).ToListAsync();
 
 
+            var absenedItems = prodItems.Where(p => 
+                        !invCtrlItems.Any(i => i.ProductID == p.ID) &&
+                        (!requestParameter.IsInStock || 
+                         (stockItems.Any(s=>s.ProductID == p.ID && (s.CalcQty != 0 || s.RealQty != 0))
+                        ))).ToList();
 
+            var absenedItems2 = stockItems.Where(s =>
+                        !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
+                        (!requestParameter.IsInStock || s.CalcQty != 0 || s.RealQty != 0)).ToList();
 
-            var query = _dbContext.Stock.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking()
-                        .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
+            //Hozzácsapjuk a absenedItems2-ből azokat a termékeket, amelyeknek nincs készletrekordja
+            // itt tartok...
 
-            var queryProd = _dbContext.Stock.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking()
-                        .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
-
-            /*
-            var result = _dbContext.Stock.AsNoTracking()
-                            .Include(p => p.Product).AsNoTracking()
-                            .Include(w => w.Warehouse).AsNoTracking()
-                            ;
-            */
             // Count records total
-            recordsTotal = await query.CountAsync();
+            recordsTotal =  absenedItems.Count();
 
             // filter data
         //    FilterByParameters(ref query, requestParameter.WarehouseID, requestParameter.SearchString);
 
             // Count records after filter
-            recordsFiltered = await query.CountAsync();
+            recordsFiltered = query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
