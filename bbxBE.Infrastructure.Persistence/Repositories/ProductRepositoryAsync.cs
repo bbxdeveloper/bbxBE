@@ -83,7 +83,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _originCacheService = originCacheService;
             _vatRateCacheService = vatRateCacheService;
 
-            //RefreshProductCache();
+            
+            Task.Run(() => this.RefreshProductCache()).Wait();
             //t.GetAwaiter().GetResult();
 
             Task.Run(() => this.RefreshVatRateCache()).Wait();
@@ -652,9 +653,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-        public async Task<List<GetProductViewModel>> GetAllProductsFromCacheAsync()
+        public List<GetProductViewModel> GetAllProductsFromCache()
         {
-            var resultData = await _productcacheService.QueryCache().ToListAsync();
+            var resultData =  _productcacheService.QueryCache().ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetProductViewModel>();
@@ -663,6 +664,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             );
             return resultDataModel;
         }
+
+        public List<Product> GetAllProductsRecordFromCache()
+        {
+            var resultData = _productcacheService.QueryCache().ToList();
+
+            return resultData;
+        }
+
         public async Task<List<Product>> GetAllProductsFromDBAsync()
         {
             return await _dbContext.Product.AsNoTracking()

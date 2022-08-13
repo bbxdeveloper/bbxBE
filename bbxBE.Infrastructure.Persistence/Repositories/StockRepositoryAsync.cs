@@ -281,7 +281,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var invCtrlPeriod = await _invCtrlPeriodRepository.GetInvCtrlPeriodRecordAsync(requestParameter.InvCtrlPeriodID);
             var invCtrlItems = await _invCtrlRepository.GetInvCtrlICPRecordsByPeriodAsync(requestParameter.InvCtrlPeriodID);
-            var prodItems = await _productRepository.GetAllProductsFromCacheAsync();
+            var prodItems = _productRepository.GetAllProductsRecordFromCache();
             var stockItems = await _dbContext.Stock.AsNoTracking()
                                 .Where(w => w.WarehouseID == invCtrlPeriod.WarehouseID && !w.Deleted).ToListAsync();
 
@@ -312,7 +312,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                    LatestIn = null,
                    LatestOut = null,
                    Warehouse = invCtrlPeriod.Warehouse,
-                   Product = _mapper.Map<GetProductViewModel, Product>(p)
+                   Product = p
                });
 
            });
