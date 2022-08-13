@@ -152,6 +152,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             var item = await _dbContext.Stock.AsNoTracking()
              .Where(w => w.WarehouseID == request.WarehouseID && w.ProductID == request.ProductID && !w.Deleted).FirstOrDefaultAsync();
+
+            if(item == null)        //Jeremi kérése
+            {
+                item = new Stock();
+            }    
             return item;
         }
 
