@@ -288,25 +288,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var invCtrlItems = await _invCtrlRepository.GetInvCtrlICPRecordsByPeriodAsync(requestParameter.InvCtrlPeriodID);
             var prodItems = _productRepository.GetAllProductsRecordFromCache();
             var stockItems = await _dbContext.Stock.AsNoTracking()
+                                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.Where(w=>w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
                                 .Where(w => w.WarehouseID == invCtrlPeriod.WarehouseID && !w.Deleted).ToListAsync();
 
-
-            var absenedItems = prodItems.Where(p => 
+            /*
+            var absenedItemsX = prodItems.Where(p => 
                         !invCtrlItems.Any(i => i.ProductID == p.ID) &&
                         (!requestParameter.IsInStock || 
                          (stockItems.Any(s=>s.ProductID == p.ID && (s.CalcQty != 0 || s.RealQty != 0))
                         ))).ToList();
+            */
 
-            var absenedItems2 = stockItems.Where(s =>
+            var absenedItems = stockItems.Where(s =>
                         !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
                         (!requestParameter.IsInStock || s.CalcQty != 0 || s.RealQty != 0)).ToList();
 
             //Hozzácsapjuk a absenedItems2-ből azokat a termékeket, amelyeknek nincs készletrekordja
             // itt tartok...
-            var product2 = prodItems.Where(p => !stockItems.Any(s => s.ProductID == p.ID)).ToList();
-            product2.ForEach(p =>
+            var nonStockedProducts = prodItems.Where(p => !stockItems.Any(s => s.ProductID == p.ID)).ToList();
+            nonStockedProducts.ForEach(p =>
             {
-                absenedItems2.Add(new Stock()
+                absenedItems.Add(new Stock()
                {
                    WarehouseID = invCtrlPeriod.WarehouseID,
                    ProductID = p.ID,
@@ -323,18 +325,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
            });
 
             // Count records total
-            recordsTotal = absenedItems2.Count();
+            recordsTotal = absenedItems.Count();
 
             // filter data
             if( !string.IsNullOrEmpty(requestParameter.SearchString))
             {
-                absenedItems2 = absenedItems2.Where(p => p.Product.Description.ToUpper().Contains(requestParameter.SearchString) ||
+                absenedItems = absenedItems.Where(p => p.Product.Description.ToUpper().Contains(requestParameter.SearchString) ||
                         p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
                         a.ProductCodeValue.ToUpper().Contains(requestParameter.SearchString))).ToList();
             }    
 
             // Count records after filter
-            recordsFiltered = absenedItems2.Count();
+            recordsFiltered = absenedItems.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -344,33 +346,34 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             };
 
             // set order by
-            IOrderedEnumerable<Stock> absenedItems21;
+            IOrderedEnumerable<Stock> absenedItemsOrdered;
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
                 if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
                 {
                     //Kis heka...
-                    absenedItems21 = absenedItems2.OrderBy(o => o.Product.ProductCodes.Single(s =>
-                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                    absenedItems = absenedItems.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue).ToList();
                 }
                 else
                 {
-   //                 absenedItems21 = absenedItems2.OrderBy(orderBy);
+                    absenedItems = absenedItems.OrderBy(p => p.GetType()
+                               .GetProperty(orderBy)
+                               .GetValue(p, null)).ToList();
+
                 }
             }
 
 
-    //        var absenedItems211 = absenedItems21.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            var absenedItemsPaged = absenedItems.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
             // retrieve data to list
           
             //TODO: szebben megoldani
             var resultDataModel = new List<GetStockViewModel>();
-            /*
-            resultDataModel.ForEach(i => resultDataModel.Add(
+            absenedItemsPaged.ForEach(i => resultDataModel.Add(
                _mapper.Map<Stock, GetStockViewModel>(i))
             );
-            */
             var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
 
             var shapeData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));

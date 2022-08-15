@@ -688,11 +688,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (_productcacheService.IsCacheEmpty() || force)
                 {
 
+#if !DEBUG
                     var q = _dbContext.Product.AsNoTracking()
                          .Include(p => p.ProductCodes).AsNoTracking()
                          .Include(pg => pg.ProductGroup).AsNoTracking()
                          .Include(o => o.Origin).AsNoTracking()
                          .Include(v => v.VatRate).AsNoTracking();
+#else
+                    var q = _dbContext.Product.AsNoTracking()
+                         .Include(p => p.ProductCodes).AsNoTracking()
+                         .Include(pg => pg.ProductGroup).AsNoTracking()
+                         .Include(o => o.Origin).AsNoTracking()
+                         .Include(v => v.VatRate).AsNoTracking().Take(1000);
+#endif
                     await _productcacheService.RefreshCache(q);
 
                     /*
