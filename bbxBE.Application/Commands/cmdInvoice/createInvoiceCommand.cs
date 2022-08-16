@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.BLL;
-using bbxBE.Application.Consts;
-using bbxBE.Application.Exceptions;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qProduct;

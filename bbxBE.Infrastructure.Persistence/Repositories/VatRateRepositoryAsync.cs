@@ -16,8 +16,8 @@ using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qVatRate;
 using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Application.Exceptions;
-using bbxBE.Application.Consts;
+using bbxBE.Common.Exceptions;
+using bbxBE.Common.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {

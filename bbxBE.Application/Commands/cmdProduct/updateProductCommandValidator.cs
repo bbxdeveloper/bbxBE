@@ -1,4 +1,4 @@
-﻿using bbxBE.Application.Consts;
+﻿using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdProduct;

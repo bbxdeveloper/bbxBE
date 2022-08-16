@@ -1,4 +1,4 @@
-﻿using bbxBE.Application.Consts;
+﻿using bbxBE.Common.Consts;
 using bbxBE.Infrastructure.Persistence.Migrations;
 using FluentMigrator.Runner;
 using Microsoft.Data.SqlClient;

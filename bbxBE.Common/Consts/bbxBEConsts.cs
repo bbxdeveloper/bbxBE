@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace bbxBE.Application.Consts
+namespace bbxBE.Common.Consts
 {
     public static  class bbxBEConsts
     {

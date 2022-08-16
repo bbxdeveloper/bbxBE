@@ -2,7 +2,7 @@
 using AutoMapper.Configuration;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Commands.cmdProduct;
-using bbxBE.Application.Exceptions;
+using bbxBE.Common.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Wrappers;

@@ -2,8 +2,8 @@
 using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Application.Consts;
-using bbxBE.Application.Exceptions;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common;

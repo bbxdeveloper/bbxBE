@@ -1,5 +1,5 @@
 ﻿using AutoMapper.Configuration;
-using bbxBE.Application.Consts;
+using bbxBE.Common.Consts;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Common;
 using bbxBE.Common.NAV;

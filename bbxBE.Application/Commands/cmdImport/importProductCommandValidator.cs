@@ -1,5 +1,5 @@
 ﻿using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Application.Consts;
+using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bxBE.Application.Commands.cmdProduct;

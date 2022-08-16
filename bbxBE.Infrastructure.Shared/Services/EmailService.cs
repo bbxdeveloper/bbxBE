@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using bbxBE.Application.DTOs.Email;
-using bbxBE.Application.Exceptions;
+using bbxBE.Common.Exceptions;
 using bbxBE.Application.Interfaces;
 using bbxBE.Domain.Settings;
 using System.Threading.Tasks;

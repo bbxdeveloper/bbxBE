@@ -1,9 +1,9 @@
-﻿using bbxBE.Application.Consts;
+﻿using bbxBE.Common.Consts;
 using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
 
-namespace bbxBE.Application.Exceptions
+namespace bbxBE.Common.Exceptions
 {
     public class ValidationException : Exception
     {
