@@ -83,8 +83,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     foreach( var invCtrlItem in p_InvCtrl)
                     {
                         var InvCtrl = _mapper.Map<InvCtrl>(invCtrlItem);
-                        var existing = await GetInvCtrlICPRecordAsync(InvCtrl.WarehouseID,
-                            InvCtrl.ProductID, InvCtrl.InvCtlPeriodID.Value);
+                        var existing = await GetInvCtrlICPRecordAsync(InvCtrl.InvCtlPeriodID.Value, InvCtrl.ProductID);
                         if (existing != null)
                         {
                             InvCtrl.ID = existing.ID;
@@ -174,15 +173,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return shapeData;
         }
 
-        public Task<InvCtrl> GetInvCtrlICPRecordAsync(long WarehouseID, long ProductID, long InvCtlPeriodID)
+        public Task<InvCtrl> GetInvCtrlICPRecordAsync(long InvCtlPeriodID, long ProductID)
         {
             var item = _dbContext.InvCtrl.AsNoTracking()
                 .Where(x => x.InvCtrlType == enInvCtrlType.ICP.ToString() &&
-                        x.WarehouseID == WarehouseID &&
-                        x.ProductID == ProductID &&
                         x.InvCtlPeriodID == InvCtlPeriodID &&
-                        !x.Deleted).SingleOrDefaultAsync();
+                        x.ProductID == ProductID &&
+                       !x.Deleted).SingleOrDefaultAsync();
             return item;
+        }
+        public Task<List<InvCtrl>> GetInvCtrlICPRecordsByPeriodAsync(long InvCtlPeriodID)
+        {
+            var items = _dbContext.InvCtrl.AsNoTracking()
+                .Where(x => x.InvCtrlType == enInvCtrlType.ICP.ToString() &&
+                        x.InvCtlPeriodID == InvCtlPeriodID &&
+                        !x.Deleted).ToListAsync();
+            return items;
         }
 
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameter)

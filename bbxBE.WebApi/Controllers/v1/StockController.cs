@@ -55,5 +55,10 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(filter));
         }
 
+        [HttpGet("queryinvctrlabsent")]
+        public async Task<IActionResult> QueryInvCtrlStockAbsent([FromQuery] QueryInvCtrlStockAbsent filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
     }
 }

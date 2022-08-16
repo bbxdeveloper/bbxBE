@@ -15,5 +15,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Entity> GetStockAsync(GetStock requestParameters);
         Task<Stock> GetStockRecordAsync(GetStockRecord requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryInvCtrlStockAbsentAsync(QueryInvCtrlStockAbsent requestParameters);
+
+
     }
 }

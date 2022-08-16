@@ -16,9 +16,8 @@ namespace bbxBE.Application.Queries.qInvCtrl
 {
     public class GetInvCtrlICPRecord:  IRequest<InvCtrl>
     {
-        public long WarehouseID { get; set; }
-        public long ProductID { get; set; }
         public long InvCtlPeriodID { get; set; }
+        public long ProductID { get; set; }
     }
 
     public class GetInvCtrlICPRecordHandler : IRequestHandler<GetInvCtrlICPRecord, InvCtrl>
@@ -36,7 +35,11 @@ namespace bbxBE.Application.Queries.qInvCtrl
 
         public async Task<InvCtrl> Handle(GetInvCtrlICPRecord request, CancellationToken cancellationToken)
         {
-            var record = await _InvCtrlRepository.GetInvCtrlICPRecordAsync(request.WarehouseID, request.ProductID, request.InvCtlPeriodID);
+            var record = await _InvCtrlRepository.GetInvCtrlICPRecordAsync(request.InvCtlPeriodID, request.ProductID);
+            if( record == null ) //Jeremi kérése
+            {
+                record = new InvCtrl();
+            }
             return record;
         }
 

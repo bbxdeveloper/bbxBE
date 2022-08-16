@@ -83,8 +83,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _originCacheService = originCacheService;
             _vatRateCacheService = vatRateCacheService;
 
+            
             Task.Run(() => this.RefreshProductCache()).Wait();
-            //RefreshProductCache();
             //t.GetAwaiter().GetResult();
 
             Task.Run(() => this.RefreshVatRateCache()).Wait();
@@ -92,7 +92,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // t2.GetAwaiter().GetResult();
         }
 
-        public bool IsUniqueProductCode(string ProductCode, long? ProductID = null)
+       
+
+
+            public bool IsUniqueProductCode(string ProductCode, long? ProductID = null)
         {
 
             /*
@@ -650,6 +653,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
+        public List<GetProductViewModel> GetAllProductsFromCache()
+        {
+            var resultData =  _productcacheService.QueryCache().ToList();
+
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetProductViewModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+                _mapper.Map<Product, GetProductViewModel>(i))
+            );
+            return resultDataModel;
+        }
+
+        public List<Product> GetAllProductsRecordFromCache()
+        {
+            var resultData = _productcacheService.QueryCache().ToList();
+
+            return resultData;
+        }
 
         public async Task<List<Product>> GetAllProductsFromDBAsync()
         {
@@ -667,11 +688,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (_productcacheService.IsCacheEmpty() || force)
                 {
 
+#if !DEBUG
                     var q = _dbContext.Product.AsNoTracking()
                          .Include(p => p.ProductCodes).AsNoTracking()
                          .Include(pg => pg.ProductGroup).AsNoTracking()
                          .Include(o => o.Origin).AsNoTracking()
                          .Include(v => v.VatRate).AsNoTracking();
+#else
+                    var q = _dbContext.Product.AsNoTracking()
+                         .Include(p => p.ProductCodes).AsNoTracking()
+                         .Include(pg => pg.ProductGroup).AsNoTracking()
+                         .Include(o => o.Origin).AsNoTracking()
+                         .Include(v => v.VatRate).AsNoTracking().Take(1000);
+#endif
                     await _productcacheService.RefreshCache(q);
 
                     /*

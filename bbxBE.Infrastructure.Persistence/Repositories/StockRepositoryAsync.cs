@@ -30,13 +30,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private readonly IStockCardRepositoryAsync _StockCardRepository;
+        private readonly IStockCardRepositoryAsync _stockCardRepository;
+        private readonly IProductRepositoryAsync _productRepository;
+        private readonly IInvCtrlPeriodRepositoryAsync _invCtrlPeriodRepository;
+        private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
 
         public StockRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Stock> dataShaperStock,
             IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IStockCardRepositoryAsync StockCardRepository
+            IStockCardRepositoryAsync stockCardRepository,
+            IProductRepositoryAsync productRepository,
+            IInvCtrlPeriodRepositoryAsync invCtrlPeriodRepository,
+            IInvCtrlRepositoryAsync invCtrlRepository
             ) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -45,7 +51,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _StockCardRepository = StockCardRepository;
+            _stockCardRepository = stockCardRepository;
+            _productRepository = productRepository;
+            _invCtrlPeriodRepository = invCtrlPeriodRepository;
+            _invCtrlRepository = invCtrlRepository;
         }
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
@@ -75,7 +84,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         await _dbContext.SaveChangesAsync();
                     }
 
-                    var latestStockCard = await _StockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
+                    var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
                                 invoice.WarehouseID, invoiceLine.ProductID, invoice.UserID, invoiceLine.ID,
                                 (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
                                 Common.Enums.enStockCardType.INVOICE,
@@ -143,6 +152,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             var item = await _dbContext.Stock.AsNoTracking()
              .Where(w => w.WarehouseID == request.WarehouseID && w.ProductID == request.ProductID && !w.Deleted).FirstOrDefaultAsync();
+
+            if(item == null)        //Jeremi kérése
+            {
+                item = new Stock();
+            }    
             return item;
         }
 
@@ -161,6 +175,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // Setup IQueryable
             
+      
             var query = _dbContext.Stock.AsNoTracking()
                         .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
                         .Include(w => w.Warehouse).AsNoTracking()
@@ -254,6 +269,113 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             p_item = p_item.Where(predicate);
+        }
+
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryInvCtrlStockAbsentAsync(QueryInvCtrlStockAbsent requestParameter)
+        {
+
+
+            var pageNumber = requestParameter.PageNumber;
+            var pageSize = requestParameter.PageSize;
+            var orderBy = requestParameter.OrderBy;
+            //      var fields = requestParameter.Fields;
+            var fields = _modelHelper.GetQueryableFields<GetStockViewModel, Stock>();
+
+
+            int recordsTotal, recordsFiltered;
+
+            var invCtrlPeriod = await _invCtrlPeriodRepository.GetInvCtrlPeriodRecordAsync(requestParameter.InvCtrlPeriodID);
+            var invCtrlItems = await _invCtrlRepository.GetInvCtrlICPRecordsByPeriodAsync(requestParameter.InvCtrlPeriodID);
+            var prodItems = _productRepository.GetAllProductsRecordFromCache();
+            var stockItems = await _dbContext.Stock.AsNoTracking()
+                                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.Where(w=>w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
+                                .Where(w => w.WarehouseID == invCtrlPeriod.WarehouseID && !w.Deleted).ToListAsync();
+
+
+            var absenedItems = stockItems.Where(s =>
+                        !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
+                        (!requestParameter.IsInStock || s.CalcQty != 0 || s.RealQty != 0)).ToList();
+
+            if (!requestParameter.IsInStock)
+            {
+                //Hozzácsapjuk a nonStockedProducts-ből azokat a termékeket, amelyeknek nincs készletrekordja
+                //és nincs leltárban
+                var nonStockedProducts = prodItems.Where(p => !stockItems.Any(s => s.ProductID == p.ID) &&
+                                                              !absenedItems.Any(s => s.ProductID == p.ID)).ToList();
+                nonStockedProducts.ForEach(p =>
+                {
+                    absenedItems.Add(new Stock()
+                    {
+                        WarehouseID = invCtrlPeriod.WarehouseID,
+                        ProductID = p.ID,
+                        CalcQty = 0,
+                        RealQty = 0,
+                        OutQty = 0,
+                        AvgCost = 0,
+                        LatestIn = null,
+                        LatestOut = null,
+                        Warehouse = invCtrlPeriod.Warehouse,
+                        Product = p
+                    });
+
+                });
+            }
+
+            // Count records total
+            recordsTotal = absenedItems.Count();
+
+            // filter data
+            if( !string.IsNullOrEmpty(requestParameter.SearchString))
+            {
+                absenedItems = absenedItems.Where(p => p.Product.Description.ToUpper().Contains(requestParameter.SearchString) ||
+                        p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                        a.ProductCodeValue.ToUpper().Contains(requestParameter.SearchString))).ToList();
+            }    
+
+            // Count records after filter
+            recordsFiltered = absenedItems.Count();
+
+            //set Record counts
+            var recordsCount = new RecordsCount
+            {
+                RecordsFiltered = recordsFiltered,
+                RecordsTotal = recordsTotal
+            };
+
+            // set order by
+            IOrderedEnumerable<Stock> absenedItemsOrdered;
+            if (!string.IsNullOrWhiteSpace(orderBy))
+            {
+                if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
+                {
+                    //Kis heka...
+                    absenedItems = absenedItems.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue).ToList();
+                }
+                else
+                {
+                    absenedItems = absenedItems.OrderBy(p => p.GetType()
+                               .GetProperty(orderBy)
+                               .GetValue(p, null)).ToList();
+
+                }
+            }
+
+
+            var absenedItemsPaged = absenedItems.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+            // retrieve data to list
+          
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetStockViewModel>();
+            absenedItemsPaged.ForEach(i => resultDataModel.Add(
+               _mapper.Map<Stock, GetStockViewModel>(i))
+            );
+            var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
+
+            var shapeData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+
+            return (shapeData, recordsCount);
         }
 
         public Task<bool> SeedDataAsync(int rowCount)

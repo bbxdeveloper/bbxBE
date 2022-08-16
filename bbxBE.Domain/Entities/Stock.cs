@@ -56,6 +56,9 @@ namespace bbxBE.Domain.Entities
         [Description("Termék")]
         public virtual Product Product { get; set; }
 
+        [ColumnLabel("Leltári tételek")]
+        [Description("Leltári tételek")]
+        public virtual List<InvCtrl> InvCtrlItems { get; set; }
 
     }
 }

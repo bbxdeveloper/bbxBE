@@ -49,14 +49,19 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
             
 
 
-            Create.Index("INX_InvCtrl")
+            Create.Index("INX_InvCtrl_ICP")
+                         .OnTable("InvCtrl")
+                         .OnColumn("InvCtrlType").Ascending()
+                         .OnColumn("InvCtlPeriodID").Ascending()     
+                         .OnColumn("ProductID").Ascending()
+                         .WithOptions().NonClustered();
+
+            Create.Index("INX_InvCtrl_ICC")
                          .OnTable("InvCtrl")
                          .OnColumn("InvCtrlType").Ascending()
                          .OnColumn("WarehouseID").Ascending()
                          .OnColumn("ProductID").Ascending()
-                         .OnColumn("InvCtlPeriodID").Ascending()     //Opcionális, mert később lehetséges a folyamatos leltár beveeztése is!
                          .WithOptions().NonClustered();
-
 
         }
     }
