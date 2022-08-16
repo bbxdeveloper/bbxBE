@@ -291,38 +291,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.Where(w=>w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
                                 .Where(w => w.WarehouseID == invCtrlPeriod.WarehouseID && !w.Deleted).ToListAsync();
 
-            /*
-            var absenedItemsX = prodItems.Where(p => 
-                        !invCtrlItems.Any(i => i.ProductID == p.ID) &&
-                        (!requestParameter.IsInStock || 
-                         (stockItems.Any(s=>s.ProductID == p.ID && (s.CalcQty != 0 || s.RealQty != 0))
-                        ))).ToList();
-            */
 
             var absenedItems = stockItems.Where(s =>
                         !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
                         (!requestParameter.IsInStock || s.CalcQty != 0 || s.RealQty != 0)).ToList();
 
-            //Hozzácsapjuk a absenedItems2-ből azokat a termékeket, amelyeknek nincs készletrekordja
-            // itt tartok...
-            var nonStockedProducts = prodItems.Where(p => !stockItems.Any(s => s.ProductID == p.ID)).ToList();
-            nonStockedProducts.ForEach(p =>
+            if (!requestParameter.IsInStock)
             {
-                absenedItems.Add(new Stock()
-               {
-                   WarehouseID = invCtrlPeriod.WarehouseID,
-                   ProductID = p.ID,
-                   CalcQty = 0,
-                   RealQty = 0,
-                   OutQty = 0,
-                   AvgCost = 0,
-                   LatestIn = null,
-                   LatestOut = null,
-                   Warehouse = invCtrlPeriod.Warehouse,
-                   Product = p
-               });
+                //Hozzácsapjuk a nonStockedProducts-ből azokat a termékeket, amelyeknek nincs készletrekordja
+                //és nincs leltárban
+                var nonStockedProducts = prodItems.Where(p => !stockItems.Any(s => s.ProductID == p.ID) &&
+                                                              !absenedItems.Any(s => s.ProductID == p.ID)).ToList();
+                nonStockedProducts.ForEach(p =>
+                {
+                    absenedItems.Add(new Stock()
+                    {
+                        WarehouseID = invCtrlPeriod.WarehouseID,
+                        ProductID = p.ID,
+                        CalcQty = 0,
+                        RealQty = 0,
+                        OutQty = 0,
+                        AvgCost = 0,
+                        LatestIn = null,
+                        LatestOut = null,
+                        Warehouse = invCtrlPeriod.Warehouse,
+                        Product = p
+                    });
 
-           });
+                });
+            }
 
             // Count records total
             recordsTotal = absenedItems.Count();
