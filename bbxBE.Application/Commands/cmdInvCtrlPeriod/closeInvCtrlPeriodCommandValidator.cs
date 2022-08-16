@@ -1,4 +1,4 @@
-﻿using bbxBE.Application.Consts;
+﻿using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Enums;
@@ -39,7 +39,17 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
 
          private async Task<bool> CanCloseAsync( long ID, CancellationToken cancellationToken)
         {
-            return await _InvCtrlPeriodRepository.CanCloseAsync(ID);
+            var canClose = await _InvCtrlPeriodRepository.CanCloseAsync(ID);
+            if (canClose)
+            {
+
+
+            }
+            else
+            { 
+            
+            }
+            return false;
         }
 
     }

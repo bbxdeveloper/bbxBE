@@ -6,7 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using static bbxBE.Common.NAV.NAV_enums;
-using bbxBE.Application.Consts;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 

@@ -15,8 +15,8 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Queries.qUSR_USER;
 using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Application.Exceptions;
-using bbxBE.Application.Consts;
+using bbxBE.Common.Exceptions;
+using bbxBE.Common.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {

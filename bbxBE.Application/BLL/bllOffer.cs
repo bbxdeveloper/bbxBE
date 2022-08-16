@@ -1,6 +1,6 @@
 ﻿using bbxBE.Application.Commands.cmdOffer;
-using bbxBE.Application.Consts;
-using bbxBE.Application.Exceptions;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;

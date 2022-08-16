@@ -1,6 +1,6 @@
 using bbxBE.Application;
 using bbxBE.Application.Commands;
-using bbxBE.Application.Exceptions;
+using bbxBE.Common.Exceptions;
 using bbxBE.Application.Queries;
 using bbxBE.Infrastructure.Persistence;
 using bbxBE.Infrastructure.Shared;

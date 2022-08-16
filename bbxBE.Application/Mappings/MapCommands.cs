@@ -6,7 +6,7 @@ using bbxBE.Application.Commands.cmdProduct;
 using bbxBE.Application.Commands.cmdProductGroup;
 using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Commands.cmdWarehouse;
-using bbxBE.Application.Consts;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;

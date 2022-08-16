@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace bbxBE.Application.Exceptions
+namespace bbxBE.Common.Exceptions
 {
     public class ApiException : Exception
     {

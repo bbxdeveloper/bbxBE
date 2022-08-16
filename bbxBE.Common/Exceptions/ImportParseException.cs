@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace bbxBE.Application.Exceptions
+namespace bbxBE.Common.Exceptions
 {
     public class ImportParseException : Exception
     {

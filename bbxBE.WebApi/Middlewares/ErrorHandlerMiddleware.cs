@@ -1,4 +1,4 @@
-﻿using bbxBE.Application.Exceptions;
+﻿using bbxBE.Common.Exceptions;
 using bbxBE.Application.Wrappers;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -8,7 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using bbxBE.Application.Consts;
+using bbxBE.Common.Consts;
 
 namespace bbxBE.WebApi.Middlewares
 {
@@ -38,7 +38,7 @@ namespace bbxBE.WebApi.Middlewares
 
                 switch (error)
                 {
-                    case Application.Exceptions.ApiException e:
+                    case bbxBE.Common.Exceptions.ApiException e:
                         // custom application error
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         break;
