@@ -18,6 +18,7 @@ using bbxBE.Application.Queries.qInvCtrlPeriod;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -80,15 +81,30 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CanDeleteAsync(long ID)
         {
-            return await Task.FromResult(true);
+            var itemExisting = await _dbContext.InvCtrl.AsNoTracking()
+                          .Where(x => x.InvCtlPeriodID == ID).AnyAsync();
+            return itemExisting;
         }
         public async Task<bool> CanCloseAsync(long ID)
         {
-            return await Task.FromResult(true);
+            var item = await _dbContext.InvCtrlPeriod.AsNoTracking()
+                          .Where(x => x.ID == ID).SingleOrDefaultAsync();
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, ID));
+            }
+            return !item.Closed;
         }
+
         public async Task<bool> CanUpdateAsync(long ID)
         {
-            return await Task.FromResult(true);
+            var item = await _dbContext.InvCtrlPeriod.AsNoTracking()
+                          .Where(x => x.ID == ID).SingleOrDefaultAsync();
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, ID));
+            }
+            return !item.Closed;
         }
         public async Task<Entity> GetInvCtrlPeriodAsync(GetInvCtrlPeriod requestParameter)
         {
@@ -213,6 +229,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !result;
         }
 
-  
+        public async Task<bool> CloseAsync(long ID)
+        {
+            var item = await _dbContext.InvCtrlPeriod.AsNoTracking()
+                          .Where(x => x.ID == ID).SingleOrDefaultAsync();
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, ID));
+            }
+
+            //itt tartok
+            var invCtrlItems = await _dbContext.InvCtrlPeriod.AsNoTracking().Where(x => x.ID == ID).ToListAsync();
+
+            return !item.Closed;
+        }
     }
 }

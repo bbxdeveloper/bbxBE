@@ -2,6 +2,7 @@
 using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Consts;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -33,7 +34,17 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
 
         public async Task<Response<long>> Handle(CloseInvCtrlPeriodCommand request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException("Not implemented: Close");
+            var canClose = await _InvCtrlPeriodRepository.CanCloseAsync(ID);
+            if (canClose)
+            {
+
+
+            }
+            else
+            {
+                throw new ValidationException(bbxBEConsts.ERR_INVCTRLPERIOD_NOTCLOSED);
+            }
+            return false;
             return new Response<long>(request.ID);
         }
 
