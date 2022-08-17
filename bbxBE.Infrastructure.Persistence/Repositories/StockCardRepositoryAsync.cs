@@ -138,6 +138,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                       .ThenBy(o2 => o2.ID).ToListAsync();
             foreach (var f in furtherItems)
             {
+
+                //itt tartok!
                 var XCalcQty = f.NCalcQty - f.OCalcQty;
                 var XRealQty = f.NRealQty - f.ORealQty;
                 var XOutQty = f.NOutQty - f.OOutQty;

@@ -19,6 +19,7 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using static bbxBE.Common.NAV.NAV_enums;
+using bbxBE.Common.Enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -34,6 +35,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IInvCtrlPeriodRepositoryAsync _invCtrlPeriodRepository;
         private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
+        private readonly ICustomerRepositoryAsync _customerRepository;
 
         public StockRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Stock> dataShaperStock,
@@ -42,8 +44,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IStockCardRepositoryAsync stockCardRepository,
             IProductRepositoryAsync productRepository,
             IInvCtrlPeriodRepositoryAsync invCtrlPeriodRepository,
-            IInvCtrlRepositoryAsync invCtrlRepository
-            ) : base(dbContext)
+            IInvCtrlRepositoryAsync invCtrlRepository,
+            ICustomerRepositoryAsync customerRepository
+          ) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperStock = dataShaperStock;
@@ -55,6 +58,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productRepository = productRepository;
             _invCtrlPeriodRepository = invCtrlPeriodRepository;
             _invCtrlRepository = invCtrlRepository;
+            _customerRepository = customerRepository;
         }
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
@@ -119,9 +123,64 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return ret;
         }
-   
 
-    public async Task<Entity> GetStockAsync(GetStock requestParameter)
+        public async Task<List<Stock>> MaintainStockByInvCtrlAsync(List<InvCtrl> invCtrlList, string XRel)
+        {
+            var ret = new List<Stock>();
+
+
+            var ownData = _customerRepository.GetOwnData();
+            if (ownData == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OWNNOTFOUND));
+            }
+            foreach (var invCtrl in invCtrlList)
+            {
+
+                var stock = await _dbContext.Stock
+                            .Where(x => x.WarehouseID == invCtrl.WarehouseID && x.ProductID == invCtrl.ProductID && !x.Deleted)
+                            .FirstOrDefaultAsync();
+
+                if (stock == null)
+                {
+                    stock = new Stock()
+                    {
+                        WarehouseID = invCtrl.WarehouseID,
+                        //Warehouse = invoice.Warehouse,
+                        ProductID = invCtrl.ProductID,
+                        //Product = invoiceLine.Product,
+                        AvgCost = stock.AvgCost             //ez nem változik
+                    };
+                    await _dbContext.Stock.AddAsync(stock);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invCtrl.InvCtrlDate,
+                            invCtrl.WarehouseID, invCtrl.ProductID, invCtrl.UserID, 0, ownData.ID,
+                            invCtrl.InvCtrlType == enInvCtrlType.ICP.ToString() ? enStockCardType.ICP : enStockCardType.ICC,
+                            invCtrl.NCalcQty,
+                            invCtrl.NRealQty,
+                            0, stock.AvgCost,
+                            XRel);
+
+
+
+                stock.CalcQty = invCtrl.NCalcQty;
+                stock.RealQty = invCtrl.NRealQty;
+                stock.AvgCost = latestStockCard.NAvgCost;
+
+
+                _dbContext.Stock.Update(stock);
+
+                invCtrl.StockID = stock.ID;
+
+
+                ret.Add(stock);
+            }
+            return ret;
+        }
+
+        public async Task<Entity> GetStockAsync(GetStock requestParameter)
         {
 
             var ID = requestParameter.ID;

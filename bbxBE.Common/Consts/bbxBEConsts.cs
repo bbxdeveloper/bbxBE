@@ -12,6 +12,9 @@ namespace bbxBE.Common.Consts
         public static string CNTRY_HU = "HU";
         public static string CONF_PwdSalt = "PwdSalt";
 
+        public const string DEF_DATEFORMAT = "yyyy-MM-dd";
+
+
         public static string CONF_CacheSettings = "CacheSettings";
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
