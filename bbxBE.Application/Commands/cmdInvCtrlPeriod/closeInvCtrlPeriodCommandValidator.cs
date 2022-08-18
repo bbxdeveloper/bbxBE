@@ -32,7 +32,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
                         {
                             return await CanCloseAsync(model.ID, cancellation);
                         }
-                    ).WithMessage(bbxBEConsts.ERR_INVCTRLPERIOD_CANTBEDELETED);
+                    ).WithMessage(bbxBEConsts.ERR_INVCTRLPERIOD_NOTCLOSED);
 
         }
 
@@ -40,16 +40,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
          private async Task<bool> CanCloseAsync( long ID, CancellationToken cancellationToken)
         {
             var canClose = await _InvCtrlPeriodRepository.CanCloseAsync(ID);
-            if (canClose)
-            {
-
-
-            }
-            else
-            { 
-            
-            }
-            return false;
+            return canClose;
         }
 
     }

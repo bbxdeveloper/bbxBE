@@ -1,17 +1,13 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.BLL;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Queries.qCustomer;
-using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -159,7 +155,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 		private readonly ICustomerRepositoryAsync _CustomerRepository;
 		private readonly IProductRepositoryAsync _ProductRepository;
 		private readonly IVatRateRepositoryAsync _VatRateRepository;
-		private readonly IStockRepositoryAsync _StockRepository;
 		private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
@@ -169,7 +164,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 			ICustomerRepositoryAsync CustomerRepository,
 			IProductRepositoryAsync ProductRepository,
 			IVatRateRepositoryAsync VatRateRepository,
-			IStockRepositoryAsync StockRepository,
 			IMapper mapper, IConfiguration configuration)
         {
             _InvoiceRepository = InvoiceRepository;
@@ -178,7 +172,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 			_CustomerRepository = CustomerRepository;
 			_ProductRepository = ProductRepository;
 			_VatRateRepository = VatRateRepository;
-			_StockRepository = StockRepository;
 			_mapper = mapper;
             _configuration = configuration;
         }

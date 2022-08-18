@@ -12,6 +12,9 @@ namespace bbxBE.Common.Consts
         public static string CNTRY_HU = "HU";
         public static string CONF_PwdSalt = "PwdSalt";
 
+        public const string DEF_DATEFORMAT = "yyyy-MM-dd";
+
+
         public static string CONF_CacheSettings = "CacheSettings";
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
@@ -84,6 +87,7 @@ namespace bbxBE.Common.Consts
         public static string ERR_INVCTRLPERIODNOTFOUND = "Leltáridőszak nem található, ID:{0} ";
         public static string ERR_INVCTRLPERIOD_CANTBEDELETED = "{PropertyName}: A leltáridőszak már nem módosítható!";
         public static string ERR_INVCTRLPERIOD_CANTBECLOSED = "A leltáridőszak nem zárható le!";
+        public static string ERR_INVCTRLPERIOD_NOTCLOSED = "A leltáridőszak nincs lezárva!";
 
         public static string ERR_INVCTRLNOTFOUND = "Leltári tétel nem található, ID:{0} ";
         public static string ERR_INVCTRL_DATE = "{PropertyName}:Helytelen leltárdátum!";

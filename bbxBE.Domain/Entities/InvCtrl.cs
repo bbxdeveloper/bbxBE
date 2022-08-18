@@ -43,7 +43,10 @@ namespace bbxBE.Domain.Entities
         [Description("Termék ID")]
         public long ProductID { get; set; }
 
- 
+        [ColumnLabel("Raktárkészlet ID")]
+        [Description("Raktárkészlet ID")]
+        public long? StockID { get; set; }
+
         [ColumnLabel("Leltározás dátuma")]
         [Description("Leltározás dátuma")]
         public DateTime InvCtrlDate { get; set; }
@@ -90,6 +93,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Termék")]
         [Description("Termék")]
         public virtual Product Product { get; set; }
+
+        [ForeignKey("StockID")]
+        [ColumnLabel("Raktárkészlet")]
+        [Description("Raktárkészlet")]
+        public virtual Stock? Stock { get; set; }
 
     }
 }

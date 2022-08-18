@@ -18,6 +18,7 @@ using bbxBE.Application.Queries.qInvCtrlPeriod;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -29,11 +30,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly IStockRepositoryAsync _StockRepository;
 
         public InvCtrlPeriodRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<InvCtrlPeriod> dataShaperInvCtrlPeriod,
             IDataShapeHelper<GetInvCtrlPeriodViewModel> dataShaperGetInvCtrlPeriodViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData, IStockRepositoryAsync stockRepository) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperInvCtrlPeriod = dataShaperInvCtrlPeriod;
@@ -41,6 +43,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _StockRepository = stockRepository;
         }
         public async Task<InvCtrlPeriod> AddInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
         {
@@ -60,7 +63,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             InvCtrlPeriod icp = null;
 
-            icp = _dbContext.InvCtrlPeriod.AsNoTracking().Where(x => x.ID == ID).FirstOrDefault();
+            icp = await _dbContext.InvCtrlPeriod.AsNoTracking().Where(x => x.ID == ID).SingleOrDefaultAsync();
 
             if (icp != null)
             {
@@ -80,15 +83,30 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CanDeleteAsync(long ID)
         {
-            return await Task.FromResult(true);
+            var itemExisting = await _dbContext.InvCtrl.AsNoTracking()
+                          .Where(x => x.InvCtlPeriodID == ID).AnyAsync();
+            return itemExisting;
         }
         public async Task<bool> CanCloseAsync(long ID)
         {
-            return await Task.FromResult(true);
+            var item = await _dbContext.InvCtrlPeriod.AsNoTracking()
+                          .Where(x => x.ID == ID).SingleOrDefaultAsync();
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, ID));
+            }
+            return !item.Closed;
         }
+
         public async Task<bool> CanUpdateAsync(long ID)
         {
-            return await Task.FromResult(true);
+            var item = await _dbContext.InvCtrlPeriod.AsNoTracking()
+                          .Where(x => x.ID == ID).SingleOrDefaultAsync();
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, ID));
+            }
+            return !item.Closed;
         }
         public async Task<Entity> GetInvCtrlPeriodAsync(GetInvCtrlPeriod requestParameter)
         {
@@ -209,10 +227,36 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID)
         {
-            var result = await _dbContext.InvCtrlPeriod.AnyAsync(w => !w.Deleted && ( ID == null || w.ID != ID.Value) && w.DateFrom < DateTo && DateFrom < w.DateTo);
+            var result = await _dbContext.InvCtrlPeriod.AnyAsync(w => !w.Deleted && (ID == null || w.ID != ID.Value) && w.DateFrom < DateTo && DateFrom < w.DateTo);
             return !result;
         }
 
-  
+        public async Task<bool> CloseAsync(long ID)
+        {
+            var invCtrlPeriod = await _dbContext.InvCtrlPeriod.AsNoTracking()
+                      .Include(w => w.Warehouse).AsNoTracking()
+                      .Where(x => x.ID == ID).SingleOrDefaultAsync();
+            if (invCtrlPeriod == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, ID));
+            }
+
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var invCtrlItems = await _dbContext.InvCtrl.AsNoTracking().Where(x => x.InvCtlPeriodID == ID).ToListAsync();
+                    var stockList = await _StockRepository.MaintainStockByInvCtrlAsync(invCtrlItems, invCtrlPeriod.Warehouse + " " + invCtrlPeriod.DateFrom.ToString(bbxBEConsts.DEF_DATEFORMAT) + "-" + invCtrlPeriod.DateTo.ToString(bbxBEConsts.DEF_DATEFORMAT));
+
+
+                }
+                catch (Exception ex)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
+                return !invCtrlPeriod.Closed;
+            }
+        }
     }
 }

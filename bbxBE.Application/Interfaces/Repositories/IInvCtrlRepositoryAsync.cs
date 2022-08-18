@@ -27,5 +27,6 @@ namespace bbxBE.Application.Interfaces.Repositories
 
         Task<bool> SeedDataAsync(int rowCount);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameters);
+
     }
 }

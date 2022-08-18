@@ -1,5 +1,4 @@
-﻿//using bbxBE.Application.Features.Positions.Queries.GetPositions;
-using bbxBE.Application.Interfaces;
+﻿using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qStock;
@@ -12,11 +11,11 @@ namespace bbxBE.Application.Interfaces.Repositories
     public interface IStockRepositoryAsync : IGenericRepositoryAsync<Stock>
     {
         Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice);
+        Task<List<Stock>> MaintainStockByInvCtrlAsync(List<InvCtrl> invCtrlList, string XRel);
+
         Task<Entity> GetStockAsync(GetStock requestParameters);
         Task<Stock> GetStockRecordAsync(GetStockRecord requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryInvCtrlStockAbsentAsync(QueryInvCtrlStockAbsent requestParameters);
-
-
     }
 }
