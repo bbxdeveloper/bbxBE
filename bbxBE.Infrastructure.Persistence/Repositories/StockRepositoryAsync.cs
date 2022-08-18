@@ -33,7 +33,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private readonly IStockCardRepositoryAsync _stockCardRepository;
         private readonly IProductRepositoryAsync _productRepository;
-        private readonly IInvCtrlPeriodRepositoryAsync _invCtrlPeriodRepository;
         private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
 
@@ -43,7 +42,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             IStockCardRepositoryAsync stockCardRepository,
             IProductRepositoryAsync productRepository,
-            IInvCtrlPeriodRepositoryAsync invCtrlPeriodRepository,
             IInvCtrlRepositoryAsync invCtrlRepository,
             ICustomerRepositoryAsync customerRepository
           ) : base(dbContext)
@@ -56,7 +54,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
             _stockCardRepository = stockCardRepository;
             _productRepository = productRepository;
-            _invCtrlPeriodRepository = invCtrlPeriodRepository;
             _invCtrlRepository = invCtrlRepository;
             _customerRepository = customerRepository;
         }
@@ -343,7 +340,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             int recordsTotal, recordsFiltered;
 
-            var invCtrlPeriod = await _invCtrlPeriodRepository.GetInvCtrlPeriodRecordAsync(requestParameter.InvCtrlPeriodID);
+            var invCtrlPeriod = await _dbContext.InvCtrlPeriod.AsNoTracking().Where( i=>i.ID == requestParameter.InvCtrlPeriodID).SingleOrDefaultAsync();
+            if (invCtrlPeriod == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, requestParameter.InvCtrlPeriodID));
+            }
             var invCtrlItems = await _invCtrlRepository.GetInvCtrlICPRecordsByPeriodAsync(requestParameter.InvCtrlPeriodID);
             var prodItems = _productRepository.GetAllProductsRecordFromCache();
             var stockItems = await _dbContext.Stock.AsNoTracking()

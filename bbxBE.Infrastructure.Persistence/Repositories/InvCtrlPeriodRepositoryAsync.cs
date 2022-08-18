@@ -63,7 +63,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             InvCtrlPeriod icp = null;
 
-            icp = _dbContext.InvCtrlPeriod.AsNoTracking().Where(x => x.ID == ID).FirstOrDefault();
+            icp = await _dbContext.InvCtrlPeriod.AsNoTracking().Where(x => x.ID == ID).SingleOrDefaultAsync();
 
             if (icp != null)
             {
