@@ -34,13 +34,13 @@
             <Font Name="Calibri" Size="14pt" Bold="True" />
           </Style>
         </TextBox>
-        <TextBox Width="53mm" Height="6mm" Left="19mm" Top="17.68mm" Value="= Parameters.WareHouseName.Value" Name="textBox1">
+        <TextBox Width="53mm" Height="6mm" Left="19mm" Top="17.68mm" Value="= Parameters.warehouse.Value" Name="textBox1">
           <Style>
             <Font Size="11pt" />
           </Style>
         </TextBox>
-        <TextBox Width="32mm" Height="6mm" Left="100mm" Top="18mm" Value="= Parameters.WareHouseFromDate.Value" Format="{0:d}" Name="textBox2" />
-        <TextBox Width="35mm" Height="6mm" Left="155mm" Top="18mm" Value="= Parameters.WareHouseToDate.Value" Format="{0:d}" Name="textBox3" />
+        <TextBox Width="32mm" Height="6mm" Left="100mm" Top="18mm" Value="= Parameters.dateFrom.Value" Format="{0:d}" Name="textBox2" />
+        <TextBox Width="35mm" Height="6mm" Left="155mm" Top="18mm" Value="= Parameters.dateTo.Value" Format="{0:d}" Name="textBox3" />
         <TextBox Width="19mm" Height="6mm" Left="0mm" Top="17.68mm" Value="=&quot;Raktár:&quot;" Name="textBox13">
           <Style>
             <Font Size="11pt" Bold="True" />
@@ -63,7 +63,7 @@
         <Font Name="Tahoma" Size="9pt" />
       </Style>
       <Items>
-        <Table DataSourceName="webServiceDataSource1" Width="189.73mm" Height="12.17mm" Left="0mm" Top="0mm" Name="table1">
+        <Table DataSourceName="webServiceDataSource1" Width="189.73mm" Height="12.18mm" Left="0mm" Top="0mm" Name="table1">
           <Body>
             <Cells>
               <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
@@ -92,7 +92,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="2" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="25mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.oRealQty" Format="{0:N0}" Name="textBox10">
+                  <TextBox Width="25mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.oRealQty" Format="{0:N2}" Name="textBox10">
                     <Style TextAlign="Right" VerticalAlign="Middle">
                       <Font Name="Tahoma" Size="7pt" />
                       <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
@@ -104,7 +104,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="3" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="25mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.nRealQty" Format="{0:N0}" Name="textBox12" StyleName="">
+                  <TextBox Width="25mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.nRealQty" Format="{0:N2}" Name="textBox12" StyleName="">
                     <Style TextAlign="Right" VerticalAlign="Middle">
                       <Font Name="Tahoma" Size="7pt" />
                       <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
@@ -196,8 +196,8 @@
     </DetailSection>
     <PageFooterSection Height="0.9cm" Name="pageFooterSection1">
       <Items>
-        <TextBox Width="48.62mm" Height="6mm" Left="0mm" Top="0mm" Value="= &quot;Oldal: &quot; + PageNumber + &quot;/&quot; + PageCount" Name="textBox32" />
-        <TextBox Width="48.62mm" Height="6mm" Left="138.79mm" Top="0mm" Value="= Now()" Format="{0:yyyy.MM.dd hh:mm}" Name="textBox33">
+        <TextBox Width="48.62mm" Height="6mm" Left="0mm" Top="2mm" Value="= &quot;Oldal: &quot; + PageNumber + &quot;/&quot; + PageCount" Name="textBox32" />
+        <TextBox Width="48.62mm" Height="6mm" Left="138.79mm" Top="2mm" Value="= Now()" Format="{0:yyyy.MM.dd hh:mm}" Name="textBox33">
           <Style TextAlign="Right" />
         </TextBox>
       </Items>
@@ -235,17 +235,17 @@
         <String>123456</String>
       </Value>
     </ReportParameter>
-    <ReportParameter Name="WareHouseName" Visible="True">
+    <ReportParameter Name="warehouse" Visible="True">
       <Value>
         <String>teszt name</String>
       </Value>
     </ReportParameter>
-    <ReportParameter Name="WareHouseFromDate" Type="DateTime" Visible="True">
+    <ReportParameter Name="dateFrom" Type="DateTime" Visible="True">
       <Value>
         <String>2022.08.10</String>
       </Value>
     </ReportParameter>
-    <ReportParameter Name="WareHouseToDate" Type="DateTime" Visible="True">
+    <ReportParameter Name="dateTo" Type="DateTime" Visible="True">
       <Value>
         <String>2022.08.20</String>
       </Value>
