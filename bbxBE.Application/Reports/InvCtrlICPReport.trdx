@@ -15,7 +15,7 @@
         </WebServiceParameter>
         <WebServiceParameter WebServiceParameterType="Query" Name="InvCtrlPeriodID">
           <Value>
-            <String>= Parameters.ID.Value</String>
+            <String>= Parameters.InvCtrlPeriodID.Value</String>
           </Value>
         </WebServiceParameter>
         <WebServiceParameter WebServiceParameterType="Query" Name="PageSize">
@@ -34,26 +34,9 @@
             <Font Name="Calibri" Size="14pt" Bold="True" />
           </Style>
         </TextBox>
-        <TextBox Width="53mm" Height="6mm" Left="19mm" Top="17.68mm" Value="= Parameters.warehouse.Value" Name="textBox1">
-          <Style>
+        <TextBox Width="179mm" Height="6mm" Left="6mm" Top="17.68mm" Value="= Parameters.InvPeriodTitle.Value" Name="textBox1">
+          <Style TextAlign="Center" VerticalAlign="Middle">
             <Font Size="11pt" />
-          </Style>
-        </TextBox>
-        <TextBox Width="32mm" Height="6mm" Left="100mm" Top="18mm" Value="= Parameters.dateFrom.Value" Format="{0:d}" Name="textBox2" />
-        <TextBox Width="35mm" Height="6mm" Left="155mm" Top="18mm" Value="= Parameters.dateTo.Value" Format="{0:d}" Name="textBox3" />
-        <TextBox Width="19mm" Height="6mm" Left="0mm" Top="17.68mm" Value="=&quot;Raktár:&quot;" Name="textBox13">
-          <Style>
-            <Font Size="11pt" Bold="True" />
-          </Style>
-        </TextBox>
-        <TextBox Width="21mm" Height="6mm" Left="79mm" Top="18mm" Value="=&quot;Dátumtól:&quot;" Name="textBox14">
-          <Style>
-            <Font Size="11pt" Bold="True" />
-          </Style>
-        </TextBox>
-        <TextBox Width="19mm" Height="6mm" Left="136mm" Top="17.68mm" Value="=&quot;Dátumig:&quot;" Name="textBox15">
-          <Style>
-            <Font Size="11pt" Bold="True" />
           </Style>
         </TextBox>
       </Items>
@@ -197,7 +180,7 @@
     <PageFooterSection Height="0.9cm" Name="pageFooterSection1">
       <Items>
         <TextBox Width="48.62mm" Height="6mm" Left="0mm" Top="2mm" Value="= &quot;Oldal: &quot; + PageNumber + &quot;/&quot; + PageCount" Name="textBox32" />
-        <TextBox Width="48.62mm" Height="6mm" Left="138.79mm" Top="2mm" Value="= Now()" Format="{0:yyyy.MM.dd hh:mm}" Name="textBox33">
+        <TextBox Width="48.62mm" Height="6mm" Left="140mm" Top="2mm" Value="= Now()" Format="{0:yyyy.MM.dd hh:mm}" Name="textBox33">
           <Style TextAlign="Right" />
         </TextBox>
       </Items>
@@ -225,7 +208,7 @@
         <String>https://bbxbe.azurewebsites.net</String>
       </Value>
     </ReportParameter>
-    <ReportParameter Name="ID" Type="Integer" Visible="True">
+    <ReportParameter Name="InvCtrlPeriodID" Type="Integer" Visible="True">
       <Value>
         <String>1</String>
       </Value>
@@ -235,19 +218,9 @@
         <String>123456</String>
       </Value>
     </ReportParameter>
-    <ReportParameter Name="warehouse" Visible="True">
+    <ReportParameter Name="InvPeriodTitle" Visible="True">
       <Value>
-        <String>teszt name</String>
-      </Value>
-    </ReportParameter>
-    <ReportParameter Name="dateFrom" Type="DateTime" Visible="True">
-      <Value>
-        <String>2022.08.10</String>
-      </Value>
-    </ReportParameter>
-    <ReportParameter Name="dateTo" Type="DateTime" Visible="True">
-      <Value>
-        <String>2022.08.20</String>
+        <String>raktár 1 2022.08.10-2022.08.20</String>
       </Value>
     </ReportParameter>
   </ReportParameters>
