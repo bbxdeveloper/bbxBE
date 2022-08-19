@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report DataSourceName="webServiceDataSource1" Width="19cm" UnitOfMeasure="Mm" Name="InvCtrlICPReportRE" SnapGridSize="0.1cm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
+  <DataSources>
+    <WebServiceDataSource ParameterValues="{&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;123456&quot;,&quot;InvCtrlPeriodID&quot;:&quot;1&quot;,&quot;PageSize&quot;:&quot;99999&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/InvCtrlICP/query" Name="webServiceDataSource1">
+      <Parameters>
+        <WebServiceParameter WebServiceParameterType="Inline" Name="@BaseURL">
+          <Value>
+            <String>= Parameters.BaseURL.Value</String>
+          </Value>
+        </WebServiceParameter>
+        <WebServiceParameter WebServiceParameterType="Header" Name="JWT">
+          <Value>
+            <String>= Parameters.JWT.Value</String>
+          </Value>
+        </WebServiceParameter>
+        <WebServiceParameter WebServiceParameterType="Query" Name="InvCtrlPeriodID">
+          <Value>
+            <String>= Parameters.ID.Value</String>
+          </Value>
+        </WebServiceParameter>
+        <WebServiceParameter WebServiceParameterType="Query" Name="PageSize">
+          <Value>
+            <String>= 99999</String>
+          </Value>
+        </WebServiceParameter>
+      </Parameters>
+    </WebServiceDataSource>
+  </DataSources>
+  <Items>
+    <PageHeaderSection Height="3cm" Name="pageHeaderSection1">
+      <Items>
+        <TextBox Width="36.34mm" Height="11.36mm" Left="76.83mm" Top="4.32mm" Value="LELTÁRÍV" Name="textBox7">
+          <Style TextAlign="Center" VerticalAlign="Middle">
+            <Font Name="Calibri" Size="14pt" Bold="True" />
+          </Style>
+        </TextBox>
+        <TextBox Width="53mm" Height="6mm" Left="19mm" Top="17.68mm" Value="= Parameters.warehouse.Value" Name="textBox1">
+          <Style>
+            <Font Size="11pt" />
+          </Style>
+        </TextBox>
+        <TextBox Width="32mm" Height="6mm" Left="100mm" Top="18mm" Value="= Parameters.dateFrom.Value" Format="{0:d}" Name="textBox2" />
+        <TextBox Width="35mm" Height="6mm" Left="155mm" Top="18mm" Value="= Parameters.dateTo.Value" Format="{0:d}" Name="textBox3" />
+        <TextBox Width="19mm" Height="6mm" Left="0mm" Top="17.68mm" Value="=&quot;Raktár:&quot;" Name="textBox13">
+          <Style>
+            <Font Size="11pt" Bold="True" />
+          </Style>
+        </TextBox>
+        <TextBox Width="21mm" Height="6mm" Left="79mm" Top="18mm" Value="=&quot;Dátumtól:&quot;" Name="textBox14">
+          <Style>
+            <Font Size="11pt" Bold="True" />
+          </Style>
+        </TextBox>
+        <TextBox Width="19mm" Height="6mm" Left="136mm" Top="17.68mm" Value="=&quot;Dátumig:&quot;" Name="textBox15">
+          <Style>
+            <Font Size="11pt" Bold="True" />
+          </Style>
+        </TextBox>
+      </Items>
+    </PageHeaderSection>
+    <DetailSection Height="1.5cm" Name="detailSection1">
+      <Style TextAlign="Center" VerticalAlign="Middle">
+        <Font Name="Tahoma" Size="9pt" />
+      </Style>
+      <Items>
+        <Table DataSourceName="webServiceDataSource1" Width="189.73mm" Height="12.18mm" Left="0mm" Top="0mm" Name="table1">
+          <Body>
+            <Cells>
+              <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="53.14mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.productCode" Name="textBox5">
+                    <Style TextAlign="Left" VerticalAlign="Middle">
+                      <Font Name="Tahoma" Size="7pt" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                      <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
+                      <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="86.59mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.product" Name="textBox8">
+                    <Style TextAlign="Left" VerticalAlign="Middle">
+                      <Font Name="Tahoma" Size="7pt" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                      <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
+                      <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="2" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="25mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.oRealQty" Format="{0:N2}" Name="textBox10">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Name="Tahoma" Size="7pt" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                      <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
+                      <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="3" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="25mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.nRealQty" Format="{0:N2}" Name="textBox12" StyleName="">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Name="Tahoma" Size="7pt" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                      <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
+                      <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+            </Cells>
+            <Columns>
+              <Column Width="53.14mm" />
+              <Column Width="86.59mm" />
+              <Column Width="25mm" />
+              <Column Width="25mm" />
+            </Columns>
+            <Rows>
+              <Row Height="6.09mm" />
+            </Rows>
+          </Body>
+          <Corner />
+          <Style>
+            <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+            <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
+            <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+          </Style>
+          <RowGroups>
+            <TableGroup Name="detailTableGroup">
+              <Groupings>
+                <Grouping />
+              </Groupings>
+            </TableGroup>
+          </RowGroups>
+          <ColumnGroups>
+            <TableGroup Name="tableGroup">
+              <ReportItem>
+                <TextBox Width="53.14mm" Height="6.09mm" Left="0cm" Top="0cm" Value="Termékkód" Name="textBox4">
+                  <Style BackgroundColor="217, 217, 217" VerticalAlign="Middle">
+                    <Font Name="Tahoma" Size="9pt" Bold="True" />
+                    <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
+                    <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                  </Style>
+                </TextBox>
+              </ReportItem>
+            </TableGroup>
+            <TableGroup Name="tableGroup1">
+              <ReportItem>
+                <TextBox Width="86.59mm" Height="6.09mm" Left="0cm" Top="0cm" Value="Termék név" Name="textBox6">
+                  <Style BackgroundColor="217, 217, 217" VerticalAlign="Middle">
+                    <Font Name="Tahoma" Size="9pt" Bold="True" />
+                    <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
+                    <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                  </Style>
+                </TextBox>
+              </ReportItem>
+            </TableGroup>
+            <TableGroup Name="tableGroup2">
+              <ReportItem>
+                <TextBox Width="25mm" Height="6.09mm" Left="0cm" Top="0cm" Value="Raktári Klt." Name="textBox9">
+                  <Style BackgroundColor="217, 217, 217" VerticalAlign="Middle">
+                    <Font Name="Tahoma" Size="9pt" Bold="True" />
+                    <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
+                    <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                  </Style>
+                </TextBox>
+              </ReportItem>
+            </TableGroup>
+            <TableGroup Name="group">
+              <ReportItem>
+                <TextBox Width="25mm" Height="6.09mm" Left="0cm" Top="0cm" Value="Leltári Klt." Name="textBox11" StyleName="">
+                  <Style BackgroundColor="217, 217, 217" VerticalAlign="Middle">
+                    <Font Name="Tahoma" Size="9pt" Bold="True" />
+                    <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
+                    <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                  </Style>
+                </TextBox>
+              </ReportItem>
+            </TableGroup>
+          </ColumnGroups>
+          <Bindings>
+            <Binding Path="DataSource" Expression="= Fields.data" />
+          </Bindings>
+        </Table>
+      </Items>
+    </DetailSection>
+    <PageFooterSection Height="0.9cm" Name="pageFooterSection1">
+      <Items>
+        <TextBox Width="48.62mm" Height="6mm" Left="0mm" Top="2mm" Value="= &quot;Oldal: &quot; + PageNumber + &quot;/&quot; + PageCount" Name="textBox32" />
+        <TextBox Width="48.62mm" Height="6mm" Left="138.79mm" Top="2mm" Value="= Now()" Format="{0:yyyy.MM.dd hh:mm}" Name="textBox33">
+          <Style TextAlign="Right" />
+        </TextBox>
+      </Items>
+    </PageFooterSection>
+  </Items>
+  <PageSettings PaperKind="A4" Landscape="False" ContinuousPaper="False">
+    <Margins>
+      <MarginsU Left="1cm" Right="1cm" Top="1cm" Bottom="1cm" />
+    </Margins>
+  </PageSettings>
+  <StyleSheet>
+    <StyleRule>
+      <Style>
+        <Padding Left="2pt" Right="2pt" />
+      </Style>
+      <Selectors>
+        <TypeSelector Type="TextItemBase" />
+        <TypeSelector Type="HtmlTextBox" />
+      </Selectors>
+    </StyleRule>
+  </StyleSheet>
+  <ReportParameters>
+    <ReportParameter Name="BaseURL" Text="BaseURL">
+      <Value>
+        <String>https://bbxbe.azurewebsites.net</String>
+      </Value>
+    </ReportParameter>
+    <ReportParameter Name="ID" Type="Integer" Visible="True">
+      <Value>
+        <String>1</String>
+      </Value>
+    </ReportParameter>
+    <ReportParameter Name="JWT" Visible="True">
+      <Value>
+        <String>123456</String>
+      </Value>
+    </ReportParameter>
+    <ReportParameter Name="warehouse" Visible="True">
+      <Value>
+        <String>teszt name</String>
+      </Value>
+    </ReportParameter>
+    <ReportParameter Name="dateFrom" Type="DateTime" Visible="True">
+      <Value>
+        <String>2022.08.10</String>
+      </Value>
+    </ReportParameter>
+    <ReportParameter Name="dateTo" Type="DateTime" Visible="True">
+      <Value>
+        <String>2022.08.20</String>
+      </Value>
+    </ReportParameter>
+  </ReportParameters>
+</Report>
