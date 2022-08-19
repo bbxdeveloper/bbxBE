@@ -146,17 +146,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         //Warehouse = invoice.Warehouse,
                         ProductID = invCtrl.ProductID,
                         //Product = invoiceLine.Product,
-                        AvgCost = stock.AvgCost             //ez nem változik
+                        AvgCost = invCtrl.AvgCost             //ez nem változik
                     };
                     await _dbContext.Stock.AddAsync(stock);
                     await _dbContext.SaveChangesAsync();
                 }
 
+                //beaktualizáljuk az InvCtrl-be az aktuális raktárkészletet
+                invCtrl.OCalcQty = stock.CalcQty;
+                invCtrl.ORealQty = stock.RealQty;
+
+
                 var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invCtrl.InvCtrlDate,
                             invCtrl.WarehouseID, invCtrl.ProductID, invCtrl.UserID, 0, ownData.ID,
                             invCtrl.InvCtrlType == enInvCtrlType.ICP.ToString() ? enStockCardType.ICP : enStockCardType.ICC,
-                            invCtrl.NCalcQty,
-                            invCtrl.NRealQty,
+                            invCtrl.NCalcQty - invCtrl.OCalcQty,        //csak a különbséget kell átadni!!!
+                            invCtrl.NRealQty - invCtrl.ORealQty,        //csak a különbséget kell átadni!!!
                             0, stock.AvgCost,
                             XRel);
 
@@ -164,13 +169,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 stock.CalcQty = invCtrl.NCalcQty;
                 stock.RealQty = invCtrl.NRealQty;
-                stock.AvgCost = latestStockCard.NAvgCost;
+                stock.AvgCost = invCtrl.AvgCost;
 
 
                 _dbContext.Stock.Update(stock);
 
                 invCtrl.StockID = stock.ID;
-
+                _dbContext.InvCtrl.Update(invCtrl);
 
                 ret.Add(stock);
             }

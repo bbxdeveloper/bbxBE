@@ -76,38 +76,50 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             };
             latestStockCard = sc;
 
-            var prevItem = await _dbContext.StockCard.AsNoTracking()
-                    .Where(w => w.WarehouseID == p_WarehouseID && w.ProductID == p_ProductID &&
-                            w.StockCardDate <= p_StockCardDate)
-                     .OrderByDescending(o1 => o1.StockCardDate)
-                     .ThenByDescending(o2 => o2.ID)
-                     .FirstOrDefaultAsync();
-
-            //Ha van előző elem, akkor azt vesszük a számítás alapjának
-            if (prevItem != null)
+            if (p_ScType != enStockCardType.ICP && p_ScType != enStockCardType.ICC)
             {
-                OCalcQty = prevItem.NCalcQty;
-                ORealQty = prevItem.NRealQty;
-                OOutQty = prevItem.NOutQty;                //ha lesz árukiadás, töltjük!
-                OAvgCost = prevItem.NAvgCost;
+                //nem leltári tétel
+                var prevItem = await _dbContext.StockCard.AsNoTracking()
+                        .Where(w => w.WarehouseID == p_WarehouseID && w.ProductID == p_ProductID &&
+                                w.StockCardDate <= p_StockCardDate)
+                         .OrderByDescending(o1 => o1.StockCardDate)
+                         .ThenByDescending(o2 => o2.ID)
+                         .FirstOrDefaultAsync();
 
+                //Ha van előző elem, akkor azt vesszük a számítás alapjának
+                if (prevItem != null)
+                {
+                    OCalcQty = prevItem.NCalcQty;
+                    ORealQty = prevItem.NRealQty;
+                    OOutQty = prevItem.NOutQty;                //ha lesz árukiadás, töltjük!
+                    OAvgCost = prevItem.NAvgCost;
+
+                }
+                else
+                {
+                    //Ha nincs előző elem, elég spec helyzet, legyenek a készletek 0-ák
+                    /*
+                    OCalcQty = p_Stock.CalcQty;
+                    ORealQty = p_Stock.RealQty;
+                    OOutQty = p_Stock.OutQty;                //ha lesz árukiadás, töltjük!
+                    */
+
+                    OCalcQty = 0;
+                    ORealQty = 0;
+                    OOutQty = 0;                //ha lesz árukiadás, töltjük!
+
+                    OAvgCost = p_Stock.AvgCost;
+                }
             }
             else
             {
-                //Ha nincs előző elem, elég spec helyzet, legyenek a készletek 0-ák
-                /*
+                //leltári tétel
+ 
                 OCalcQty = p_Stock.CalcQty;
                 ORealQty = p_Stock.RealQty;
-                OOutQty = p_Stock.OutQty;                //ha lesz árukiadás, töltjük!
-                */
-
-                OCalcQty = 0;
-                ORealQty = 0;
                 OOutQty = 0;                //ha lesz árukiadás, töltjük!
-
                 OAvgCost = p_Stock.AvgCost;
             }
-
             //és ez alapján beupdate-eljük a currStockCard -ot
             sc.OCalcQty = OCalcQty;
             sc.ORealQty = ORealQty;
@@ -129,6 +141,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             OAvgCost = sc.NAvgCost;
 
 
+
             //Ezután az utána következő, többi elemet számoljuk át
 
             var furtherItems = await _dbContext.StockCard
@@ -139,25 +152,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var f in furtherItems)
             {
 
-                //itt tartok!
-                var XCalcQty = f.NCalcQty - f.OCalcQty;
-                var XRealQty = f.NRealQty - f.ORealQty;
-                var XOutQty = f.NOutQty - f.OOutQty;
+                if (f.ScType != enStockCardType.ICP.ToString() && f.ScType != enStockCardType.ICC.ToString())
+                {
+                    // NEM leltári tétel
+                    var XCalcQty = f.NCalcQty - f.OCalcQty;
+                    var XRealQty = f.NRealQty - f.ORealQty;
+                    var XOutQty = f.NOutQty - f.OOutQty;
 
-                f.OCalcQty = OCalcQty;
-                f.ORealQty = ORealQty;
-                f.OOutQty = OOutQty;                //ha lesz árukiadás, töltjük!
-                f.OAvgCost = OAvgCost;
+                    f.OCalcQty = OCalcQty;
+                    f.ORealQty = ORealQty;
+                    f.OOutQty = OOutQty;                //ha lesz árukiadás, töltjük!
+                    f.OAvgCost = OAvgCost;
 
-                f.NCalcQty = OCalcQty + XCalcQty;
-                f.NRealQty = ORealQty + XRealQty;
-                f.NOutQty = OOutQty + XOutQty;                //ha lesz árukiadás, töltjük!
+                    f.NCalcQty = OCalcQty + XCalcQty;
+                    f.NRealQty = ORealQty + XRealQty;
+                    f.NOutQty = OOutQty + XOutQty;                //ha lesz árukiadás, töltjük!
 
-                f.NAvgCost = (XCalcQty >= 0 || XRealQty > 0 ?
-                                bllStock.GetNewAvgCost(OAvgCost, (ORealQty + XRealQty), XRealQty, f.UnitPrice) :
-                                OAvgCost);
+                    f.NAvgCost = (XCalcQty >= 0 || XRealQty > 0 ?
+                                    bllStock.GetNewAvgCost(OAvgCost, (ORealQty + XRealQty), XRealQty, f.UnitPrice) :
+                                    OAvgCost);
 
-                _dbContext.StockCard.Update(f);
+                    _dbContext.StockCard.Update(f);
+                }
+                else
+                {
+                    // Leltári tétel esetén nincs átszámolás!!!!
+                }
 
                 OCalcQty = f.NCalcQty;
                 ORealQty = f.NRealQty;
