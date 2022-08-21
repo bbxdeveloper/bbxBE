@@ -22,9 +22,10 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Product> DeleteProductAsync(long ID);
 
         Task<bool> SeedDataAsync(int rowCount);
-        Entity GetProduct(GetProduct requestParameters);
+        Product GetProduct(long ID);
+        Entity GetProductEntity(long ID);
         Product GetProductByProductCode(string productCode);
-        Entity GetProductByProductCode(GetProductByProductCode requestParameter);
+        Entity GetProductEntityByProductCode(string productCode);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductAsync(QueryProduct requestParameters);
         Task<List<Product>> GetAllProductsFromDBAsync();
         List<GetProductViewModel> GetAllProductsFromCache();

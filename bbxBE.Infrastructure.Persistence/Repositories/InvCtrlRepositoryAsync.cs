@@ -20,9 +20,43 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using static bbxBE.Common.NAV.NAV_enums;
+using static bxBE.Application.Commands.cmdInvCtrl.createInvCtrlICPCommand;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
+
+    /*
+     {
+  "items": [
+    {
+      "warehouseID": 1,
+      "invCtlPeriodID": 10,
+      "productID": 118562,
+      "invCtrlDate": "2022-08-21T00:00:00",
+      "nRealQty": 12,
+      "userID": 0
+    },
+    {
+      "warehouseID": 1,
+      "invCtlPeriodID": 10,
+      "productID": 118563,
+      "invCtrlDate": "2022-08-21T00:00:00",
+      "nRealQty": 3,
+      "userID": 0
+    },
+    {
+      "warehouseID": 1,
+      "invCtlPeriodID": 10,
+      "productID": 37032,
+      "invCtrlDate": "2022-08-21T00:00:00",
+      "nRealQty": 32,
+      "userID": 0
+    }
+  ]
+}
+*/
+
+
     public class InvCtrlRepositoryAsync : GenericRepositoryAsync<InvCtrl>, IInvCtrlRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
@@ -31,11 +65,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly IProductRepositoryAsync _productRepository;
 
         public InvCtrlRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<InvCtrl> dataShaperInvCtrl,
             IDataShapeHelper<GetInvCtrlViewModel> dataShaperGetInvCtrlViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
+            IProductRepositoryAsync productRepository) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperInvCtrl = dataShaperInvCtrl;
@@ -43,6 +79,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _productRepository = productRepository;
         }
         public async Task<InvCtrl> AddInvCtrlAsync(InvCtrl p_InvCtrl)
         {
@@ -84,6 +121,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         var InvCtrl = _mapper.Map<InvCtrl>(invCtrlItem);
                         var existing = await GetInvCtrlICPRecordAsync(InvCtrl.InvCtlPeriodID.Value, InvCtrl.ProductID);
+
+                        //*************************************
+                        //* leltári tétel rekord kiegészítése *
+                        //************************************
+
+                        invCtrlItem.NCalcQty = invCtrlItem.NRealQty;
+
+                        //nyilvántartási egységár meghatározása
+                        // 1. Raktárkészlet alapján?
+                        var stock = await _dbContext.Stock
+                        .Where(x => x.WarehouseID == invCtrlItem.WarehouseID && x.ProductID == invCtrlItem.ProductID && !x.Deleted)
+                        .FirstOrDefaultAsync();
+                        if (stock != null) 
+                        {
+                            invCtrlItem.AvgCost = stock.AvgCost;
+                        }
+
+                        // 2. raktárkészlet alapján nem sikerült, cikktörzs alapján
+                        //
+                        if (invCtrlItem.AvgCost == 0)
+                        {
+                            var prod = _productRepository.GetProduct(invCtrlItem.ProductID);
+                            if( prod != null)
+                            {
+                                invCtrlItem.AvgCost = (prod.LatestSupplyPrice != 0 ? prod.LatestSupplyPrice : prod.UnitPrice2);
+                            }
+
+                        }
+
                         if (existing != null)
                         {
                             InvCtrl.ID = existing.ID;

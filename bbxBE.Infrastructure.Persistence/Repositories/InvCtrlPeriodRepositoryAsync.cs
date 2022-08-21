@@ -19,6 +19,8 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Collections;
+using EFCore.BulkExtensions;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -246,7 +248,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
                     var invCtrlItems = await _dbContext.InvCtrl.AsNoTracking().Where(x => x.InvCtlPeriodID == ID).ToListAsync();
-                    var stockList = await _StockRepository.MaintainStockByInvCtrlAsync(invCtrlItems, invCtrlPeriod.Warehouse + " " + invCtrlPeriod.DateFrom.ToString(bbxBEConsts.DEF_DATEFORMAT) + "-" + invCtrlPeriod.DateTo.ToString(bbxBEConsts.DEF_DATEFORMAT));
+                    var stockList = await _StockRepository.MaintainStockByInvCtrlAsync(invCtrlItems, 
+                                invCtrlPeriod.Warehouse.WarehouseCode + "-" + invCtrlPeriod.Warehouse.WarehouseDescription + " " + invCtrlPeriod.DateFrom.ToString(bbxBEConsts.DEF_DATEFORMAT) + "-" + invCtrlPeriod.DateTo.ToString(bbxBEConsts.DEF_DATEFORMAT));
+                    invCtrlPeriod.Closed = true;
+                    _dbContext.InvCtrlPeriod.Update(invCtrlPeriod);
+
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
 
 
                 }

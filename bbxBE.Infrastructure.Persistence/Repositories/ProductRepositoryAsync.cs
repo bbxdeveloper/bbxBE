@@ -25,6 +25,8 @@ using Hangfire;
 using System.Threading;
 using EFCore.BulkExtensions;
 using bbxBE.Common.Locking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -513,12 +515,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return prod;
         }
 
-        public Entity GetProduct(GetProduct requestParameter)
+        public Product GetProduct(long ID)
+        {
+            var query = _productcacheService.QueryCache();
+            var prod = query.Where(i => i.ID == ID).SingleOrDefault();
+            return prod;
+        }
+        public Entity GetProductEntity(long ID)
         {
 
-            var ID = requestParameter.ID;
-
-            Product prod = null;
+           Product prod = null;
             if (!_productcacheService.TryGetValue(ID, out prod))
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, ID));
 
@@ -531,18 +537,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
         public Product GetProductByProductCode(string productCode)
         {
-
+            productCode = productCode.ToUpper();
             var query = _productcacheService.QueryCache();
 
             var prod = query.Where(i => i.ProductCodes.Any(c => c.ProductCodeValue.ToUpper() == productCode.ToUpper()
                                                                    && c.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).FirstOrDefault();
             return prod;
         }
-        public Entity GetProductByProductCode(GetProductByProductCode requestParameter)
+        public Entity GetProductEntityByProductCode(string productCode)
         {
-            var prod = GetProductByProductCode(requestParameter.ProductCode.ToUpper());
+            var prod  = GetProductByProductCode(productCode);
 
             //            var fields = requestParameter.Fields;
             if (prod != null)
