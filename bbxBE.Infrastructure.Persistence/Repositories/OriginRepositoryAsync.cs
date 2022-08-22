@@ -48,8 +48,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _cacheService = originGroupCacheService;
             _productCacheService = productCacheService;
 
-            var t = RefreshOriginCache();
+            /*
+            var t = RefreshOriginCache_OBSOLED();
             t.GetAwaiter().GetResult();
+            */
         }
 
 
@@ -282,6 +284,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
         public async Task RefreshOriginCache()
+        {
+            await _cacheService.RefreshCache();
+        }
+
+        public async Task RefreshOriginCache_OBSOLED()
         {
             if (_cacheService.IsCacheEmpty())
             {

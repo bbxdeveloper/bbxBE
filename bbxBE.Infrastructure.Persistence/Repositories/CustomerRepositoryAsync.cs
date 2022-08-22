@@ -46,9 +46,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
             _cacheService = customerCacheService;
 
-
-            var t = RefreshCustomerCache();
+            /*
+            var t = RefreshCustomerCache_OBSOLED();
             t.GetAwaiter().GetResult();
+            */
         }
 
 
@@ -268,7 +269,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
-        public async Task RefreshCustomerCache()
+        public async Task RefreshCustomerCache_OBSOLED()
         {
             if (_cacheService.IsCacheEmpty())
             {

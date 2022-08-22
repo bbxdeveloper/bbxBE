@@ -86,12 +86,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _vatRateCacheService = vatRateCacheService;
 
             
-            Task.Run(() => this.RefreshProductCache()).Wait();
-            //t.GetAwaiter().GetResult();
+            // Task.Run(() => this.RefreshProductCache_OBSOLED()).Wait();
+            // Task.Run(() => this.RefreshVatRateCache_OBSOLED()).Wait();
 
-            Task.Run(() => this.RefreshVatRateCache()).Wait();
-            //await RefreshVatRateCache();
-            // t2.GetAwaiter().GetResult();
+
         }
 
        
@@ -281,7 +279,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 productCodes.AddRange(product.ProductCodes);
             }
             await _dbContext.BulkInsertAsync(productCodes);
-            await RefreshProductCache(true);            
+            await RefreshProductCache();            
             await _dbContext.SaveChangesAsync();
 
             return item;
@@ -475,7 +473,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 productCodes.AddRange(product.ProductCodes);
             }
             await _dbContext.BulkUpdateAsync(productCodes);
-            await RefreshProductCache(true);
+            await RefreshProductCache();
 
             await _dbContext.SaveChangesAsync();
 
@@ -688,41 +686,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(v => v.VatRate).AsNoTracking().ToListAsync();
         }
 
-        public async Task RefreshProductCache(bool force = false)
+
+        public async Task RefreshProductCache()
         {
-            //      using (var lockObj = new ProductCacheLock(Common.Globals.GlobalLockObjs.ProductCacheLocker))
-            {
-                if (_productcacheService.IsCacheEmpty() || force)
-                {
-
-#if !DEBUG
-                    var q = _dbContext.Product.AsNoTracking()
-                         .Include(p => p.ProductCodes).AsNoTracking()
-                         .Include(pg => pg.ProductGroup).AsNoTracking()
-                         .Include(o => o.Origin).AsNoTracking()
-                         .Include(v => v.VatRate).AsNoTracking();
-#else
-                    var q = _dbContext.Product.AsNoTracking()
-                         .Include(p => p.ProductCodes).AsNoTracking()
-                         .Include(pg => pg.ProductGroup).AsNoTracking()
-                         .Include(o => o.Origin).AsNoTracking()
-                         .Include(v => v.VatRate).AsNoTracking().Take(1000);
-#endif
-                    await _productcacheService.RefreshCache(q);
-
-                    /*
-                    foreach (var entry in _productcacheService.Cache)
-                    {
-                        var prod = (Product)entry.Value;
-                        _dbContext.Entry(prod).State = EntityState.Detached;
-                        _dbContext.Entry(prod.VatRate).State = EntityState.Detached;
-                    }
-                    */
-                }
-            }
+            await _productcacheService.RefreshCache();
         }
 
-        public async Task RefreshVatRateCache()
+        public async Task RefreshVatRateCache_OBSOLED()
         {
 
             if (_vatRateCacheService.IsCacheEmpty())

@@ -33,8 +33,9 @@ namespace bbxBE.WebApi
             services.AddApplicationLayer();
             services.AddCommandInfrastructure(_config);
             services.AddQueryInfrastructure(_config);
-            services.AddPersistenceInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
+            services.AddPersistenceInfrastructure(_config);
+
             services.AddSwaggerExtension();
             services.AddControllersExtension();
 
@@ -76,6 +77,7 @@ namespace bbxBE.WebApi
 
             services.AddHangfire(x => x.UseSqlServerStorage(_config.GetConnectionString("bbxdbconnection")));
             services.AddHangfireServer();
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)

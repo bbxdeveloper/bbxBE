@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Reflection;
 using Hangfire;
+using Microsoft.Extensions.Logging;
 
 namespace bbxBE.Infrastructure.Persistence
 {
@@ -58,12 +59,13 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IInvCtrlPeriodRepositoryAsync, InvCtrlPeriodRepositoryAsync>();
             services.AddTransient<IInvCtrlRepositoryAsync, InvCtrlRepositoryAsync>();
 
+
+                
             services.AddSingleton<ICacheService<Product>, ProductCacheService>();
             services.AddSingleton<ICacheService<Customer>, CustomerCacheService>();
             services.AddSingleton<ICacheService<ProductGroup>, ProductGroupCacheService>();
             services.AddSingleton<ICacheService<Origin>, OriginCacheService>();
             services.AddSingleton<ICacheService<VatRate>, VatRateCacheService>();
-
 
             /*
 
