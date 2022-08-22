@@ -30,6 +30,6 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<List<Product>> GetAllProductsFromDBAsync();
         List<GetProductViewModel> GetAllProductsFromCache();
         List<Product> GetAllProductsRecordFromCache();
-        Task RefreshProductCache(bool force = false);
+        Task RefreshProductCache();
     }
 }

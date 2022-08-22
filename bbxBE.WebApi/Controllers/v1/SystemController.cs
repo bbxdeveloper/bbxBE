@@ -39,7 +39,7 @@ namespace bbxBE.WebApi.Controllers.v1
         {
         // https://docs.microsoft.com/en-us/answers/questions/481854/load-controller-at-startup-web-api-core.html
 
-            _productRepositoryAsync.RefreshProductCache(true);
+            await _productRepositoryAsync.RefreshProductCache();
             return Ok(true);
         }
     }

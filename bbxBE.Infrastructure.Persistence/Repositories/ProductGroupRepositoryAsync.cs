@@ -45,8 +45,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
             _cacheService = productGroupCacheService;
 
-            var t = RefreshProductGroupCache();
+            /*
+            var t = RefreshProductGroupCache_OBSOLED();
             t.GetAwaiter().GetResult();
+            */
         }
 
 
@@ -231,6 +233,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
         public async Task RefreshProductGroupCache()
+        {
+            _cacheService.RefreshCache();
+        }
+
+        public async Task RefreshProductGroupCache_OBSOLED()
         {
             if (_cacheService.IsCacheEmpty())
             {
