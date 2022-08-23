@@ -13,20 +13,22 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdOffer
+namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
 {
 
-    public class printOfferCommandValidator : AbstractValidator<PrintOfferCommand>
+    public class printInvCtrlPeriodCommandValidator : AbstractValidator<PrintInvCtrlPeriodCommand>
     {
-        private readonly IOfferRepositoryAsync _offerRepository;
+        private readonly IInvCtrlPeriodRepositoryAsync _invCtrlPeriodRepository;
 
-        public printOfferCommandValidator(IOfferRepositoryAsync offerRepository)
+        public printInvCtrlPeriodCommandValidator(IInvCtrlPeriodRepositoryAsync invCtrlPeriodRepository)
         {
-            _offerRepository = offerRepository;
+            _invCtrlPeriodRepository = invCtrlPeriodRepository;
             RuleFor(p => p.ID)
                 .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
-
+            RuleFor(p => p.Title)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
         }
     }
 }

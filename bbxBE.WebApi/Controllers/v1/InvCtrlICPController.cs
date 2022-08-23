@@ -1,4 +1,5 @@
 ﻿using bbxBE.Application.Commands.cmdInvCtrl;
+using bbxBE.Application.Commands.cmdInvCtrlPeriod;
 using bbxBE.Application.Commands.cmdUSR_USER;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qInvCtrl;
@@ -21,10 +22,13 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        public InvCtrlICPController( IWebHostEnvironment env, IConfiguration conf)
+        private readonly IHttpContextAccessor _context;
+
+        public InvCtrlICPController( IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
+            _context = context;
         }
 
 
@@ -73,28 +77,42 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
-  /*      
-        [HttpPut]
- //       [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(UpdateInvCtrlCommand command)
+
+        [HttpPost("report")]
+        public async Task<IActionResult> Print(PrintInvCtrlCommand command)
         {
-            return Ok(await Mediator.Send(command));
+
+            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var result = await Mediator.Send(command);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
-        // GET: USRController/Delete/5
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery] DeleteInvCtrlCommand command)
-        {
-            return Ok(await Mediator.Send(command));
-        }
+        /*      
+              [HttpPut]
+       //       [ValidateAntiForgeryToken]
+              public async Task<IActionResult> Update(UpdateInvCtrlCommand command)
+              {
+                  return Ok(await Mediator.Send(command));
+              }
 
-        [HttpPatch]
-        //       [ValidateAntiForgeryToken]
-        [HttpGet("close")]
-        public async Task<IActionResult> Close([FromQuery] CloseInvCtrlCommand command)
-        {
-            return Ok(await Mediator.Send(command));
-        }
-  */
+              // GET: USRController/Delete/5
+              [HttpDelete]
+              public async Task<IActionResult> Delete([FromQuery] DeleteInvCtrlCommand command)
+              {
+                  return Ok(await Mediator.Send(command));
+              }
+
+              [HttpPatch]
+              //       [ValidateAntiForgeryToken]
+              [HttpGet("close")]
+              public async Task<IActionResult> Close([FromQuery] CloseInvCtrlCommand command)
+              {
+                  return Ok(await Mediator.Send(command));
+              }
+        */
     }
 }

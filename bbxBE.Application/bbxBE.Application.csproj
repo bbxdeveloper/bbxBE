@@ -13,11 +13,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Reports\InvCtrlICP.trdx" />
+    <None Remove="Reports\InvCtrlICPReport.trdx" />
     <None Remove="Reports\Invoice.trdx" />
     <None Remove="Reports\Offer.trdx" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Reports\InvCtrlICP.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\InvCtrlICPReport.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Reports\Invoice.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
