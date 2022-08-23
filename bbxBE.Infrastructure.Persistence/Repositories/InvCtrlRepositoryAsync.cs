@@ -275,7 +275,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             int recordsTotal, recordsFiltered;
-            var prodCached = _productcacheService.ListCache();
+            var prodCached = _productcacheService.QueryCache();
+            var prodCachedList = _productcacheService.ListCache();
 
 
             // Setup IQueryable
@@ -283,32 +284,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 //                .Include(w => w.Warehouse)
 //                .Include(i => i.InvCtrlPeriod)
 //                .Include(s => s.Stock)
-                .Join(prodCached, ic => ic.ProductID, p => p.ID, (ic, p) => new {ic, p})
+//                .Join(prodCached, ic => ic.ProductID, p => p.ID, (ic, p) => new {ic, p})
 //                .Where(w => !w.ic.Deleted)
                 .Select( s => new InvCtrl()
                 {
-                    ID = s.ic.ID,
-                    CreateTime = s.ic.CreateTime,
-                    UpdateTime = s.ic.UpdateTime,
-                    Deleted = s.ic.Deleted,
+                    ID = s.ID,
+                    CreateTime = s.CreateTime,
+                    UpdateTime = s.UpdateTime,
+                    Deleted = s.Deleted,
 
-                    InvCtrlType = s.ic.InvCtrlType,
-                    WarehouseID = s.ic.WarehouseID,
-                    InvCtlPeriodID = s.ic.InvCtlPeriodID,
-                    ProductID = s.ic.ProductID,
-                    StockID = s.ic.StockID,
-                    InvCtrlDate = s.ic.InvCtrlDate,
-                    OCalcQty = s.ic.OCalcQty,
-                    ORealQty = s.ic.ORealQty,
-                    NCalcQty = s.ic.NCalcQty,
-                    NRealQty = s.ic.NRealQty,
-                    AvgCost = s.ic.AvgCost,
+                    InvCtrlType = s.InvCtrlType,
+                    WarehouseID = s.WarehouseID,
+                    InvCtlPeriodID = s.InvCtlPeriodID,
+                    ProductID = s.ProductID,
+                    StockID = s.StockID,
+                    InvCtrlDate = s.InvCtrlDate,
+                    OCalcQty = s.OCalcQty,
+                    ORealQty = s.ORealQty,
+                    NCalcQty = s.NCalcQty,
+                    NRealQty = s.NRealQty,
+                    AvgCost = s.AvgCost,
 
-                    UserID = s.ic.UserID,
+                    UserID = s.UserID,
                     //                  Warehouse = s.ic.Warehouse,
                     //                  InvCtrlPeriod = s.ic.InvCtrlPeriod,
                     //                  Stock = s.ic.Stock
-                    Product = s.p,
+                    Product = prodCachedList.Where( p=> p.ID == s.ProductID).FirstOrDefault(),
                 });
 
 
