@@ -21,6 +21,7 @@ using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using static bbxBE.Common.NAV.NAV_enums;
 using static bxBE.Application.Commands.cmdInvCtrl.createInvCtrlICPCommand;
+using bbxBE.Infrastructure.Persistence.Caches;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -66,12 +67,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly IProductRepositoryAsync _productRepository;
+        private readonly ICacheService<Product> _productcacheService;
 
         public InvCtrlRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<InvCtrl> dataShaperInvCtrl,
             IDataShapeHelper<GetInvCtrlViewModel> dataShaperGetInvCtrlViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
-            IProductRepositoryAsync productRepository) : base(dbContext)
+            IProductRepositoryAsync productRepository,
+            ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperInvCtrl = dataShaperInvCtrl;
@@ -80,6 +83,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _productRepository = productRepository;
+            _productcacheService = productCacheService;
         }
         public async Task<InvCtrl> AddInvCtrlAsync(InvCtrl p_InvCtrl)
         {
@@ -271,23 +275,52 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             int recordsTotal, recordsFiltered;
+            var prodCached = _productcacheService.ListCache();
+
 
             // Setup IQueryable
-            var result = _dbContext.InvCtrl.AsNoTracking()
-                .Include(w => w.Warehouse).AsNoTracking()
-                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
-                .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
-                        && !w.Deleted);
+            IQueryable<InvCtrl> result = _dbContext.InvCtrl
+//                .Include(w => w.Warehouse)
+//                .Include(i => i.InvCtrlPeriod)
+//                .Include(s => s.Stock)
+                .Join(prodCached, ic => ic.ProductID, p => p.ID, (ic, p) => new {ic, p})
+//                .Where(w => !w.ic.Deleted)
+                .Select( s => new InvCtrl()
+                {
+                    ID = s.ic.ID,
+                    CreateTime = s.ic.CreateTime,
+                    UpdateTime = s.ic.UpdateTime,
+                    Deleted = s.ic.Deleted,
+
+                    InvCtrlType = s.ic.InvCtrlType,
+                    WarehouseID = s.ic.WarehouseID,
+                    InvCtlPeriodID = s.ic.InvCtlPeriodID,
+                    ProductID = s.ic.ProductID,
+                    StockID = s.ic.StockID,
+                    InvCtrlDate = s.ic.InvCtrlDate,
+                    OCalcQty = s.ic.OCalcQty,
+                    ORealQty = s.ic.ORealQty,
+                    NCalcQty = s.ic.NCalcQty,
+                    NRealQty = s.ic.NRealQty,
+                    AvgCost = s.ic.AvgCost,
+
+                    UserID = s.ic.UserID,
+                    //                  Warehouse = s.ic.Warehouse,
+                    //                  InvCtrlPeriod = s.ic.InvCtrlPeriod,
+                    //                  Stock = s.ic.Stock
+                    Product = s.p,
+                });
 
 
             // Count records total
-            recordsTotal = await result.CountAsync();
+        //    recordsTotal = await result.CountAsync();
+            recordsTotal = result.Count();
 
             // filter data
             FilterBy(ref result, InvCtrlPeriodID, searchString);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered =  result.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount

@@ -16,6 +16,8 @@ using bbxBE.Common.Consts;
 using bbxBE.Common.Locking;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using System.Linq.Dynamic.Core;
+
 namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class BaseCacheService<T> : ICacheService<T> where T : BaseEntity
@@ -64,6 +66,10 @@ namespace bbxBE.Infrastructure.Persistence.Caches
         public IQueryable<T> QueryCache()
         {
             return Cache.Values.AsQueryable();
+        }
+        public IList<T> ListCache()
+        {
+            return Cache.Values.ToList();
         }
 
         private static LockProvider<string> CacheLockProvider = new LockProvider<string>();

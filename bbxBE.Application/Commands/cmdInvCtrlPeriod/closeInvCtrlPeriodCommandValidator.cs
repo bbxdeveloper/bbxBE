@@ -32,7 +32,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
                         {
                             return await CanCloseAsync(model.ID, cancellation);
                         }
-                    ).WithMessage(bbxBEConsts.ERR_INVCTRLPERIOD_NOTCLOSED);
+                    ).WithMessage(bbxBEConsts.ERR_INVCTRLPERIOD_ALREADYCLOSED);
 
         }
 
