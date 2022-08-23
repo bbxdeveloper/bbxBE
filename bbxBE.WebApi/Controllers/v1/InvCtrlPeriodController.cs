@@ -21,10 +21,13 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        public InvCtrlPeriodController( IWebHostEnvironment env, IConfiguration conf)
+        private readonly IHttpContextAccessor _context;
+
+        public InvCtrlPeriodController( IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
+            _context = context;
         }
 
 
@@ -85,5 +88,17 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
+        [HttpPost("report")]
+        public async Task<IActionResult> Print(PrintInvCtrlPeriodCommand command)
+        {
+
+            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var result = await Mediator.Send(command);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
+        }
     }
 }
