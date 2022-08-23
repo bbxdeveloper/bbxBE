@@ -53,10 +53,15 @@ namespace bbxBE.Application.BLL
 
             System.Collections.Hashtable deviceInfo = new System.Collections.Hashtable();
 
+            //throw new Exception(String.Join(",", reportSource.Parameters) + "::::" + ((Telerik.Reporting.ReportItemBase)reportSource.ReportDocument).Name);
+
             Telerik.Reporting.Processing.RenderingResult result = reportProcessor.RenderReport("PDF", reportSource, deviceInfo);
 
             if (result == null)
                 throw new Exception("Offer report result is null!");
+
+            if (result.HasErrors)
+                throw new Exception("Report engine has some reference ERROR!");
 
             //Példányszám beállítása
             //

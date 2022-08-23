@@ -46,6 +46,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Telerik.Reporting">
+      <HintPath>lib\Telerik.Reporting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.Reporting.OpenXmlRendering.2.7.2">
+      <HintPath>lib\Telerik.Reporting.OpenXmlRendering.2.7.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.Reporting.WebServiceDataSource">
+      <HintPath>lib\Telerik.Reporting.WebServiceDataSource.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="bbxBE.WebApi.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
