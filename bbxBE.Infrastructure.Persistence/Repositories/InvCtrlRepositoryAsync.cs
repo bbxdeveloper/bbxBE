@@ -284,6 +284,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 //                .Include(w => w.Warehouse)
                 //                .Include(i => i.InvCtrlPeriod)
                 //                .Include(s => s.Stock)
+
                 .Join(prodCached, ic => ic.ProductID, p => p.ID, (ic, p) => new {ic, p})
 //                .Where(w => !w.ic.Deleted)
                 .Select( s => new InvCtrl()
@@ -311,10 +312,49 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     //                  Stock = s.ic.Stock
 //                    Product = prodCachedList.Where( p=> p.ID == s.ProductID).FirstOrDefault(),
                 });
+            
+            var q2 = from ic in _dbContext.InvCtrl
+                     join p in prodCached on ic.ProductID equals p.ID
+Select new InvCtrl()
+{
+    ID = s.ic.ID,
+    CreateTime = s.ic.CreateTime,
+    UpdateTime = s.ic.UpdateTime,
+    Deleted = s.ic.Deleted,
+
+    InvCtrlType = s.ic.InvCtrlType,
+    WarehouseID = s.ic.WarehouseID,
+    InvCtlPeriodID = s.ic.InvCtlPeriodID,
+    ProductID = s.ic.ProductID,
+    StockID = s.ic.StockID,
+    InvCtrlDate = s.ic.InvCtrlDate,
+    OCalcQty = s.ic.OCalcQty,
+    ORealQty = s.ic.ORealQty,
+    NCalcQty = s.ic.NCalcQty,
+    NRealQty = s.ic.NRealQty,
+    AvgCost = s.ic.AvgCost,
+
+    UserID = s.ic.UserID,
+    //                  Warehouse = s.ic.Warehouse,
+    //                  InvCtrlPeriod = s.ic.InvCtrlPeriod,
+    //                  Stock = s.ic.Stock
+    //                    Product = prodCachedList.Where( p=> p.ID == s.ProductID).FirstOrDefault(),
+}
+                     select new EmployeeData
+                     {
+                         EmployeeId = e.EmployeeId,
+                         FullName = e.FullName,
+                         Office = e.Office,
+                         Area = o.Area,
+                         Region = o.Region,
+                         OfficeName = o.Name,
+                         Position = e.Position,
+                         Languages = e.Languages
+                     };
 
 
             // Count records total
-        //    recordsTotal = await result.CountAsync();
+            //    recordsTotal = await result.CountAsync();
             recordsTotal = result.Count();
 
             // filter data
