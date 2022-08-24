@@ -23,10 +23,10 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
         public printInvCtrlPeriodCommandValidator(IInvCtrlPeriodRepositoryAsync invCtrlPeriodRepository)
         {
             _invCtrlPeriodRepository = invCtrlPeriodRepository;
-            RuleFor(p => p.ID)
+            RuleFor(p => p.InvCtrlPeriodID)
                 .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
-            RuleFor(p => p.Title)
+            RuleFor(p => p.InvPeriodTitle)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
         }

@@ -24,10 +24,10 @@ namespace bbxBE.Application.BLL
         public static async Task<FileStreamResult> CreateInvCtrlReportAsynch(IInvCtrlRepositoryAsync _invCtrlRepository, string reportTRDX, PrintInvCtrlCommand request, CancellationToken cancellationToken)
         {
 
-            var invCtrl = await _invCtrlRepository.GetInvCtrl(new Queries.qInvCtrl.GetInvCtrl { ID = request.ID });
+            var invCtrl = await _invCtrlRepository.GetInvCtrl(new Queries.qInvCtrl.GetInvCtrl { ID = request.InvCtrlPeriodID });
             if (invCtrl == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLNOTFOUND, request.ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLNOTFOUND, request.InvCtrlPeriodID));
             }
 
 
@@ -47,8 +47,8 @@ namespace bbxBE.Application.BLL
                 reportSource.ReportDocument = rep;
             }
 
-            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvCtrlPeriodID", request.ID));
-            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvPeriodTitle", request.Title));
+            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvCtrlPeriodID", request.InvCtrlPeriodID));
+            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvPeriodTitle", request.InvPeriodTitle));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("IsInStock", request.IsInStock));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
 

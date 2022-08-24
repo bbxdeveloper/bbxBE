@@ -28,8 +28,8 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
 {
     public class PrintInvCtrlCommand : IRequest<FileStreamResult>
     {
-        public long ID { get; set; }
-        public string Title { get; set; }
+        public long InvCtrlPeriodID { get; set; }
+        public string InvPeriodTitle { get; set; }
         public bool IsInStock { get; set; }
         public string baseURL;
     }
