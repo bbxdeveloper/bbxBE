@@ -30,7 +30,6 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(p => p.IsInStock)
-                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
         }
     }
