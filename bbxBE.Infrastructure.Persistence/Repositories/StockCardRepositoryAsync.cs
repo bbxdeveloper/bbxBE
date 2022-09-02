@@ -20,6 +20,8 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Common.Enums;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using bbxBE.Infrastructure.Persistence.Caches;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -31,11 +33,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly ICacheService<Product> _productcacheService;
 
         public StockCardRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<StockCard> dataShaperStockCard,
             IDataShapeHelper<GetStockCardViewModel> dataShaperGetStockCardViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
+            ICacheService<Product> productcacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperStockCard = dataShaperStockCard;
@@ -43,6 +47,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _productcacheService = productcacheService;
         }
 
 
@@ -229,23 +234,33 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             int recordsTotal, recordsFiltered;
 
-            // Setup IQueryable
-            var query = _dbContext.StockCard.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking()
-                        .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
+
+            /*********************************************/
+            /* Gyorsítás: a product-ot cache-ből töltjük */
+            /*********************************************/
+
+            // Először lekérdezünk
+            var preQuery = _dbContext.StockCard.AsNoTracking()
+                        .Include(w => w.Warehouse).AsNoTracking();
 
             // Count records total
-            recordsTotal = await query.CountAsync();
+            recordsTotal = await preQuery.CountAsync();
 
-            // filter data
+            FilterBy(ref preQuery, requestParameter.WarehouseID, requestParameter.StockCardDateFrom, requestParameter.StockCardDateTo, requestParameter.XRel, requestParameter.ProductID);
 
+            var resultList = await preQuery.ToListAsync();
 
+            //Ezután feltöltjük a cache-ből a productot
+            var prodCachedList = _productcacheService.ListCache();
+            resultList.ForEach(i =>
+                i.Product = prodCachedList.FirstOrDefault(f => f.ID == i.ProductID)
+                );
 
-            FilterBy(ref query, requestParameter.WarehouseID, requestParameter.StockCardDateFrom, requestParameter.StockCardDateTo, requestParameter.XRel, requestParameter.ProductID);
+            var query = resultList.AsQueryable();
+
 
             // Count records after filter
-            recordsFiltered = await query.CountAsync();
+            recordsFiltered = query.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -257,11 +272,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
+                //Kis heka...
                 if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
                 {
-                    //Kis heka...
                     query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
                                 s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCT)
+                {
+                    query = query.OrderBy(o => o.Product.Description);
                 }
                 else
                 {
@@ -280,7 +299,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await query.ToListAsync();
+            var resultData = query.ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetStockCardViewModel>();

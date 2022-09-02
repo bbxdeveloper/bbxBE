@@ -612,6 +612,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
 
             }
+
             // paging
             query = query
             .Skip((pageNumber - 1) * pageSize)
@@ -670,12 +671,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return resultDataModel;
         }
 
-        public List<Product> GetAllProductsRecordFromCache()
-        {
-            var resultData = _productcacheService.QueryCache().ToList();
-
-            return resultData;
-        }
 
         public async Task<List<Product>> GetAllProductsFromDBAsync()
         {

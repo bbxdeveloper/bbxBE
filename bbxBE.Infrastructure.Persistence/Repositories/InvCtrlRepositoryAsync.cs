@@ -21,6 +21,9 @@ using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using static bbxBE.Common.NAV.NAV_enums;
 using static bxBE.Application.Commands.cmdInvCtrl.createInvCtrlICPCommand;
+using bbxBE.Infrastructure.Persistence.Caches;
+using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -66,12 +69,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly IProductRepositoryAsync _productRepository;
+        private readonly ICacheService<Product> _productcacheService;
 
         public InvCtrlRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<InvCtrl> dataShaperInvCtrl,
             IDataShapeHelper<GetInvCtrlViewModel> dataShaperGetInvCtrlViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
-            IProductRepositoryAsync productRepository) : base(dbContext)
+            IProductRepositoryAsync productRepository,
+            ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperInvCtrl = dataShaperInvCtrl;
@@ -80,6 +85,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _productRepository = productRepository;
+            _productcacheService = productCacheService;
         }
         public async Task<InvCtrl> AddInvCtrlAsync(InvCtrl p_InvCtrl)
         {
@@ -221,14 +227,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var ID = requestParameter.ID;
             var item =  await _dbContext.InvCtrl.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
-                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
-                .Where(w => w.ID == ID && w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
-                        && !w.Deleted).SingleOrDefaultAsync();
+                .Where(w => w.ID == ID && !w.Deleted).SingleOrDefaultAsync();
+            
 
             if (item == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLNOTFOUND, ID));
             }
+            item.Product = _productcacheService.QueryCache().Where(w => w.ID == item.ProductID).SingleOrDefault();
 
             var itemModel = _mapper.Map<InvCtrl, GetInvCtrlViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
@@ -271,23 +277,33 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             int recordsTotal, recordsFiltered;
+            var prodCachedList = _productcacheService.ListCache();
 
-            // Setup IQueryable
-            var result = _dbContext.InvCtrl.AsNoTracking()
+            /*******************************************************************************************/
+            //Gyorsításként cache.bél töltjük fel a terméktörzset. Ezt nem lehet összehozni hatékonyan
+            //az EF linq-val, ezért először lekérdezzük a teljes listát, feltöltjük a termékekek és 
+            /*******************************************************************************************/
+            var resultList = await _dbContext.InvCtrl.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking()
-                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
-                .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
-                        && !w.Deleted);
+                .Include(i => i.InvCtrlPeriod).AsNoTracking()
+                .Include(s => s.Stock).AsNoTracking()
+                .Where(w => !w.Deleted && w.InvCtlPeriodID == InvCtrlPeriodID).ToListAsync();
+
+            resultList.ForEach(i =>
+                i.Product = prodCachedList.FirstOrDefault(f => f.ID == i.ProductID)
+                );
 
 
+            var query = resultList.AsQueryable();
             // Count records total
-            recordsTotal = await result.CountAsync();
+            //    recordsTotal = await result.CountAsync();
+            recordsTotal = query.Count();
 
             // filter data
-            FilterBy(ref result, InvCtrlPeriodID, searchString);
+            FilterBy(ref query, InvCtrlPeriodID, searchString);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered =  query.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -299,21 +315,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                //Kis heka...
+                if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
+                {
+                    query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCT)
+                {
+                    query = query.OrderBy(o => o.Product.Description);
+                }
+                else
+                {
+                    query = query.OrderBy(orderBy);
+                }
             }
+
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<InvCtrl>("new(" + fields + ")");
+                query = query.Select<InvCtrl>("new(" + fields + ")");
             }
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = query.ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetInvCtrlViewModel>();

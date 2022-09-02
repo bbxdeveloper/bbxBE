@@ -29,7 +29,6 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductAsync(QueryProduct requestParameters);
         Task<List<Product>> GetAllProductsFromDBAsync();
         List<GetProductViewModel> GetAllProductsFromCache();
-        List<Product> GetAllProductsRecordFromCache();
         Task RefreshProductCache();
     }
 }

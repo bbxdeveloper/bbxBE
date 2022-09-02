@@ -82,7 +82,7 @@ namespace bbxBE.WebApi
                  .Include(p => p.ProductCodes).AsNoTracking()
                  .Include(pg => pg.ProductGroup).AsNoTracking()
                  .Include(o => o.Origin).AsNoTracking()
-                 .Include(v => v.VatRate).AsNoTracking().Take(1000);
+                 .Include(v => v.VatRate).AsNoTracking(); //`.Take(1000);
 
 #endif
             
