@@ -159,7 +159,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (_productGroupCacheService.IsCacheEmpty())
                 {
                     pg = _dbContext.ProductGroup.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
-                    _dbContext.Entry(pg).State = EntityState.Unchanged;
                 }
                 else
                 {
@@ -168,6 +167,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 if (pg != null)
                 {
+                    _dbContext.Entry(pg).State = EntityState.Unchanged;
                     p_product.ProductGroupID = pg.ID;
                     p_product.ProductGroup = pg;
                 }
@@ -179,7 +179,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (_originCacheService.IsCacheEmpty())
                 {
                     og = _dbContext.Origin.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
-                    _dbContext.Entry(og).State = EntityState.Unchanged;
                 }
                 else
                 {
@@ -188,6 +187,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 if ( og != null)
                 {
+                    _dbContext.Entry(og).State = EntityState.Unchanged;
                     p_product.OriginID = og.ID;
                     p_product.Origin = og;
                 }
@@ -233,15 +233,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
+                try
+                {
+                    p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
 
-                p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
 
-                await _dbContext.Product.AddAsync(p_product);
+                    await _dbContext.Product.AddAsync(p_product);
 
-                await _dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
 
-                await dbContextTransaction.CommitAsync();
-                _productcacheService.AddOrUpdate(p_product);
+                    await dbContextTransaction.CommitAsync();
+                    _productcacheService.AddOrUpdate(p_product);
+                }
+                catch(Exception e)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
             }
             return p_product;
         }
