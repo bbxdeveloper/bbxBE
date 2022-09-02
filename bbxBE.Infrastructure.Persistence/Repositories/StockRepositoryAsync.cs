@@ -20,6 +20,8 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Common.Enums;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using bbxBE.Infrastructure.Persistence.Caches;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -35,6 +37,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
+        private readonly ICacheService<Product> _productcacheService;
 
         public StockRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Stock> dataShaperStock,
@@ -43,7 +46,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IStockCardRepositoryAsync stockCardRepository,
             IProductRepositoryAsync productRepository,
             IInvCtrlRepositoryAsync invCtrlRepository,
-            ICustomerRepositoryAsync customerRepository
+            ICustomerRepositoryAsync customerRepository,
+            ICacheService<Product> productcacheService  
           ) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -56,6 +60,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productRepository = productRepository;
             _invCtrlRepository = invCtrlRepository;
             _customerRepository = customerRepository;
+            _productcacheService = productcacheService;
         }
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
@@ -234,27 +239,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             int recordsTotal, recordsFiltered;
 
-            // Setup IQueryable
-            
-      
-            var query = _dbContext.Stock.AsNoTracking()
-                        .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+            /*********************************************/
+            /* Gyorsítás: a product-ot cache-ből töltjük */
+            /*********************************************/
+
+            //raktárra lekrédezés
+            var preQuery = _dbContext.Stock.AsNoTracking()
                         .Include(w => w.Warehouse).AsNoTracking()
-                        .Where( w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()));
-            /*
-            var result = _dbContext.Stock.AsNoTracking()
-                            .Include(p => p.Product).AsNoTracking()
-                            .Include(w => w.Warehouse).AsNoTracking()
-                            ;
-            */
+                        .Where(w => !w.Deleted && w.WarehouseID == requestParameter.WarehouseID);
+
             // Count records total
-            recordsTotal = await query.CountAsync();
+            recordsTotal = await preQuery.CountAsync();
+
+
+            var resultList = await preQuery.ToListAsync();
+
+            //Ezután feltöltjük a cache-ből a productot
+            var prodCachedList = _productcacheService.ListCache();
+            resultList.ForEach(i =>
+                i.Product = prodCachedList.FirstOrDefault(f => f.ID == i.ProductID)
+                );
+
+
+            var query = resultList.AsQueryable();
 
             // filter data
             FilterByParameters(ref query, requestParameter.WarehouseID, requestParameter.SearchString);
 
             // Count records after filter
-            recordsFiltered = await query.CountAsync();
+            recordsFiltered = query.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -266,18 +279,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
+                //Kis heka...
                 if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
                 {
-                    //Kis heka...
                     query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
                                 s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCT)
+                {
+                    query = query.OrderBy(o => o.Product.Description);
                 }
                 else
                 {
                     query = query.OrderBy(orderBy);
                 }
             }
-
 
 
             // select columns
@@ -291,7 +307,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await query.ToListAsync();
+            var resultData =  query.ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetStockViewModel>();
@@ -345,16 +361,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             int recordsTotal, recordsFiltered;
 
-            var invCtrlPeriod = await _dbContext.InvCtrlPeriod.AsNoTracking().Where( i=>i.ID == requestParameter.InvCtrlPeriodID).SingleOrDefaultAsync();
+            var invCtrlPeriod = await _dbContext.InvCtrlPeriod.AsNoTracking()
+                                        .Include(w => w.Warehouse).AsNoTracking()
+                                        .Where( i=>i.ID == requestParameter.InvCtrlPeriodID).SingleOrDefaultAsync();
             if (invCtrlPeriod == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, requestParameter.InvCtrlPeriodID));
             }
             var invCtrlItems = await _invCtrlRepository.GetInvCtrlICPRecordsByPeriodAsync(requestParameter.InvCtrlPeriodID);
-            var prodItems = _productRepository.GetAllProductsRecordFromCache();
+            var prodItems = _productcacheService.ListCache();
             var stockItems = await _dbContext.Stock.AsNoTracking()
-                                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes.Where(w=>w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())).AsNoTracking()
-                                .Where(w => w.WarehouseID == invCtrlPeriod.WarehouseID && !w.Deleted).ToListAsync();
+                             .Include(w => w.Warehouse).AsNoTracking()
+                             .Where(w => w.WarehouseID == invCtrlPeriod.WarehouseID && !w.Deleted).ToListAsync();
+
+            stockItems.ForEach(i =>
+                i.Product = prodItems.FirstOrDefault(f => f.ID == i.ProductID)
+                );
 
 
             var absenedItems = stockItems.Where(s =>
@@ -408,26 +430,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             };
 
             // set order by
-            IOrderedEnumerable<Stock> absenedItemsOrdered;
+            var absenedItemsOrdered = absenedItems.AsQueryable();
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
+                //Kis heka...
                 if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
                 {
-                    //Kis heka...
-                    absenedItems = absenedItems.OrderBy(o => o.Product.ProductCodes.Single(s =>
-                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue).ToList();
+                    absenedItemsOrdered = absenedItemsOrdered.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCT)
+                {
+                    absenedItemsOrdered = absenedItemsOrdered.OrderBy(o => o.Product.Description);
                 }
                 else
                 {
-                    absenedItems = absenedItems.OrderBy(p => p.GetType()
+                    absenedItemsOrdered = absenedItemsOrdered.OrderBy(p => p.GetType()
                                .GetProperty(orderBy)
-                               .GetValue(p, null)).ToList();
-
+                               .GetValue(p, null));
                 }
             }
 
 
-            var absenedItemsPaged = absenedItems.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            var absenedItemsPaged = absenedItemsOrdered.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
             // retrieve data to list
           

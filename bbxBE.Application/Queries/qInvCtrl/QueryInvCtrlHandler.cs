@@ -16,7 +16,7 @@ namespace bbxBE.Application.Queries.qInvCtrl
 {
     public class QueryInvCtrl : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
-        public long? InvCtrlPeriodID { get; set; }
+        public long InvCtrlPeriodID { get; set; }
         public string SearchString { get; set; }
     }
 

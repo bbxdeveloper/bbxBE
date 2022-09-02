@@ -22,6 +22,8 @@ using bbxBE.Common.Enums;
 using static bbxBE.Common.NAV.NAV_enums;
 using static bxBE.Application.Commands.cmdInvCtrl.createInvCtrlICPCommand;
 using bbxBE.Infrastructure.Persistence.Caches;
+using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -225,14 +227,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var ID = requestParameter.ID;
             var item =  await _dbContext.InvCtrl.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
-                .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
-                .Where(w => w.ID == ID && w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
-                        && !w.Deleted).SingleOrDefaultAsync();
+                .Where(w => w.ID == ID && !w.Deleted).SingleOrDefaultAsync();
+            
 
             if (item == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLNOTFOUND, ID));
             }
+            item.Product = _productcacheService.QueryCache().Where(w => w.ID == item.ProductID).SingleOrDefault();
 
             var itemModel = _mapper.Map<InvCtrl, GetInvCtrlViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
@@ -275,93 +277,33 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             int recordsTotal, recordsFiltered;
-            var prodCached = _productcacheService.QueryCache();
             var prodCachedList = _productcacheService.ListCache();
 
+            /*******************************************************************************************/
+            //Gyorsításként cache.bél töltjük fel a terméktörzset. Ezt nem lehet összehozni hatékonyan
+            //az EF linq-val, ezért először lekérdezzük a teljes listát, feltöltjük a termékekek és 
+            /*******************************************************************************************/
+            var resultList = await _dbContext.InvCtrl.AsNoTracking()
+                .Include(w => w.Warehouse).AsNoTracking()
+                .Include(i => i.InvCtrlPeriod).AsNoTracking()
+                .Include(s => s.Stock).AsNoTracking()
+                .Where(w => !w.Deleted && w.InvCtlPeriodID == InvCtrlPeriodID).ToListAsync();
 
-            // Setup IQueryable
-            IQueryable<InvCtrl> result = _dbContext.InvCtrl
-                //                .Include(w => w.Warehouse)
-                //                .Include(i => i.InvCtrlPeriod)
-                //                .Include(s => s.Stock)
-
-                .Join(prodCached, ic => ic.ProductID, p => p.ID, (ic, p) => new {ic, p})
-//                .Where(w => !w.ic.Deleted)
-                .Select( s => new InvCtrl()
-                {
-                    ID = s.ic.ID,
-                    CreateTime = s.ic.CreateTime,
-                    UpdateTime = s.ic.UpdateTime,
-                    Deleted = s.ic.Deleted,
-
-                    InvCtrlType = s.ic.InvCtrlType,
-                    WarehouseID = s.ic.WarehouseID,
-                    InvCtlPeriodID = s.ic.InvCtlPeriodID,
-                    ProductID = s.ic.ProductID,
-                    StockID = s.ic.StockID,
-                    InvCtrlDate = s.ic.InvCtrlDate,
-                    OCalcQty = s.ic.OCalcQty,
-                    ORealQty = s.ic.ORealQty,
-                    NCalcQty = s.ic.NCalcQty,
-                    NRealQty = s.ic.NRealQty,
-                    AvgCost = s.ic.AvgCost,
-
-                    UserID = s.ic.UserID,
-                    //                  Warehouse = s.ic.Warehouse,
-                    //                  InvCtrlPeriod = s.ic.InvCtrlPeriod,
-                    //                  Stock = s.ic.Stock
-//                    Product = prodCachedList.Where( p=> p.ID == s.ProductID).FirstOrDefault(),
-                });
-            
-            var q2 = from ic in _dbContext.InvCtrl
-                     join p in prodCached on ic.ProductID equals p.ID
-Select new InvCtrl()
-{
-    ID = s.ic.ID,
-    CreateTime = s.ic.CreateTime,
-    UpdateTime = s.ic.UpdateTime,
-    Deleted = s.ic.Deleted,
-
-    InvCtrlType = s.ic.InvCtrlType,
-    WarehouseID = s.ic.WarehouseID,
-    InvCtlPeriodID = s.ic.InvCtlPeriodID,
-    ProductID = s.ic.ProductID,
-    StockID = s.ic.StockID,
-    InvCtrlDate = s.ic.InvCtrlDate,
-    OCalcQty = s.ic.OCalcQty,
-    ORealQty = s.ic.ORealQty,
-    NCalcQty = s.ic.NCalcQty,
-    NRealQty = s.ic.NRealQty,
-    AvgCost = s.ic.AvgCost,
-
-    UserID = s.ic.UserID,
-    //                  Warehouse = s.ic.Warehouse,
-    //                  InvCtrlPeriod = s.ic.InvCtrlPeriod,
-    //                  Stock = s.ic.Stock
-    //                    Product = prodCachedList.Where( p=> p.ID == s.ProductID).FirstOrDefault(),
-}
-                     select new EmployeeData
-                     {
-                         EmployeeId = e.EmployeeId,
-                         FullName = e.FullName,
-                         Office = e.Office,
-                         Area = o.Area,
-                         Region = o.Region,
-                         OfficeName = o.Name,
-                         Position = e.Position,
-                         Languages = e.Languages
-                     };
+            resultList.ForEach(i =>
+                i.Product = prodCachedList.FirstOrDefault(f => f.ID == i.ProductID)
+                );
 
 
+            var query = resultList.AsQueryable();
             // Count records total
             //    recordsTotal = await result.CountAsync();
-            recordsTotal = result.Count();
+            recordsTotal = query.Count();
 
             // filter data
-            FilterBy(ref result, InvCtrlPeriodID, searchString);
+            FilterBy(ref query, InvCtrlPeriodID, searchString);
 
             // Count records after filter
-            recordsFiltered =  result.Count();
+            recordsFiltered =  query.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -373,21 +315,35 @@ Select new InvCtrl()
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                //Kis heka...
+                if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
+                {
+                    query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCT)
+                {
+                    query = query.OrderBy(o => o.Product.Description);
+                }
+                else
+                {
+                    query = query.OrderBy(orderBy);
+                }
             }
+
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<InvCtrl>("new(" + fields + ")");
+                query = query.Select<InvCtrl>("new(" + fields + ")");
             }
             // paging
-            result = result
+            query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = query.ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetInvCtrlViewModel>();

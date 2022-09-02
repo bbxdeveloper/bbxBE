@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using bbxBE.Common.Consts;
+using static bbxBE.Common.NAV.NAV_enums;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repository
 {
@@ -70,6 +73,5 @@ namespace bbxBE.Infrastructure.Persistence.Repository
                  .Set<T>()
                  .ToListAsync();
         }
-
     }
 }
