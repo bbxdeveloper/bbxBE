@@ -72,13 +72,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         _dbContext.Entry(p_invoice.Supplier).State = EntityState.Unchanged;
                     foreach (var il in p_invoice.InvoiceLines)
                     {
-                        /*
-                        _dbContext.Entry(il.Product.ProductGroup).State = EntityState.Detached;
-                        _dbContext.Entry(il.Product.VatRate).State = EntityState.Detached;
-                        */
-                        //              il.Product.ProductGroup = null;
-                        //              il.Product.VatRate = null;
                         _dbContext.Entry(il.Product).State = EntityState.Unchanged;
+                        _dbContext.Entry(il.Product.ProductGroup).State = EntityState.Unchanged;
 
                         if (il.VatRate != null)
                             _dbContext.Entry(il.VatRate).State = EntityState.Unchanged;
