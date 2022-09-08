@@ -22,6 +22,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Common.Enums;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using bbxBE.Infrastructure.Persistence.Caches;
+using System.Collections;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -65,16 +66,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
         {
-            var ret = new List<Stock>();
+            var lstStock = new List<Stock>();
 
             foreach (var invoiceLine in invoice.InvoiceLines)
             {
                 if (invoiceLine.ProductID.HasValue && invoiceLine.Product.IsStock)
                 {
 
-                    var stock = await _dbContext.Stock
+                    var stock = lstStock.FirstOrDefault(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID);
+                    if (stock == null)
+                    {
+
+                        stock = await _dbContext.Stock
                                 .Where(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID && !x.Deleted)
                                 .FirstOrDefaultAsync();
+                    }
 
                     if (stock == null)
                     {
@@ -117,18 +123,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     stock.AvgCost = latestStockCard.NAvgCost;
 
 
-                    _dbContext.Stock.Update(stock);
-
-                    ret.Add(stock);
+                    lstStock.Add(stock);
                 }
-
             }
-            return ret;
+            _dbContext.Stock.UpdateRange(lstStock);
+            return lstStock;
         }
 
         public async Task<List<Stock>> MaintainStockByInvCtrlAsync(List<InvCtrl> invCtrlList, string XRel)
         {
-            var ret = new List<Stock>();
+            var lstStock = new List<Stock>();
 
 
             var ownData = _customerRepository.GetOwnData();
@@ -139,9 +143,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var invCtrl in invCtrlList)
             {
 
-                var stock = await _dbContext.Stock
-                            .Where(x => x.WarehouseID == invCtrl.WarehouseID && x.ProductID == invCtrl.ProductID && !x.Deleted)
-                            .FirstOrDefaultAsync();
+                
+
+                var stock = lstStock.FirstOrDefault(x => x.WarehouseID == invCtrl.WarehouseID && x.ProductID == invCtrl.ProductID);
+                if (stock == null)
+                {
+
+                    stock = await _dbContext.Stock
+                             .Where(x => x.WarehouseID == invCtrl.WarehouseID && x.ProductID == invCtrl.ProductID && !x.Deleted)
+                             .FirstOrDefaultAsync();
+                }
 
                 if (stock == null)
                 {
@@ -177,14 +188,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 stock.AvgCost = invCtrl.AvgCost;
 
 
-                _dbContext.Stock.Update(stock);
 
                 invCtrl.StockID = stock.ID;
                 _dbContext.InvCtrl.Update(invCtrl);
 
-                ret.Add(stock);
+                lstStock.Add(stock);
             }
-            return ret;
+
+            _dbContext.Stock.UpdateRange(lstStock);
+
+            return lstStock;
         }
 
         public async Task<Entity> GetStockAsync(GetStock requestParameter)
