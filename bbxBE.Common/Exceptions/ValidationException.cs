@@ -12,6 +12,10 @@ namespace bbxBE.Common.Exceptions
             Errors = new List<string>();
         }
 
+        public ValidationException(List<string> errors) : base(bbxBEConsts.ERR_VALIDATION)
+        {
+            Errors = errors;
+        }
         public List<string> Errors { get; }
 
         public ValidationException(IEnumerable<ValidationFailure> failures)
