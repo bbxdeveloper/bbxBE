@@ -12,28 +12,28 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
 
-namespace bbxBE.Application.Queries.qUSR_USER
+namespace bbxBE.Application.Queries.qUser
 {
-    public class GetUSR_USER:  IRequest<Entity>
+    public class GetUser:  IRequest<Entity>
     {
         public long ID { get; set; }
         public string Fields { get; set; }
     }
 
-    public class GetUSR_USERHandler : IRequestHandler<GetUSR_USER, Entity>
+    public class GetUserHandler : IRequestHandler<GetUser, Entity>
     {
-        private readonly IUSR_USERRepositoryAsync _positionRepository;
+        private readonly IUserRepositoryAsync _positionRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetUSR_USERHandler(IUSR_USERRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetUserHandler(IUserRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
         {
             _positionRepository = positionRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<Entity> Handle(GetUSR_USER request, CancellationToken cancellationToken)
+        public async Task<Entity> Handle(GetUser request, CancellationToken cancellationToken)
         {
             var validFilter = request;
             var pagination = request;
@@ -52,10 +52,10 @@ namespace bbxBE.Application.Queries.qUSR_USER
             }
 */
             // query based on filter
-            var entity = await _positionRepository.GetUSR_USERAsync(validFilter);
+            var entity = await _positionRepository.GetUserAsync(validFilter);
 
 
-            var data = entity.MapItemFieldsByMapToAnnotation<GetUSR_USERViewModel>();
+            var data = entity.MapItemFieldsByMapToAnnotation<GetUsersViewModel>();
 
             // response wrapper
             return data;

@@ -1,6 +1,6 @@
 ﻿using bbxBE.Application.Commands.cmdCustomer;
 using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Application.Commands.cmdUSR_USER;
+using bbxBE.Application.Commands.cmdUser;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;

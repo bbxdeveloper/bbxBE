@@ -4,7 +4,7 @@ using bbxBE.Application.Commands.cmdCustomer;
 using bbxBE.Application.Commands.cmdOrigin;
 using bbxBE.Application.Commands.cmdProduct;
 using bbxBE.Application.Commands.cmdProductGroup;
-using bbxBE.Application.Commands.cmdUSR_USER;
+using bbxBE.Application.Commands.cmdUser;
 using bbxBE.Application.Commands.cmdWarehouse;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
@@ -30,19 +30,23 @@ namespace bbxBE.Command.Mappings
     {
         public MapCommands()
         {
-            CreateMap<CreateUSR_USERCommand, USR_USER>()
-             .ForMember(dst => dst.USR_NAME, opt => opt.MapFrom(src => src.Name))
-             .ForMember(dst => dst.USR_EMAIL, opt => opt.MapFrom(src => src.Email))
-             .ForMember(dst => dst.USR_LOGIN, opt => opt.MapFrom(src => src.LoginName))
-             .ForMember(dst => dst.USR_COMMENT, opt => opt.MapFrom(src => src.Comment));
+            CreateMap<createUserCommand, Users>();
+            /*
+         .ForMember(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
+         .ForMember(dst => dst.Email, opt => opt.MapFrom(src => src.Email))
+         .ForMember(dst => dst.LoginName, opt => opt.MapFrom(src => src.LoginName))
+         .ForMember(dst => dst.Comment, opt => opt.MapFrom(src => src.Comment));
+            */
 
-            CreateMap<UpdateUSR_USERCommand, USR_USER>()
-             .ForMember(dst => dst.USR_NAME, opt => opt.MapFrom(src => src.Name))
-             .ForMember(dst => dst.USR_EMAIL, opt => opt.MapFrom(src => src.Email))
-             .ForMember(dst => dst.USR_LOGIN, opt => opt.MapFrom(src => src.LoginName))
-             .ForMember(dst => dst.USR_COMMENT, opt => opt.MapFrom(src => src.Comment));
+            CreateMap<UpdateUserCommand, Users>();
+                /*
+             .ForMember(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
+             .ForMember(dst => dst.Email, opt => opt.MapFrom(src => src.Email))
+             .ForMember(dst => dst.LoginName, opt => opt.MapFrom(src => src.LoginName))
+             .ForMember(dst => dst.Comment, opt => opt.MapFrom(src => src.Comment));
+                */
 
-            CreateMap<DeleteUSR_USERCommand, USR_USER>();
+            CreateMap<DeleteUserCommand, Users>();
 
             CreateMap<CreateCustomerCommand, Customer>()
                 .ForMember(dst => dst.TaxpayerId,

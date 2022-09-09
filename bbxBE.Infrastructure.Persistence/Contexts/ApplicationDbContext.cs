@@ -25,7 +25,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
             _loggerFactory = loggerFactory;
         }
 
-        public DbSet<USR_USER> USR_USER { get; set; }
+        public DbSet<Users> Users { get; set; }
         public DbSet<Customer> Customer { get; set; }
         public DbSet<ProductGroup> ProductGroup { get; set; }
         public DbSet<Origin> Origin { get; set; }

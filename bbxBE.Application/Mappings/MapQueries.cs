@@ -16,7 +16,7 @@ namespace bbxBE.Queries.Mappings
     {
         public MapQueries()
         {
-            CreateMap<GetUSR_USERViewModel, USR_USER>().ReverseMap();
+            CreateMap<GetUsersViewModel, Users>().ReverseMap();
 
             CreateMap<GetCustomerViewModel, Customer>().ReverseMap();
             CreateMap<List<Customer>, List<GetCustomerViewModel>>().ReverseMap();

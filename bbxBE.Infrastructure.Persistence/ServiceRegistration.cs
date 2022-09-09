@@ -44,7 +44,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddSingleton<Database>();
 
             services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
-            services.AddTransient<IUSR_USERRepositoryAsync, USR_USERRepositoryAsync>();
+            services.AddTransient<IUserRepositoryAsync, UserRepositoryAsync>();
             services.AddTransient<ICustomerRepositoryAsync, CustomerRepositoryAsync>();
             services.AddTransient<IProductGroupRepositoryAsync, ProductGroupRepositoryAsync>();
             services.AddTransient<IOriginRepositoryAsync, OriginRepositoryAsync>();

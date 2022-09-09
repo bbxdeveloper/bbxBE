@@ -14,10 +14,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdUSR_USER
+namespace bbxBE.Application.Commands.cmdUser
 {
 
-    public class UpdateUSR_USERCommand : IRequest<Response<USR_USER>>
+    public class UpdateUserCommand : IRequest<Response<Users>>
     {
         public long ID { get; set; }
 
@@ -31,28 +31,28 @@ namespace bbxBE.Application.Commands.cmdUSR_USER
 
     }
 
-    public class UpdateUSR_USERCommandHandler : IRequestHandler<UpdateUSR_USERCommand, Response<USR_USER>>
+    public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Response<Users>>
     {
-        private readonly IUSR_USERRepositoryAsync _usrRepository;
+        private readonly IUserRepositoryAsync _usrRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public UpdateUSR_USERCommandHandler(IUSR_USERRepositoryAsync usrRepository, IMapper mapper, IConfiguration configuration)
+        public UpdateUserCommandHandler(IUserRepositoryAsync usrRepository, IMapper mapper, IConfiguration configuration)
         {
             _usrRepository = usrRepository;
             _mapper = mapper;
             _configuration = configuration;
         }
 
-        public async Task<Response<USR_USER>> Handle(UpdateUSR_USERCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Users>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
 
-            var usr = _mapper.Map<USR_USER>(request);
+            var usr = _mapper.Map<Users>(request);
 
-            usr.USR_PASSWDHASH = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt));
+            usr.PasswordHash = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt));
 
             await _usrRepository.UpdateAsync(usr);
-            return new Response<USR_USER>(usr);
+            return new Response<Users>(usr);
         }
 
 

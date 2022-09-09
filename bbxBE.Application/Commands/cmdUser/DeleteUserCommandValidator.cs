@@ -12,14 +12,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdUSR_USER
+namespace bbxBE.Application.Commands.cmdUser
 {
 
-    public class DeleteUSR_USERCommandValidator : AbstractValidator<DeleteUSR_USERCommand>
+    public class DeleteUserCommandValidator : AbstractValidator<DeleteUserCommand>
     {
-        private readonly IUSR_USERRepositoryAsync _usrRepository;
+        private readonly IUserRepositoryAsync _usrRepository;
 
-        public DeleteUSR_USERCommandValidator(IUSR_USERRepositoryAsync usrRepository)
+        public DeleteUserCommandValidator(IUserRepositoryAsync usrRepository)
         {
             this._usrRepository = usrRepository;
 

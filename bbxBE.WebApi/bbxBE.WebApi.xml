@@ -270,21 +270,21 @@
             <param name="filter"></param>
             <returns></returns>
         </member>
-        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Get(bbxBE.Application.Queries.qUSR_USER.GetUSR_USER)">
+        <member name="M:bbxBE.WebApi.Controllers.v1.UserController.Get(bbxBE.Application.Queries.qUser.GetUser)">
             <summary>
             GET: api/controller
             </summary>
             <param name="filter"></param>
             <returns></returns>
         </member>
-        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Query(bbxBE.Application.Queries.qUSR_USER.QueryUSR_USER)">
+        <member name="M:bbxBE.WebApi.Controllers.v1.UserController.Query(bbxBE.Application.Queries.qUser.QueryUser)">
             <summary>
             GET: api/controller
             </summary>
             <param name="filter"></param>
             <returns></returns>
         </member>
-        <member name="M:bbxBE.WebApi.Controllers.v1.USRController.Create(bbxBE.Application.Commands.cmdUSR_USER.CreateUSR_USERCommand)">
+        <member name="M:bbxBE.WebApi.Controllers.v1.UserController.Create(bbxBE.Application.Commands.cmdUser.createUserCommand)">
             <summary>
             POST api/controller
             </summary>

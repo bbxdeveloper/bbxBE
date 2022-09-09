@@ -32,7 +32,7 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Felhasználó")]
         [Description("Felhasználó")]
         [MapToEntity("UserName")]
-        public string USR_NAME { get; set; }
+        public string UserName { get; set; }
 
         [ColumnLabel("Számlasor ID")]
         [Description("Számlasor ID")]

@@ -12,32 +12,22 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdUSR_USER
+namespace bbxBE.Application.Commands.cmdUser
 {
 
-    public class UpdateUSR_USERCommandValidator : AbstractValidator<UpdateUSR_USERCommand>
+    public class createUserCommandValidator : AbstractValidator<createUserCommand>
     {
-        private readonly IUSR_USERRepositoryAsync _usrRepository;
+        private readonly IUserRepositoryAsync _userRepository;
 
-        public UpdateUSR_USERCommandValidator(IUSR_USERRepositoryAsync usrRepository)
+        public createUserCommandValidator(IUserRepositoryAsync userRepository)
         {
-            this._usrRepository = usrRepository;
-
-            RuleFor(p => p.ID)
-                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
-
+            this._userRepository = userRepository;
 
             RuleFor(p => p.Name)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
-                .MustAsync(
-                    async (model,Name, cancellation) =>
-                    {
-                        return await IsUniqueNameAsync(Name, model.ID, cancellation);
-                    }
-                ).WithMessage(bbxBEConsts.ERR_EXISTS);
+                .MustAsync(IsUniqueNameAsync).WithMessage(bbxBEConsts.ERR_EXISTS);
 
             RuleFor(p => p.Email)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
@@ -52,22 +42,20 @@ namespace bbxBE.Application.Commands.cmdUSR_USER
 
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.ERR_MAXLEN);
-            
         }
 
-       
-        private async Task<bool> IsUniqueNameAsync(string p_USR_NAME, long p_ID, CancellationToken cancellationToken)
+        private async Task<bool> IsUniqueNameAsync(string p_UserName, CancellationToken cancellationToken)
         {
-                return await _usrRepository.IsUniqueNameAsync(p_USR_NAME, p_ID);
+            return await _userRepository.IsUniqueNameAsync(p_UserName);
         }
-        private async Task<bool> IsValidEmailAsync(string p_USR_EMAIL, CancellationToken cancellationToken)
+        private async Task<bool> IsValidEmailAsync(string p_Email, CancellationToken cancellationToken)
         {
 
             ParserOptions po = new ParserOptions();
             po.AllowAddressesWithoutDomain = false;
             po.AddressParserComplianceMode = RfcComplianceMode.Strict;
 
-            return await Task.FromResult(MailboxAddress.TryParse(po, p_USR_EMAIL, out _)).ConfigureAwait(false);
+            return await Task.FromResult(MailboxAddress.TryParse(po, p_Email, out _)).ConfigureAwait(false);
         }
     }
 
