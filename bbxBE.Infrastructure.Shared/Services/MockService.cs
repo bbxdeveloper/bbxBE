@@ -7,10 +7,10 @@ namespace bbxBE.Infrastructure.Shared.Services
 {
     public class MockService : IMockService
     {
-        public List<USR_USER> GetUsers(int rowCount)
+        public List<Users> GetUsers(int rowCount)
         {
     
-            var usrFaker = new USR_USERInsertBogusConfig();
+            var usrFaker = new UserInsertBogusConfig();
             return usrFaker.Generate(rowCount);
  
             }

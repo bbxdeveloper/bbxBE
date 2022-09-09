@@ -19,7 +19,7 @@ namespace bbxBE.Application.Queries
         {
 
        
-            services.AddScoped<IDataShapeHelper<USR_USER>, DataShapeHelper<USR_USER>>();
+            services.AddScoped<IDataShapeHelper<Users>, DataShapeHelper<Users>>();
 
             services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
             services.AddScoped<IDataShapeHelper<GetCustomerViewModel>, DataShapeHelper<GetCustomerViewModel>>();

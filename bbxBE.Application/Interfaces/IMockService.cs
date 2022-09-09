@@ -5,7 +5,7 @@ namespace bbxBE.Application.Interfaces
 {
     public interface IMockService
     {
-        List<USR_USER> GetUsers(int rowCount);
+        List<Users> GetUsers(int rowCount);
 
     }
 }

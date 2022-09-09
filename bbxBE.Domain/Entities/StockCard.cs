@@ -131,7 +131,7 @@ namespace bbxBE.Domain.Entities
         [ForeignKey("UserID")]
         [ColumnLabel("Felhasználó")]
         [Description("Felhasználó")]
-        public virtual USR_USER User { get; set; }
+        public virtual Users User { get; set; }
 
         [ForeignKey("InvoiceLineID")]
         [ColumnLabel("Számlasor")]

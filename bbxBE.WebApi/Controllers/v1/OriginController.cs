@@ -1,5 +1,5 @@
 ﻿using bbxBE.Application.Commands.cmdOrigin;
-using bbxBE.Application.Commands.cmdUSR_USER;
+using bbxBE.Application.Commands.cmdUser;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qOrigin;
 using bbxBE.Application.Wrappers;

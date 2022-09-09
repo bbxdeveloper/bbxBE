@@ -14,9 +14,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdUSR_USER
+namespace bbxBE.Application.Commands.cmdUser
 {
-    public class CreateUSR_USERCommand : IRequest<Response<USR_USER>>
+    public class createUserCommand : IRequest<Response<Users>>
     {
         public string Name { get; set; }
         public string Email { get; set; }
@@ -27,26 +27,26 @@ namespace bbxBE.Application.Commands.cmdUSR_USER
 
     }
 
-    public class CreateUSR_USERCommandHandler : IRequestHandler<CreateUSR_USERCommand, Response<USR_USER>>
+    public class CreateUserCommandHandler : IRequestHandler<createUserCommand, Response<Users>>
     {
-        private readonly IUSR_USERRepositoryAsync _usrRepository;
+        private readonly IUserRepositoryAsync _userRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateUSR_USERCommandHandler(IUSR_USERRepositoryAsync usrRepository, IMapper mapper, IConfiguration configuration)
+        public CreateUserCommandHandler(IUserRepositoryAsync userRepository, IMapper mapper, IConfiguration configuration)
         {
-            _usrRepository = usrRepository;
+            _userRepository = userRepository;
             _mapper = mapper;
             _configuration = configuration;
         }
 
-        public async Task<Response<USR_USER>> Handle(CreateUSR_USERCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Users>> Handle(createUserCommand request, CancellationToken cancellationToken)
         {
-            var usr = _mapper.Map<USR_USER>(request);
-            usr.USR_PASSWDHASH = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt));
+            var usr = _mapper.Map<Users>(request);
+            usr.PasswordHash = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt));
 
-            await _usrRepository.AddAsync(usr);
-            return new Response<USR_USER>(usr);
+            await _userRepository.AddAsync(usr);
+            return new Response<Users>(usr);
         }
 
 

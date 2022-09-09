@@ -1,4 +1,4 @@
-﻿using bbxBE.Application.Commands.cmdUSR_USER;
+﻿using bbxBE.Application.Commands.cmdUser;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qStock;
 using bbxBE.Application.Wrappers;

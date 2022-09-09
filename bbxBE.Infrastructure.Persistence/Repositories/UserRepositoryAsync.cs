@@ -13,22 +13,22 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.BLL;
-using bbxBE.Application.Queries.qUSR_USER;
+using bbxBE.Application.Queries.qUser;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
-    public class USR_USERRepositoryAsync : GenericRepositoryAsync<USR_USER>, IUSR_USERRepositoryAsync
+    public class UserRepositoryAsync : GenericRepositoryAsync<Users>, IUserRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private IDataShapeHelper<USR_USER> _dataShaper;
+        private IDataShapeHelper<Users> _dataShaper;
         private readonly IModelHelper _modelHelper;
         private readonly IMockService _mockData;
 
-        public USR_USERRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<USR_USER> dataShaper, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
+        public UserRepositoryAsync(ApplicationDbContext dbContext,
+            IDataShapeHelper<Users> dataShaper, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaper = dataShaper;
@@ -37,9 +37,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
  
-        public async Task<bool> IsUniqueNameAsync(string USR_NAME, long? ID = null)
+        public async Task<bool> IsUniqueNameAsync(string UserName, long? ID = null)
         {
-            return !await _dbContext.USR_USER.AnyAsync(p => p.USR_NAME == USR_NAME && p.USR_ACTIVE && (ID == null || p.ID != ID.Value));
+            return !await _dbContext.Users.AnyAsync(p => p.Name == UserName && p.Active && (ID == null || p.ID != ID.Value));
          }
 
 
@@ -54,7 +54,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return true;
         }
      
-        public async Task<Entity> GetUSR_USERAsync(GetUSR_USER requestParameter)
+        public async Task<Entity> GetUserAsync(GetUser requestParameter)
         {
           
             var ID = requestParameter.ID;
@@ -73,7 +73,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUSR_USERAsync(QueryUSR_USER requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUserAsync(QueryUser requestParameter)
         {
 
             var SearchString = requestParameter.SearchString;
@@ -82,11 +82,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetUSR_USERViewModel, USR_USER>();
+            var fields = _modelHelper.GetQueryableFields<GetUsersViewModel, Users>();
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _dbContext.USR_USER
+            var result = _dbContext.Users
                 .AsNoTracking()
                 .AsExpandable();
 
@@ -115,7 +115,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<USR_USER>("new(" + fields + ")");
+                result = result.Select<Users>("new(" + fields + ")");
             }
             // paging
             result = result
@@ -130,7 +130,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterByColumns(ref IQueryable<USR_USER> p_USR, string SearchString)
+        private void FilterByColumns(ref IQueryable<Users> p_USR, string SearchString)
         {
             if (!p_USR.Any())
                 return;
@@ -138,10 +138,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if ( string.IsNullOrEmpty(SearchString) )
                 return;
 
-            var predicate = PredicateBuilder.New<USR_USER>();
+            var predicate = PredicateBuilder.New<Users>();
 
     
-            predicate = predicate.And(p => p.USR_NAME.Contains(SearchString.Trim())|| p.USR_LOGIN.Contains(SearchString.Trim()));
+            predicate = predicate.And(p => p.Name.Contains(SearchString.Trim())|| p.LoginName.Contains(SearchString.Trim()));
 
             p_USR = p_USR.Where(predicate);
         }

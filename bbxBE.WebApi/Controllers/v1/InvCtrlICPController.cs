@@ -1,6 +1,6 @@
 ﻿using bbxBE.Application.Commands.cmdInvCtrl;
 using bbxBE.Application.Commands.cmdInvCtrlPeriod;
-using bbxBE.Application.Commands.cmdUSR_USER;
+using bbxBE.Application.Commands.cmdUser;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qInvCtrl;
 using bbxBE.Application.Wrappers;

@@ -1,5 +1,5 @@
 ﻿using bbxBE.Application.Commands.cmdWarehouse;
-using bbxBE.Application.Commands.cmdUSR_USER;
+using bbxBE.Application.Commands.cmdUser;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qWarehouse;
 using bbxBE.Application.Wrappers;
