@@ -86,7 +86,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             if (!bOK)
             {
                 _logger.LogError($"{className} cache LOCKED");
-                throw new LockedCacheException(string.Format($"{className}:"+bbxBEConsts.ERR_LOCKEDCACHE));
+                throw new LockedCacheException(string.Format($"{className}:" + bbxBEConsts.ERR_LOCKEDCACHE));
             }
 
             try
@@ -112,5 +112,11 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             }
 
         }
+
+        public void EmptyCache()
+        {
+            Cache = new System.Collections.Concurrent.ConcurrentDictionary<long, T>();
+        }
+
     }
 }

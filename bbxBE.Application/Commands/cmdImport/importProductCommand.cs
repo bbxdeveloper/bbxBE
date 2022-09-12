@@ -24,6 +24,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using bbxBE.Application.Commands.ResultModels;
+using bbxBE.Application.Interfaces;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
@@ -54,6 +55,13 @@ namespace bbxBE.Application.Commands.cmdImport
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IProductGroupRepositoryAsync _productGroupRepository;
         private readonly IOriginRepositoryAsync _originRepository;
+
+        private readonly ICacheService<Product> _productcacheService;
+        private readonly ICacheService<ProductGroup> _productGroupCacheService;
+        private readonly ICacheService<Origin> _originCacheService;
+        private readonly ICacheService<VatRate> _vatRateCacheService;
+
+
         //private readonly IUnitOfMEasure
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
@@ -68,13 +76,22 @@ namespace bbxBE.Application.Commands.cmdImport
                                             IProductGroupRepositoryAsync productGroupCodeRepository,
                                             IOriginRepositoryAsync originRepository,
                                             IMapper mapper,
-                                            ILogger<ImportProductCommandHandler> logger)
-        {
+                                            ILogger<ImportProductCommandHandler> logger,
+                                              ICacheService<Product> productCacheService,
+                                            ICacheService<ProductGroup> productGroupCacheService,
+                                            ICacheService<Origin> originCacheService,
+                                            ICacheService<VatRate> vatRateCacheService
+          )
+        { 
             _productRepository = productRepository;
             _productGroupRepository = productGroupCodeRepository;
             _originRepository = originRepository;
             _mapper = mapper;
             _logger = logger;
+            _productcacheService = productCacheService;
+            _productGroupCacheService = productGroupCacheService;
+            _originCacheService = originCacheService;
+            _vatRateCacheService = vatRateCacheService;
         }
 
         public async Task<Response<ImportedItemsStatistics>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
@@ -83,6 +100,12 @@ namespace bbxBE.Application.Commands.cmdImport
             var productItemsFromCSV = await GetProductItemsAsync(request, mappedProductColumns.productMap);
             var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };
             var productCodes = new Dictionary<string, long>();
+
+            _productcacheService.EmptyCache();
+            _productGroupCacheService.EmptyCache();
+            _originCacheService.EmptyCache();
+            _vatRateCacheService.EmptyCache();
+
 
             // Get Products from Db/Cache and filter to OWN category.
             var pCodes = await _productRepository.GetAllProductsFromDBAsync();
@@ -157,11 +180,11 @@ namespace bbxBE.Application.Commands.cmdImport
             }
 
             // create product groups into DB
-            await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
 
             // create origin into DB
             await _originRepository.AddOriginRangeAsync(createableOriginCodes);
 
+            await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
 
             // save Prodcuts list into DB. They need to create only
             try

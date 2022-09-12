@@ -169,7 +169,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     _dbContext.Entry(pg).State = EntityState.Unchanged;
                     p_product.ProductGroupID = pg.ID;
-                    p_product.ProductGroup = pg;
+    //                p_product.ProductGroup = pg;
                 }
             }
 
@@ -189,7 +189,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     _dbContext.Entry(og).State = EntityState.Unchanged;
                     p_product.OriginID = og.ID;
-                    p_product.Origin = og;
+  //                  p_product.Origin = og;
                 }
             }
 
@@ -216,9 +216,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
             }
-            _dbContext.Entry(vr).State = EntityState.Unchanged;
+   //         _dbContext.Entry(vr).State = EntityState.Unchanged;
             p_product.VatRateID = vr.ID;
-            p_product.VatRate = vr;
+//            p_product.VatRate = vr;
 
             foreach (var pc in p_product.ProductCodes)
             {
@@ -287,7 +287,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 productCodes.AddRange(product.ProductCodes);
             }
             await _dbContext.BulkInsertAsync(productCodes);
-            await RefreshProductCache();            
+  //          await RefreshProductCache();            
             await _dbContext.SaveChangesAsync();
 
             return item;

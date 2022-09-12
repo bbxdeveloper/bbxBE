@@ -18,6 +18,7 @@ using bbxBE.Application.Queries.qOrigin;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -57,8 +58,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public bool IsUniqueOriginCode(string OriginCode, long? ID = null)
         {
-            var query = _cacheService.QueryCache();
-            return !query.ToList().Any(p => p.OriginCode == OriginCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+            if (_cacheService.IsCacheEmpty())
+            {
+                return !_dbContext.Origin.Any(p => p.OriginCode == OriginCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+            }
+            else
+            {
+                var query = _cacheService.QueryCache();
+                return !query.ToList().Any(p => p.OriginCode == OriginCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+            }
         }
 
         public async Task<Origin> AddOriginAsync(Origin p_origin)
@@ -82,7 +90,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 await dbContextTransaction.CommitAsync();
             }
-            await RefreshOriginCache();
+       //   await RefreshOriginCache();
             return p_originList.Count();
         }
 
