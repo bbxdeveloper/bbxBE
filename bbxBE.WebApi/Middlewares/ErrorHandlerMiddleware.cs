@@ -100,6 +100,9 @@ namespace bbxBE.WebApi.Middlewares
                             response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         }
                         break;
+                    case UnauthorizedAccessException e:
+                        response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        break;
                     case Exception e:
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         processInnerExceptions(e, responseModel);

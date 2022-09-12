@@ -1,10 +1,10 @@
-﻿using bbxBE.Application.Commands.cmdProductGroup;
+﻿using bbxBE.Application.Commands.cmdCounter;
 using bbxBE.Application.Commands.cmdUser;
 using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Queries.qProductGroup;
+using bbxBE.Application.Queries.qCounter;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
-using bxBE.Application.Commands.cmdProductGroup;
+using bxBE.Application.Commands.cmdCounter;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -17,16 +17,14 @@ namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
  //   [Authorize]
-    public class ProductGroupController : BaseApiController
+    public class AuthController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        private readonly IHttpContextAccessor _context;
-        public ProductGroupController( IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
+        public AuthController( IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
-            _context = context;
         }
 
 
@@ -36,7 +34,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetProductGroup filter)
+        public async Task<IActionResult> Get([FromQuery] GetCounter filter)
         {
             return Ok(await Mediator.Send(filter));
         }
@@ -47,7 +45,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryProductGroup filter)
+        public async Task<IActionResult> Query([FromQuery] QueryCounter filter)
         {
             return Ok(await Mediator.Send(filter));
         }
@@ -58,7 +56,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create(CreateProductGroupCommand command)
+        public async Task<IActionResult> Create(CreateCounterCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
@@ -67,14 +65,23 @@ namespace bbxBE.WebApi.Controllers.v1
         // POST: USRController/Edit/5
         [HttpPut]
  //       [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(UpdateProductGroupCommand command)
+        public async Task<IActionResult> Update(UpdateCounterCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+
+        // POST: USRController/Edit/5
+        [HttpPatch]
+        //       [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GetNextNumber(GetNextNumberCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
 
         // GET: USRController/Delete/5
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery] DeleteProductGroupCommand command)
+        public async Task<IActionResult> Delete([FromQuery] DeleteCounterCommand command)
         {
             return Ok(await Mediator.Send(command));
         }

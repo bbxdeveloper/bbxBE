@@ -44,7 +44,7 @@ namespace bbxBE.WebApi
             services.AddHealthChecks();
             //API Security
             services.AddJWTAuthentication(_config);
-            services.AddAuthorizationPolicies(_config);
+            services.AddAuthorizationPolicies_ÁTALAKÍTANI(_config);
             // API version
             services.AddApiVersioningExtension();
             // API explorer

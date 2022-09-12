@@ -125,19 +125,21 @@ namespace bbxBE.WebApi.Extensions
                 options.RequireHttpsMetadata = false;
             });
         }
-        public static void AddAuthorizationPolicies(this IServiceCollection services, IConfiguration configuration)
+        public static void AddAuthorizationPolicies_ÁTALAKÍTANI(this IServiceCollection services, IConfiguration configuration)
         {
             string hradmin = configuration["ApiRoles:HRAdminRole"],
                     manager = configuration["ApiRoles:ManagerRole"], employee = configuration["ApiRoles:EmployeeRole"];
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(AuthorizationConsts.HrAdminPolicy, policy => policy.RequireAssertion(context => HasRole(context.User, hradmin)));
-                options.AddPolicy(AuthorizationConsts.ManagerPolicy, policy => policy.RequireAssertion(context => HasRole(context.User, manager) || HasRole(context.User, hradmin)));
-                options.AddPolicy(AuthorizationConsts.EmployeePolicy, policy => policy.RequireAssertion(context => HasRole(context.User, employee) || HasRole(context.User, manager) || HasRole(context.User, hradmin)));
+                options.AddPolicy(AuthorizationConsts.HrAdminPolicy, policy => policy.RequireAssertion(context => HasRole_ÁTALAKÍTANI(context.User, hradmin)));
+                options.AddPolicy(AuthorizationConsts.ManagerPolicy, policy => policy.RequireAssertion(context => HasRole_ÁTALAKÍTANI(context.User, manager) || HasRole_ÁTALAKÍTANI(context.User, hradmin)));
+                options.AddPolicy(AuthorizationConsts.EmployeePolicy, policy => policy.RequireAssertion(context => HasRole_ÁTALAKÍTANI(context.User, employee) || HasRole_ÁTALAKÍTANI(context.User, manager) || HasRole_ÁTALAKÍTANI(context.User, hradmin)));
             });
+
+
         }
-        public static bool HasRole(ClaimsPrincipal user, string role)
+        public static bool HasRole_ÁTALAKÍTANI(ClaimsPrincipal user, string role)
         {
             if (string.IsNullOrEmpty(role))
                 return false;
