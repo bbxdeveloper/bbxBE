@@ -29,12 +29,25 @@ namespace bbxBE.Infrastructure.Persistence
             }
             else
             {
-
+                
                 services.AddDbContext<ApplicationDbContext>(options =>
-               options.UseSqlServer(
-                   configuration.GetConnectionString("bbxdbconnection"),
-                   b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
+                   options.UseSqlServer(
+                       configuration.GetConnectionString("bbxdbconnection"),
+                       b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)
+                       ),
+                       contextLifetime: ServiceLifetime.Transient,
+                        optionsLifetime: ServiceLifetime.Singleton
                );
+                
+                /*
+                services.AddDbContextFactory<ApplicationDbContext>(options =>
+                   options.UseSqlServer(
+                       configuration.GetConnectionString("bbxdbconnection")),
+                       ServiceLifetime.Scoped
+               );
+                */
+         
+
             }
 
             // Connection Dappernak
@@ -60,7 +73,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IInvCtrlRepositoryAsync, InvCtrlRepositoryAsync>();
 
 
-                
+            
             services.AddSingleton<ICacheService<Product>, ProductCacheService>();
             services.AddSingleton<ICacheService<Customer>, CustomerCacheService>();
             services.AddSingleton<ICacheService<ProductGroup>, ProductGroupCacheService>();
