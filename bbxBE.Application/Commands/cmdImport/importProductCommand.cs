@@ -157,7 +157,7 @@ namespace bbxBE.Application.Commands.cmdImport
             // fill update Product items in Update list
             for (int i = 0; i < updateProductCommands.Count; i++)
             {
-                CreateOrUpdateProductionAsync(updateProductCommands[i], cancellationToken);
+                await CreateOrUpdateProductionAsync(updateProductCommands[i], cancellationToken);
             }
 
             // save Prodcuts list into DB. They need to update only

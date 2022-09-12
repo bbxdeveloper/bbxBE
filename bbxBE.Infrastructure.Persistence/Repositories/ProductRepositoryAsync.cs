@@ -167,7 +167,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 if (pg != null)
                 {
-                    _dbContext.Entry(pg).State = EntityState.Unchanged;
+     //               _dbContext.Entry(pg).State = EntityState.Unchanged;
                     p_product.ProductGroupID = pg.ID;
     //                p_product.ProductGroup = pg;
                 }
@@ -187,7 +187,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 if ( og != null)
                 {
-                    _dbContext.Entry(og).State = EntityState.Unchanged;
+//                    _dbContext.Entry(og).State = EntityState.Unchanged;
                     p_product.OriginID = og.ID;
   //                  p_product.Origin = og;
                 }
