@@ -101,10 +101,10 @@ namespace bbxBE.Application.Commands.cmdImport
             var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };
             var productCodes = new Dictionary<string, long>();
 
-            _productcacheService.EmptyCache();
-            _productGroupCacheService.EmptyCache();
-            _originCacheService.EmptyCache();
-            _vatRateCacheService.EmptyCache();
+            //_productcacheService.EmptyCache();
+            //_productGroupCacheService.EmptyCache();
+            //_originCacheService.EmptyCache();
+            //_vatRateCacheService.EmptyCache();
 
 
             // Get Products from Db/Cache and filter to OWN category.
@@ -351,10 +351,15 @@ namespace bbxBE.Application.Commands.cmdImport
                 createPRoductCommand.UnitPrice1 = productMapper.ContainsKey(UnitPrice1FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice1FieldName]]) : 0;
                 createPRoductCommand.UnitPrice2 = productMapper.ContainsKey(UnitPrice2FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice2FieldName]]) : 0;
                 createPRoductCommand.IsStock = productMapper.ContainsKey(IsStockFieldName) ? bool.Parse(currentFieldsArray[productMapper[IsStockFieldName]]) : true;
-                createPRoductCommand.MinStock = productMapper.ContainsKey(MinStockFieldName) ? decimal.Parse(currentFieldsArray[productMapper[MinStockFieldName]]) : 0;
+                createPRoductCommand.MinStock = productMapper.ContainsKey(MinStockFieldName) ?
+                    string.IsNullOrEmpty(currentFieldsArray[productMapper[MinStockFieldName]]) ? 0 :
+                    decimal.Parse(currentFieldsArray[productMapper[MinStockFieldName]]) : 0;
                 createPRoductCommand.OrdUnit = productMapper.ContainsKey(OrdUnitFieldName) ? decimal.Parse(currentFieldsArray[productMapper[OrdUnitFieldName]]) : 0;
                 createPRoductCommand.ProductFee = productMapper.ContainsKey(ProductFeeFieldName) ? decimal.Parse(currentFieldsArray[productMapper[ProductFeeFieldName]]) : 0;
-                createPRoductCommand.Active = productMapper.ContainsKey(ActiveFieldName) ? (currentFieldsArray[productMapper[ActiveFieldName]] == "1" ? true : false) : false;
+                createPRoductCommand.Active = productMapper.ContainsKey(ActiveFieldName) ?
+                    (currentFieldsArray[productMapper[ActiveFieldName]] == "1" || currentFieldsArray[productMapper[ActiveFieldName]] == "IGAZ" ? 
+                    true : false) 
+                    : false;
                 createPRoductCommand.EAN = productMapper.ContainsKey(EANFieldName) ? currentFieldsArray[productMapper[EANFieldName]].Replace("\"", "").Trim() : null;
                 createPRoductCommand.VTSZ = productMapper.ContainsKey(VTSZFieldName) ? currentFieldsArray[productMapper[VTSZFieldName]].Replace("\"", "").Trim() : null;
                 createPRoductCommand.ProductGroupCode = productMapper.ContainsKey(ProductGroupCodeFieldName) ? currentFieldsArray[productMapper[ProductGroupCodeFieldName]].Replace("\"", "").Trim() : null;
