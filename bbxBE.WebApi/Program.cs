@@ -41,8 +41,6 @@ namespace bbxBE.WebApi
             {
                 var services = scope.ServiceProvider;
 
-
-
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
                 try
                 {
@@ -70,63 +68,34 @@ namespace bbxBE.WebApi
             //***********
             //* Product *
             //***********
-            var dbc = services.GetService<ApplicationDbContext>();
-#if !DEBUG
-                    var qProdc = dbc.Product.AsNoTracking()
-                         .Include(p => p.ProductCodes).AsNoTracking()
-                         .Include(pg => pg.ProductGroup).AsNoTracking()
-                         .Include(o => o.Origin).AsNoTracking()
-                         .Include(v => v.VatRate).AsNoTracking();
-#else
-            var qProdc = dbc.Product.AsNoTracking()
-                 .Include(p => p.ProductCodes).AsNoTracking()
-                 .Include(pg => pg.ProductGroup).AsNoTracking()
-                 .Include(o => o.Origin).AsNoTracking()
-                 .Include(v => v.VatRate).AsNoTracking().Take(1000);
-
-#endif
-            
             var prodCache = services.GetService<ICacheService<Product>>();
-            Task.Run(() => prodCache.RefreshCache(qProdc)).Wait();
-
+            Task.Run(() => prodCache.RefreshCache()).Wait();
 
             //***********
             //* VatRate *
             //***********
-            var qvatc = dbc.VatRate
-                        .AsNoTracking()
-                        .AsExpandable();
             var vatCache = services.GetService<ICacheService<VatRate>>();
-            Task.Run(() => vatCache.RefreshCache(qvatc)).Wait();
+            Task.Run(() => vatCache.RefreshCache()).Wait();
+        
 
             //************
             //* Customer *
             //************
-            var qCust = dbc.Customer
-                        .AsNoTracking()
-                        .AsExpandable();
             var custCache = services.GetService<ICacheService<Customer>>();
-            Task.Run(() => custCache.RefreshCache(qCust)).Wait();
+            Task.Run(() => custCache.RefreshCache()).Wait();
 
 
             //**********
             //* Origin *
             //**********
-            var qOrigin = dbc.Origin
-                    .AsNoTracking()
-                    .AsExpandable();
-
             var originCache = services.GetService<ICacheService<Origin>>();
-            Task.Run(() => originCache.RefreshCache(qOrigin)).Wait();
+            Task.Run(() => originCache.RefreshCache()).Wait();
 
             //****************
             //* ProductGroup *
             //****************
-            var qProductGroup = dbc.ProductGroup
-                            .AsNoTracking()
-                            .AsExpandable();
             var productGroupCache = services.GetService<ICacheService<ProductGroup>>();
-            Task.Run(() => productGroupCache.RefreshCache(qProductGroup)).Wait();
+            Task.Run(() => productGroupCache.RefreshCache()).Wait();
 
         }
 

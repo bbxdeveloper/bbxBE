@@ -18,6 +18,7 @@ using bbxBE.Application.Queries.qProductGroup;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
+using bbxBE.Infrastructure.Persistence.Caches;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -54,8 +55,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public bool IsUniqueProductGroupCode(string ProductGroupCode, long? ID = null)
         {
-            var query = _cacheService.QueryCache();
-            return !query.ToList().Any(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+
+            if (_cacheService.IsCacheEmpty())
+            {
+                return !_dbContext.ProductGroup.AsNoTracking().Any(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted && (ID == null || p.ID != ID.Value)); ;
+            }
+            else
+            {
+                var query = _cacheService.QueryCache();
+                return !query.ToList().Any(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+            }
+
         }
 
         public async Task<ProductGroup> AddProudctGroupAsync(ProductGroup p_productGroup)
@@ -76,7 +86,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 await _dbContext.ProductGroup.AddRangeAsync(p_productGroupList);
                 await _dbContext.SaveChangesAsync();
 
-                await RefreshProductGroupCache();
+                //await RefreshProductGroupCache();
             return p_productGroupList.Count;
         }
 
@@ -92,7 +102,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             _dbContext.ProductGroup.UpdateRange(p_productGroupList);
             await _dbContext.SaveChangesAsync();
-            await RefreshProductGroupCache();
+            //await RefreshProductGroupCache();
             return p_productGroupList.Count;
         }
 
