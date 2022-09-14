@@ -26,6 +26,7 @@ using System.Linq;
 using bbxBE.Application.Commands.ResultModels;
 using System.Globalization;
 using Telerik.Reporting.Drawing;
+using bbxBE.Application.Interfaces;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
@@ -101,12 +102,6 @@ namespace bbxBE.Application.Commands.cmdImport
             var productItemsFromCSV = await GetProductItemsAsync(request, mappedProductColumns.productMap);
             var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };
             var productCodes = new Dictionary<string, long>();
-
-            _productcacheService.EmptyCache();
-            _productGroupCacheService.EmptyCache();
-            _originCacheService.EmptyCache();
-            _vatRateCacheService.EmptyCache();
-
 
             // Get Products from Db/Cache and filter to OWN category.
             var pCodes = await _productRepository.GetAllProductsFromDBAsync();

@@ -111,6 +111,9 @@ namespace bbxBE.Common.Consts
         public static string ERR_NAV_TAXPAYER = "A lekérdezéshez használt adószámnak 8 jeygűnek kell lennie!";
 
 
+        public static string ERR_CACHE_NOTUSED = "A gyorsítótár nincs használatban:{0}!";
+
+
         public static string VATCODE_27 = "27%";
         public static string VATCODE_KBAET = "KBAET";
         public static string VATCODE_FA = "FA";
