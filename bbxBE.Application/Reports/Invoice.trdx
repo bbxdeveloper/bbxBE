@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report DataSourceName="webServiceDataSource1" Width="18cm" Name="invoice" Zoom="2" SnapGridSize="0.1cm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
+<Report DataSourceName="webServiceDataSource1" Width="18cm" Name="invoice" SnapGridSize="0.1cm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;1&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;&quot;,&quot;FullData&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;12&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbetestcustomer.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;,&quot;FullData&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Query" Name="ID">
           <Value>
@@ -27,7 +27,7 @@
     </WebServiceDataSource>
   </DataSources>
   <Items>
-    <PageHeaderSection Height="6.7cm" Name="pageHeaderSection1">
+    <PageHeaderSection Height="7.3cm" Name="pageHeaderSection1">
       <Items>
         <Panel Width="9.7cm" Height="1cm" Left="8.3cm" Top="0cm" Name="panel1">
           <Items>
@@ -701,7 +701,7 @@
   </Items>
   <PageSettings PaperKind="A4" Landscape="False" ContinuousPaper="False">
     <Margins>
-      <MarginsU Left="1.5cm" Right="1.5cm" Top="1cm" Bottom="1cm" />
+      <MarginsU Left="1cm" Right="1cm" Top="1cm" Bottom="1cm" />
     </Margins>
   </PageSettings>
   <StyleSheet>
@@ -761,17 +761,17 @@
   <ReportParameters>
     <ReportParameter Name="InvoiceID" Type="Integer" Text="InvoiceID" Visible="True">
       <Value>
-        <String>1</String>
+        <String>12</String>
       </Value>
     </ReportParameter>
     <ReportParameter Name="BaseURL" Visible="True">
       <Value>
-        <String>https://bbxbe.azurewebsites.net</String>
+        <String>https://bbxbetestcustomer.azurewebsites.net</String>
       </Value>
     </ReportParameter>
     <ReportParameter Name="JWT" AllowNull="True">
       <Value>
-        <String></String>
+        <String>1234</String>
       </Value>
     </ReportParameter>
     <ReportParameter Name="FullData" Type="Boolean" Text="FullData">

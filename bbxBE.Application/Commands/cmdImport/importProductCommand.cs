@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using AutoMapper.Configuration;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Commands.cmdProduct;
@@ -24,7 +24,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using bbxBE.Application.Commands.ResultModels;
-using bbxBE.Application.Interfaces;
+using System.Globalization;
+using Telerik.Reporting.Drawing;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
@@ -342,6 +343,9 @@ namespace bbxBE.Application.Commands.cmdImport
 
             var createPRoductCommand = new CreateProductCommand();
 
+            //var ci = new System.Globalization.CultureInfo("en-GB");
+            //var numberStyle = NumberStyles.AllowDecimalPoint;
+
             try
             {
                 createPRoductCommand.Description = productMapper.ContainsKey(DescriptionFieldName) ? currentFieldsArray[productMapper[DescriptionFieldName]].Replace("\"", "").Trim() : null;
@@ -351,10 +355,15 @@ namespace bbxBE.Application.Commands.cmdImport
                 createPRoductCommand.UnitPrice1 = productMapper.ContainsKey(UnitPrice1FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice1FieldName]]) : 0;
                 createPRoductCommand.UnitPrice2 = productMapper.ContainsKey(UnitPrice2FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice2FieldName]]) : 0;
                 createPRoductCommand.IsStock = productMapper.ContainsKey(IsStockFieldName) ? bool.Parse(currentFieldsArray[productMapper[IsStockFieldName]]) : true;
-                createPRoductCommand.MinStock = productMapper.ContainsKey(MinStockFieldName) ? decimal.Parse(currentFieldsArray[productMapper[MinStockFieldName]]) : 0;
+                createPRoductCommand.MinStock = productMapper.ContainsKey(MinStockFieldName) ?
+                    string.IsNullOrEmpty(currentFieldsArray[productMapper[MinStockFieldName]]) ? 0 :
+                    decimal.Parse(currentFieldsArray[productMapper[MinStockFieldName]]) : 0;
                 createPRoductCommand.OrdUnit = productMapper.ContainsKey(OrdUnitFieldName) ? decimal.Parse(currentFieldsArray[productMapper[OrdUnitFieldName]]) : 0;
                 createPRoductCommand.ProductFee = productMapper.ContainsKey(ProductFeeFieldName) ? decimal.Parse(currentFieldsArray[productMapper[ProductFeeFieldName]]) : 0;
-                createPRoductCommand.Active = productMapper.ContainsKey(ActiveFieldName) ? (currentFieldsArray[productMapper[ActiveFieldName]] == "1" ? true : false) : false;
+                createPRoductCommand.Active = productMapper.ContainsKey(ActiveFieldName) ?
+                    (currentFieldsArray[productMapper[ActiveFieldName]] == "1" || currentFieldsArray[productMapper[ActiveFieldName]] == "IGAZ" ?
+                    true : false)
+                    : false;
                 createPRoductCommand.EAN = productMapper.ContainsKey(EANFieldName) ? currentFieldsArray[productMapper[EANFieldName]].Replace("\"", "").Trim() : null;
                 createPRoductCommand.VTSZ = productMapper.ContainsKey(VTSZFieldName) ? currentFieldsArray[productMapper[VTSZFieldName]].Replace("\"", "").Trim() : null;
                 createPRoductCommand.ProductGroupCode = productMapper.ContainsKey(ProductGroupCodeFieldName) ? currentFieldsArray[productMapper[ProductGroupCodeFieldName]].Replace("\"", "").Trim() : null;

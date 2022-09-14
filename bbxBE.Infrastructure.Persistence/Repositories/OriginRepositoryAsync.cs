@@ -1,4 +1,4 @@
-﻿using LinqKit;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -90,7 +90,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 await dbContextTransaction.CommitAsync();
             }
-       //   await RefreshOriginCache();
+
+            //await RefreshOriginCache();
             return p_originList.Count();
         }
 
@@ -122,7 +123,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
             //                await dbContextTransaction.CommitAsync();
 
-            await RefreshOriginCache();
+            //await RefreshOriginCache();
 
             //Product cache aktualizálás (ha fel van töltve)
             if (!_productCacheService.IsCacheEmpty())

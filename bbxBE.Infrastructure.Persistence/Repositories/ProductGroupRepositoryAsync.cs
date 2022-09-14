@@ -86,7 +86,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 await _dbContext.ProductGroup.AddRangeAsync(p_productGroupList);
                 await _dbContext.SaveChangesAsync();
 
-                await RefreshProductGroupCache();
+                //await RefreshProductGroupCache();
             return p_productGroupList.Count;
         }
 
@@ -102,7 +102,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             _dbContext.ProductGroup.UpdateRange(p_productGroupList);
             await _dbContext.SaveChangesAsync();
-            await RefreshProductGroupCache();
+            //await RefreshProductGroupCache();
             return p_productGroupList.Count;
         }
 
