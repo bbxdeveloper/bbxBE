@@ -17,25 +17,29 @@ using bbxBE.Common.Locking;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Linq.Dynamic.Core;
+using bbxBE.Infrastructure.Persistence.Contexts;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class BaseCacheService<T> : ICacheService<T> where T : BaseEntity
     {
         public System.Collections.Concurrent.ConcurrentDictionary<long, T> Cache { get; private set; } = new System.Collections.Concurrent.ConcurrentDictionary<long, T>();
-        private IQueryable<T> _cacheQuery = null;
+        internal IQueryable<T> _cacheQuery = null;
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
         private readonly ILoggerFactory _loggerFactory;
+        internal readonly ApplicationDbContext _dbContext;
 
         private readonly string _cacheID;
-        public BaseCacheService(ILoggerFactory loggerFactory, IConfiguration p_Configuration)
+        public BaseCacheService(ILoggerFactory loggerFactory, IConfiguration p_Configuration, ApplicationDbContext dbContext)
         {
             //            _logger = p_Logger;
             _configuration = p_Configuration;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger("CacheService");
             _cacheID = System.Guid.NewGuid().ToString();
+            _dbContext = dbContext;
         }
 
         public bool TryGetValue(long ID, out T value)
@@ -86,7 +90,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             if (!bOK)
             {
                 _logger.LogError($"{className} cache LOCKED");
-                throw new LockedCacheException(string.Format($"{className}:"+bbxBEConsts.ERR_LOCKEDCACHE));
+                throw new LockedCacheException(string.Format($"{className}:" + bbxBEConsts.ERR_LOCKEDCACHE));
             }
 
             try
@@ -112,5 +116,11 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             }
 
         }
+
+        public void EmptyCache()
+        {
+            Cache = new System.Collections.Concurrent.ConcurrentDictionary<long, T>();
+        }
+
     }
 }
