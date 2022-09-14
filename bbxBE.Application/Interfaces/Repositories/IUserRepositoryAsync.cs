@@ -17,6 +17,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 
         Task<Entity> GetUserAsync(GetUser requestParameters);
         Task<Users> GetUserRecordByNameAsync(string name);
+        Task<Users> GetUserRecordByLoginNameAsync(string name);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUserAsync(QueryUser requestParameters);
     }
 }

@@ -42,8 +42,15 @@ namespace bbxBE.WebApi
             // CORS
             services.AddCorsExtension();
             services.AddHealthChecks();
+            
+            
             //API Security
+            
+            
             services.AddJWTAuthentication(_config);
+
+
+
             services.AddAuthorizationPolicies_ÁTALAKÍTANI(_config);
             // API version
             services.AddApiVersioningExtension();

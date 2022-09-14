@@ -21,7 +21,7 @@ namespace bbxBE.Application.Commands.cmdAuth
     {
         public LoginCommandValidator()
         {
-            RuleFor(p => p.Name)
+            RuleFor(p => p.LoginName)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(p => p.Password)

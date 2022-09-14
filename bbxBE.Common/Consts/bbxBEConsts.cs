@@ -12,6 +12,12 @@ namespace bbxBE.Common.Consts
         public static string CNTRY_HU = "HU";
         public static string CONF_PwdSalt = "PwdSalt";
 
+        public static string CONF_JWTSettings = "JWTSettings";
+        public static string CONF_JWTKey = "Key";
+        public static string CONF_JWTIssuer = "Issuer";
+        public static string CONF_JWTAudience = "Audience";
+        public static string CONF_JWTDurationInMinutes = "DurationInMinutes";
+
         public const string DEF_DATEFORMAT = "yyyy-MM-dd";
 
 

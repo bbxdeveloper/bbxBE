@@ -1,16 +1,20 @@
-﻿using IdentityModel;
+﻿using bbxBE.Common.Consts;
+using IdentityModel;
 using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 
 namespace bbxBE.WebApi.Extensions
@@ -117,14 +121,42 @@ namespace bbxBE.WebApi.Extensions
         }
         public static void AddJWTAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
+            var JWTKey = configuration["JWTSettings:Key"];
+            var JWTIssuer = configuration["JWTSettings:Issuer"];
+            var JWTAudience = configuration["JWTSettings:Audience"];
 
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = JWTIssuer,
+                    ValidAudience = JWTAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTKey)),
+                    TokenDecryptionKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTKey)),
+                    ClockSkew = TimeSpan.Zero   //https://stackoverflow.com/questions/39728519/jwtsecuritytoken-doesnt-expire-when-it-should
+                        };
+                    });
+            /* ori
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
             .AddIdentityServerAuthentication(options =>
             {
                 options.Authority = configuration["Sts:ServerUrl"];
                 options.RequireHttpsMetadata = false;
             });
+            */
         }
+
+
         public static void AddAuthorizationPolicies_ÁTALAKÍTANI(this IServiceCollection services, IConfiguration configuration)
         {
             string hradmin = configuration["ApiRoles:HRAdminRole"],

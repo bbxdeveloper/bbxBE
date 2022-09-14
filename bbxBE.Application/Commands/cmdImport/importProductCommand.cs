@@ -26,6 +26,7 @@ using System.Linq;
 using bbxBE.Application.Commands.ResultModels;
 using System.Globalization;
 using Telerik.Reporting.Drawing;
+using bbxBE.Application.Interfaces;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
