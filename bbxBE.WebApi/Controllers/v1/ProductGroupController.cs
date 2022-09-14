@@ -21,10 +21,12 @@ namespace bbxBE.WebApi.Controllers.v1
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        public ProductGroupController( IWebHostEnvironment env, IConfiguration conf)
+        private readonly IHttpContextAccessor _context;
+        public ProductGroupController( IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
+            _context = context;
         }
 
 

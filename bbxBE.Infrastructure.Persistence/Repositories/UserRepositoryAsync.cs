@@ -39,7 +39,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
  
         public async Task<bool> IsUniqueNameAsync(string UserName, long? ID = null)
         {
-            return !await _dbContext.Users.AnyAsync(p => p.Name == UserName && p.Active && (ID == null || p.ID != ID.Value));
+            return !await _dbContext.Users.AnyAsync(p => p.Name.ToUpper() == UserName.ToUpper() && p.Active && (ID == null || p.ID != ID.Value));
          }
 
 
@@ -53,14 +53,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             return true;
         }
-     
+
         public async Task<Entity> GetUserAsync(GetUser requestParameter)
         {
-          
+
             var ID = requestParameter.ID;
 
             var user = await GetByIdAsync(ID);
-      
+
             var fields = requestParameter.Fields;
 
             if (user == null)
@@ -72,6 +72,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var shapeData = _dataShaper.ShapeData(user, fields);
 
             return shapeData;
+        }
+        public async Task<Users> GetUserRecordByNameAsync(string name)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(p => p.Name.ToUpper() == name.ToUpper());
+        }
+        public async Task<Users> GetUserRecordByLoginNameAsync(string loginName)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(p => p.LoginName.ToUpper() == loginName.ToUpper());
         }
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUserAsync(QueryUser requestParameter)
         {

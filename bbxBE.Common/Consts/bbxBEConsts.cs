@@ -12,6 +12,12 @@ namespace bbxBE.Common.Consts
         public static string CNTRY_HU = "HU";
         public static string CONF_PwdSalt = "PwdSalt";
 
+        public static string CONF_JWTSettings = "JWTSettings";
+        public static string CONF_JWTKey = "Key";
+        public static string CONF_JWTIssuer = "Issuer";
+        public static string CONF_JWTAudience = "Audience";
+        public static string CONF_JWTDurationInMinutes = "DurationInMinutes";
+
         public const string DEF_DATEFORMAT = "yyyy-MM-dd";
 
 
@@ -55,6 +61,7 @@ namespace bbxBE.Common.Consts
         public static string ERR_INVOICENOTFOUND = "Számla/szállítólevél nem található, ID:{0} ";
         public static string ERR_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
         public static string ERR_USERNOTFOUND = "Felhasználó nem található, ID:{0} ";
+        public static string ERR_USERNOTFOUND2 = "Felhasználó nem található, név:{0} ";
         public static string ERR_WAREHOUSENOTFOUND = "Raktár nem található, Kód:{0}";
         public static string ERR_STOCKNOTFOUND = "Raktárkészlet nem található, ID:{0} ";
         public static string ERR_STOCKCARDNOTFOUND = "Készletkarton nem található, ID:{0} ";
