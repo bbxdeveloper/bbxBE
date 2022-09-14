@@ -45,18 +45,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _cacheService = productGroupCacheService;
-
-            /*
-            var t = RefreshProductGroupCache_OBSOLED();
-            t.GetAwaiter().GetResult();
-            */
         }
 
 
         public bool IsUniqueProductGroupCode(string ProductGroupCode, long? ID = null)
         {
 
-            if (_cacheService.IsCacheEmpty())
+            if (_cacheService.IsCacheNull())
             {
                 return !_dbContext.ProductGroup.AsNoTracking().Any(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted && (ID == null || p.ID != ID.Value)); ;
             }
@@ -86,7 +81,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 await _dbContext.ProductGroup.AddRangeAsync(p_productGroupList);
                 await _dbContext.SaveChangesAsync();
 
-                //await RefreshProductGroupCache();
+                await RefreshProductGroupCache();
             return p_productGroupList.Count;
         }
 
@@ -102,7 +97,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             _dbContext.ProductGroup.UpdateRange(p_productGroupList);
             await _dbContext.SaveChangesAsync();
-            //await RefreshProductGroupCache();
+            await RefreshProductGroupCache();
             return p_productGroupList.Count;
         }
 
@@ -244,21 +239,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task RefreshProductGroupCache()
         {
-            _cacheService.RefreshCache();
+            await _cacheService.RefreshCache();
         }
 
-        public async Task RefreshProductGroupCache_OBSOLED()
-        {
-            if (_cacheService.IsCacheEmpty())
-            {
-                var q = _dbContext.ProductGroup
-                .AsNoTracking()
-                .AsExpandable();
-                await _cacheService.RefreshCache(q);
-
-            }
-
-        }
+ 
 
     }
 }

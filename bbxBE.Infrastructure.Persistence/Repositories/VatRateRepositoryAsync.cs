@@ -215,7 +215,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task RefreshVatRateCache()
         {
 
-            if (_cacheService.IsCacheEmpty())
+            if (_cacheService.IsCacheNull())
             {
 
                 var q = _dbContext.VatRate

@@ -49,16 +49,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _cacheService = originGroupCacheService;
             _productCacheService = productCacheService;
 
-            /*
-            var t = RefreshOriginCache_OBSOLED();
-            t.GetAwaiter().GetResult();
-            */
         }
 
 
         public bool IsUniqueOriginCode(string OriginCode, long? ID = null)
         {
-            if (_cacheService.IsCacheEmpty())
+            if (_cacheService.IsCacheNull())
             {
                 return !_dbContext.Origin.Any(p => p.OriginCode == OriginCode && !p.Deleted && (ID == null || p.ID != ID.Value));
             }
@@ -91,7 +87,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 await dbContextTransaction.CommitAsync();
             }
 
-            //await RefreshOriginCache();
+            await RefreshOriginCache();
             return p_originList.Count();
         }
 
@@ -104,7 +100,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _cacheService.AddOrUpdate(p_origin);
 
             //Product cache aktualizálás (ha fel van töltve)
-            if (!_productCacheService.IsCacheEmpty())
+            if (!_productCacheService.IsCacheNull())
             {
                 foreach (var prod in _productCacheService.QueryCache())
                 {
@@ -126,7 +122,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //await RefreshOriginCache();
 
             //Product cache aktualizálás (ha fel van töltve)
-            if (!_productCacheService.IsCacheEmpty())
+            if (!_productCacheService.IsCacheNull())
             {
                 await _productCacheService.RefreshCache();
             }
@@ -295,17 +291,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task RefreshOriginCache()
         {
             await _cacheService.RefreshCache();
-        }
-
-        public async Task RefreshOriginCache_OBSOLED()
-        {
-            if (_cacheService.IsCacheEmpty())
-            {
-                var q = _dbContext.Origin
-                .AsNoTracking()
-                .AsExpandable();
-                await _cacheService.RefreshCache(q);
-            }
         }
     }
 }

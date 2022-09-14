@@ -84,12 +84,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productGroupCacheService = productGroupCacheService;
             _originCacheService = originCacheService;
             _vatRateCacheService = vatRateCacheService;
-
-            
-            // Task.Run(() => this.RefreshProductCache_OBSOLED()).Wait();
-            // Task.Run(() => this.RefreshVatRateCache_OBSOLED()).Wait();
-
-
         }
 
        
@@ -114,7 +108,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CheckProductGroupCodeAsync(string ProductGroupCode)
         {
-            if (_productGroupCacheService.IsCacheEmpty())
+            if (_productGroupCacheService.IsCacheNull())
             {
                 return await _dbContext.ProductGroup.AnyAsync(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted);
             }
@@ -127,7 +121,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CheckOriginCodeAsync(string OriginCode)
         {
-            if (_originCacheService.IsCacheEmpty())
+            if (_originCacheService.IsCacheNull())
             {
                 return await _dbContext.Origin.AnyAsync(p => p.OriginCode == OriginCode && !p.Deleted);
             }
@@ -140,7 +134,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> CheckVatRateCodeAsync(string VatRateCode)
         {
-            if (_vatRateCacheService.IsCacheEmpty())
+            if (_vatRateCacheService.IsCacheNull())
             {
                 return await _dbContext.VatRate.AnyAsync(p => p.VatRateCode == VatRateCode && !p.Deleted);
             }
@@ -156,7 +150,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
             {
                 ProductGroup pg;
-                if (_productGroupCacheService.IsCacheEmpty())
+                if (_productGroupCacheService.IsCacheNull())
                 {
                     pg = _dbContext.ProductGroup.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
                 }
@@ -178,7 +172,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!string.IsNullOrWhiteSpace(p_OriginCode))
             {
                 Origin og;
-                if (_originCacheService.IsCacheEmpty())
+                if (_originCacheService.IsCacheNull())
                 {
                     og = _dbContext.Origin.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
                 }
@@ -199,7 +193,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             VatRate vr;
             if (!string.IsNullOrWhiteSpace(p_VatRateCode))
             {
-                if (_vatRateCacheService.IsCacheEmpty())
+                if (_vatRateCacheService.IsCacheNull())
                 {
                     vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode); 
                 }
@@ -292,7 +286,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             await _dbContext.BulkInsertAsync(productCodes);
 
-            //await RefreshProductCache();            
+            await RefreshProductCache();            
             await _dbContext.SaveChangesAsync();
 
             return item;
@@ -321,7 +315,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
                 {
                     ProductGroup pg = null;
-                    if (_productGroupCacheService.IsCacheEmpty())
+                    if (_productGroupCacheService.IsCacheNull())
                     {
 
                         pg =  _dbContext.ProductGroup.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
@@ -342,7 +336,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     Origin origin = null;
 
-                    if (_originCacheService.IsCacheEmpty())
+                    if (_originCacheService.IsCacheNull())
                     {
 
                         origin = _dbContext.Origin.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
@@ -364,7 +358,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     VatRate vatRate = null;
 
 
-                    if (_vatRateCacheService.IsCacheEmpty())
+                    if (_vatRateCacheService.IsCacheNull())
                     {
 
                         vatRate = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
@@ -700,23 +694,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _productcacheService.RefreshCache();
         }
 
-        public async Task RefreshVatRateCache_OBSOLED()
-        {
-
-            if (_vatRateCacheService.IsCacheEmpty())
-            {
-
-                var q = _dbContext.VatRate
-                .AsNoTracking()
-                .AsExpandable();
-                await _vatRateCacheService.RefreshCache(q);
-/*
-                foreach (var entry in _vatRateCacheService.Cache)
-                {
-                    _dbContext.Entry(entry.Value).State = EntityState.Detached;
-                }
-*/
-            }
-        }
     }
 }

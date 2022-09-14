@@ -24,7 +24,8 @@ namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class BaseCacheService<T> : ICacheService<T> where T : BaseEntity
     {
-        public System.Collections.Concurrent.ConcurrentDictionary<long, T> Cache { get; private set; } = new System.Collections.Concurrent.ConcurrentDictionary<long, T>();
+        //        public System.Collections.Concurrent.ConcurrentDictionary<long, T> Cache { get; private set; } = new System.Collections.Concurrent.ConcurrentDictionary<long, T>();
+        public System.Collections.Concurrent.ConcurrentDictionary<long, T> Cache { get; private set; } = null;
         internal IQueryable<T> _cacheQuery = null;
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
@@ -44,36 +45,71 @@ namespace bbxBE.Infrastructure.Persistence.Caches
 
         public bool TryGetValue(long ID, out T value)
         {
-            value = null;
-            return Cache.TryGetValue(ID, out value);
+            if (!IsCacheNull())
+            {
+                value = null;
+                return Cache.TryGetValue(ID, out value);
+            }
+            else
+            {
+                throw new CacheException(bbxBEConsts.ERR_CACHE_NOTUSED, typeof(T).FullName);
+            }
         }
 
         public T AddOrUpdate(T value)
         {
-            T prod = null;
-            prod = Cache.AddOrUpdate(value.ID, value, (key, oldValue) => value);
-            return prod;
+            if (!IsCacheNull())
+            {
+                T prod = null;
+                prod = Cache.AddOrUpdate(value.ID, value, (key, oldValue) => value);
+                return prod;
+            }
+            else
+            {
+                throw new CacheException(bbxBEConsts.ERR_CACHE_NOTUSED, typeof(T).FullName);
+            }
         }
 
         public bool TryRemove(T value)
         {
-            bool succeed = false;
-            succeed = Cache.TryRemove(value.ID, out value);
-            return succeed;
+            if (!IsCacheNull())
+            {
+                bool succeed = false;
+                succeed = Cache.TryRemove(value.ID, out value);
+                return succeed;
+            }
+            else
+            {
+                throw new CacheException(bbxBEConsts.ERR_CACHE_NOTUSED, typeof(T).FullName);
+            }
         }
 
-        public bool IsCacheEmpty()
+        public bool IsCacheNull()
         {
-            return Cache == null || Cache.Count() == 0;
+            return _cacheQuery == null || Cache == null;
         }
 
         public IQueryable<T> QueryCache()
         {
-            return Cache.Values.AsQueryable();
+            if (!IsCacheNull())
+            {
+                return Cache.Values.AsQueryable();
+            }
+            else
+            {
+                throw new CacheException(bbxBEConsts.ERR_CACHE_NOTUSED, typeof(T).FullName);
+            }
         }
         public IList<T> ListCache()
         {
-            return Cache.Values.ToList();
+            if (!IsCacheNull())
+            {
+                return Cache.Values.ToList();
+            }
+            else
+            {
+                throw new CacheException(bbxBEConsts.ERR_CACHE_NOTUSED, typeof(T).FullName);
+            }
         }
 
         private static LockProvider<string> CacheLockProvider = new LockProvider<string>();
