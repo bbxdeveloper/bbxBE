@@ -15,7 +15,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             : base(loggerFactory, p_Configuration, dbContext)
         {
 #if !DEBUG
-           _cacheQueryc = _dbContext.Product.AsNoTracking()
+           _cacheQuery = _dbContext.Product.AsNoTracking()
                          .Include(p => p.ProductCodes).AsNoTracking()
                          .Include(pg => pg.ProductGroup).AsNoTracking()
                          .Include(o => o.Origin).AsNoTracking()

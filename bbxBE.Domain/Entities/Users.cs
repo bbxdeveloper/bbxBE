@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
-
+using System.Text.Json.Serialization;
 
 namespace bbxBE.Domain.Entities
 {
@@ -20,6 +20,7 @@ namespace bbxBE.Domain.Entities
         public string LoginName { get; set; }
 
         [IgnoreDataMemberAttribute]
+        [JsonIgnoreAttribute]
         public string PasswordHash { get; set; }
 
         [DataMember]

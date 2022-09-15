@@ -21,7 +21,7 @@ using bbxBE.Application.Commands.ResultModels;
 
 namespace bxBE.Application.Commands.cmdAuth
 {
-    public class LoginCommand : IRequest<Response<JWTToken>>
+    public class LoginCommand : IRequest<Response<LoginInfo>>
     {
 
         public string LoginName { get; set; }
@@ -31,7 +31,7 @@ namespace bxBE.Application.Commands.cmdAuth
     }
 
 
-    public class LoginCommandHandler : IRequestHandler<LoginCommand, Response<JWTToken>>
+    public class LoginCommandHandler : IRequestHandler<LoginCommand, Response<LoginInfo>>
     {
         private readonly IUserRepositoryAsync _userRepositoryAsync;
         private readonly IMapper _mapper;
@@ -46,7 +46,7 @@ namespace bxBE.Application.Commands.cmdAuth
             _logger = logger;
         }
 
-        public async Task<Response<JWTToken>> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<Response<LoginInfo>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Logging:{request.LoginName}");
 
@@ -70,7 +70,7 @@ namespace bxBE.Application.Commands.cmdAuth
 
             var token = BllAuth.GenerateJSONWebToken(usr, JWTKey, JWTIssuer, JWTDurationInMinutes);
 
-            return new Response<JWTToken>(new JWTToken() {  Token = token});
+            return new Response<LoginInfo>(new LoginInfo() {  Token = token, User = usr});
         }
 
 
