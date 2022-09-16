@@ -127,6 +127,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
             _dbContext.Stock.UpdateRange(lstStock);
+            await _dbContext.SaveChangesAsync();
             return lstStock;
         }
 

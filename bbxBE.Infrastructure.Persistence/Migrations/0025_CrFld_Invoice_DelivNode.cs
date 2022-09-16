@@ -69,6 +69,17 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                end",
                "B" + enInvoiceType.DNI.ToString() + "_" + bbxBEConsts.DEF_WAREHOUSE,
                bbxBEConsts.DEF_WAREHOUSE, "B" + enInvoiceType.DNI.ToString() + "_" + bbxBEConsts.DEF_WAREHOUSE, "Szolnok bev. szállító", "BEVS-", 1, 5, "/", ""));
+
+
+            Delete.Index("INX_StockCardDate")
+                        .OnTable("StockCard");
+
+            Create.Index("INX_StockCardDate")
+                   .OnTable("StockCard")
+                   .OnColumn("StockCardDate").Descending()
+                   .OnColumn("ID").Descending()
+                   .WithOptions().NonClustered();
+
         }
     }
 }

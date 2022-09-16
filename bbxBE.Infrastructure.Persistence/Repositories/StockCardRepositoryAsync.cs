@@ -191,7 +191,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 latestStockCard = f;
             }
-
+            await _dbContext.SaveChangesAsync();
             return latestStockCard;
         }
 
