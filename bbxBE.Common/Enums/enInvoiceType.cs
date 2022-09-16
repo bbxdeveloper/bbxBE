@@ -9,9 +9,11 @@ namespace bbxBE.Common.Enums
     {
         [Description("Számla")]
         INV,
-        [Description("Szállítólevél")]
-        DLV,
+        [Description("Kimenő szállítólevél")]
+        DNO,
         [Description("Bevételezés")]
-        INC
+        INC,
+        [Description("Bejövő szállítólevél")]
+        DNI
     }
 }

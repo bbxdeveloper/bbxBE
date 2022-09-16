@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static bbxBE.Common.NAV.NAV_enums;
+using bbxBE.Common.NAV;
 
 namespace bxBE.Application.Commands.cmdInvoice
 {
@@ -213,7 +214,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			  "lineGrossAmount": 1270
 			}
 		  ]
-		}
+		}	
 
 
 		 */
@@ -229,7 +230,10 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 
 				//ID-k feloldása
-				request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;      //Átmenetileg
+				if (!string.IsNullOrWhiteSpace(request.WarehouseCode))
+				{
+					request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;      //Átmenetileg
+				}
 
 				var wh = await _WarehouseRepository.GetWarehouseByCodeAsync(request.WarehouseCode);
 				if (wh == null)
@@ -269,8 +273,15 @@ namespace bxBE.Application.Commands.cmdInvoice
 				invoice.InvoiceNumber = await _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
 				invoice.Copies = 1;
 
-				//Kiszámítható mezők kiszámolása
-				invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;
+                //Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
+                if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
+                {
+					invoice.PaymentMethod = PaymentMethodType.OTHER.ToString();
+                }
+
+
+                //Kiszámítható mezők kiszámolása
+                invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;
 				invoice.InvoiceVatAmountHUF = invoice.InvoiceVatAmount * invoice.ExchangeRate;
 
 				invoice.InvoiceGrossAmount = invoice.InvoiceNetAmount + invoice.InvoiceVatAmount;
@@ -317,8 +328,14 @@ namespace bxBE.Application.Commands.cmdInvoice
 					ln.lineGrossAmountNormal = ln.LineNetAmount + ln.lineVatAmount;
 					ln.lineGrossAmountNormalHUF = ln.lineGrossAmountNormal * invoice.ExchangeRate;
 
+					//Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
+					if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
+					{
+						ln.PendingDNQuantity = ln.Quantity;
+					}
 
-				}
+
+                }
 
 
 
