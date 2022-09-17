@@ -99,19 +99,26 @@ namespace bbxBE.Domain.Entities
 		[Description("Gyűjtőszámla esetén az adott tétel teljesítési dátuma")]
 		public DateTime LineDeliveryDate { get; set; }
 
-		[ColumnLabel("Szállítólevél")]
+        //Gyűjtőszámla - szállítólvék kapcsolat
+        [ColumnLabel("Szállítólevél")]
 		[Description("Kapcsolt szállítólevél száma")]
-		public string DeliveryNote { get; set; }
+		public string OrigDeliveryNoteNumber { get; set; }
 
 		[ColumnLabel("Szállítólevél ID")]
 		[Description("Kapcsolt szállítólevél ID")]
-		public long? DeliveryNoteInvoiceID { get; set; }
+		public long? OrigDeliveryNoteInvoiceID { get; set; }
+
 		[ColumnLabel("Szállítólevél sor")]
 		[Description("Kapcsolt szállítólevél sor")]
-		public short? DeliveryNoteLineNumber { get; set; }
+		public short? OrigDeliveryNoteInvoiceLineID { get; set; }
 
-		//Termékdíj - deklaráció
-		[ColumnLabel("Átvállalás irány")]
+        //Csak szállítólevél esetén értelmezett mezők
+        [ColumnLabel("Rendezetlen szállítólevél-mennyiség")]
+        [Description("Rendezetlen szállítólevél-mennyiség")]
+        public decimal PendingDNQuantity { get; set; }
+
+        //Termékdíj - deklaráció
+        [ColumnLabel("Átvállalás irány")]
 		[Description("Az átvállalás iránya és jogszabályi alapja (02_ab, stb...)")]
 		public string TakeoverReason { get; set; }
 		[ColumnLabel("Termékdíj összeg")]

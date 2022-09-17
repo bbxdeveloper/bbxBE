@@ -152,20 +152,6 @@ namespace bbxBE.Common.NAV
             AGGREGATE
         }
 
-        public enum enCustpaymentMethod
-        {
-            [Description("Készpénz")]
-            CASH,
-            [Description("Átutalás")]
-            TRANSFER,
-            [Description("Bankkártya")]
-            CARD,
- //           [Description("Utalvány")]
- //           VOUCHER,
-            [Description("Egyéb")]
-            OTHER
-        }
-
         public enum enCustinvoiceAppearance
         {
             [Description("Papír alapú")]

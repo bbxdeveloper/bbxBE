@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using static bbxBE.Common.NAV.NAV_enums;
@@ -66,7 +67,8 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpGet("paymentmethod")]
         public async Task<IActionResult> GetPaymentMethod()
         {
-            var req = new GetEnum() { type = typeof(enCustpaymentMethod) };
+            var req = new GetEnum() { type = typeof(PaymentMethodType), FilteredItems = new List<string>() { PaymentMethodType.VOUCHER.ToString(), PaymentMethodType.OTHER.ToString()}};
+
             return Ok(await Mediator.Send(req));
         }
 

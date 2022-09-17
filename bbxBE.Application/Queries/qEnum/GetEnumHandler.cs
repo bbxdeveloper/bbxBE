@@ -21,7 +21,8 @@ namespace bbxBE.Application.Queries.qEnum
     public class GetEnum : IRequest<List<GetEnumModel>>
     {
         public Type type { get; set; }   
-     }
+        public List<string> FilteredItems { get; set; } = new List<string>();
+    }
 
     public class GetEnumHandler : IRequestHandler<GetEnum, List<GetEnumModel>>
     {
@@ -42,7 +43,7 @@ namespace bbxBE.Application.Queries.qEnum
                                 Value = v.ToString(),
                                 //Text = v.ToString() + "-" + Utils.GetEnumDescription(v)
                                 Text = Utils.GetEnumDescription(v)
-                            })
+                            }).Where( w=>!request.FilteredItems.Any( a=>a==w.Value))
                             .ToList();
             return e;
         }

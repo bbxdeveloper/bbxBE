@@ -16,7 +16,7 @@ namespace bbxBE.Common.Enums
         [Description("Klt.diekt")]
         DIRECT,
         [Description("Szla/Száll")]
-        INVOICE,
+        INV_DLV,
         [Description("Kiad")]
         TRANSFER,                       //csak a VALÓS készlet változik
         [Description("Kiad száml")]

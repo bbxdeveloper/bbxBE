@@ -99,7 +99,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
                                 invoice.WarehouseID, invoiceLine.ProductID, invoice.UserID, invoiceLine.ID,
                                 (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
-                                Common.Enums.enStockCardType.INVOICE,
+                                Common.Enums.enStockCardType.INV_DLV,
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
                                 0, invoiceLine.UnitPrice,
@@ -127,6 +127,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
             _dbContext.Stock.UpdateRange(lstStock);
+            await _dbContext.SaveChangesAsync();
             return lstStock;
         }
 
