@@ -129,11 +129,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return pg;
         }
 
-        public Entity GetProductGroup(GetProductGroup requestParameter)
+        public Entity GetProductGroup(long ID)
         {
-
-
-            var ID = requestParameter.ID;
             ProductGroup productGroup = null;
             if (!_cacheService.TryGetValue(ID, out productGroup))
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODUCTGROUPNOTFOUND, ID));

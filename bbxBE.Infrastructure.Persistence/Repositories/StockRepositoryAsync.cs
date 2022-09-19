@@ -201,10 +201,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return lstStock;
         }
 
-        public async Task<Entity> GetStockAsync(GetStock requestParameter)
+        public async Task<Entity> GetStockAsync(long ID)
         {
-
-            var ID = requestParameter.ID;
 
             var item = await _dbContext.Stock.AsNoTracking()
              .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
@@ -228,10 +226,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return shapeData;
         }
 
-        public async Task<Stock> GetStockRecordAsync(GetStockRecord request)
+        public async Task<Stock> GetStockRecordAsync( long warehouseID, long productID)
         {
             var item = await _dbContext.Stock.AsNoTracking()
-             .Where(w => w.WarehouseID == request.WarehouseID && w.ProductID == request.ProductID && !w.Deleted).FirstOrDefaultAsync();
+             .Where(w => w.WarehouseID == warehouseID && w.ProductID == productID && !w.Deleted).FirstOrDefaultAsync();
 
             if(item == null)        //Jeremi kérése
             {

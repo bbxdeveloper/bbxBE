@@ -34,12 +34,7 @@ namespace bbxBE.Application.Queries.qStockCard
 
         public async Task<Entity> Handle(GetStockCard request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
-
-            // query based on filter
-            var entity = await _StockCardRepository.GetStockCardAsync(validFilter);
+            var entity = await _StockCardRepository.GetStockCardAsync(request.ID);
             var data = entity.MapItemFieldsByMapToAnnotation<GetStockCardViewModel>();
 
             // response wrapper

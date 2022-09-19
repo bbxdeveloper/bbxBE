@@ -40,7 +40,7 @@ namespace bbxBE.Application.Queries.qStock
         /// <returns></returns>
         public async Task<Stock> Handle(GetStockRecord request, CancellationToken cancellationToken)
         {
-            var entity = await _StockRepository.GetStockRecordAsync(request);
+            var entity = await _StockRepository.GetStockRecordAsync(request.WarehouseID, request.ProductID);
             return entity;
         }
 

@@ -35,12 +35,7 @@ namespace bbxBE.Application.Queries.qVatRate
 
         public async Task<Entity> Handle(GetVatRate request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
-
-            // query based on filter
-            var entity = await _vatRateRepository.GetVatRateAsync(validFilter);
+            var entity = await _vatRateRepository.GetVatRateAsync(request.ID);
             var data = entity.MapItemFieldsByMapToAnnotation<GetVatRateViewModel>();
 
             // response wrapper

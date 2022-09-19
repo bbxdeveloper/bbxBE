@@ -35,12 +35,7 @@ namespace bbxBE.Application.Queries.qWarehouse
 
         public async Task<Entity> Handle(GetWarehouse request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
-
-            // query based on filter
-            var entity = await _warehouseRepository.GetWarehouseAsync(validFilter);
+            var entity = await _warehouseRepository.GetWarehouseAsync(request.ID);
             var data = entity.MapItemFieldsByMapToAnnotation<GetWarehouseViewModel>();
 
             // response wrapper

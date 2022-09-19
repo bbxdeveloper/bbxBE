@@ -195,10 +195,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return latestStockCard;
         }
 
-        public async Task<Entity> GetStockCardAsync(GetStockCard requestParameter)
+        public async Task<Entity> GetStockCardAsync(long ID)
         {
-
-            var ID = requestParameter.ID;
 
             var item = await _dbContext.StockCard.AsNoTracking()
                     .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()

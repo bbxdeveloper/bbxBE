@@ -52,7 +52,7 @@ namespace bbxBE.Application.Queries.qUser
             }
 */
             // query based on filter
-            var entity = await _positionRepository.GetUserAsync(validFilter);
+            var entity = await _positionRepository.GetUserAsync(validFilter.ID, validFilter.Fields);
 
 
             var data = entity.MapItemFieldsByMapToAnnotation<GetUsersViewModel>();
