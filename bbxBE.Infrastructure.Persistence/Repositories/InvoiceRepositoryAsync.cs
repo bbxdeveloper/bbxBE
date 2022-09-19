@@ -18,6 +18,7 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Attributes;
 using System.ComponentModel;
+using static Dapper.SqlMapper;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -26,6 +27,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ApplicationDbContext _dbContext;
         private IDataShapeHelper<Invoice> _dataShaperInvoice;
         private IDataShapeHelper<GetInvoiceViewModel> _dataShaperGetInvoiceViewModel;
+        private IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> _dataShaperGetPendigDeliveryNotesSummaryModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
@@ -173,11 +175,45 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return item;
         }
 
-        public async Task<Entity> GetPendigDeliveryNotesSummareAsync(bool incoming, long warehouseID, string currencyCode)
+        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummareAsync(bool incoming, long warehouseID, string currencyCode)
         {
 
 
+            var lstEntities = new List<GetPendigDeliveryNotesSummaryModel>();
 
+            if(incoming)
+            {
+                lstEntities = await _dbContext.InvoiceLine.AsNoTracking()
+                 .Include(i => i.Invoice).ThenInclude(t => t.Supplier)
+                 .Where(w => w.PendingDNQuantity > 0 && w.Invoice.Incoming == incoming && w.Invoice.WarehouseID == warehouseID && w.Invoice.CurrencyCode == currencyCode)
+                .GroupBy(g => g.Invoice.SupplierID)
+                       .Select(g => new GetPendigDeliveryNotesSummaryModel()
+                       {
+
+                           WarehouseID = warehouseID,
+                           CustomerID = g.FirstOrDefault().Invoice.Supplier.ID,
+                           Customer = g.FirstOrDefault().Invoice.Supplier.CustomerName,
+                           SumNetAmount = g.Sum(s => s.LineNetAmount)
+                       }
+                       ).ToListAsync();
+            }
+            else
+            {
+                lstEntities = await _dbContext.InvoiceLine.AsNoTracking()
+                 .Include(i => i.Invoice).ThenInclude(t => t.Customer)
+                 .Where(w => w.PendingDNQuantity > 0 && w.Invoice.Incoming == incoming && w.Invoice.WarehouseID == warehouseID && w.Invoice.CurrencyCode == currencyCode)
+                .GroupBy(g => g.Invoice.CustomerID)
+                       .Select(g => new GetPendigDeliveryNotesSummaryModel()
+                       {
+
+                           WarehouseID = warehouseID,
+                           CustomerID = g.FirstOrDefault().Invoice.CustomerID,
+                           Customer = g.FirstOrDefault().Invoice.Customer.CustomerName,
+                           SumNetAmount = g.Sum(s => s.LineNetAmount)
+                       }
+                       ).ToListAsync();
+            }
+            /* ????
             var queryModel = await _dbContext.InvoiceLine.AsNoTracking()
               .Include(i => i.Invoice).ThenInclude(t => (incoming ? t.Supplier : t.Customer)).AsNoTracking()
               .Where(w => w.PendingDNQuantity > 0 && w.Invoice.Incoming == incoming && w.Invoice.WarehouseID == warehouseID && w.Invoice.CurrencyCode == currencyCode)
@@ -190,8 +226,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             Customer = (incoming ? g.FirstOrDefault().Invoice.Supplier.CustomerName : g.FirstOrDefault().Invoice.Customer.CustomerName),
                             SumNetAmount = g.Sum(s => s.LineNetAmount)
                         }
-                        ).ToList();
-            var shapeData = _dataShaperGetInvoiceViewModel.ShapeData(queryModel, "");
+                        ).ToListAsync();
+            */
+
+            var shapeData = _dataShaperGetPendigDeliveryNotesSummaryModel.ShapeData(lstEntities, "");
 
             return shapeData;
         }

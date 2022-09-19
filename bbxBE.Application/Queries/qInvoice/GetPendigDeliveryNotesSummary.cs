@@ -15,10 +15,11 @@ using bbxBE.Common.Attributes;
 using System.ComponentModel;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
+using System.Text;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
-    public class GetPendigDeliveryNotesSummary :  IRequest<Entity>
+    public class GetPendigDeliveryNotesSummary :  IRequest<IEnumerable<Entity>>
     {
         [ColumnLabel("B/K")]
         [Description("Bejővő/Kimenő")]
@@ -33,7 +34,7 @@ namespace bbxBE.Application.Queries.qInvoice
         public string CurrencyCode { get; set; }
     }
 
-    public class GetPendigDeliveryNotesSummaryHandler : IRequestHandler<GetPendigDeliveryNotesSummary, Entity>
+    public class GetPendigDeliveryNotesSummaryHandler : IRequestHandler<GetPendigDeliveryNotesSummary, IEnumerable<Entity>>
     {
         private readonly IInvoiceRepositoryAsync _invoiceRepository;
         private readonly IWarehouseRepositoryAsync _WarehouseRepositoryAsync;
@@ -50,7 +51,7 @@ namespace bbxBE.Application.Queries.qInvoice
             _modelHelper = modelHelper;
         }
 
-        public async Task<Entity> Handle(GetPendigDeliveryNotesSummary request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Entity>> Handle(GetPendigDeliveryNotesSummary request, CancellationToken cancellationToken)
         {
 
             var wh = await _WarehouseRepositoryAsync.GetWarehouseByCodeAsync(request.WarehouseCode);
@@ -59,8 +60,7 @@ namespace bbxBE.Application.Queries.qInvoice
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
             }
             // query based on filter
-            var entity = await _invoiceRepository.GetPendigDeliveryNotesSummareAsync(request);
-            var data = entity.MapItemFieldsByMapToAnnotation<GetInvoiceViewModel>();
+            var data = await _invoiceRepository.GetPendigDeliveryNotesSummareAsync(request.Incoming, wh.ID, request.CurrencyCode);
 
             // response wrapper
             return data;
