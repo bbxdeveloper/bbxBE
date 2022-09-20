@@ -20,11 +20,14 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
             ILoggerFactory loggerFactory
             ) : base(options)
         {
-            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
             ChangeTracker.LazyLoadingEnabled = false;
+            ChangeTracker.AutoDetectChangesEnabled = false; 
+            
+            
             _dateTime = dateTime;
             _loggerFactory = loggerFactory;
-        }
+          }
 
         public DbSet<Users> Users { get; set; }
         public DbSet<Customer> Customer { get; set; }

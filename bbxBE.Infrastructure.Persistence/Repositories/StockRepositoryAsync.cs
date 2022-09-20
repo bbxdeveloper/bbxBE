@@ -70,7 +70,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             foreach (var invoiceLine in invoice.InvoiceLines)
             {
-                if (invoiceLine.ProductID.HasValue && invoiceLine.Product.IsStock)
+                if (invoiceLine.ProductID.HasValue && invoiceLine.Product.IsStock )
                 {
 
                     var stock = lstStock.FirstOrDefault(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID);

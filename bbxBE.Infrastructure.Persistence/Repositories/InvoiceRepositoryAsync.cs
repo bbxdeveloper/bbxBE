@@ -63,26 +63,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 try
                 {
+                    var stockList = await _StockRepository.MaintainStockByInvoiceAsync(p_invoice);
 
                     //c# how to disable save related entity in EF ???
                     //TODO: ideiglenes megoldás, relációban álló objektumok Detach-olása hogy ne akarja menteni azokat az EF 
                     if (p_invoice.Customer != null)
-                        _dbContext.Entry(p_invoice.Customer).State = EntityState.Unchanged;
+                        p_invoice.Customer = null;
+
                     if (p_invoice.Supplier != null)
-                        _dbContext.Entry(p_invoice.Supplier).State = EntityState.Unchanged;
+                        p_invoice.Supplier = null;
+
                     foreach (var il in p_invoice.InvoiceLines)
                     {
-                        _dbContext.Entry(il.Product).State = EntityState.Unchanged;
-                        _dbContext.Entry(il.Product.ProductGroup).State = EntityState.Unchanged;
+                        il.Product = null;
+                        il.VatRate = null;
+                         
 
-                        if (il.VatRate != null)
-                            _dbContext.Entry(il.VatRate).State = EntityState.Unchanged;
                     }
 
                     await _dbContext.Invoice.AddAsync(p_invoice);
-                    await _dbContext.SaveChangesAsync();
-
-                    var stockList = await _StockRepository.MaintainStockByInvoiceAsync(p_invoice);
                     await _dbContext.SaveChangesAsync();
 
                     await dbContextTransaction.CommitAsync();
