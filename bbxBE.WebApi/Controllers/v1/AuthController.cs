@@ -42,7 +42,7 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
 #if (!DEBUG)
-        [Authorize]
+ //       [Authorize]
 #else
         [AllowAnonymous]
 #endif
@@ -50,7 +50,8 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPost()]
         public IActionResult Logout()
         {
-            throw new NotImplementedException();
+           // throw new NotImplementedException();
+            return Ok();
         }
     }
 }
