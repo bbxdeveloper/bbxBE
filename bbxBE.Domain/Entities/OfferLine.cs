@@ -48,6 +48,10 @@ namespace bbxBE.Domain.Entities
 		[Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
 		public decimal VatPercentage { get; set; }
 
+		[ColumnLabel("Mennyiség")]
+		[Description("Mennyiség")]
+		public decimal Quantity { get; set; }
+
 		[ColumnLabel("Me")]
 		[Description("Mennyiségi egység")]
 		public string UnitOfMeasure { get; set; }

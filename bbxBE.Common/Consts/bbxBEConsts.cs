@@ -25,9 +25,6 @@ namespace bbxBE.Common.Consts
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
         public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
-        public static string ERR_LEN1 = "{PropertyName}:  mező karakterek száma:1.";
-        public static string ERR_LEN2 = "{PropertyName}:  mező karakterek száma:2.";
-        public static string ERR_LEN8 = "{PropertyName}:  mező karakterek száma:8.";
 
         public static string ERR_MAXLEN = "{PropertyName}:  mező mérete nem lehet több, mint {MaxLength}.";
         public static string ERR_RANGE = "{PropertyName}:  mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";

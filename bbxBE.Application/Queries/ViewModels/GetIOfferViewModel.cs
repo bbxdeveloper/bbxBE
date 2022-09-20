@@ -46,7 +46,10 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("A termék vagy szolgáltatás megnevezése")]
 			public string LineDescription { get; set; }
 
-			
+			[ColumnLabel("Mennyiség")]
+			[Description("Mennyiség")]
+			public decimal Quantity { get; set; }
+
 			#region UnitOfMeasure
 
 			[DataMember]
@@ -91,6 +94,14 @@ namespace bbxBE.Application.Queries.ViewModels
 			[ColumnLabel("Bruttó ár")]
 			[Description("Bruttó ár")]
 			public decimal UnitGross { get; set; }
+
+			[ColumnLabel("Nettó érték")]
+			[Description("Nettó érték")]
+			public decimal NetAmount { get; set; }
+
+			[ColumnLabel("Bruttó érték")]
+			[Description("Bruttó érték")]
+			public decimal BrtAmount { get; set; }
 
 		}
 
@@ -173,6 +184,14 @@ namespace bbxBE.Application.Queries.ViewModels
 		[ColumnLabel("Legutolsó verzió?")]
 		[Description("Legutolsó verzió?")]
 		public bool LatestVersion { get; set; }
+
+		[ColumnLabel("Nettó összérték")]
+		[Description("Nettó összérték")]
+		public decimal SumNetAmount { get; set; }
+
+		[ColumnLabel("Bruttó összérték")]
+		[Description("Bruttó összérték")]
+		public decimal SumBrtAmount { get; set; }
 
 
 		[ColumnLabel("Ajánlatsorok")]
