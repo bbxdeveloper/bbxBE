@@ -105,9 +105,12 @@ namespace bxBE.Application.Commands.cmdOffer
 			[Description("Ár")]
 			public decimal UnitPrice { get; set; }
 
+			/*
 			[ColumnLabel("Áfa értéke")]
 			[Description("Áfa értéke")]
 			public decimal UnitVat { get; set; }
+			*/
+
 
 			[ColumnLabel("Bruttó ár")]
 			[Description("Bruttó ár")]
@@ -211,10 +214,7 @@ namespace bxBE.Application.Commands.cmdOffer
 					//	ln.VatRate = vatRate;
 					ln.VatRateID = vatRate.ID;
 					ln.VatPercentage = vatRate.VatPercentage;
-
-					ln.UnitPriceHUF = ln.UnitPrice * offer.ExchangeRate;
-					ln.UnitVatHUF = ln.UnitVat * offer.ExchangeRate;
-					ln.UnitGrossHUF = ln.UnitGross * offer.ExchangeRate;
+					
 				}
 
 

@@ -63,6 +63,7 @@ namespace bbxBE.Domain.Entities
 		public decimal UnitPrice { get; set; }
 		[ColumnLabel("Ár HUF")]
 		[Description("Ár forintban")]
+		
 		public decimal UnitPriceHUF { get; set; }
 		[ColumnLabel("Nettó érték")]
 		[Description("Ár a számla pénznemében")]

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace bbxBE.Application.Queries.ViewModels
@@ -89,7 +90,9 @@ namespace bbxBE.Application.Queries.ViewModels
 
 			[ColumnLabel("Áfa értéke")]
 			[Description("Áfa értéke")]
-			public decimal UnitVat { get; set; }
+			[DataMember]
+			[NotDBField]
+			public decimal UnitVat { get { return Math.Round(Quantity * UnitPrice *  VatPercentage, 1); } }
 
 			[ColumnLabel("Bruttó ár")]
 			[Description("Bruttó ár")]
@@ -97,11 +100,16 @@ namespace bbxBE.Application.Queries.ViewModels
 
 			[ColumnLabel("Nettó érték")]
 			[Description("Nettó érték")]
-			public decimal NetAmount { get; set; }
+			[DataMember]
+			[NotDBField]
+
+			public decimal NetAmount { get { return Math.Round(Quantity * UnitPrice, 1); } }
 
 			[ColumnLabel("Bruttó érték")]
 			[Description("Bruttó érték")]
-			public decimal BrtAmount { get; set; }
+			[DataMember]
+			[NotDBField] 
+			public decimal BrtAmount { get { return Math.Round(Quantity * UnitPrice * ( 1 + VatPercentage), 1); } }
 
 		}
 
@@ -187,10 +195,20 @@ namespace bbxBE.Application.Queries.ViewModels
 
 		[ColumnLabel("Nettó összérték")]
 		[Description("Nettó összérték")]
+		[DataMember]
+		[NotDBField]
+		//Tétellap nélküli lekérdezés esetén is át kell adni ezt a mezőt. Emiatt nem használható a OfferLines.Sum
+		//public decimal SumNetAmount { get { return Math.Round(OfferLines.Sum(s => s.NetAmount), 0); } }
 		public decimal SumNetAmount { get; set; }
+
 
 		[ColumnLabel("Bruttó összérték")]
 		[Description("Bruttó összérték")]
+		[DataMember]
+		[NotDBField]
+
+		//Tétellap nélküli lekérdezés esetén is át kell adni ezt a mezőt. Emiatt nem használható a OfferLines.Sum
+		//public decimal SumBrtAmount { get { return Math.Round(OfferLines.Sum(s => s.BrtAmount), 0); } }
 		public decimal SumBrtAmount { get; set; }
 
 
@@ -198,8 +216,6 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Ajánlatsorok")]
 		[MapToEntity("offerLines")]
 		public List<GetOfferViewModel.OfferLine> OfferLines { get; set; } = new List<GetOfferViewModel.OfferLine>();
-
-
 
 	}
 }

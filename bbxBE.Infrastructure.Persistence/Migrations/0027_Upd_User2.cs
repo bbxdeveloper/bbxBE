@@ -11,7 +11,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00024, "v00.00.01-add users")]
+    [Migration(00027, "v00.00.01-add users")]
     public class InitialTables_00027: Migration
     {
 

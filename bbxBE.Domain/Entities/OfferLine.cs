@@ -59,7 +59,8 @@ namespace bbxBE.Domain.Entities
 		[ColumnLabel("Ár")]
 		[Description("Ár")]
 		public decimal UnitPrice { get; set; }
-
+		
+		/*
 		[ColumnLabel("Ár forintban")]
 		[Description("Ár forintban")]
 		public decimal UnitPriceHUF { get; set; }
@@ -71,14 +72,17 @@ namespace bbxBE.Domain.Entities
 		[ColumnLabel("Áfa értéke forintban")]
 		[Description("Áfa értéke forintban")]
 		public decimal UnitVatHUF { get; set; }
+		*/
 
 		[ColumnLabel("Bruttó ár")]
 		[Description("Bruttó ár")]
 		public decimal UnitGross { get; set; }
 
+		/*
 		[ColumnLabel("Bruttó ár forintban")]
 		[Description("Bruttó ár forintban")]
 		public decimal UnitGrossHUF { get; set; }
+		*/
 
 		//Relációk
 		[JsonIgnore]					//ignorálni kell, mert körkörös hivatkozást eredményez
