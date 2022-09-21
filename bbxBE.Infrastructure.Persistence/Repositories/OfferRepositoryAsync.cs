@@ -198,7 +198,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             var ID = requestParameter.ID;
-            var item = await GetOfferRecordAsync(ID, requestParameter.FullData);
+            var item = await GetOfferRecordAsync(ID);
 
             if ( item == null)
             {
@@ -206,6 +206,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
 
             var itemModel = _mapper.Map<Offer, GetOfferViewModel>(item);
+
+            //a requestParameter.FullData kezelés miatt a SumNetAmount és SumBrtAmount mezőket ki kell számolni 
+            itemModel.SumNetAmount = Math.Round(itemModel.OfferLines.Sum(s => s.NetAmount), 0);
+            itemModel.SumBrtAmount = Math.Round(itemModel.OfferLines.Sum(s => s.BrtAmount), 0);
+            if (!requestParameter.FullData)
+            {
+            //itemModel.OfferLines = new List<GetOfferViewModel.OfferLine>();
+            itemModel.OfferLines = null;
+            }
+
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
 
             // shape data
@@ -214,25 +224,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return shapeData;
         }
 
-        public async Task<Offer> GetOfferRecordAsync(long ID, bool FullData = true)
+        public async Task<Offer> GetOfferRecordAsync(long ID)
         {
 
 
             Offer item;
 
-            if (FullData)
-            {
-                item = await _dbContext.Offer.AsNoTracking()
-                      .Include(c => c.Customer).AsNoTracking()
-                      .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
-                      .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
-            }
-            else
-            {
-                item = await _dbContext.Offer.AsNoTracking()
-                      .Include(c => c.Customer).AsNoTracking()
-                      .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
-            }
+            item = await _dbContext.Offer.AsNoTracking()
+                  .Include(c => c.Customer).AsNoTracking()
+                  .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
+                  .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
             return item;
         }
 

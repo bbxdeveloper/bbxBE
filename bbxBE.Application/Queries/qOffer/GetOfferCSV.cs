@@ -46,7 +46,7 @@ namespace bbxBE.Application.Commands.cmdOffer
         public async Task<FileStreamResult> Handle(GetOfferCSV request, CancellationToken cancellationToken)
         {
 
-            var offer = await _offerRepository.GetOfferRecordAsync(request.ID, true);
+            var offer = await _offerRepository.GetOfferRecordAsync(request.ID);
             if (offer == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OFFERNOTFOUND, request.ID));

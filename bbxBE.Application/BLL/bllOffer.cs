@@ -23,7 +23,7 @@ namespace bbxBE.Application.BLL
         public static async Task<FileStreamResult> CreateOfferReportAsynch(IOfferRepositoryAsync _offerRepository, string reportTRDX,  PrintOfferCommand request, CancellationToken cancellationToken)
         {
 
-            var offer = await _offerRepository.GetOfferRecordAsync(request.ID, false);
+            var offer = await _offerRepository.GetOfferRecordAsync(request.ID);
             if (offer == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OFFERNOTFOUND, request.ID));
