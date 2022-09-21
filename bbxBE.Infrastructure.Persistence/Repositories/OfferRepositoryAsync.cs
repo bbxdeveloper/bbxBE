@@ -250,18 +250,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             IQueryable<Offer> query;
-            if (requestParameter.FullData)
-            {
-
-                query = _dbContext.Offer.AsNoTracking()
+                   query = _dbContext.Offer.AsNoTracking()
                  .Include(c => c.Customer).AsNoTracking()
                  .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking();
-            }
-            else
-            {
-                query = _dbContext.Offer.AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking();
-            }
+
 
             // Count records total
             recordsTotal = await query.CountAsync();
@@ -308,6 +300,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             resultData.ForEach(i => resultDataModel.Add(
                _mapper.Map<Offer, GetOfferViewModel>(i))
             );
+
+            //a requestParameter.FullData kezelés miatt a SumNetAmount és SumBrtAmount mezőket ki kell számolni 
+            resultDataModel.ForEach(i =>
+            {
+                i.SumNetAmount = Math.Round(i.OfferLines.Sum(s => s.NetAmount),0);
+                i.SumBrtAmount = Math.Round(i.OfferLines.Sum(s => s.BrtAmount),0);
+                if (!requestParameter.FullData)
+                {
+                    //i.OfferLines = new List<GetOfferViewModel.OfferLine>();
+                    i.OfferLines = null;
+                }
+            });
+
 
 
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
