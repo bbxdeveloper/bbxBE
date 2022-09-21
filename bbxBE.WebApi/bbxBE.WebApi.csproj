@@ -10,6 +10,7 @@
     <Version>1.3.0</Version>
     <Configurations>Debug;Release;Test</Configurations>
 	  <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+	  <UserSecretsId>82234b64-eacf-42af-b87c-5874a29c22ea</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
