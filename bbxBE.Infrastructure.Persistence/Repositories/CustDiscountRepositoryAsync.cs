@@ -25,39 +25,58 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class CustDiscountRepositoryAsync : GenericRepositoryAsync<CustDiscount>, ICustDiscountRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private IDataShapeHelper<CustDiscount> _dataShaperCustDiscount;
         private IDataShapeHelper<GetCustDiscountViewModel> _dataShaperGetCustDiscountViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private readonly ICacheService<CustDiscount> _cacheService;
-        private readonly ICacheService<Product> _productCacheService;
+        private readonly ICacheService<Customer> _customerCacheService;
+        private readonly ICacheService<ProductGroup> _productGroupCacheService;
 
         public CustDiscountRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<CustDiscount> dataShaperCustDiscount,
             IDataShapeHelper<GetCustDiscountViewModel> dataShaperGetCustDiscountViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            ICacheService<CustDiscount> CustDiscountGroupCacheService,
-            ICacheService<Product> productCacheService) : base(dbContext)
+            ICacheService<Customer> customerCacheService,
+            ICacheService<ProductGroup> productGroupCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperCustDiscount = dataShaperCustDiscount;
             _dataShaperGetCustDiscountViewModel = dataShaperGetCustDiscountViewModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _cacheService = CustDiscountGroupCacheService;
-            _productCacheService = productCacheService;
 
+            _customerCacheService = customerCacheService;
+            _productGroupCacheService = productGroupCacheService;
+           
         }
 
-        public async Task<long> CreateOrUpdateCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList)
+        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList)
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var CustomerID = p_CustDiscountList.First().CustomerID
-                _dbContext.CustDiscount.RemoveRange(_dbContext.CustDiscount.Where(x => x.CustomerID == CustomerID));
-     
+
+                var customerID = p_CustDiscountList.First().CustomerID;
+                Customer cust = null;
+                if (!_customerCacheService.TryGetValue(customerID, out cust))
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, customerID));
+
+                var errPg = new List<string>();
+                p_CustDiscountList.ForEach(
+                    i =>
+                    {
+                        ProductGroup pg = null;
+
+                        if (!_productGroupCacheService.TryGetValue(i.ProductGroupID, out pg))
+                            errPg.Add(i.ProductGroupID.ToString());
+                    }
+                    );
+                if (errPg.Count > 0)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODUCTGROUPNOTFOUND, String.Join(',', errPg)));
+                }
+
+                _dbContext.CustDiscount.RemoveRange(_dbContext.CustDiscount.Where(x => x.CustomerID == customerID));
+
                 await _dbContext.CustDiscount.AddRangeAsync(p_CustDiscountList);
                 await _dbContext.SaveChangesAsync();
 
@@ -67,13 +86,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return p_CustDiscountList.Count();
         }
 
-        public Entity GetCustDiscount(GetCustDiscount requestParameter)
+        public async Task<Entity>  GetCustDiscountAsync(long ID)
         {
-            var ID = requestParameter.ID;
-            CustDiscount CustDiscount = null;
-            if (!_cacheService.TryGetValue(ID, out CustDiscount))
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CustDiscountNOTFOUND, ID));
 
+            var CustDiscount = await _dbContext.CustDiscount.AsNoTracking().AsExpandable()
+                     .Include(i => i.Customer).AsNoTracking()
+                     .Include(i => i.ProductGroup).AsNoTracking()
+                     .SingleOrDefaultAsync(s => s.ID == ID);
 
             var itemModel = _mapper.Map<CustDiscount, GetCustDiscountViewModel>(CustDiscount);
             var listFieldsModel = _modelHelper.GetModelFields<GetCustDiscountViewModel>();
@@ -83,107 +102,26 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-
-        public List<Entity> GetCustDiscountList()
+        
+        public async Task<List<Entity>> GetCustDiscountForCustomerListAsync( long customerID)
         {
 
-            var query = _cacheService.QueryCache();
-
-            var listFields = _modelHelper.GetDBFields<CustDiscount>();
-
-            // shape data
-            List<Entity> shapeData = new List<Entity>();
-            query.ForEachAsync(i =>
-            {
-                shapeData.Add(_dataShaperCustDiscount.ShapeData(i, String.Join(",", listFields)));
-
-            });
-
-
-            return shapeData;
-        }
-
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustDiscountAsync(QueryCustDiscount requestParameter)
-        {
-
-            var searchString = requestParameter.SearchString;
-
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
-            var orderBy = requestParameter.OrderBy;
-            //      var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetCustDiscountViewModel, CustDiscount>();
-
-
-            int recordsTotal, recordsFiltered;
-
-            // Setup IQueryable
-            var query = _cacheService.QueryCache();
-
-            // Count records total
-            recordsTotal =  query.Count();
-
-            // filter data
-            FilterBySearchString(ref query, searchString);
-
-            // Count records after filter
-            recordsFiltered = query.Count();
-
-            //set Record counts
-            var recordsCount = new RecordsCount
-            {
-                RecordsFiltered = recordsFiltered,
-                RecordsTotal = recordsTotal
-            };
-
-            // set order by
-            if (!string.IsNullOrWhiteSpace(orderBy))
-            {
-                query = query.OrderBy(orderBy);
-            }
-
-            // select columns
-            if (!string.IsNullOrWhiteSpace(fields))
-            {
-                query = query.Select<CustDiscount>("new(" + fields + ")");
-            }
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
-
-            // retrieve data to list
-            var resultData = query.ToList();
-
-            //TODO: szebben megoldani
-            var resultDataModel = new List<GetCustDiscountViewModel>();
-            resultData.ForEach(i => resultDataModel.Add(
-               _mapper.Map<CustDiscount, GetCustDiscountViewModel>(i))
-            );
-
+            var query = _dbContext.CustDiscount.AsNoTracking().AsExpandable()
+                       .Include(i => i.Customer).AsNoTracking()
+                       .Include(i => i.ProductGroup).AsNoTracking()
+                       .Where(s => s.CustomerID == customerID);
 
             var listFieldsModel = _modelHelper.GetModelFields<GetCustDiscountViewModel>();
+            List<Entity> shapeData = new List<Entity>();
 
-            var shapeData = _dataShaperGetCustDiscountViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            await query.ForEachAsync(i =>
+               {
+                   var itemModel = _mapper.Map<CustDiscount, GetCustDiscountViewModel>(i);
+                   shapeData.Add(_dataShaperGetCustDiscountViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel)));
 
-            return (shapeData, recordsCount);
-        }
+               });
 
-        private void FilterBySearchString(ref IQueryable<CustDiscount> p_item, string p_searchString)
-        {
-            if (!p_item.Any())
-                return;
-
-            if (string.IsNullOrWhiteSpace(p_searchString))
-                return;
-
-            var predicate = PredicateBuilder.New<CustDiscount>();
-
-            var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.CustDiscountCode.ToUpper().Contains(srcFor) ||
-                                           p.CustDiscountDescription.ToUpper().Contains(srcFor));
-
-            p_item = p_item.Where(predicate);
+            return shapeData;
         }
 
         public Task<bool> SeedDataAsync(int rowCount)
@@ -191,9 +129,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-        public async Task RefreshCustDiscountCache()
-        {
-            await _cacheService.RefreshCache();
-        }
     }
 }

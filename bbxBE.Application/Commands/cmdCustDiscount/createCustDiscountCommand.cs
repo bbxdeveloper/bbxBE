@@ -40,13 +40,13 @@ namespace bxBE.Application.Commands.cmdCustDiscount
 
     public class CreateCustDiscountCommandHandler : IRequestHandler<CreateCustDiscountCommand, Response<List<CustDiscount>>>
     {
-        private readonly ICustDiscountRepositoryAsync _CustDiscountRepository;
+        private readonly ICustDiscountRepositoryAsync _custDiscountRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateCustDiscountCommandHandler(ICustDiscountRepositoryAsync CustDiscountRepository, IMapper mapper, IConfiguration configuration)
+        public CreateCustDiscountCommandHandler(ICustDiscountRepositoryAsync custDiscountRepository, IMapper mapper, IConfiguration configuration)
         {
-            _CustDiscountRepository = CustDiscountRepository;
+            _custDiscountRepository = custDiscountRepository;
             _mapper = mapper;
             _configuration = configuration;
         }
@@ -61,7 +61,7 @@ namespace bxBE.Application.Commands.cmdCustDiscount
                 CustDiscountItems.Add(CustDiscount);
             }
             );
-            var res = await _CustDiscountRepository.AddCustDiscountRangeAsync(CustDiscountItems);
+            var res = await _custDiscountRepository.MaintanenceCustDiscountRangeAsync(CustDiscountItems);
             return new Response<List<CustDiscount>>(CustDiscountItems);
         }
 

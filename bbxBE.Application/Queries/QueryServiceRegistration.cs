@@ -62,6 +62,9 @@ namespace bbxBE.Application.Queries
             services.AddScoped<IDataShapeHelper<InvCtrl>, DataShapeHelper<InvCtrl>>();
             services.AddScoped<IDataShapeHelper<GetInvCtrlViewModel>, DataShapeHelper<GetInvCtrlViewModel>>();
 
+            services.AddScoped<IDataShapeHelper<CustDiscount>, DataShapeHelper<CustDiscount>>();
+            services.AddScoped<IDataShapeHelper<GetCustDiscountViewModel>, DataShapeHelper<GetCustDiscountViewModel>>();
+
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>
             {
                 services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);

@@ -18,8 +18,11 @@ namespace bbxBE.Application.Commands.cmdCustDiscount
 
     public class createCustDiscountCommandValidator : AbstractValidator<CreateCustDiscountCommand>
     {
-        public createCustDiscountCommandValidator(ICustDiscountRepositoryAsync CustDiscountRepository)
+        public createCustDiscountCommandValidator()
         {
+            RuleFor(r => r.CustomerID)
+            .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
+
             RuleForEach(r => r.Items)
                  .SetValidator(model => new createCustDiscountItemValidator());
         }
@@ -29,13 +32,9 @@ namespace bbxBE.Application.Commands.cmdCustDiscount
  
             public createCustDiscountItemValidator()
             {
-                RuleFor(r => r.CustomerID)
-                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
                 RuleFor(r => r.ProductGroupID)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
             }
-
-
         }
 
     }

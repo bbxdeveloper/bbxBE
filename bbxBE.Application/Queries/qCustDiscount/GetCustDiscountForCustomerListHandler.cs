@@ -14,37 +14,32 @@ using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Application.Queries.qCustDiscount
 {
-    public class GetCustDiscount:  IRequest<Entity>
+    public class GetCustDiscountForCustomerList:  IRequest<IEnumerable<Entity>>
     {
-        public long ID { get; set; }
+        public long CustomerID { get; set; }
   //      public string Fields { get; set; }
     }
 
-    public class GetCustDiscountHandler : IRequestHandler<GetCustDiscount, Entity>
+    public class GetCustDiscountForCustomerListHandler : IRequestHandler<GetCustDiscountForCustomerList, IEnumerable<Entity>>
     {
         private readonly ICustDiscountRepositoryAsync _custDiscountRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetCustDiscountHandler(ICustDiscountRepositoryAsync custDiscountRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetCustDiscountForCustomerListHandler(ICustDiscountRepositoryAsync custDiscountRepository, IMapper mapper, IModelHelper modelHelper)
         {
             _custDiscountRepository = custDiscountRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<Entity> Handle(GetCustDiscount request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Entity>> Handle(GetCustDiscountForCustomerList request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
-
-            // query based on filter
-            var entityPosition = await _custDiscountRepository.GetCustDiscountAsync(validFilter);
-            var data = entityPosition.MapItemFieldsByMapToAnnotation<GetCustDiscountViewModel>();
-
+            var data =  await _custDiscountRepository.GetCustDiscountForCustomerListAsync(request.CustomerID);
             // response wrapper
             return data;
         }
+
+     
     }
 }
