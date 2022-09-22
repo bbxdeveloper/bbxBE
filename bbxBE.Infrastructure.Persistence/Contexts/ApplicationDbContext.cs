@@ -20,11 +20,14 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
             ILoggerFactory loggerFactory
             ) : base(options)
         {
-            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
             ChangeTracker.LazyLoadingEnabled = false;
+            ChangeTracker.AutoDetectChangesEnabled = false; 
+            
+            
             _dateTime = dateTime;
             _loggerFactory = loggerFactory;
-        }
+          }
 
         public DbSet<Users> Users { get; set; }
         public DbSet<Customer> Customer { get; set; }
@@ -46,6 +49,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<StockCard> StockCard { get; set; }
         public DbSet<InvCtrlPeriod> InvCtrlPeriod { get; set; }
         public DbSet<InvCtrl> InvCtrl { get; set; }
+        public DbSet<CustDiscount> CustDiscount { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

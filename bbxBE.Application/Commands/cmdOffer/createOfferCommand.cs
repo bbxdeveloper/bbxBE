@@ -76,17 +76,20 @@ namespace bxBE.Application.Commands.cmdOffer
 			[Description("A termék vagy szolgáltatás megnevezése")]
 			public string LineDescription { get; set; }
 
+			[ColumnLabel("Mennyiség")]
+			[Description("Mennyiség")]
+			public decimal Quantity { get; set; }
+			[ColumnLabel("Me.e.")]
+			[Description("Mennyiségi egység kód")]
+			public string UnitOfMeasure { get; set; }
+
 			[ColumnLabel("Árengedmény %")]
 			[Description("Árengedmény %)")]
 			public decimal Discount { get; set; }
 			[ColumnLabel("Árengedmény megjelenítés?")]
 			[Description("Árengedmény megjelenítés)")]
 			public bool ShowDiscount { get; set; }
-
-			[ColumnLabel("Me.e.")]
-			[Description("Mennyiségi egység kód")]
-			public string UnitOfMeasure { get; set; }
-
+			
 			/*
 			[ColumnLabel("Áfa ID")]
 			[Description("Áfa ID")]
@@ -102,9 +105,12 @@ namespace bxBE.Application.Commands.cmdOffer
 			[Description("Ár")]
 			public decimal UnitPrice { get; set; }
 
+			/*
 			[ColumnLabel("Áfa értéke")]
 			[Description("Áfa értéke")]
 			public decimal UnitVat { get; set; }
+			*/
+
 
 			[ColumnLabel("Bruttó ár")]
 			[Description("Bruttó ár")]
@@ -208,10 +214,7 @@ namespace bxBE.Application.Commands.cmdOffer
 					//	ln.VatRate = vatRate;
 					ln.VatRateID = vatRate.ID;
 					ln.VatPercentage = vatRate.VatPercentage;
-
-					ln.UnitPriceHUF = ln.UnitPrice * offer.ExchangeRate;
-					ln.UnitVatHUF = ln.UnitVat * offer.ExchangeRate;
-					ln.UnitGrossHUF = ln.UnitGross * offer.ExchangeRate;
+					
 				}
 
 

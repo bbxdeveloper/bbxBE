@@ -223,25 +223,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return shapeData;
         }
 
-        public async Task<Offer> GetOfferRecordAsync(long ID, bool FullData = true)
+        public async Task<Offer> GetOfferRecordAsync(long ID)
         {
 
 
             Offer item;
 
-            if (FullData)
-            {
-                item = await _dbContext.Offer.AsNoTracking()
-                      .Include(c => c.Customer).AsNoTracking()
-                      .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
-                      .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
-            }
-            else
-            {
-                item = await _dbContext.Offer.AsNoTracking()
-                      .Include(c => c.Customer).AsNoTracking()
-                      .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
-            }
+            item = await _dbContext.Offer.AsNoTracking()
+                  .Include(c => c.Customer).AsNoTracking()
+                  .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
+                  .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
             return item;
         }
 
@@ -259,18 +250,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             IQueryable<Offer> query;
-            if (requestParameter.FullData)
-            {
-
-                query = _dbContext.Offer.AsNoTracking()
+                   query = _dbContext.Offer.AsNoTracking()
                  .Include(c => c.Customer).AsNoTracking()
                  .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking();
-            }
-            else
-            {
-                query = _dbContext.Offer.AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking();
-            }
+
 
             // Count records total
             recordsTotal = await query.CountAsync();
@@ -318,6 +301,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                _mapper.Map<Offer, GetOfferViewModel>(i))
             );
 
+            //a requestParameter.FullData kezelés miatt a SumNetAmount és SumBrtAmount mezőket ki kell számolni 
+            resultDataModel.ForEach(i =>
+            {
+                i.SumNetAmount = Math.Round(i.OfferLines.Sum(s => s.NetAmount),0);
+                i.SumBrtAmount = Math.Round(i.OfferLines.Sum(s => s.BrtAmount),0);
+                if (!requestParameter.FullData)
+                {
+                    //i.OfferLines = new List<GetOfferViewModel.OfferLine>();
+                    i.OfferLines = null;
+                }
+            });
+
+
 
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
 
@@ -355,11 +351,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Task<bool> SeedDataAsync(int rowCount)
         {
             throw new System.NotImplementedException();
-        }
-
-        public Task<Offer> GetOfferRecordAsync(long ID, bool FullData = true)
-        {
-            throw new NotImplementedException();
         }
     }
 }

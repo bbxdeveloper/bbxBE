@@ -49,6 +49,8 @@ namespace bbxBE.Application.Commands.cmdOffer
     {
         public CreateOfferLinesCommandValidatror()
         {
+            RuleFor(p => p.Quantity)
+                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(p => p.UnitOfMeasure)
                  .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.LineNumber, model.ProductCode, model.UnitOfMeasure));
             RuleFor(p => p.Discount)

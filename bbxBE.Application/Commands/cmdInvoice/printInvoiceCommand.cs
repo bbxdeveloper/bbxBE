@@ -22,6 +22,8 @@ using System.Xml;
 using Telerik.Reporting;
 using Telerik.Reporting.Processing;
 using Telerik.Reporting.XmlSerialization;
+using bbxBE.Domain.Enums;
+using bbxBE.Common.Enums;
 
 namespace bbxBE.Application.Commands.cmdInvoice
 {
@@ -29,6 +31,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
     {
         public long ID { get; set; }
         public string InvoiceNumber { get; set; }
+        public string InvoiceType { get; set; }
 
         public string baseURL;
     }
@@ -53,16 +56,39 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
             }
 
-
-            var reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
-
             InstanceReportSource reportSource = null;
             Telerik.Reporting.Report rep = null;
-
-
-
             System.Xml.XmlReaderSettings settings = new System.Xml.XmlReaderSettings();
             settings.IgnoreWhitespace = true;
+            string reportTRDX = String.Empty;
+
+            Enum.TryParse(request.InvoiceType, out enInvoiceType invoiceType);
+
+            switch (invoiceType)
+            {
+                case enInvoiceType.INC:
+                    {
+                        reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceINC.trdx", Assembly.GetExecutingAssembly());
+                        break;
+                    }
+                case enInvoiceType.DNI:
+                    {
+                        reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceDNI.trdx", Assembly.GetExecutingAssembly());
+                        break;
+                    }
+                case enInvoiceType.DNO:
+                    {
+                        reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceDNO.trdx", Assembly.GetExecutingAssembly());
+                        break;
+                    }
+                case enInvoiceType.INV:
+                default:
+                    {
+                        reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
+                        break;
+                    }
+            }
+
             using (System.Xml.XmlReader xmlReader = XmlReader.Create(new StringReader(reportTRDX), settings))
             {
                 ReportXmlSerializer xmlSerializer = new ReportXmlSerializer();
@@ -86,7 +112,6 @@ namespace bbxBE.Application.Commands.cmdInvoice
             if (result.Errors.Length > 0)
                 throw new Exception("Invoice report finished with error:" + result.Errors[0].Message);
 
-
             //Példányszám beállítása
             //
             invoice.Copies++;
@@ -95,9 +120,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
             Stream stream = new MemoryStream(result.DocumentBytes);
             string fileName = $"Invoice{invoice.InvoiceNumber.Replace("/", "-")}.pdf";
 
-             
             var fsr = new FileStreamResult(stream, $"application/pdf") { FileDownloadName = fileName };
-
 
             return fsr;
         }
