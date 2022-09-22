@@ -9,7 +9,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00026, "v00.00.01-Offer new field: Quantity")]
+    [Migration(00026, "v00.01.64-Offer new field: Quantity")]
     public class InitialTables_00026 : Migration
     {
         public override void Down()
