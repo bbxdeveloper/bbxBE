@@ -22,26 +22,21 @@ namespace bbxBE.Application.Queries.qCounter
 
     public class GetCounterHandler : IRequestHandler<GetCounter, Entity>
     {
-        private readonly ICounterRepositoryAsync _positionRepository;
+        private readonly ICounterRepositoryAsync _counterRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetCounterHandler(ICounterRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetCounterHandler(ICounterRepositoryAsync counterRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _counterRepository = counterRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
         public async Task<Entity> Handle(GetCounter request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
-
-            // query based on filter
-            var entityPosition = await _positionRepository.GetCounterAsync(validFilter);
-            var data = entityPosition.MapItemFieldsByMapToAnnotation<GetCounterViewModel>();
+            var entity = await _counterRepository.GetCounterAsync(request.ID);
+            var data = entity.MapItemFieldsByMapToAnnotation<GetCounterViewModel>();
 
             // response wrapper
             return data;

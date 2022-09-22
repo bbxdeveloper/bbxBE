@@ -25,6 +25,27 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.CustDiscountController.Get(bbxBE.Application.Queries.qCustDiscount.GetCustDiscount)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.CustDiscountController.Query(bbxBE.Application.Queries.qCustDiscount.GetCustDiscountForCustomerList)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.CustDiscountController.Create(bxBE.Application.Commands.cmdCustDiscount.CreateCustDiscountCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.CustomerController.Get(bbxBE.Application.Queries.qCustomer.GetCustomer)">
             <summary>
             GET: api/controller

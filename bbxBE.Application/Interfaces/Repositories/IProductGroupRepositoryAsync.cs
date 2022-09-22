@@ -20,7 +20,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<ProductGroup> DeleteProductGroupAsync(long ID);
         Task<bool> SeedDataAsync(int rowCount);
 
-        Entity GetProductGroup(GetProductGroup requestParameters);
+        Entity GetProductGroup(long ID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductGroupAsync(QueryProductGroup requestParameters);
 
 

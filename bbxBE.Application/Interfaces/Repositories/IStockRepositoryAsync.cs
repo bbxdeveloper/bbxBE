@@ -1,6 +1,4 @@
-﻿using bbxBE.Application.Interfaces;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Parameters;
+﻿using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qStock;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;
@@ -13,8 +11,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice);
         Task<List<Stock>> MaintainStockByInvCtrlAsync(List<InvCtrl> invCtrlList, string XRel);
 
-        Task<Entity> GetStockAsync(GetStock requestParameters);
-        Task<Stock> GetStockRecordAsync(GetStockRecord requestParameters);
+        Task<Entity> GetStockAsync(long ID);
+        Task<Stock> GetStockRecordAsync(long warehouseID, long productID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameters);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryInvCtrlStockAbsentAsync(QueryInvCtrlStockAbsent requestParameters);
     }

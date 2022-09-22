@@ -38,12 +38,8 @@ namespace bbxBE.Application.Queries.qInvoice
 
         public async Task<Entity> Handle(GetInvoice request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
 
-            // query based on filter
-            var entity = await _invoiceRepository.GetInvoiceAsync(validFilter);
+            var entity = await _invoiceRepository.GetInvoiceAsync(request.ID, request.FullData);
             var data = entity.MapItemFieldsByMapToAnnotation<GetInvoiceViewModel>();
 
             // response wrapper

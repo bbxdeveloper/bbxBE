@@ -35,12 +35,9 @@ namespace bbxBE.Application.Queries.qProductGroup
 
         public async Task<Entity> Handle(GetProductGroup request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
-
+  
             // query based on filter
-            var entity = _productGroupRepository.GetProductGroup(validFilter);
+            var entity = _productGroupRepository.GetProductGroup(request.ID);
             var data = entity.MapItemFieldsByMapToAnnotation<GetProductGroupViewModel>();
 
             // response wrapper

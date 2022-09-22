@@ -9,7 +9,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(0025, "v00.00.01-Invoice - Delivery Note")]
+    [Migration(0025, "v00.01.61-Invoice - Delivery Note")]
     public class InitialTables_00025 : Migration
     {
         public override void Down()
@@ -32,14 +32,13 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                 .AddColumn("PendingDNQuantity").AsDecimal().WithDefaultValue(0);
 
 
-            Create.Index("INX_DeliveryNoteInvoiceID")
+            Create.Index("INX_OrigDeliveryNoteInvoiceID")
                            .OnTable("InvoiceLine")
                            .OnColumn("OrigDeliveryNoteInvoiceID").Ascending()
-                           .OnColumn("PendingDNQuantity").Descending()
                            .WithOptions().NonClustered();
-            Create.Index("INX_DeliveryNoteInvoiceLineID")
+
+            Create.Index("INX_PendingDNQuantity")
                            .OnTable("InvoiceLine")
-                           .OnColumn("OrigDeliveryNoteInvoiceID").Ascending()
                            .OnColumn("PendingDNQuantity").Descending()
                            .WithOptions().NonClustered();
 

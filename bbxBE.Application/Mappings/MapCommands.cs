@@ -11,6 +11,7 @@ using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCounter;
+using bxBE.Application.Commands.cmdCustDiscount;
 using bxBE.Application.Commands.cmdCustomer;
 using bxBE.Application.Commands.cmdInvCtrl;
 using bxBE.Application.Commands.cmdInvCtrlPeriod;
@@ -138,8 +139,9 @@ namespace bbxBE.Command.Mappings
 
             CreateMap<createInvCtrlICPCommand.InvCtrlItem, InvCtrl>()
                .ForMember(dst => dst.InvCtrlDate, opt => opt.MapFrom(src => src.InvCtrlDate.Date));
-        //    CreateMap<UpdateInvCtrlCommand, InvCtrl>();
+            //    CreateMap<UpdateInvCtrlCommand, InvCtrl>();
 
-        }
+            CreateMap<CreateCustDiscountCommand.CustDiscountItem, CustDiscount>();
+       }
     }
 }

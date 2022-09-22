@@ -41,12 +41,9 @@ namespace bbxBE.Application.Queries.qOffer
         /// <returns></returns>
         public async Task<Entity> Handle(GetOffer request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
 
             // query based on filter
-                var entityOffer = await _OfferRepository.GetOfferAsync(validFilter);
+                var entityOffer = await _OfferRepository.GetOfferAsync(request.ID, request.FullData);
             var data = entityOffer.MapItemFieldsByMapToAnnotation<GetOfferViewModel>();
 
             // response wrapper

@@ -10,14 +10,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
 using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
+using bbxBE.Common.Attributes;
+using System.ComponentModel;
+using static Dapper.SqlMapper;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -26,6 +27,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ApplicationDbContext _dbContext;
         private IDataShapeHelper<Invoice> _dataShaperInvoice;
         private IDataShapeHelper<GetInvoiceViewModel> _dataShaperGetInvoiceViewModel;
+        private IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> _dataShaperGetPendigDeliveryNotesSummaryModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
@@ -124,13 +126,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<Entity> GetInvoiceAsync(GetInvoice requestParameter)
+        public async Task<Entity> GetInvoiceAsync(long ID, bool FullData)
         {
 
-
-            var ID = requestParameter.ID;
-
-            Invoice item = await GetInvoiceRecordAsync(ID, requestParameter.FullData);
+            Invoice item = await GetInvoiceRecordAsync(ID, FullData);
 
             if (item == null)
             {
@@ -145,8 +144,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-
-
 
         public async Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true)
         {
@@ -175,6 +172,65 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                   .Where(x => x.ID == ID).FirstOrDefaultAsync();
             }
             return item;
+        }
+
+        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummareAsync(bool incoming, long warehouseID, string currencyCode)
+        {
+
+
+            var lstEntities = new List<GetPendigDeliveryNotesSummaryModel>();
+
+            if(incoming)
+            {
+                lstEntities = await _dbContext.InvoiceLine.AsNoTracking()
+                 .Include(i => i.Invoice).ThenInclude(t => t.Supplier)
+                 .Where(w => w.PendingDNQuantity > 0 && w.Invoice.Incoming == incoming && w.Invoice.WarehouseID == warehouseID && w.Invoice.CurrencyCode == currencyCode)
+                .GroupBy(g => g.Invoice.SupplierID)
+                       .Select(g => new GetPendigDeliveryNotesSummaryModel()
+                       {
+
+                           WarehouseID = warehouseID,
+                           CustomerID = g.FirstOrDefault().Invoice.Supplier.ID,
+                           Customer = g.FirstOrDefault().Invoice.Supplier.CustomerName,
+                           SumNetAmount = g.Sum(s => s.LineNetAmount)
+                       }
+                       ).ToListAsync();
+            }
+            else
+            {
+                lstEntities = await _dbContext.InvoiceLine.AsNoTracking()
+                 .Include(i => i.Invoice).ThenInclude(t => t.Customer)
+                 .Where(w => w.PendingDNQuantity > 0 && w.Invoice.Incoming == incoming && w.Invoice.WarehouseID == warehouseID && w.Invoice.CurrencyCode == currencyCode)
+                .GroupBy(g => g.Invoice.CustomerID)
+                       .Select(g => new GetPendigDeliveryNotesSummaryModel()
+                       {
+
+                           WarehouseID = warehouseID,
+                           CustomerID = g.FirstOrDefault().Invoice.CustomerID,
+                           Customer = g.FirstOrDefault().Invoice.Customer.CustomerName,
+                           SumNetAmount = g.Sum(s => s.LineNetAmount)
+                       }
+                       ).ToListAsync();
+            }
+            /* ????
+            var queryModel = await _dbContext.InvoiceLine.AsNoTracking()
+              .Include(i => i.Invoice).ThenInclude(t => (incoming ? t.Supplier : t.Customer)).AsNoTracking()
+              .Where(w => w.PendingDNQuantity > 0 && w.Invoice.Incoming == incoming && w.Invoice.WarehouseID == warehouseID && w.Invoice.CurrencyCode == currencyCode)
+              .GroupBy(g => (incoming ? g.Invoice.SupplierID : g.Invoice.CustomerID))
+                        .Select(g => new GetPendigDeliveryNotesSummaryModel()
+                        {
+
+                            WarehouseID = warehouseID,
+                            CustomerID = g.Key,
+                            Customer = (incoming ? g.FirstOrDefault().Invoice.Supplier.CustomerName : g.FirstOrDefault().Invoice.Customer.CustomerName),
+                            SumNetAmount = g.Sum(s => s.LineNetAmount)
+                        }
+                        ).ToListAsync();
+            */
+
+            var shapeData = _dataShaperGetPendigDeliveryNotesSummaryModel.ShapeData(lstEntities, "");
+
+            return shapeData;
         }
 
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)

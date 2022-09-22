@@ -164,9 +164,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return origin;
         }
 
-        public Entity GetOrigin(GetOrigin requestParameter)
+        public Entity GetOrigin(long ID)
         {
-            var ID = requestParameter.ID;
             Origin origin = null;
             if (!_cacheService.TryGetValue(ID, out origin))
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_ORIGINNOTFOUND, ID));

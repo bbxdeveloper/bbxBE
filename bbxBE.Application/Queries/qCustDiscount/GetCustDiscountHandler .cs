@@ -12,31 +12,31 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
 
-namespace bbxBE.Application.Queries.qVatRate
+namespace bbxBE.Application.Queries.qCustDiscount
 {
-    public class GetVatRate:  IRequest<Entity>
+    public class GetCustDiscount:  IRequest<Entity>
     {
         public long ID { get; set; }
   //      public string Fields { get; set; }
     }
 
-    public class GetVatRateHandler : IRequestHandler<GetVatRate, Entity>
+    public class GetCustDiscountHandler : IRequestHandler<GetCustDiscount, Entity>
     {
-        private readonly IVatRateRepositoryAsync _vatRateRepository;
+        private readonly ICustDiscountRepositoryAsync _custDiscountRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetVatRateHandler(IVatRateRepositoryAsync vatRateRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetCustDiscountHandler(ICustDiscountRepositoryAsync custDiscountRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _vatRateRepository = vatRateRepository;
+            _custDiscountRepository = custDiscountRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
 
-        public async Task<Entity> Handle(GetVatRate request, CancellationToken cancellationToken)
+        public async Task<Entity> Handle(GetCustDiscount request, CancellationToken cancellationToken)
         {
-            var entity = await _vatRateRepository.GetVatRateAsync(request.ID);
-            var data = entity.MapItemFieldsByMapToAnnotation<GetVatRateViewModel>();
+            var entityPosition = await _custDiscountRepository.GetCustDiscountAsync(request.ID);
+            var data = entityPosition.MapItemFieldsByMapToAnnotation<GetCustDiscountViewModel>();
 
             // response wrapper
             return data;

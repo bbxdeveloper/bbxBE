@@ -72,12 +72,19 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(req));
         }
 
-        /// <summary>
-        /// GET: api/controller
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        [HttpGet("query")]
+        [HttpGet("pendigdeliverynotessummary")]
+        public async Task<IActionResult> Get([FromQuery] GetPendigDeliveryNotesSummary filter)
+        {
+            return Ok(await Mediator.Send(filter));
+
+        }
+
+            /// <summary>
+            /// GET: api/controller
+            /// </summary>
+            /// <param name="filter"></param>
+            /// <returns></returns>
+            [HttpGet("query")]
         public async Task<IActionResult> Query([FromQuery] QueryInvoice filter)
         {
             return Ok(await Mediator.Send(filter));

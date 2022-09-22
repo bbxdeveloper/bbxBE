@@ -11,7 +11,7 @@ using System.Text;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00023,"v00.00.01 USR_USER -> User")]
+    [Migration(00023,"v00.01.61 USR_USER -> User")]
     public class CrTbl_0001_User: Migration
     {
         public override void Down()

@@ -130,6 +130,11 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
              .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.Product.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description));
+
+            CreateMap<CustDiscount, GetCustDiscountViewModel>()
+            .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Customer.CustomerName))
+            .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupDescription));
+
         }
 
         private static string enStockCardTypeNameResolver(string ScType)
