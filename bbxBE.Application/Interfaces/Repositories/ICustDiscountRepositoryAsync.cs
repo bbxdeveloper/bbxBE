@@ -11,9 +11,10 @@ namespace bbxBE.Application.Interfaces.Repositories
 {
     public interface ICustDiscountRepositoryAsync : IGenericRepositoryAsync<CustDiscount>
     {
+        Task<long> CreateOrUpdateCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList);
+
         Task<bool> SeedDataAsync(int rowCount);
         Task<CustDiscount> AddCustDiscountAsync(CustDiscount p_CustDiscount);
-        Task<long> AddCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList);
 
         Task<CustDiscount> UpdateCustDiscountAsync(CustDiscount p_CustDiscount);
         Task<long> UpdateCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList);

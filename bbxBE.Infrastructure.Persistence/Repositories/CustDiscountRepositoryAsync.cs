@@ -51,117 +51,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         }
 
-
-        public bool IsUniqueCustDiscountCode(string CustDiscountCode, long? ID = null)
-        {
-            if (_cacheService.IsCacheNull())
-            {
-                return !_dbContext.CustDiscount.Any(p => p.CustDiscountCode == CustDiscountCode && !p.Deleted && (ID == null || p.ID != ID.Value));
-            }
-            else
-            {
-                var query = _cacheService.QueryCache();
-                return !query.ToList().Any(p => p.CustDiscountCode == CustDiscountCode && !p.Deleted && (ID == null || p.ID != ID.Value));
-            }
-        }
-
-        public async Task<CustDiscount> AddCustDiscountAsync(CustDiscount p_CustDiscount)
-        {
-
-            await _dbContext.CustDiscount.AddAsync(p_CustDiscount);
-            await _dbContext.SaveChangesAsync();
-
-            _cacheService.AddOrUpdate(p_CustDiscount);
-            return p_CustDiscount;
-        }
-
-        public async Task<long> AddCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList)
+        public async Task<long> CreateOrUpdateCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList)
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-
-
+                var CustomerID = p_CustDiscountList.First().CustomerID
+                _dbContext.CustDiscount.RemoveRange(_dbContext.CustDiscount.Where(x => x.CustomerID == CustomerID));
+     
                 await _dbContext.CustDiscount.AddRangeAsync(p_CustDiscountList);
                 await _dbContext.SaveChangesAsync();
 
                 await dbContextTransaction.CommitAsync();
             }
 
-            await RefreshCustDiscountCache();
             return p_CustDiscountList.Count();
-        }
-
-        public async Task<CustDiscount> UpdateCustDiscountAsync(CustDiscount p_CustDiscount)
-        {
-            _dbContext.CustDiscount.Update(p_CustDiscount);
-            await _dbContext.SaveChangesAsync();
-            //                await dbContextTransaction.CommitAsync();
-
-            _cacheService.AddOrUpdate(p_CustDiscount);
-
-            //Product cache aktualizálás (ha fel van töltve)
-            if (!_productCacheService.IsCacheNull())
-            {
-                foreach (var prod in _productCacheService.QueryCache())
-                {
-                    if (prod.CustDiscountID == p_CustDiscount.ID)
-                    {
-                        prod.CustDiscount = p_CustDiscount;
-                    }
-                }
-            }
-            return p_CustDiscount;
-        }
-
-        public async Task<long> UpdateCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList)
-        {
-            _dbContext.CustDiscount.UpdateRange(p_CustDiscountList);
-            await _dbContext.SaveChangesAsync();
-            //                await dbContextTransaction.CommitAsync();
-
-            //await RefreshCustDiscountCache();
-
-            //Product cache aktualizálás (ha fel van töltve)
-            if (!_productCacheService.IsCacheNull())
-            {
-                await _productCacheService.RefreshCache();
-            }
-            return p_CustDiscountList.Count();
-        }
-
-        public async Task<CustDiscount> DeleteCustDiscountAsync(long ID)
-        {
-
-            CustDiscount CustDiscount = null;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
-            {
-                CustDiscount = _dbContext.CustDiscount.Where(x => x.ID == ID).FirstOrDefault();
-
-                if (CustDiscount != null)
-                {
-
-                    _dbContext.CustDiscount.Remove(CustDiscount);
-
-                    await _dbContext.SaveChangesAsync();
-                    await dbContextTransaction.CommitAsync();
-
-                    _cacheService.TryRemove(CustDiscount);
-                    //Product cache aktualizálás
-                    foreach (var prod in _productCacheService.QueryCache())
-                    {
-                        if (prod.CustDiscountID == CustDiscount.ID)
-                        {
-                            prod.CustDiscountID = 0;
-                            prod.CustDiscount = null;
-                        }
-                    }
-                }
-                else
-                {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CustDiscountNOTFOUND, ID));
-                }
-            }
-            return CustDiscount;
         }
 
         public Entity GetCustDiscount(GetCustDiscount requestParameter)

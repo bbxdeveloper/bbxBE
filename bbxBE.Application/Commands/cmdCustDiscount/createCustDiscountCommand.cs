@@ -22,10 +22,7 @@ namespace bxBE.Application.Commands.cmdCustDiscount
     {
         public class CustDiscountItem
         {
-            [ColumnLabel("Ügyfél ID")]
-            [Description("Ügyfél ID")]
-            public long CustomerID { get; set; }
-
+ 
             [ColumnLabel("Termékcsoport ID")]
             [Description("Termékcsoport ID")]
             public long ProductGroupID { get; set; }
@@ -34,6 +31,10 @@ namespace bxBE.Application.Commands.cmdCustDiscount
             [Description("Árengedmény %)")]
             public decimal Discount { get; set; }
         }
+
+        [ColumnLabel("Ügyfél ID")]
+        [Description("Ügyfél ID")]
+        public long CustomerID { get; set; }
         public List<CustDiscountItem> Items { get; set; } = new List<CustDiscountItem>();
     }
 
@@ -56,6 +57,7 @@ namespace bxBE.Application.Commands.cmdCustDiscount
             request.Items.ForEach(i =>
             {
                 var CustDiscount= _mapper.Map<CustDiscount>(i);
+                CustDiscount.CustomerID = request.CustomerID;
                 CustDiscountItems.Add(CustDiscount);
             }
             );
