@@ -39,12 +39,7 @@ namespace bbxBE.Application.Queries.qStock
         /// <returns></returns>
         public async Task<Entity> Handle(GetStock request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-
-
-            // query based on filter
-            var entity = await _StockRepository.GetStockAsync(validFilter);
+            var entity = await _StockRepository.GetStockAsync(request.ID);
             var data = entity.MapItemFieldsByMapToAnnotation<GetStockViewModel>();
 
             // response wrapper

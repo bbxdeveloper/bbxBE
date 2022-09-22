@@ -16,8 +16,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Offer> UpdateOfferRecordAsync(Offer p_Offer);
         Task<Offer> DeleteOfferAsync(long ID);
 
-        Task<Entity> GetOfferAsync(GetOffer requestParameters);
-        Task<Offer> GetOfferRecordAsync(long ID);
+        Task<Entity> GetOfferAsync(long ID, bool FullData = true);
+        Task<Offer> GetOfferRecordAsync(long ID, bool FullData = true);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOfferAsync(QueryOffer requestParameters);
         
     }

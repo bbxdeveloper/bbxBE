@@ -194,11 +194,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<Entity> GetOfferAsync(GetOffer requestParameter)
+        public async Task<Entity> GetOfferAsync(long ID, bool FullData = true)
         {
 
-            var ID = requestParameter.ID;
-            var item = await GetOfferRecordAsync(ID);
+            var item = await GetOfferRecordAsync(ID, FullData);
 
             if ( item == null)
             {

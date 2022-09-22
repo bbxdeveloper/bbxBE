@@ -54,15 +54,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return true;
         }
 
-        public async Task<Entity> GetUserAsync(GetUser requestParameter)
+        public async Task<Entity> GetUserAsync(long ID, string fields)
         {
 
-            var ID = requestParameter.ID;
-
             var user = await GetByIdAsync(ID);
-
-            var fields = requestParameter.Fields;
-
             if (user == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_USERNOTFOUND, ID));

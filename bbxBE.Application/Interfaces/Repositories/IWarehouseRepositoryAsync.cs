@@ -14,7 +14,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> SeedDataAsync(int rowCount);
         Task<Warehouse> GetWarehouseByCodeAsync(string WarehouseCode);
 
-        Task<Entity> GetWarehouseAsync(GetWarehouse requestParameters);
+        Task<Entity> GetWarehouseAsync(long ID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedWarehouseAsync(QueryWarehouse requestParameters);
     }
 }

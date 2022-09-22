@@ -18,7 +18,7 @@ namespace bbxBE.Application.Interfaces.Repositories
             enStockCardType p_ScType,
             decimal p_XCalcQty, decimal p_XRealQty, decimal p_XOutQty, decimal p_UnitPrice,
             string p_XRel);
-        Task<Entity> GetStockCardAsync(GetStockCard requestParameters);
+        Task<Entity> GetStockCardAsync(long ID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockCardAsync(QueryStockCard requestParameters);
     }
 }

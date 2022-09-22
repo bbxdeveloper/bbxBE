@@ -18,8 +18,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Customer> DeleteCustomerAsync(long ID);
         Task<Customer> UpdateCustomerAsync(Customer p_customer);
         Customer GetOwnData();
-        Customer GetCustomer(long customerID);
-        Entity GetCustomer(GetCustomer requestParameters);
+        Customer GetCustomerRecord(long customerID);
+        Entity GetCustomer(long customerID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParamter);
     }
 }

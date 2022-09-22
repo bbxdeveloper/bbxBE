@@ -20,7 +20,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<long> UpdateOriginRangeAsync(List<Origin> p_originList);
 
         Task<Origin> DeleteOriginAsync(long ID);
-        Entity GetOrigin(GetOrigin requestParameters);
+        Entity GetOrigin(long ID);
         List<Entity> GetOriginList();
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOriginAsync(QueryOrigin requestParameters);
     }

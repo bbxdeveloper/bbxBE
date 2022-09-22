@@ -10,8 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
 using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qWarehouse;
@@ -54,11 +52,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<Entity> GetWarehouseAsync(GetWarehouse requestParameter)
+        public async Task<Entity> GetWarehouseAsync(long ID)
         {
-
-
-            var ID = requestParameter.ID;
 
             var item = await GetByIdAsync(ID);
 

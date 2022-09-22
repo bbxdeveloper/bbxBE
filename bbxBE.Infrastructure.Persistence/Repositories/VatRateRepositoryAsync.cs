@@ -62,12 +62,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
 
-        public async Task<Entity> GetVatRateAsync(GetVatRate requestParameter)
+        public async Task<Entity> GetVatRateAsync(long ID)
         {
-
-
-            var ID = requestParameter.ID;
-
             var query = _cacheService.QueryCache();
             var item = query.Where(x => x.ID== ID).FirstOrDefault();
 

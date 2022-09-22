@@ -137,7 +137,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return query.SingleOrDefault(s => s.IsOwnData);
         }
 
-        public Customer GetCustomer(long customerID)
+        public Customer GetCustomerRecord(long customerID)
         {
             Customer cust = null;
             if (!_cacheService.TryGetValue(customerID, out cust))
@@ -145,9 +145,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return cust;
         }
 
-        public Entity GetCustomer(GetCustomer requestParameter)
+        public Entity GetCustomer(long customerID)
         {
-            var cust = GetCustomer(requestParameter.ID);
+            var cust = GetCustomerRecord(customerID);
 
             var itemModel = _mapper.Map<Customer, GetCustomerViewModel>(cust);
             var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();
