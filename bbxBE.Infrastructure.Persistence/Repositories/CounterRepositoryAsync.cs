@@ -101,17 +101,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return p_Counter;
         }
 
-        public async Task<Entity> GetCounterAsync(GetCounter requestParameter)
+        public async Task<Entity> GetCounterAsync(long ID)
         {
-
-
-            var ID = requestParameter.ID;
             var item  = await _dbContext.Counter//.AsNoTracking().AsExpandable()
                     .Include(i => i.Warehouse).SingleOrDefaultAsync(s=>s.ID == ID);
-
-            //            var item = await GetByIdAsync(ID);
-
-            //            var fields = requestParameter.Fields;
 
             var itemModel = _mapper.Map<Counter, GetCounterViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetCounterViewModel>();

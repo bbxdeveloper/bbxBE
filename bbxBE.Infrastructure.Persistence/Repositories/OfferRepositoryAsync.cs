@@ -197,7 +197,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Entity> GetOfferAsync(long ID, bool FullData = true)
         {
 
-            var item = await GetOfferRecordAsync(ID, FullData);
+            var item = await GetOfferRecordAsync(ID);
 
             if ( item == null)
             {
@@ -205,6 +205,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
 
             var itemModel = _mapper.Map<Offer, GetOfferViewModel>(item);
+
+            //a requestParameter.FullData kezelés miatt a SumNetAmount és SumBrtAmount mezőket ki kell számolni 
+            itemModel.SumNetAmount = Math.Round(itemModel.OfferLines.Sum(s => s.NetAmount), 0);
+            itemModel.SumBrtAmount = Math.Round(itemModel.OfferLines.Sum(s => s.BrtAmount), 0);
+            if (!FullData)
+            {
+            //itemModel.OfferLines = new List<GetOfferViewModel.OfferLine>();
+            itemModel.OfferLines = null;
+            }
+
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
 
             // shape data
@@ -347,6 +357,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-   
+        public Task<Offer> GetOfferRecordAsync(long ID, bool FullData = true)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

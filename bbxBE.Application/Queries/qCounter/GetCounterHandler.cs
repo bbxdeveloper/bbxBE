@@ -35,13 +35,8 @@ namespace bbxBE.Application.Queries.qCounter
 
         public async Task<Entity> Handle(GetCounter request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
-
-            // query based on filter
-            var entityPosition = await _positionRepository.GetCounterAsync(validFilter);
-            var data = entityPosition.MapItemFieldsByMapToAnnotation<GetCounterViewModel>();
+            var entity = await _counterRepository.GetCounterAsync(request.ID);
+            var data = entity.MapItemFieldsByMapToAnnotation<GetCounterViewModel>();
 
             // response wrapper
             return data;

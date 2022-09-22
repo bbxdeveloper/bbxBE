@@ -14,7 +14,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> SeedDataAsync(int rowCount);
         Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode);
         Task<Counter> UpdateCounterAsync(Counter p_Counter, string p_WarehouseCode);
-        Task<Entity> GetCounterAsync(GetCounter requestParameters);
+        Task<Entity> GetCounterAsync(long ID);
         Task<string> GetNextValueAsync(string CounterCode, long WarehouseID, bool useCounterPool = true);
         Task<bool> FinalizeValueAsync(string CounterCode, long WarehouseID, string counterValue);
         Task<bool> RollbackValueAsync(string CounterCode, long WarehouseID, string counterValue);
