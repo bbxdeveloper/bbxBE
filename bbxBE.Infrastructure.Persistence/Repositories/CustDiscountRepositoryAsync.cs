@@ -106,7 +106,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<List<Entity>> GetCustDiscountForCustomerListAsync( long customerID)
         {
 
-            var query = _dbContext.CustDiscount.AsNoTracking().AsExpandable()
+            var query = _dbContext.CustDiscount.AsNoTracking()
                        .Include(i => i.Customer).AsNoTracking()
                        .Include(i => i.ProductGroup).AsNoTracking()
                        .Where(s => s.CustomerID == customerID);
