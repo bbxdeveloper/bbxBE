@@ -133,6 +133,7 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<CustDiscount, GetCustDiscountViewModel>()
             .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Customer.CustomerName))
+            .ForMember(dst => dst.ProductGroupCode, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode))
             .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupDescription));
 
         }
