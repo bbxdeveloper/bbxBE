@@ -150,7 +150,7 @@
               <TableCell RowIndex="0" ColumnIndex="6" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
                   <TextBox Width="11.03mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.vatRateCode" Name="textBox25" StyleName="Normal.TableBody">
-                    <Style>
+                    <Style TextAlign="Right">
                       <Font Size="7pt" />
                     </Style>
                   </TextBox>
@@ -186,7 +186,7 @@
               <TableCell RowIndex="0" ColumnIndex="3" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
                   <TextBox Width="13.36mm" Height="5mm" Left="0cm" Top="0cm" Value="=Fields.quantity" Name="textBox9" StyleName="Normal.TableBody">
-                    <Style>
+                    <Style TextAlign="Right">
                       <Font Size="7pt" />
                     </Style>
                   </TextBox>
