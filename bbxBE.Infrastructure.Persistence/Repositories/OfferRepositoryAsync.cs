@@ -77,6 +77,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
 
+
                     //Az aktuális minden esetben Latest!
                     p_Offer.LatestVersion = true;
                     p_Offer.OfferVersion = 0;
@@ -85,9 +86,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     //Ha másolatot insert-elünk, a biztonság kedvéért kiürítjük az ID-ket
                     p_Offer.OfferLines.ToList().ForEach(e => {
+                        e.Product = null;
+                        e.VatRate = null;
                         e.OfferID = 0;
                         e.ID = 0; }
                     );
+
                     p_Offer.ID = 0;
 
                     await _dbContext.Offer.AddAsync(p_Offer);
@@ -129,7 +133,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             _dbContext.OfferLine.Remove(existingLine);
                     }
 
-                    p_Offer.OfferLines.ToList().ForEach(e => e.OfferID = p_Offer.ID);
+                    p_Offer.OfferLines.ToList().ForEach(e => {
+                        e.Product = null;
+                        e.VatRate = null;
+                        e.OfferID = 0;
+                        e.ID = 0;
+                    });
 
 
                     _dbContext.Offer.Update(p_Offer);
@@ -152,7 +161,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 try
                 {
-      
+                    p_Offer.OfferLines.ToList().ForEach(e => {
+                        e.Product = null;
+                        e.VatRate = null;
+                    });
+
                     _dbContext.Offer.Update(p_Offer);
 
                     await _dbContext.SaveChangesAsync();
@@ -178,6 +191,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 if (offer != null)
                 {
+                    offer.OfferLines.ToList().ForEach(e => {
+                        e.Product = null;
+                        e.VatRate = null;
+                    });
+                    
                     offer.Deleted = true;
                     _dbContext.Offer.Update(offer);
 
