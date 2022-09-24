@@ -2,6 +2,7 @@
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
+using bbxBE.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +19,6 @@ namespace bbxBE.Application.Queries.ViewModels
 	/// </summary>
 	public class GetPendigDeliveryNotesSummaryModel
     {
-
 		[ColumnLabel("Raktár ID")]
 		[Description("Raktár ID")]
 		public long WarehouseID { get; set; }
