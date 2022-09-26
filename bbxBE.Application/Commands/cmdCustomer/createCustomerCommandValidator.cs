@@ -46,6 +46,15 @@ namespace bbxBE.Application.Commands.cmdCustomer
             RuleFor(p => p.IsOwnData)
                        .Must(IsUniqueIsOwnData).WithMessage(bbxBEConsts.ERR_CST_OWNEXISTS);
 
+            RuleFor(p => p.City)
+               .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
+
+            RuleFor(p => p.AdditionalAddressDetail)
+              .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+              .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
+              .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
         }
 
         private bool CheckBankAccount(string p_CustomerBankAccountNumber)

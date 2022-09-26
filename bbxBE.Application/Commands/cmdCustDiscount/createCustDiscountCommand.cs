@@ -55,16 +55,19 @@ namespace bxBE.Application.Commands.cmdCustDiscount
         public async Task<Response<List<CustDiscount>>> Handle(CreateCustDiscountCommand request, CancellationToken cancellationToken)
         {
             var CustDiscountItems = new List<CustDiscount>();
-            request.Items.ForEach(i =>
+            if (request.Items != null)
             {
-                if (i.ProductGroupID > 0)
+                request.Items.ForEach(i =>
                 {
-                    var CustDiscount = _mapper.Map<CustDiscount>(i);
-                    CustDiscount.CustomerID = request.CustomerID;
-                    CustDiscountItems.Add(CustDiscount);
+                    if (i.ProductGroupID > 0)
+                    {
+                        var CustDiscount = _mapper.Map<CustDiscount>(i);
+                        CustDiscount.CustomerID = request.CustomerID;
+                        CustDiscountItems.Add(CustDiscount);
+                    }
                 }
+                );
             }
-            );
             var res = await _custDiscountRepository.MaintanenceCustDiscountRangeAsync(CustDiscountItems);
             return new Response<List<CustDiscount>>(CustDiscountItems);
         }
