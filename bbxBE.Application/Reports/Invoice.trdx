@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report DataSourceName="webServiceDataSource1" Width="18cm" Name="invoice" SnapGridSize="0.1cm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;12&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbetestcustomer.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;,&quot;FullData&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;12&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;,&quot;FullData&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Query" Name="ID">
           <Value>
@@ -224,7 +224,7 @@
             </Panel>
             <Panel Width="2.701cm" Height="1.5cm" Left="9.197cm" Top="0cm" Name="panel8">
               <Items>
-                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.invoiceIssueDate" Format="{0:d}" Name="lbDateStamp">
+                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.invoiceIssueDate" Format="{0:yyyy.MM.dd}" Name="lbDateStamp">
                   <Style>
                     <Font Name="Courier New" Size="9pt" />
                   </Style>
@@ -243,7 +243,7 @@
                     <Font Name="Courier New" Size="9pt" />
                   </Style>
                 </TextBox>
-                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.paymentDate" Format="{0:d}" Name="lbPaymentDate">
+                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.paymentDate" Format="{0:yyyy.MM.dd}" Name="lbPaymentDate">
                   <Style>
                     <Font Name="Courier New" Size="9pt" />
                   </Style>
@@ -252,7 +252,7 @@
             </Panel>
             <Panel Width="2.701cm" Height="1.5cm" Left="6.496cm" Top="0cm" Name="panel7">
               <Items>
-                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.invoiceDeliveryDate" Format="{0:d}" Name="lbFinishDate">
+                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.invoiceDeliveryDate" Format="{0:yyyy.MM.dd}" Name="lbFinishDate">
                   <Style>
                     <Font Name="Courier New" Size="9pt" />
                   </Style>
@@ -293,7 +293,7 @@
                               <Font Size="8pt" />
                             </Style>
                           </TextBox>
-                          <TextBox Width="1.123cm" Height="0.4cm" Left="1.867cm" Top="0.5cm" Value="= Fields.unitOfMeasure" Name="textBox37">
+                          <TextBox Width="1.123cm" Height="0.4cm" Left="1.867cm" Top="0.5cm" Value="= Fields.unitOfMeasureX" Name="textBox37">
                             <Style>
                               <Font Size="8pt" />
                             </Style>
@@ -477,7 +477,7 @@
                 </TableGroup>
               </ColumnGroups>
               <Bindings>
-                <Binding Path="DataSource" Expression="= Fields.invoiceLines" />
+                <Binding Path="DataSource" Expression="= Fields.InvoiceLines" />
               </Bindings>
             </Table>
             <TextBox Width="3.4cm" Height="0.7cm" Left="3.096cm" Top="0cm" Value="Fizetés módja" Name="textBox14">
@@ -766,7 +766,7 @@
     </ReportParameter>
     <ReportParameter Name="BaseURL" Visible="True">
       <Value>
-        <String>https://bbxbetestcustomer.azurewebsites.net</String>
+        <String>https://bbxbe.azurewebsites.net</String>
       </Value>
     </ReportParameter>
     <ReportParameter Name="JWT" AllowNull="True">
