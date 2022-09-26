@@ -182,51 +182,44 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if(incoming)
             {
-                lstEntities = await _dbContext.InvoiceLine.AsNoTracking()
-                 .Include(i => i.Invoice).ThenInclude(t => t.Supplier)
-                 .Where(w => w.PendingDNQuantity > 0 && w.Invoice.Incoming == incoming && w.Invoice.WarehouseID == warehouseID && w.Invoice.CurrencyCode == currencyCode)
-                .GroupBy(g => g.Invoice.SupplierID)
-                       .Select(g => new GetPendigDeliveryNotesSummaryModel()
-                       {
+                var q1 = from InvoiceLine in _dbContext.InvoiceLine
+                          join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
+                          join Customer in _dbContext.Customer on Invoice.SupplierID equals Customer.ID
+                         where InvoiceLine.PendingDNQuantity > 0 && Invoice.Incoming == incoming && Invoice.WarehouseID == warehouseID && Invoice.CurrencyCode == currencyCode
+                         group InvoiceLine by 
+                         new { CustomerID = Invoice.SupplierID, CustomerName = Customer.CustomerName} into grp
+                         orderby grp.Key.CustomerName
 
-                           WarehouseID = warehouseID,
-                           CustomerID = g.FirstOrDefault().Invoice.Supplier.ID,
-                           Customer = g.FirstOrDefault().Invoice.Supplier.CustomerName,
-                           SumNetAmount = g.Sum(s => s.LineNetAmount)
-                       }
-                       ).ToListAsync();
+                          select new GetPendigDeliveryNotesSummaryModel()
+                          {
+                              WarehouseID = warehouseID,
+                              CustomerID = grp.Key.CustomerID,
+                              Customer = grp.Key.CustomerName,
+                              SumNetAmount = grp.Sum(s => s.LineNetAmount)
+                          };
+
+                lstEntities = await q1.ToListAsync();
             }
             else
             {
-                lstEntities = await _dbContext.InvoiceLine.AsNoTracking()
-                 .Include(i => i.Invoice).ThenInclude(t => t.Customer)
-                 .Where(w => w.PendingDNQuantity > 0 && w.Invoice.Incoming == incoming && w.Invoice.WarehouseID == warehouseID && w.Invoice.CurrencyCode == currencyCode)
-                .GroupBy(g => g.Invoice.CustomerID)
-                       .Select(g => new GetPendigDeliveryNotesSummaryModel()
-                       {
+                var q1 = from InvoiceLine in _dbContext.InvoiceLine
+                         join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
+                         join Customer in _dbContext.Customer on Invoice.CustomerID equals Customer.ID
+                         where InvoiceLine.PendingDNQuantity > 0 && Invoice.Incoming == incoming && Invoice.WarehouseID == warehouseID && Invoice.CurrencyCode == currencyCode
+                         group InvoiceLine by
+                         new { CustomerID = Invoice.CustomerID, CustomerName = Customer.CustomerName } into grp
+                         orderby grp.Key.CustomerName
 
-                           WarehouseID = warehouseID,
-                           CustomerID = g.FirstOrDefault().Invoice.CustomerID,
-                           Customer = g.FirstOrDefault().Invoice.Customer.CustomerName,
-                           SumNetAmount = g.Sum(s => s.LineNetAmount)
-                       }
-                       ).ToListAsync();
+                         select new GetPendigDeliveryNotesSummaryModel()
+                         {
+                             WarehouseID = warehouseID,
+                             CustomerID = grp.Key.CustomerID,
+                             Customer = grp.Key.CustomerName,
+                             SumNetAmount = grp.Sum(s => s.LineNetAmount)
+                         };
+
+                lstEntities = await q1.ToListAsync();
             }
-            /* ????
-            var queryModel = await _dbContext.InvoiceLine.AsNoTracking()
-              .Include(i => i.Invoice).ThenInclude(t => (incoming ? t.Supplier : t.Customer)).AsNoTracking()
-              .Where(w => w.PendingDNQuantity > 0 && w.Invoice.Incoming == incoming && w.Invoice.WarehouseID == warehouseID && w.Invoice.CurrencyCode == currencyCode)
-              .GroupBy(g => (incoming ? g.Invoice.SupplierID : g.Invoice.CustomerID))
-                        .Select(g => new GetPendigDeliveryNotesSummaryModel()
-                        {
-
-                            WarehouseID = warehouseID,
-                            CustomerID = g.Key,
-                            Customer = (incoming ? g.FirstOrDefault().Invoice.Supplier.CustomerName : g.FirstOrDefault().Invoice.Customer.CustomerName),
-                            SumNetAmount = g.Sum(s => s.LineNetAmount)
-                        }
-                        ).ToListAsync();
-            */
 
             var shapeData = _dataShaperGetPendigDeliveryNotesSummaryModel.ShapeData(lstEntities, "");
 

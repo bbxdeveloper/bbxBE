@@ -50,12 +50,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
            
         }
 
-        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList)
+        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList, long customerID)
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
-                var customerID = p_CustDiscountList.First().CustomerID;
                 Customer cust = null;
                 if (!_customerCacheService.TryGetValue(customerID, out cust))
                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, customerID));
@@ -109,7 +108,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var query = _dbContext.CustDiscount.AsNoTracking()
                        .Include(i => i.Customer).AsNoTracking()
                        .Include(i => i.ProductGroup).AsNoTracking()
-                       .Where(s => s.CustomerID == customerID);
+                       .Where(s => s.CustomerID == customerID)
+                       .OrderBy( o=>o.ProductGroup.ProductGroupCode);
 
             var listFieldsModel = _modelHelper.GetModelFields<GetCustDiscountViewModel>();
             List<Entity> shapeData = new List<Entity>();

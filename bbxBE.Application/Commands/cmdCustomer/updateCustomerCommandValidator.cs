@@ -51,6 +51,17 @@ namespace bbxBE.Application.Commands.cmdCustomer
                             return IsUniqueIsOwnData(model.IsOwnData, Convert.ToInt64(model.ID));
                         }
                     ).WithMessage(bbxBEConsts.ERR_CST_OWNEXISTS);
+
+            RuleFor(p => p.City)
+               .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
+
+            RuleFor(p => p.AdditionalAddressDetail)
+              .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+              .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
+              .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
+
         }
 
         private bool IsUniqueTaxpayerId(string TaxpayerNumber, long ID)
