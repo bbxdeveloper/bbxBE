@@ -109,7 +109,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var query = _dbContext.CustDiscount.AsNoTracking()
                        .Include(i => i.Customer).AsNoTracking()
                        .Include(i => i.ProductGroup).AsNoTracking()
-                       .Where(s => s.CustomerID == customerID);
+                       .Where(s => s.CustomerID == customerID)
+                       .OrderBy( o=>o.ProductGroup.ProductGroupCode);
 
             var listFieldsModel = _modelHelper.GetModelFields<GetCustDiscountViewModel>();
             List<Entity> shapeData = new List<Entity>();

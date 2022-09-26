@@ -15,6 +15,7 @@ using System.Configuration;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace bxBE.Application.Commands.cmdCustDiscount
 {
@@ -56,9 +57,12 @@ namespace bxBE.Application.Commands.cmdCustDiscount
             var CustDiscountItems = new List<CustDiscount>();
             request.Items.ForEach(i =>
             {
-                var CustDiscount= _mapper.Map<CustDiscount>(i);
-                CustDiscount.CustomerID = request.CustomerID;
-                CustDiscountItems.Add(CustDiscount);
+                if (i.ProductGroupID > 0)
+                {
+                    var CustDiscount = _mapper.Map<CustDiscount>(i);
+                    CustDiscount.CustomerID = request.CustomerID;
+                    CustDiscountItems.Add(CustDiscount);
+                }
             }
             );
             var res = await _custDiscountRepository.MaintanenceCustDiscountRangeAsync(CustDiscountItems);
