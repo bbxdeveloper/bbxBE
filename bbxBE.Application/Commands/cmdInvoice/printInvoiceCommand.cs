@@ -31,7 +31,6 @@ namespace bbxBE.Application.Commands.cmdInvoice
     {
         public long ID { get; set; }
         public string InvoiceNumber { get; set; }
-        public string InvoiceType { get; set; }
 
         public string baseURL;
     }
@@ -62,7 +61,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
             settings.IgnoreWhitespace = true;
             string reportTRDX = String.Empty;
 
-            Enum.TryParse(request.InvoiceType, out enInvoiceType invoiceType);
+            Enum.TryParse(invoice.InvoiceType, out enInvoiceType invoiceType);
 
             switch (invoiceType)
             {

@@ -68,7 +68,7 @@ namespace bxBE.Application.Commands.cmdCustDiscount
                 }
                 );
             }
-            var res = await _custDiscountRepository.MaintanenceCustDiscountRangeAsync(CustDiscountItems);
+            var res = await _custDiscountRepository.MaintanenceCustDiscountRangeAsync(CustDiscountItems, request.CustomerID);
             return new Response<List<CustDiscount>>(CustDiscountItems);
         }
 

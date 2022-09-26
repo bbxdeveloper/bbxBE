@@ -50,12 +50,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
            
         }
 
-        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList)
+        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList, long customerID)
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
-                var customerID = p_CustDiscountList.First().CustomerID;
                 Customer cust = null;
                 if (!_customerCacheService.TryGetValue(customerID, out cust))
                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, customerID));
