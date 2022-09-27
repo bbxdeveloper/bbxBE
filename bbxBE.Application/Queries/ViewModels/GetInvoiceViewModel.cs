@@ -223,6 +223,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
 		[ColumnLabel("Megjegyzés")]
 		[Description("Ügyfél megjegyzés")]
+		[MapToEntity("customerComment")]
 		public string CustomerComment { get; set; }
 
 		#endregion
@@ -243,6 +244,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
 		[ColumnLabel("Eredeti.biz")]
 		[Description("Bevételhez eredeti bizonylata")]
+		[MapToEntity("customerInvoiceNumber")]
 		public string CustomerInvoiceNumber { get; set; }
 
 		[ColumnLabel("Megjegyzés")]
@@ -267,10 +269,12 @@ namespace bbxBE.Application.Queries.ViewModels
 
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
+		[MapToEntity("invoiceLines")]
 		public List<GetInvoiceViewModel.InvoiceLine> InvoiceLines { get; set; } = new List<GetInvoiceViewModel.InvoiceLine>();
 
 		[ColumnLabel("Áfaösszesítők")]
 		[Description("Áfaösszesítők")]
+		[MapToEntity("summaryByVatRates")]
 		public List<GetInvoiceViewModel.SummaryByVatRate> SummaryByVatRates { get; set; } = new List<GetInvoiceViewModel.SummaryByVatRate>();
 
 

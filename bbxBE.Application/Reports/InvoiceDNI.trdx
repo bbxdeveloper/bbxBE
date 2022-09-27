@@ -58,104 +58,6 @@
             <Font Name="Courier New" Size="14pt" />
           </Style>
         </TextBox>
-        <Panel Width="7.11cm" Height="4.201cm" Left="3.747cm" Top="2.3cm" Name="panel2">
-          <Items>
-            <TextBox Width="4.444cm" Height="0.7cm" Left="0cm" Top="1.4cm" Value="= Fields.customerAdditionalAddressDetail" Name="textBox21">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.555cm" Height="0.7cm" Left="0cm" Top="2.801cm" Value="= Fields.customerTaxpayerNumber" Name="textBox25">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.945cm" Height="0.7cm" Left="3.165cm" Top="0.7cm" Value="= Fields.customerCity" Name="textBox13">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="2cm" Height="0.7cm" Left="1.145cm" Top="0.7cm" Value="= Fields.customerPostalCode" Name="textBox19">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="1.145cm" Height="0.7cm" Left="0cm" Top="0.7cm" Value="= Fields.customerCountryCode" Name="textBox29">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.555cm" Height="0.7cm" Left="3.555cm" Top="2.801cm" Value="= Fields.customerThirdStateTaxId" Name="textBox31">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="7.11cm" Height="0.7cm" Left="0cm" Top="2.1cm" Value="= Fields.customerTaxpayerNumber" Name="textBox44">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="7.11cm" Height="0.7cm" Left="0cm" Top="3.501cm" Value="= Fields.customerComment" Name="textBox46">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="4.444cm" Height="0.7cm" Left="0cm" Top="0cm" Value="= Fields.customerName" Name="textBox6">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-          </Items>
-        </Panel>
-        <Panel Width="7.11cm" Height="4.201cm" Left="10.89cm" Top="2.3cm" Name="panel3">
-          <Items>
-            <TextBox Width="4.444cm" Height="0.7cm" Left="0cm" Top="0cm" Value="= Fields.supplierName" Name="lbBuyerName">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="2cm" Height="0.7cm" Left="1.145cm" Top="0.7cm" Value="= Fields.supplierPostalCode" Name="lbAddressZipCity">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="4.444cm" Height="0.7cm" Left="0cm" Top="1.4cm" Value="= Fields.supplierAdditionalAddressDetail" Name="lbAddressStreet">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.555cm" Height="0.7cm" Left="0cm" Top="2.801cm" Value="= Fields.supplierTaxpayerNumber" Name="lbTaxNumber">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.9cm" Height="0.7cm" Left="3.146cm" Top="0.7cm" Value="= Fields.supplierCity" Name="textBox27">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="1.145cm" Height="0.7cm" Left="0cm" Top="0.7cm" Value="= Fields.supplierCountryCode" Name="textBox7">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.555cm" Height="0.7cm" Left="3.555cm" Top="2.801cm" Value="= Fields.supplierThirdStateTaxId" Name="textBox32">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="7.11cm" Height="0.7cm" Left="0cm" Top="2.1cm" Value="= Fields.supplierTaxpayerNumber" Name="textBox43">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="7.11cm" Height="0.7cm" Left="0cm" Top="3.501cm" Value="= Fields.supplierComment" Name="textBox48">
-              <Style>
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-          </Items>
-        </Panel>
         <Panel Width="8.3cm" Height="1cm" Left="0cm" Top="0cm" Name="panel5">
           <Items>
             <TextBox Width="8.3cm" Height="1cm" Left="0cm" Top="0cm" Value="{Fields.copies}. példány" Name="textBox5">
@@ -165,40 +67,139 @@
             </TextBox>
           </Items>
         </Panel>
-        <Panel Width="3.692cm" Height="4.201cm" Left="0.055cm" Top="2.3cm" Name="panel11">
+        <TextBox Width="3.692cm" Height="0.7cm" Left="0.055cm" Top="5.102cm" Value="Adószám:" Name="textBox23">
+          <Style>
+            <Font Name="Courier New" Size="8pt" />
+          </Style>
+        </TextBox>
+        <TextBox Width="3.692cm" Height="0.7cm" Left="0.055cm" Top="4.4cm" Value="Bankszámla:" Name="textBox45">
+          <Style TextAlign="Left" VerticalAlign="Top">
+            <Font Name="Courier New" Size="8pt" />
+          </Style>
+        </TextBox>
+        <TextBox Width="3.692cm" Height="0.7cm" Left="0.055cm" Top="5.802cm" Value="Megjegyzés:" Name="textBox34">
+          <Style>
+            <Font Name="Courier New" Size="8pt" />
+          </Style>
+        </TextBox>
+        <TextBox Width="3.692cm" Height="0.7cm" Left="0.055cm" Top="2.3cm" Value="Név:" Name="textBox10">
+          <Style TextAlign="Left" VerticalAlign="Top">
+            <Font Name="Courier New" Size="8pt" />
+          </Style>
+        </TextBox>
+        <TextBox Width="3.692cm" Height="0.7cm" Left="0.055cm" Top="3.001cm" Value="Cím:" Name="textBox47">
+          <Style TextAlign="Left" VerticalAlign="Top">
+            <Font Name="Courier New" Size="8pt" />
+          </Style>
+        </TextBox>
+        <TextBox Width="3.692cm" Height="0.7cm" Left="0.055cm" Top="3.701cm" Value="További címadatok:" Name="textBox49">
+          <Style TextAlign="Left" VerticalAlign="Top">
+            <Font Name="Courier New" Size="8pt" />
+          </Style>
+        </TextBox>
+        <Panel Width="7.11cm" Height="4.201cm" Left="3.747cm" Top="2.301cm" Name="panel2">
           <Items>
-            <TextBox Width="3.692cm" Height="0.7cm" Left="0cm" Top="2.801cm" Value="Adószám:" Name="textBox23">
+            <TextBox Width="4.444cm" Height="0.7cm" Left="0cm" Top="1.4cm" Value="= Fields.supplierAdditionalAddressDetail" Name="textBox21">
               <Style>
                 <Font Name="Courier New" Size="8pt" />
               </Style>
             </TextBox>
-            <TextBox Width="3.692cm" Height="0.7cm" Left="0cm" Top="2.1cm" Value="Bankszámla:" Name="textBox45">
-              <Style TextAlign="Left" VerticalAlign="Top">
-                <Font Name="Courier New" Size="8pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.692cm" Height="0.7cm" Left="0cm" Top="3.501cm" Value="Megjegyzés:" Name="textBox34">
+            <TextBox Width="3.555cm" Height="0.7cm" Left="0cm" Top="2.801cm" Value="= Fields.supplierTaxpayerNumber" Name="textBox25">
               <Style>
                 <Font Name="Courier New" Size="8pt" />
               </Style>
             </TextBox>
-            <TextBox Width="3.692cm" Height="0.7cm" Left="0cm" Top="0cm" Value="Név:" Name="textBox10">
-              <Style TextAlign="Left" VerticalAlign="Top">
+            <TextBox Width="3.945cm" Height="0.7cm" Left="3.165cm" Top="0.7cm" Value="= Fields.supplierCity" Name="textBox13">
+              <Style>
                 <Font Name="Courier New" Size="8pt" />
               </Style>
             </TextBox>
-            <TextBox Width="3.692cm" Height="0.7cm" Left="0cm" Top="0.7cm" Value="Cím:" Name="textBox47">
-              <Style TextAlign="Left" VerticalAlign="Top">
+            <TextBox Width="2cm" Height="0.7cm" Left="1.145cm" Top="0.7cm" Value="= Fields.supplierPostalCode" Name="textBox19">
+              <Style>
                 <Font Name="Courier New" Size="8pt" />
               </Style>
             </TextBox>
-            <TextBox Width="3.692cm" Height="0.7cm" Left="0cm" Top="1.4cm" Value="További címadatok:" Name="textBox49">
-              <Style TextAlign="Left" VerticalAlign="Top">
+            <TextBox Width="1.145cm" Height="0.7cm" Left="0cm" Top="0.7cm" Value="= Fields.supplierCountryCode" Name="textBox29">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.555cm" Height="0.7cm" Left="3.555cm" Top="2.801cm" Value="= Fields.supplierThirdStateTaxId" Name="textBox31">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="7.11cm" Height="0.7cm" Left="0cm" Top="2.1cm" Value="= Fields.supplierBankAccountNumber" Name="textBox44">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="7.11cm" Height="0.7cm" Left="0cm" Top="3.501cm" Value="= Fields.supplierComment" Name="textBox46">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="4.444cm" Height="0.7cm" Left="0cm" Top="0cm" Value="= Fields.supplierName" Name="textBox6">
+              <Style>
                 <Font Name="Courier New" Size="8pt" />
               </Style>
             </TextBox>
           </Items>
         </Panel>
+        <Panel Width="7.11cm" Height="4.201cm" Left="10.89cm" Top="2.301cm" Name="panel3">
+          <Items>
+            <TextBox Width="4.444cm" Height="0.7cm" Left="0cm" Top="0cm" Value="= Fields.customerName" Name="lbBuyerName">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="2cm" Height="0.7cm" Left="1.145cm" Top="0.7cm" Value="= Fields.customerPostalCode" Name="lbAddressZipCity">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="4.444cm" Height="0.7cm" Left="0cm" Top="1.4cm" Value="= Fields.customerAdditionalAddressDetail" Name="lbAddressStreet">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.555cm" Height="0.7cm" Left="0cm" Top="2.801cm" Value="= Fields.customerTaxpayerNumber" Name="lbTaxNumber">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.9cm" Height="0.7cm" Left="3.146cm" Top="0.7cm" Value="= Fields.customerCity" Name="textBox27">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="1.145cm" Height="0.7cm" Left="0cm" Top="0.7cm" Value="= Fields.customerCountryCode" Name="textBox7">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.555cm" Height="0.7cm" Left="3.555cm" Top="2.801cm" Value="= Fields.customerThirdStateTaxId" Name="textBox32">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="7.11cm" Height="0.7cm" Left="0cm" Top="2.1cm" Value="= Fields.customerTaxpayerNumber" Name="textBox43">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="7.11cm" Height="0.7cm" Left="0cm" Top="3.501cm" Value="= Fields.customerComment" Name="textBox48">
+              <Style>
+                <Font Name="Courier New" Size="8pt" />
+              </Style>
+            </TextBox>
+          </Items>
+        </Panel>
+        <TextBox Width="17.945cm" Height="0.799cm" Left="0.055cm" Top="6.501cm" Value="= Fields.notice" Name="textBox63">
+          <Style>
+            <Font Name="Courier New" Size="8pt" />
+          </Style>
+        </TextBox>
       </Items>
     </PageHeaderSection>
     <DetailSection Height="3.503cm" Name="detailSection1">
@@ -438,7 +439,7 @@
                 <Binding Path="DataSource" Expression="= Fields.invoiceLines" />
               </Bindings>
             </Table>
-            <TextBox Width="3.4cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.invoiceNumber" Name="lbDocumentNumber">
+            <TextBox Width="3.4cm" Height="0.8cm" Left="14.536cm" Top="0.7cm" Value="= Fields.invoiceNumber" Name="lbDocumentNumber">
               <Style>
                 <Font Name="Courier New" Size="9pt" Bold="True" />
                 <BorderStyle Bottom="None" />
@@ -446,37 +447,47 @@
                 <BorderWidth Bottom="1pt" />
               </Style>
             </TextBox>
-            <TextBox Width="3.4cm" Height="0.7cm" Left="0cm" Top="0cm" Value="Bizonylatszám" Name="textBox12">
+            <TextBox Width="3.4cm" Height="0.7cm" Left="14.536cm" Top="0cm" Value="Bizonylatszám" Name="textBox12">
               <Style VerticalAlign="Bottom">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2.701cm" Height="0.7cm" Left="3.4cm" Top="0cm" Value="Telj.dát." Name="textBox8">
+            <TextBox Width="2.701cm" Height="0.7cm" Left="3.931cm" Top="0cm" Value="Telj.dát." Name="textBox8">
               <Style VerticalAlign="Bottom">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2.701cm" Height="0.8cm" Left="3.4cm" Top="0.7cm" Value="= Fields.invoiceDeliveryDate" Format="{0:d}" Name="lbFinishDate">
+            <TextBox Width="2.701cm" Height="0.8cm" Left="3.931cm" Top="0.7cm" Value="= Fields.invoiceDeliveryDate" Format="{0:d}" Name="lbFinishDate">
               <Style>
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2.701cm" Height="0.7cm" Left="6.101cm" Top="0cm" Value="Kelt." Name="textBox11">
+            <TextBox Width="2.701cm" Height="0.7cm" Left="7.302cm" Top="0cm" Value="Kelt." Name="textBox11">
               <Style VerticalAlign="Bottom">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2.701cm" Height="0.8cm" Left="6.101cm" Top="0.7cm" Value="= Fields.invoiceIssueDate" Format="{0:d}" Name="lbDateStamp">
+            <TextBox Width="2.701cm" Height="0.8cm" Left="7.302cm" Top="0.7cm" Value="= Fields.invoiceIssueDate" Format="{0:d}" Name="lbDateStamp">
               <Style>
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2.701cm" Height="0.7cm" Left="8.803cm" Top="0cm" Value="Fiz.hat." Name="textBox17">
+            <TextBox Width="2.701cm" Height="0.7cm" Left="10.065cm" Top="0cm" Value="Fiz.hat." Name="textBox17">
               <Style VerticalAlign="Bottom">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2.701cm" Height="0.8cm" Left="8.803cm" Top="0.7cm" Value="= Fields.paymentDate" Format="{0:d}" Name="lbPaymentDate">
+            <TextBox Width="2.701cm" Height="0.8cm" Left="10.065cm" Top="0.7cm" Value="= Fields.paymentDate" Format="{0:d}" Name="lbPaymentDate">
+              <Style>
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.445cm" Height="0.7cm" Left="0.055cm" Top="0cm" Value="Eredeti bizonylat" Name="textBox60">
+              <Style VerticalAlign="Bottom">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.445cm" Height="0.8cm" Left="0.055cm" Top="0.7cm" Value="= Fields.customerInvoiceNumber" Format="{0:d}" Name="textBox14">
               <Style>
                 <Font Name="Courier New" Size="9pt" />
               </Style>

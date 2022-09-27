@@ -90,7 +90,7 @@
                 <Font Name="Courier New" Size="8pt" />
               </Style>
             </TextBox>
-            <TextBox Width="7.11cm" Height="0.7cm" Left="0cm" Top="2.1cm" Value="= Fields.supplierTaxpayerNumber" Name="textBox44">
+            <TextBox Width="7.11cm" Height="0.7cm" Left="0cm" Top="2.1cm" Value="= Fields.supplierBankAccountNumber" Name="textBox44">
               <Style>
                 <Font Name="Courier New" Size="8pt" />
               </Style>
@@ -199,6 +199,11 @@
             </TextBox>
           </Items>
         </Panel>
+        <TextBox Width="17.945cm" Height="0.799cm" Left="0cm" Top="6.501cm" Value="= Fields.notice" Name="textBox63">
+          <Style>
+            <Font Name="Courier New" Size="8pt" />
+          </Style>
+        </TextBox>
       </Items>
     </PageHeaderSection>
     <DetailSection Height="3.503cm" Name="detailSection1">
@@ -222,43 +227,30 @@
                 <BorderWidth Top="1pt" />
               </Style>
             </Panel>
-            <Panel Width="2.701cm" Height="1.5cm" Left="9.197cm" Top="0cm" Name="panel8">
-              <Items>
-                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.invoiceIssueDate" Format="{0:d}" Name="lbDateStamp">
-                  <Style>
-                    <Font Name="Courier New" Size="9pt" />
-                  </Style>
-                </TextBox>
-                <TextBox Width="2.701cm" Height="0.7cm" Left="0cm" Top="0cm" Value="Kelt." Name="textBox11">
-                  <Style VerticalAlign="Bottom">
-                    <Font Name="Courier New" Size="9pt" />
-                  </Style>
-                </TextBox>
-              </Items>
-            </Panel>
-            <Panel Width="2.701cm" Height="1.5cm" Left="11.898cm" Top="0cm" Name="panel9">
+            <Panel Width="2.838cm" Height="1.5cm" Left="9.197cm" Top="0cm" Name="panel8">
               <Items>
                 <TextBox Width="2.701cm" Height="0.7cm" Left="0cm" Top="0cm" Value="Fiz.hat." Name="textBox17">
                   <Style VerticalAlign="Bottom">
                     <Font Name="Courier New" Size="9pt" />
                   </Style>
                 </TextBox>
-                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.paymentDate" Format="{0:d}" Name="lbPaymentDate">
+                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.paymentDate" Format="{0:yyyy.MM.dd}" Name="lbPaymentDate">
                   <Style>
                     <Font Name="Courier New" Size="9pt" />
                   </Style>
                 </TextBox>
               </Items>
             </Panel>
+            <Panel Width="2.701cm" Height="1.5cm" Left="11.898cm" Top="0cm" Name="panel9" />
             <Panel Width="2.701cm" Height="1.5cm" Left="6.496cm" Top="0cm" Name="panel7">
               <Items>
-                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.invoiceDeliveryDate" Format="{0:d}" Name="lbFinishDate">
-                  <Style>
+                <TextBox Width="2.701cm" Height="0.7cm" Left="0cm" Top="0cm" Value="Kelt." Name="textBox11">
+                  <Style VerticalAlign="Bottom">
                     <Font Name="Courier New" Size="9pt" />
                   </Style>
                 </TextBox>
-                <TextBox Width="2.701cm" Height="0.7cm" Left="0cm" Top="0cm" Value="Telj.dát." Name="textBox8">
-                  <Style VerticalAlign="Bottom">
+                <TextBox Width="2.701cm" Height="0.8cm" Left="0cm" Top="0.7cm" Value="= Fields.invoiceIssueDate" Format="{0:yyyy.MM.dd}" Name="lbDateStamp">
+                  <Style>
                     <Font Name="Courier New" Size="9pt" />
                   </Style>
                 </TextBox>
@@ -491,6 +483,16 @@
                 <BorderStyle Bottom="None" />
                 <BorderColor Bottom="Black" />
                 <BorderWidth Bottom="1pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="2.701cm" Height="0.7cm" Left="3.795cm" Top="0cm" Value="Telj.dát." Name="textBox8">
+              <Style VerticalAlign="Bottom">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="2.701cm" Height="0.8cm" Left="3.795cm" Top="0.7cm" Value="= Fields.invoiceDeliveryDate" Format="{0:yyyy.MM.dd}" Name="lbFinishDate">
+              <Style>
+                <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
           </Items>
