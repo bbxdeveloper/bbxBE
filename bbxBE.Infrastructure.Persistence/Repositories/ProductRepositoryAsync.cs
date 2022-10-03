@@ -243,10 +243,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
                     prodForCache = (Product)p_product.Clone();
                     PrepareProductForSave(p_product);
+
                     await _dbContext.Product.AddAsync(p_product);
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 
+                    prodForCache.ID = p_product.ID;
                     _productcacheService.AddOrUpdate(prodForCache);
                 }
                 catch (Exception e)
@@ -267,6 +269,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var prod in p_productList)
             {
                 PrepareNewProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
+                PrepareProductForSave(prod);
                 item++;
             }
 
@@ -437,17 +440,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
 
-            var prodForCache = (Product)p_product.Clone();
+            Product prodForCache = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
                 try
                 {
                     p_product = PrepareUpdateProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
+                    prodForCache = (Product)p_product.Clone();
+                    PrepareProductForSave(p_product);
 
                     _dbContext.Product.Update(p_product);
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
+
                     _productcacheService.AddOrUpdate(prodForCache);
 
                 }
@@ -468,6 +474,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var prod in p_productList)
             {
                 PrepareUpdateProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
+                PrepareProductForSave(prod);
                 item++;
             }
 
