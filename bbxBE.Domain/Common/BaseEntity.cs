@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 namespace bbxBE.Domain.Common
 {
     [DataContract]
-    public abstract class BaseEntity
+    public abstract class BaseEntity : ICloneable
     {
 
         [Key]
@@ -21,6 +21,11 @@ namespace bbxBE.Domain.Common
 
         [DataMember]
         public bool Deleted { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
 
     }
 }

@@ -86,10 +86,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _vatRateCacheService = vatRateCacheService;
         }
 
-       
 
 
-            public bool IsUniqueProductCode(string ProductCode, long? ProductID = null)
+
+        public bool IsUniqueProductCode(string ProductCode, long? ProductID = null)
         {
 
             /*
@@ -164,7 +164,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     //_dbContext.Entry(pg).State = EntityState.Unchanged;
                     p_product.ProductGroupID = pg.ID;
-                    //p_product.ProductGroup = pg;
+                    p_product.ProductGroup = pg;
 
                 }
             }
@@ -179,14 +179,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 else
                 {
                     var query = _originCacheService.QueryCache();
-                   og = query.SingleOrDefault(x => x.OriginCode == p_OriginCode);
+                    og = query.SingleOrDefault(x => x.OriginCode == p_OriginCode);
                 }
-                if ( og != null)
+                if (og != null)
                 {
 
                     //_dbContext.Entry(og).State = EntityState.Unchanged;
                     p_product.OriginID = og.ID;
-                    //p_product.Origin = og;
+                    p_product.Origin = og;
                 }
             }
 
@@ -195,7 +195,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 if (_vatRateCacheService.IsCacheNull())
                 {
-                    vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode); 
+                    vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
                 }
                 else
                 {
@@ -203,7 +203,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     vr = query.SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
                 }
 
-                if( vr == null) 
+                if (vr == null)
                 {
                     vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
                 }
@@ -216,7 +216,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //_dbContext.Entry(vr).State = EntityState.Unchanged;
             p_product.VatRateID = vr.ID;
-            //p_product.VatRate = vr;
+            p_product.VatRate = vr;
 
             foreach (var pc in p_product.ProductCodes)
             {
@@ -226,31 +226,40 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return p_product;
         }
+        private void PrepareProductForSave(Product p_product)
+        {
+            p_product.ProductGroup = null;
+            p_product.Origin = null;
+            p_product.VatRate = null;
+        }
 
         public async Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
+            Product prodForCache = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
                     p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
-
+                    prodForCache = (Product)p_product.Clone();
+                    PrepareProductForSave(p_product);
 
                     await _dbContext.Product.AddAsync(p_product);
-
                     await _dbContext.SaveChangesAsync();
-
                     await dbContextTransaction.CommitAsync();
-                    _productcacheService.AddOrUpdate(p_product);
+
+                    prodForCache.ID = p_product.ID;
+                    _productcacheService.AddOrUpdate(prodForCache);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
                 }
             }
-            return p_product;
+            return prodForCache;
         }
+    
 
 
         public async Task<int> AddProductRangeAsync(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList)
@@ -260,6 +269,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var prod in p_productList)
             {
                 PrepareNewProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
+                PrepareProductForSave(prod);
                 item++;
             }
 
@@ -429,22 +439,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
- 
+
+            Product prodForCache = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
-                p_product = PrepareUpdateProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
+                try
+                {
+                    p_product = PrepareUpdateProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
+                    prodForCache = (Product)p_product.Clone();
+                    PrepareProductForSave(p_product);
 
+                    _dbContext.Product.Update(p_product);
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
 
+                    _productcacheService.AddOrUpdate(prodForCache);
 
-                _dbContext.Product.Update(p_product);
-                await _dbContext.SaveChangesAsync();
-                await dbContextTransaction.CommitAsync();
-                _productcacheService.AddOrUpdate(p_product);
-
-
+                }
+                catch (Exception e)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
             }
-            return p_product;
+            return prodForCache;
         }
 
         public async Task<int> UpdateProductRangeAsync(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList)
@@ -455,6 +474,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var prod in p_productList)
             {
                 PrepareUpdateProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
+                PrepareProductForSave(prod);
                 item++;
             }
 

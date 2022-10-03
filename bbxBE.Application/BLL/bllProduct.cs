@@ -91,8 +91,7 @@ namespace bbxBE.Application.BLL
                 pcEAN = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
                 prod.ProductCodes.Add(pcEAN);
             }
-            await _ProductRepository.UpdateProductAsync(prod, request.ProductGroupCode, request.OriginCode, request.VatRateCode);
-            return prod;
+            return await _ProductRepository.UpdateProductAsync(prod, request.ProductGroupCode, request.OriginCode, request.VatRateCode);
         }
 
 
