@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Attributes;
+using System.ComponentModel;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
@@ -18,7 +20,8 @@ namespace bbxBE.Application.Queries.qInvoice
     {
         public long ID { get; set; }
 
-        //Teljes reációs szerkezet kell? I/N
+        [ColumnLabel("Teljes?")]
+        [Description("Teljes reációs szerkezet kell? I/N")]
         public bool FullData { get; set; } = true;
         //      public string Fields { get; set; }
     }

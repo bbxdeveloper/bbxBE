@@ -19,6 +19,8 @@ using bbxBE.Common.Consts;
 using bbxBE.Common.Attributes;
 using System.ComponentModel;
 using static Dapper.SqlMapper;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using bbxBE.Common.Enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -28,27 +30,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private IDataShapeHelper<Invoice> _dataShaperInvoice;
         private IDataShapeHelper<GetInvoiceViewModel> _dataShaperGetInvoiceViewModel;
         private IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> _dataShaperGetPendigDeliveryNotesSummaryModel;
+        private IDataShapeHelper<GetPendigDeliveryNotesModel> _dataShaperGetPendigDeliveryNotesModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private readonly IStockRepositoryAsync _StockRepository;
+        private readonly IStockRepositoryAsync _stockRepository;
+        private readonly ICustomerRepositoryAsync _customerRepository;
         public InvoiceRepositoryAsync(ApplicationDbContext dbContext,
 
 
         IDataShapeHelper<Invoice> dataShaperInvoice,
-              IDataShapeHelper<GetInvoiceViewModel> dataShaperGetInvoiceViewModel,
+            IDataShapeHelper<GetInvoiceViewModel> dataShaperGetInvoiceViewModel,
+            IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> dataShaperGetPendigDeliveryNotesSummaryModel,
+            IDataShapeHelper<GetPendigDeliveryNotesModel> dataShaperGetPendigDeliveryNotesModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IStockRepositoryAsync StockRepository
+            IStockRepositoryAsync stockRepository,
+            ICustomerRepositoryAsync customerRepository
             ) : base(dbContext)
         {
             _dbContext = dbContext;
 
             _dataShaperInvoice = dataShaperInvoice;
             _dataShaperGetInvoiceViewModel = dataShaperGetInvoiceViewModel;
+            _dataShaperGetPendigDeliveryNotesSummaryModel = dataShaperGetPendigDeliveryNotesSummaryModel;
+            _dataShaperGetPendigDeliveryNotesModel = dataShaperGetPendigDeliveryNotesModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _StockRepository = StockRepository;
+            _stockRepository = stockRepository;
+            _customerRepository = customerRepository;
         }
 
 
@@ -65,7 +75,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 try
                 {
-                    var stockList = await _StockRepository.MaintainStockByInvoiceAsync(p_invoice);
+                    var stockList = await _stockRepository.MaintainStockByInvoiceAsync(p_invoice);
 
                     //c# how to disable save related entity in EF ???
                     //TODO: ideiglenes megoldás, relációban álló objektumok Detach-olása hogy ne akarja menteni azokat az EF 
@@ -174,29 +184,34 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return item;
         }
 
-        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummareAsync(bool incoming, long warehouseID, string currencyCode)
+        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID, string currencyCode)
         {
 
 
             var lstEntities = new List<GetPendigDeliveryNotesSummaryModel>();
 
-            if(incoming)
+
+            if (incoming)
             {
                 var q1 = from InvoiceLine in _dbContext.InvoiceLine
-                          join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
-                          join Customer in _dbContext.Customer on Invoice.SupplierID equals Customer.ID
-                         where InvoiceLine.PendingDNQuantity > 0 && Invoice.Incoming == incoming && Invoice.WarehouseID == warehouseID && Invoice.CurrencyCode == currencyCode
-                         group InvoiceLine by 
-                         new { CustomerID = Invoice.SupplierID, CustomerName = Customer.CustomerName} into grp
+                         join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
+                         join Customer in _dbContext.Customer on Invoice.SupplierID equals Customer.ID
+                         where InvoiceLine.PendingDNQuantity > 0 
+                            && Invoice.Incoming == incoming 
+                            && Invoice.WarehouseID == warehouseID
+                            && Invoice.InvoiceType == enInvoiceType.DNI.ToString()
+                            && Invoice.CurrencyCode == currencyCode
+                         group InvoiceLine by
+                         new { CustomerID = Invoice.SupplierID, CustomerName = Customer.CustomerName } into grp
                          orderby grp.Key.CustomerName
 
-                          select new GetPendigDeliveryNotesSummaryModel()
-                          {
-                              WarehouseID = warehouseID,
-                              CustomerID = grp.Key.CustomerID,
-                              Customer = grp.Key.CustomerName,
-                              SumNetAmount = grp.Sum(s => s.LineNetAmount)
-                          };
+                         select new GetPendigDeliveryNotesSummaryModel()
+                         {
+                             WarehouseID = warehouseID,
+                             CustomerID = grp.Key.CustomerID,
+                             Customer = grp.Key.CustomerName,
+                             SumNetAmount = grp.Sum(s => s.LineNetAmount)
+                         };
 
                 lstEntities = await q1.ToListAsync();
             }
@@ -205,7 +220,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 var q1 = from InvoiceLine in _dbContext.InvoiceLine
                          join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
                          join Customer in _dbContext.Customer on Invoice.CustomerID equals Customer.ID
-                         where InvoiceLine.PendingDNQuantity > 0 && Invoice.Incoming == incoming && Invoice.WarehouseID == warehouseID && Invoice.CurrencyCode == currencyCode
+                         where InvoiceLine.PendingDNQuantity > 0
+                            && Invoice.Incoming == incoming
+                            && Invoice.WarehouseID == warehouseID
+                            && Invoice.InvoiceType == enInvoiceType.DNO.ToString()
+                            && Invoice.CurrencyCode == currencyCode
                          group InvoiceLine by
                          new { CustomerID = Invoice.CustomerID, CustomerName = Customer.CustomerName } into grp
                          orderby grp.Key.CustomerName
@@ -222,6 +241,38 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
 
             var shapeData = _dataShaperGetPendigDeliveryNotesSummaryModel.ShapeData(lstEntities, "");
+
+            return shapeData;
+        }
+        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesAsync(bool incoming, long warehouseID, long customerID, string currencyCode)
+        {
+            var own = _customerRepository.GetOwnData();
+
+            var query = _dbContext.InvoiceLine
+                .Include(t => t.VatRate).AsNoTracking()
+                .Include(i => i.Invoice).ThenInclude(s => s.Supplier)
+                .Include(i => i.Invoice).ThenInclude(c => c.Customer).AsNoTracking()
+                .Where(w => w.PendingDNQuantity > 0 
+                        && w.Invoice.Incoming == incoming 
+                        && w.Invoice.WarehouseID == warehouseID 
+                        && w.Invoice.InvoiceType ==  (incoming ? enInvoiceType.DNI.ToString() : enInvoiceType.DNO.ToString())
+                        && w.Invoice.SupplierID == (incoming ? customerID : own.ID)
+                        && w.Invoice.CustomerID == (incoming ? own.ID : customerID)
+                        )
+                .OrderBy( o => o.Invoice.InvoiceNumber);
+
+            var resultData = await query.ToListAsync();
+
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetPendigDeliveryNotesModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+               _mapper.Map<InvoiceLine, GetPendigDeliveryNotesModel>(i))
+            );
+
+
+            var listFieldsModel = _modelHelper.GetModelFields<GetPendigDeliveryNotesModel>();
+
+            var shapeData = _dataShaperGetPendigDeliveryNotesModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
             return shapeData;
         }
