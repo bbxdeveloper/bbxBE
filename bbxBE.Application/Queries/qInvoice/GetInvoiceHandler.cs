@@ -22,7 +22,6 @@ namespace bbxBE.Application.Queries.qInvoice
 
         [ColumnLabel("Teljes?")]
         [Description("Teljes reációs szerkezet kell? I/N")]
-        [Description("Teljes reációs szerkezet kell? I/N")]
         public bool FullData { get; set; } = true;
         //      public string Fields { get; set; }
     }

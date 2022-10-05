@@ -24,7 +24,6 @@ public static class MigrationManager
                 IDbConnection connection = new SqlConnection(databaseService.Context.ConnectionString);
                 var dbName = connection.Database;
 
-
                 databaseService.CreateDatabase(dbName);
                 migrationService.ListMigrations();
                 migrationService.MigrateUp();

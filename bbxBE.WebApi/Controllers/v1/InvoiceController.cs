@@ -73,18 +73,25 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
         [HttpGet("pendigdeliverynotessummary")]
-        public async Task<IActionResult> Get([FromQuery] GetPendigDeliveryNotesSummary filter)
+        public async Task<IActionResult> Get([FromQuery] GetPendigDeliveryNotesSummary pars)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(pars));
 
         }
 
-            /// <summary>
-            /// GET: api/controller
-            /// </summary>
-            /// <param name="filter"></param>
-            /// <returns></returns>
-            [HttpGet("query")]
+        [HttpGet("pendigdeliverynotes")]
+        public async Task<IActionResult> Get([FromQuery] GetPendigDeliveryNotes pars)
+        {
+            return Ok(await Mediator.Send(pars));
+
+        }
+
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet("query")]
         public async Task<IActionResult> Query([FromQuery] QueryInvoice filter)
         {
             return Ok(await Mediator.Send(filter));

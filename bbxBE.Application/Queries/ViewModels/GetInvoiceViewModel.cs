@@ -123,7 +123,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
 
 		[ColumnLabel("Számlaszám")]
-		[Description("Számla sorszáma")]
+		[Description("Számla/szállítólevél sorszáma")]
 		public string InvoiceNumber { get; set; }
 
 		[ColumnLabel("Kelt")]

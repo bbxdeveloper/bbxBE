@@ -1,9 +1,12 @@
-﻿using bbxBE.Application.Interfaces;
+﻿using bbxBE.Application.Helpers;
+using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qInvoice;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -18,7 +21,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice);
 
         Task<Entity> GetInvoiceAsync( long ID , bool FullData);
-        Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummareAsync(bool Incoming, long WarehouseID, string CurrencyCode);
+        Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID, string currencyCode);
+        Task<IEnumerable<Entity>> GetPendigDeliveryNotesAsync(bool incoming, long warehouseID, long customerID, string currencyCode);
         Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameters);
         

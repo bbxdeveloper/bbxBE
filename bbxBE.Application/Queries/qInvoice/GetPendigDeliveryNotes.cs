@@ -16,18 +16,23 @@ using System.ComponentModel;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using System.Text;
+using System.Linq;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
     public class GetPendigDeliveryNotes :  IRequest<IEnumerable<Entity>>
     {
-        [ColumnLabel("Ügyfél")]
-        [Description("Ügyfél ID")]
-        public long CustomerID { get; set; }
+        [ColumnLabel("B/K")]
+        [Description("Bejővő/Kimenő")]
+        public bool Incoming { get; set; }
 
         [ColumnLabel("Raktár")]
         [Description("Raktár")]
         public string WarehouseCode { get; set; }
+
+        [ColumnLabel("Ügyfél")]
+        [Description("Ügyfél ID")]
+        public long CustomerID { get; set; }
 
         [ColumnLabel("Pénznem")]
         [Description("Pénznem")]
@@ -42,7 +47,6 @@ namespace bbxBE.Application.Queries.qInvoice
         private readonly ICacheService<Customer> _customerCacheService;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
-//itt tartok        
         public GetPendigDeliveryNotesHandler(IInvoiceRepositoryAsync invoiceRepository,
                 IWarehouseRepositoryAsync WarehouseRepositoryAsync,
                 ICacheService<Product> productCacheService,
@@ -60,10 +64,10 @@ namespace bbxBE.Application.Queries.qInvoice
         public async Task<IEnumerable<Entity>> Handle(GetPendigDeliveryNotes request, CancellationToken cancellationToken)
         {
 
-            var cust = await _WarehouseRepositoryAsync.GetWarehouseByCodeAsync(request.WarehouseCode);
-            if (wh == null)
+            var cust = _customerCacheService.QueryCache().Where(w => w.ID == request.CustomerID).FirstOrDefault();
+            if (cust == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTOMERNOTFOUND, request.CustomerID));
             }
             var wh = await _WarehouseRepositoryAsync.GetWarehouseByCodeAsync(request.WarehouseCode);
             if (wh == null)
@@ -71,7 +75,7 @@ namespace bbxBE.Application.Queries.qInvoice
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
             }
             // query based on filter
-            var data = await _invoiceRepository.GetPendigDeliveryNotesAsync(request.Incoming, wh.ID, request.CurrencyCode);
+            var data = await _invoiceRepository.GetPendigDeliveryNotesAsync(request.Incoming, wh.ID, cust.ID, request.CurrencyCode);
 
             // response wrapper
             return data;

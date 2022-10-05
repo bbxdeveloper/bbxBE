@@ -60,7 +60,7 @@ namespace bbxBE.Application.Queries.qInvoice
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
             }
             // query based on filter
-            var data = await _invoiceRepository.GetPendigDeliveryNotesSummareAsync(request.Incoming, wh.ID, request.CurrencyCode);
+            var data = await _invoiceRepository.GetPendigDeliveryNotesSummaryAsync(request.Incoming, wh.ID, request.CurrencyCode);
 
             // response wrapper
             return data;

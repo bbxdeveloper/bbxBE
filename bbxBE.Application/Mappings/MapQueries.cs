@@ -136,6 +136,14 @@ namespace bbxBE.Queries.Mappings
             .ForMember(dst => dst.ProductGroupCode, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode))
             .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupDescription));
 
+            CreateMap<Invoice, GetPendigDeliveryNotesSummaryModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
+
+            CreateMap<InvoiceLine, GetPendigDeliveryNotesModel>()
+            .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Invoice.Incoming ? src.Invoice.Supplier.CustomerName : src.Invoice.Customer.CustomerName))
+            .ForMember(dst => dst.InvoiceNumber, opt => opt.MapFrom(src => src.Invoice.InvoiceNumber))
+            .ForMember(dst => dst.InvoiceIssueDate, opt => opt.MapFrom(src => src.Invoice.InvoiceIssueDate));
+
+
         }
 
         private static string enStockCardTypeNameResolver(string ScType)
