@@ -92,7 +92,7 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Áfa értéke")]
 			[DataMember]
 			[NotDBField]
-			public decimal UnitVat { get { return Math.Round(Quantity * UnitPrice *  VatPercentage, 1); } }
+			public decimal UnitVat { get { return Math.Round(Quantity * UnitPrice *  VatPercentage, 2); } }
 
 			[ColumnLabel("Bruttó ár")]
 			[Description("Bruttó ár")]
@@ -103,13 +103,13 @@ namespace bbxBE.Application.Queries.ViewModels
 			[DataMember]
 			[NotDBField]
 
-			public decimal NetAmount { get { return Math.Round(Quantity * UnitPrice, 1); } }
+			public decimal NetAmount { get { return Math.Round(Quantity * UnitPrice, 2); } }
 
 			[ColumnLabel("Bruttó érték")]
 			[Description("Bruttó érték")]
 			[DataMember]
 			[NotDBField] 
-			public decimal BrtAmount { get { return Math.Round(Quantity * UnitPrice * ( 1 + VatPercentage), 1); } }
+			public decimal BrtAmount { get { return Math.Round(Quantity * UnitPrice * ( 1 + VatPercentage), 0); } }
 
 		}
 
