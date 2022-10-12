@@ -57,6 +57,10 @@ namespace bxBE.Application.Commands.cmdCustomer
         [ColumnLabel("Cím")]
         [Description("Cím")]
         public string AdditionalAddressDetail { get; set; }
+        [ColumnLabel("Email")]
+        [Description("Email")]
+        public string Email { get; set; }
+
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]
         public string Comment { get; set; }

@@ -10,8 +10,11 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
+using MimeKit;
 
 namespace bbxBE.Common
 {
@@ -761,6 +764,19 @@ namespace bbxBE.Common
                 result = reader.ReadToEnd();
             }
             return result;
+        }
+
+        public static async Task<bool> IsValidEmailAsync(string p_Email, CancellationToken cancellationToken)
+        {
+
+            if (string.IsNullOrWhiteSpace(p_Email))
+                return true;
+
+            ParserOptions po = new ParserOptions();
+            po.AllowAddressesWithoutDomain = false;
+            po.AddressParserComplianceMode = RfcComplianceMode.Strict;
+
+            return await Task.FromResult(MailboxAddress.TryParse(po, p_Email, out _)).ConfigureAwait(false);
         }
     }
 

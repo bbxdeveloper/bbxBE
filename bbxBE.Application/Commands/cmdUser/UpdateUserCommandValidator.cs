@@ -11,6 +11,7 @@ using System.Configuration;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using bbxBE.Common;
 
 namespace bbxBE.Application.Commands.cmdUser
 {
@@ -40,11 +41,11 @@ namespace bbxBE.Application.Commands.cmdUser
                 ).WithMessage(bbxBEConsts.ERR_EXISTS);
 
             RuleFor(p => p.Email)
-                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
-                .MustAsync(IsValidEmailAsync).WithMessage(bbxBEConsts.ERR_INVALIDEMAIL);
-
+               .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
+               .MustAsync(Utils.IsValidEmailAsync).WithMessage(bbxBEConsts.ERR_INVALIDEMAIL);
+            
             RuleFor(p => p.LoginName)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
@@ -60,15 +61,7 @@ namespace bbxBE.Application.Commands.cmdUser
         {
                 return await _usrRepository.IsUniqueNameAsync(p_UserName, p_ID);
         }
-        private async Task<bool> IsValidEmailAsync(string p_Email, CancellationToken cancellationToken)
-        {
-
-            ParserOptions po = new ParserOptions();
-            po.AllowAddressesWithoutDomain = false;
-            po.AddressParserComplianceMode = RfcComplianceMode.Strict;
-
-            return await Task.FromResult(MailboxAddress.TryParse(po, p_Email, out _)).ConfigureAwait(false);
-        }
+  
     }
 
 }

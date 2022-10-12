@@ -6,6 +6,7 @@ using FluentValidation;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using bbxBE.Common;
 
 namespace bbxBE.Application.Commands.cmdCustomer
 {
@@ -61,6 +62,11 @@ namespace bbxBE.Application.Commands.cmdCustomer
               .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
               .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
               .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
+
+            RuleFor(p => p.Email)
+               .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
+               .MustAsync(Utils.IsValidEmailAsync).WithMessage(bbxBEConsts.ERR_INVALIDEMAIL);
+
 
         }
 
