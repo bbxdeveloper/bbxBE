@@ -52,6 +52,11 @@ namespace bbxBE.Application.Queries.ViewModels
         public string City { get; set; }
    //     [NotModelFieldAttribute]
         public string AdditionalAddressDetail { get; set; }
+
+        [ColumnLabel("Email")]
+        [Description("Email")]
+        public string Email { get; set; }
+
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
         public bool IsOwnData { get; set; }
