@@ -29,7 +29,6 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
             RuleFor(p => p.CustomerName)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.TaxpayerNumber)
@@ -49,12 +48,10 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
             RuleFor(p => p.City)
                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-               .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.AdditionalAddressDetail)
               .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-              .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
               .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.Email)

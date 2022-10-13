@@ -28,7 +28,6 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(p => p.InvPeriodTitle)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(p => p.IsInStock)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
         }

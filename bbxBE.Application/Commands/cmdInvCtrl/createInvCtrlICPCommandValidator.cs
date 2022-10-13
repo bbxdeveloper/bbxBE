@@ -50,7 +50,6 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
 
             RuleFor(r => r.InvCtrlDate)
                   .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                  .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                   .MustAsync(
                         async (model, Name, cancellation) =>
                         {

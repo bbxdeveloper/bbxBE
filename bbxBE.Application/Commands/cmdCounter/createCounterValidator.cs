@@ -25,7 +25,6 @@ namespace bbxBE.Application.Commands.cmdCounter
             this._CounterRepository = CounterRepository;
             RuleFor(p => p.CounterCode)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .MustAsync(
                         async (model, Name, cancellation) =>
                         {
@@ -36,17 +35,14 @@ namespace bbxBE.Application.Commands.cmdCounter
 
             RuleFor(p => p.CounterDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.Prefix)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.NumbepartLength)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .InclusiveBetween(1, 10).WithMessage(bbxBEConsts.ERR_RANGE);
         }
         /*

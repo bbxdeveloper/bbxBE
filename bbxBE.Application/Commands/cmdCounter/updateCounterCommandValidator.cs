@@ -24,7 +24,6 @@ namespace bbxBE.Application.Commands.cmdCounter
 
             RuleFor(p => p.CounterCode)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                    .MustAsync(
                         async (model, Name, cancellation) =>
                         {
@@ -35,7 +34,6 @@ namespace bbxBE.Application.Commands.cmdCounter
 
             RuleFor(p => p.CounterDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
         }
 

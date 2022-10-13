@@ -26,19 +26,16 @@ namespace bbxBE.Application.Commands.cmdUser
 
             RuleFor(p => p.Name)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
                 .MustAsync(IsUniqueNameAsync).WithMessage(bbxBEConsts.ERR_EXISTS);
 
             RuleFor(p => p.Email)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
                 .MustAsync(Utils.IsValidEmailAsync).WithMessage(bbxBEConsts.ERR_INVALIDEMAIL);
 
             RuleFor(p => p.LoginName)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.Comment)

@@ -24,7 +24,6 @@ namespace bbxBE.Application.Commands.cmdWarehouse
 
             RuleFor(p => p.WarehouseCode)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                    .MustAsync(
                         async (model, Name, cancellation) =>
                         {
@@ -35,7 +34,6 @@ namespace bbxBE.Application.Commands.cmdWarehouse
 
             RuleFor(p => p.WarehouseDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(bbxBEConsts.DescriptionLen).WithMessage(bbxBEConsts.ERR_MAXLEN);
         }
 
