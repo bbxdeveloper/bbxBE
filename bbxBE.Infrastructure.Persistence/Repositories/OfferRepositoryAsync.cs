@@ -187,13 +187,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             Offer offer = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                offer = await _dbContext.Offer.Where(x => x.ID == ID).FirstOrDefaultAsync();
+                offer = await _dbContext.Offer.AsNoTracking()
+                        .Include(o=>o.OfferLines).AsNoTracking()
+                        .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
 
                 if (offer != null)
                 {
                     offer.OfferLines.ToList().ForEach(e => {
                         e.Product = null;
                         e.VatRate = null;
+                        e.Deleted = true;
                     });
                     
                     offer.Deleted = true;
