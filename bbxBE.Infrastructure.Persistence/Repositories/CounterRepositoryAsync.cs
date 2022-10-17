@@ -58,7 +58,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     var wh = _dbContext.Warehouse.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
                     p_Counter.WarehouseID = wh.ID;
-                    p_Counter.Warehouse = wh;
+                   // p_Counter.Warehouse = wh;
 
                 }
 
@@ -84,7 +84,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         var wh = _dbContext.Warehouse.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
                         p_Counter.WarehouseID = wh.ID;
-                        p_Counter.Warehouse = wh;
+                    //    p_Counter.Warehouse = wh;
                     }
 
                     _dbContext.Counter.Update(p_Counter);
