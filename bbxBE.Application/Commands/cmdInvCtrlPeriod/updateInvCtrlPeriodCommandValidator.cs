@@ -39,7 +39,6 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
 
             RuleFor(r => r.DateFrom)
                   .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                  .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                   .Must(
                          (model, Name) =>
                          {

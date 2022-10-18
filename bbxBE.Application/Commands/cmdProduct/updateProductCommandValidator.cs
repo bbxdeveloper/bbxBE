@@ -26,7 +26,6 @@ namespace bbxBE.Application.Commands.cmdProduct
 
             RuleFor(p => p.ProductCode)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                     .Must(
                          (model, ProductCode) =>
                          {
@@ -37,7 +36,6 @@ namespace bbxBE.Application.Commands.cmdProduct
 
             RuleFor(p => p.Description)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.ProductGroupCode)
@@ -54,7 +52,6 @@ namespace bbxBE.Application.Commands.cmdProduct
 
             RuleFor(p => p.VTSZ)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
         }
 

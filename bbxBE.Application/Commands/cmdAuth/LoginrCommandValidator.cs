@@ -22,11 +22,9 @@ namespace bbxBE.Application.Commands.cmdAuth
         public LoginCommandValidator()
         {
             RuleFor(p => p.LoginName)
-                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(p => p.Password)
-                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
+                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
         }
     }
 }

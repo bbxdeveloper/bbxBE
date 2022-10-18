@@ -25,7 +25,6 @@ namespace bbxBE.Application.Commands.cmdOrigin
             this._OriginRepository = OriginRepository;
             RuleFor(p => p.OriginCode)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                     .Must(
                          (model, Name) =>
                          {
@@ -36,7 +35,6 @@ namespace bbxBE.Application.Commands.cmdOrigin
 
             RuleFor(p => p.OriginDescription)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
         }
