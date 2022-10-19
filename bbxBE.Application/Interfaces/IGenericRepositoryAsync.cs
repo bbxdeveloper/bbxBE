@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,5 +20,11 @@ namespace bbxBE.Application.Interfaces
         Task UpdateAsync(T entity);
 
         Task DeleteAsync(T entity);
+
+        Task UpdateRangeAsync(IEnumerable<T> entities);
+
+        Task AddRangeAsync(IEnumerable<T> entities);
+
+
     }
 }

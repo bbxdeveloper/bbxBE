@@ -20,11 +20,16 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
             ILoggerFactory loggerFactory
             ) : base(options)
         {
-            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
+            /*
+                      ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
+                      ChangeTracker.LazyLoadingEnabled = false;
+                      ChangeTracker.AutoDetectChangesEnabled = false; 
+
+          */
+            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             ChangeTracker.LazyLoadingEnabled = false;
-            ChangeTracker.AutoDetectChangesEnabled = false; 
-            
-            
+            //ChangeTracker.AutoDetectChangesEnabled = false;
+
             _dateTime = dateTime;
             _loggerFactory = loggerFactory;
           }

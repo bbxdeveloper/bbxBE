@@ -93,12 +93,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
             return p_InvCtrl;
         }
-        public async Task<bool> AddRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl)
-        {
-            await _dbContext.InvCtrl.AddRangeAsync(p_InvCtrl);
-            await _dbContext.SaveChangesAsync();
-            return true;
-        }
 
         public async Task<InvCtrl> UpdateInvCtrlAsync(InvCtrl p_InvCtrl)
         {
@@ -106,12 +100,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
             return p_InvCtrl;
         }
-        public async Task<bool> UpdateRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl)
-        {
-            _dbContext.InvCtrl.UpdateRange(p_InvCtrl);
-            await _dbContext.SaveChangesAsync();
-            return true;
-        }
+
         public async Task<bool> AddOrUpdateRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl)
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
@@ -171,13 +160,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     
                     if (AddInvCtrlItems.Count > 0)
                     {
-                        await _dbContext.InvCtrl.AddRangeAsync(AddInvCtrlItems);
+                        await AddRangeAsync(AddInvCtrlItems);
                     }
                     if (UpdInvCtrlItems.Count > 0)
                     {
-                        _dbContext.InvCtrl.UpdateRange(UpdInvCtrlItems);
+                        await UpdateRangeAsync(UpdInvCtrlItems);
                     }
-
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();

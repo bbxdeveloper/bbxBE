@@ -73,5 +73,23 @@ namespace bbxBE.Infrastructure.Persistence.Repository
                  .Set<T>()
                  .ToListAsync();
         }
+        
+        public async Task UpdateRangeAsync(IEnumerable<T> entities)
+        {
+            foreach (var entity in entities)
+            {
+                _dbContext.Entry(entity).State = EntityState.Modified;
+            }
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            foreach (var entity in entities)
+            {
+                _dbContext.Entry(entity).State = EntityState.Added;
+            }
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

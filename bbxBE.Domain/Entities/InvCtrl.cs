@@ -52,7 +52,7 @@ namespace bbxBE.Domain.Entities
         public DateTime InvCtrlDate { get; set; }
 
 
-        [ColumnLabel("E.Krt")]
+        [ColumnLabel("E.Klt")]
         [Description("Eredeti karton szerinti mennyiség")]
         public decimal OCalcQty { get; set; }
 
@@ -60,12 +60,12 @@ namespace bbxBE.Domain.Entities
         [Description("Eredeti valós mennyiség")]
         public decimal ORealQty { get; set; }
 
-        [ColumnLabel("Új Krt")]
-        [Description("Új karton szerinti mennyiség")]
+        [ColumnLabel("Leltári Klt")]
+        [Description("Leltári karton szerinti mennyiség")]
         public decimal NCalcQty { get; set; }
 
-        [ColumnLabel("Új valós")]
-        [Description("Új valós mennyiség")]
+        [ColumnLabel("Leltári  valós")]                       
+        [Description("Leltári  valós mennyiség")]
         public decimal NRealQty { get; set; }
 
         [ColumnLabel("ELÁBÉ")]

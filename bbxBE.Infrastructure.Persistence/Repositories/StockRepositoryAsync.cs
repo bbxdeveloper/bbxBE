@@ -133,7 +133,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<List<Stock>> MaintainStockByInvCtrlAsync(List<InvCtrl> invCtrlList, string XRel)
         {
-            var lstStock = new List<Stock>();
+            var lstStock = new List<Stock>();       //updatelendő készlet gyűjtő
+            var lstCtrlList = new List<InvCtrl>();       //updatelendő készlet gyűjtő
 
 
             var ownData = _customerRepository.GetOwnData();
@@ -146,7 +147,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 
 
-                var stock = lstStock.FirstOrDefault(x => x.WarehouseID == invCtrl.WarehouseID && x.ProductID == invCtrl.ProductID);
+                var stock = lstStock.FirstOrDefault(x => x.WarehouseID == invCtrl.WarehouseID && x.ProductID == invCtrl.ProductID); //már foglalkoztunk a készlettel ?
                 if (stock == null)
                 {
 
@@ -188,15 +189,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 stock.RealQty = invCtrl.NRealQty;
                 stock.AvgCost = invCtrl.AvgCost;
 
-
-
+ 
                 invCtrl.StockID = stock.ID;
-                _dbContext.InvCtrl.Update(invCtrl);
 
                 lstStock.Add(stock);
+                lstCtrlList.Add(invCtrl);
             }
 
-            _dbContext.Stock.UpdateRange(lstStock);
+            await UpdateRangeAsync(lstStock);
+            await _invCtrlRepository.UpdateRangeAsync(lstCtrlList);
+
 
             return lstStock;
         }

@@ -136,7 +136,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             sc.NOutQty = OOutQty + p_XOutQty;                //ha lesz árukiadás, töltjük!
 
             sc.NAvgCost = (p_XCalcQty >= 0 || p_XRealQty > 0 ?
-                            bllStock.GetNewAvgCost(OAvgCost, (ORealQty + p_XRealQty), p_XRealQty, p_UnitPrice) :
+                            bllStock.GetNewAvgCost(OAvgCost, ORealQty, (ORealQty + p_XRealQty), p_UnitPrice) :
                             OAvgCost);
             await _dbContext.StockCard.AddAsync(sc);
 
@@ -174,7 +174,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     f.NOutQty = OOutQty + XOutQty;                //ha lesz árukiadás, töltjük!
 
                     f.NAvgCost = (XCalcQty >= 0 || XRealQty > 0 ?
-                                    bllStock.GetNewAvgCost(OAvgCost, (ORealQty + XRealQty), XRealQty, f.UnitPrice) :
+                                    bllStock.GetNewAvgCost(OAvgCost, ORealQty, (ORealQty + XRealQty), f.UnitPrice) :
                                     OAvgCost);
 
                     _dbContext.StockCard.Update(f);
