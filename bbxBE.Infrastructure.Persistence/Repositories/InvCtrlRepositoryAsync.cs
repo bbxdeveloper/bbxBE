@@ -89,15 +89,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<InvCtrl> AddInvCtrlAsync(InvCtrl p_InvCtrl)
         {
-            await _dbContext.InvCtrl.AddAsync(p_InvCtrl);
+            await AddAsync(p_InvCtrl);
             await _dbContext.SaveChangesAsync();
             return p_InvCtrl;
         }
 
         public async Task<InvCtrl> UpdateInvCtrlAsync(InvCtrl p_InvCtrl)
         {
-            _dbContext.InvCtrl.Update(p_InvCtrl);
-            await _dbContext.SaveChangesAsync();
+            await UpdateAsync(p_InvCtrl);
             return p_InvCtrl;
         }
 
@@ -192,7 +191,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
 
 
-                _dbContext.InvCtrl.Remove(icp);
+                await RemoveAsync(icp);
                 await _dbContext.SaveChangesAsync();
 
             }

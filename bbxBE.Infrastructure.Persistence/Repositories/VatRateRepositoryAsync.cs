@@ -55,7 +55,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             VatRate vr = null;
 
             var query = _cacheService.QueryCache();
-            vr = query.Where(x => x.VatRateCode.ToUpper() == vatRateCode.ToUpper()).FirstOrDefault();
+            vr = await query.Where(x => x.VatRateCode.ToUpper() == vatRateCode.ToUpper()).FirstOrDefaultAsync();
             return vr;
         }
 
@@ -85,17 +85,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
 
-            await _dbContext.VatRate.AddAsync(p_vatRate);
-            await _dbContext.SaveChangesAsync();
-
+            await AddAsync(p_vatRate);
             _cacheService.AddOrUpdate(p_vatRate);
             return p_vatRate;
         }
         public async Task<VatRate> UpdateVatRateAsync(VatRate p_vatRate)
         {
             _cacheService.AddOrUpdate(p_vatRate);
-            _dbContext.VatRate.Update(p_vatRate);
-            await _dbContext.SaveChangesAsync();
+            await UpdateAsync(p_vatRate);
             return p_vatRate;
         }
         public async Task<VatRate> DeleteVatRateAsync(long ID)
@@ -110,8 +107,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
                 _cacheService.TryRemove(vr);
-                _dbContext.VatRate.Remove(vr);
-                await _dbContext.SaveChangesAsync();
+                await RemoveAsync(vr);
 
             }
             else

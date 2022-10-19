@@ -68,8 +68,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Origin> AddOriginAsync(Origin p_origin)
         {
 
-            await _dbContext.Origin.AddAsync(p_origin);
-            await _dbContext.SaveChangesAsync();
+            await AddAsync(p_origin);
 
             _cacheService.AddOrUpdate(p_origin);
             return p_origin;
@@ -81,8 +80,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
 
 
-                await _dbContext.Origin.AddRangeAsync(p_originList);
-                await _dbContext.SaveChangesAsync();
+                await AddRangeAsync(p_originList);
 
                 await dbContextTransaction.CommitAsync();
             }
@@ -93,8 +91,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Origin> UpdateOriginAsync(Origin p_origin)
         {
-            _dbContext.Origin.Update(p_origin);
-            await _dbContext.SaveChangesAsync();
+            await UpdateAsync(p_origin);
             //                await dbContextTransaction.CommitAsync();
 
             _cacheService.AddOrUpdate(p_origin);
@@ -115,8 +112,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<long> UpdateOriginRangeAsync(List<Origin> p_originList)
         {
-            _dbContext.Origin.UpdateRange(p_originList);
-            await _dbContext.SaveChangesAsync();
+            await UpdateRangeAsync(p_originList);
             //                await dbContextTransaction.CommitAsync();
 
             //await RefreshOriginCache();
@@ -140,9 +136,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (origin != null)
                 {
 
-                    _dbContext.Origin.Remove(origin);
-
-                    await _dbContext.SaveChangesAsync();
+                    await RemoveAsync(origin);
                     await dbContextTransaction.CommitAsync();
 
                     _cacheService.TryRemove(origin);

@@ -50,15 +50,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<InvCtrlPeriod> AddInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
         {
-            await _dbContext.InvCtrlPeriod.AddAsync(p_invCtrlPeriod);
-            await _dbContext.SaveChangesAsync();
+            await AddAsync(p_invCtrlPeriod);
             return p_invCtrlPeriod;
         }
 
         public async Task<InvCtrlPeriod> UpdateInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
         {
-            _dbContext.InvCtrlPeriod.Update(p_invCtrlPeriod);
-            await _dbContext.SaveChangesAsync();
+            await UpdateAsync(p_invCtrlPeriod);
             return p_invCtrlPeriod;
         }
         public async Task<InvCtrlPeriod> DeleteInvCtrlPeriodAsync(long ID)
@@ -72,7 +70,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
 
 
-                _dbContext.InvCtrlPeriod.Remove(icp);
+                await RemoveAsync(icp);
                 await _dbContext.SaveChangesAsync();
 
             }
@@ -254,9 +252,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
                     invCtrlPeriod.Closed = true;
-                    _dbContext.InvCtrlPeriod.Update(invCtrlPeriod);
-
-                    await _dbContext.SaveChangesAsync();
+                    await UpdateAsync(invCtrlPeriod);
                     await dbContextTransaction.CommitAsync();
 
 

@@ -92,8 +92,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             //Product = invoiceLine.Product,
                             AvgCost = invoiceLine.UnitPrice
                         };
-                        await _dbContext.Stock.AddAsync(stock);
-                        await _dbContext.SaveChangesAsync();
+                        await AddAsync(stock);
                     }
 
                     var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
@@ -126,8 +125,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     lstStock.Add(stock);
                 }
             }
-            _dbContext.Stock.UpdateRange(lstStock);
-            await _dbContext.SaveChangesAsync();
+            await UpdateRangeAsync(lstStock);
             return lstStock;
         }
 
@@ -166,8 +164,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         //Product = invoiceLine.Product,
                         AvgCost = invCtrl.AvgCost             //ez nem változik
                     };
-                    await _dbContext.Stock.AddAsync(stock);
-                    await _dbContext.SaveChangesAsync();
+                    await AddAsync(stock);
                 }
 
                 //beaktualizáljuk az InvCtrl-be az aktuális raktárkészletet
@@ -198,7 +195,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             await UpdateRangeAsync(lstStock);
             await _invCtrlRepository.UpdateRangeAsync(lstCtrlList);
-
 
             return lstStock;
         }

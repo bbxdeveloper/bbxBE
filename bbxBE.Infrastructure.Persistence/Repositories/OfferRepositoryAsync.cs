@@ -94,9 +94,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     p_Offer.ID = 0;
 
-                    await _dbContext.Offer.AddAsync(p_Offer);
-
-                    await _dbContext.SaveChangesAsync();
+                    await AddAsync(p_Offer);
                     await dbContextTransaction.CommitAsync();
 
                 }
@@ -130,7 +128,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     foreach (var existingLine in curentLines)
                     {
                         if (!p_Offer.OfferLines.Any(a => a.ID == existingLine.ID))
+                        {
                             _dbContext.OfferLine.Remove(existingLine);
+                         //   await RemoveAsync(existingLine, false);
+                        }
                     }
 
                     p_Offer.OfferLines.ToList().ForEach(e => {
@@ -141,7 +142,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     });
 
 
-                    _dbContext.Offer.Update(p_Offer);
+                    await UpdateAsync(p_Offer, false);
 
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
@@ -166,9 +167,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         e.VatRate = null;
                     });
 
-                    _dbContext.Offer.Update(p_Offer);
-
-                    await _dbContext.SaveChangesAsync();
+                    await UpdateAsync(p_Offer);
                     await dbContextTransaction.CommitAsync();
 
                 }
@@ -200,9 +199,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     });
                     
                     offer.Deleted = true;
-                    _dbContext.Offer.Update(offer);
 
-                    await _dbContext.SaveChangesAsync();
+                    await UpdateAsync(offer);
                     await dbContextTransaction.CommitAsync();
 
                 }

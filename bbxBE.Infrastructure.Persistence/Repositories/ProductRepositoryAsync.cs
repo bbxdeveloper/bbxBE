@@ -244,8 +244,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     prodForCache = (Product)p_product.Clone();
                     PrepareProductForSave(p_product);
 
-                    await _dbContext.Product.AddAsync(p_product);
-                    await _dbContext.SaveChangesAsync();
+                    await AddAsync(p_product);
                     await dbContextTransaction.CommitAsync();
 
                     prodForCache.ID = p_product.ID;
@@ -450,8 +449,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     prodForCache = (Product)p_product.Clone();
                     PrepareProductForSave(p_product);
 
-                    _dbContext.Product.Update(p_product);
-                    await _dbContext.SaveChangesAsync();
+                    await UpdateAsync(p_product);
                     await dbContextTransaction.CommitAsync();
 
                     _productcacheService.AddOrUpdate(prodForCache);
@@ -521,14 +519,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     if (prod.ProductCodes != null)
                     {
-
-                        _dbContext.ProductCode.RemoveRange(prod.ProductCodes.ToList());
+                        foreach (var pc in prod.ProductCodes)
+                        {
+                            _dbContext.Set<ProductCode>().Remove(pc);
+                        }
                     }
                     _productcacheService.TryRemove(prod);
 
-                    _dbContext.Product.Remove(prod);
-
-                    await _dbContext.SaveChangesAsync();
+                    await RemoveAsync(prod);
                     await dbContextTransaction.CommitAsync();
 
                 }

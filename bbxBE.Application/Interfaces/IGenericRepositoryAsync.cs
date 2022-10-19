@@ -15,16 +15,17 @@ namespace bbxBE.Application.Interfaces
 
         Task<IEnumerable<T>> GetPagedAdvancedReponseAsync(int pageNumber, int pageSize, string orderBy, string fields);
 
-        Task<T> AddAsync(T entity);
+        Task<T> AddAsync(T entity, bool savechenges = true);
 
-        Task UpdateAsync(T entity);
+        Task UpdateAsync(T entity, bool savechenges = true);
 
-        Task DeleteAsync(T entity);
+        Task RemoveAsync(T entity, bool savechenges = true);
 
-        Task UpdateRangeAsync(IEnumerable<T> entities);
+        Task AddRangeAsync(IEnumerable<T> entities, bool savechenges = true);
 
-        Task AddRangeAsync(IEnumerable<T> entities);
+        Task UpdateRangeAsync(IEnumerable<T> entities, bool savechenges = true);
 
+        Task RemoveRangeAsync(IEnumerable<T> entities,bool savechenges = true);
 
     }
 }

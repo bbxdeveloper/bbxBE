@@ -74,10 +74,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODUCTGROUPNOTFOUND, String.Join(',', errPg)));
                 }
 
-                _dbContext.CustDiscount.RemoveRange(_dbContext.CustDiscount.Where(x => x.CustomerID == customerID));
-
-                await _dbContext.CustDiscount.AddRangeAsync(p_CustDiscountList);
-                await _dbContext.SaveChangesAsync();
+                await RemoveRangeAsync(_dbContext.CustDiscount.Where(x => x.CustomerID == customerID), false);
+                await AddRangeAsync(p_CustDiscountList);
 
                 await dbContextTransaction.CommitAsync();
             }

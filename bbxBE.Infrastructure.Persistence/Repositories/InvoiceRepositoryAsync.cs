@@ -93,9 +93,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     }
 
-                    await _dbContext.Invoice.AddAsync(p_invoice);
-                    await _dbContext.SaveChangesAsync();
-
+                    await AddAsync(p_invoice);
                     await dbContextTransaction.CommitAsync();
 
                 }
@@ -122,8 +120,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
 
-                    _dbContext.Invoice.Update(p_invoice);
-                    await _dbContext.SaveChangesAsync();
+                    await UpdateAsync(p_invoice);
                     await dbContextTransaction.CommitAsync();
 
                 }

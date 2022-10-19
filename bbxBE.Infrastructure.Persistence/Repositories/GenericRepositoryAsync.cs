@@ -48,23 +48,26 @@ namespace bbxBE.Infrastructure.Persistence.Repository
                 .ToListAsync();
         }
 
-        public async Task<T> AddAsync(T entity)
+        public async Task<T> AddAsync(T entity, bool savechenges = true)
         {
             await _dbContext.Set<T>().AddAsync(entity);
-            await _dbContext.SaveChangesAsync();
+            if (savechenges)
+                await _dbContext.SaveChangesAsync();
             return entity;
         }
 
-        public async Task UpdateAsync(T entity)
+        public async Task UpdateAsync(T entity, bool savechenges = true)
         {
             _dbContext.Entry(entity).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
+            if (savechenges)
+                await _dbContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(T entity)
+        public async Task RemoveAsync(T entity, bool savechenges = true)
         {
             _dbContext.Set<T>().Remove(entity);
-            await _dbContext.SaveChangesAsync();
+            if( savechenges)
+                await _dbContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -73,23 +76,39 @@ namespace bbxBE.Infrastructure.Persistence.Repository
                  .Set<T>()
                  .ToListAsync();
         }
-        
-        public async Task UpdateRangeAsync(IEnumerable<T> entities)
-        {
-            foreach (var entity in entities)
-            {
-                _dbContext.Entry(entity).State = EntityState.Modified;
-            }
-            await _dbContext.SaveChangesAsync();
-        }
 
-        public async Task AddRangeAsync(IEnumerable<T> entities)
+        public async Task AddRangeAsync(IEnumerable<T> entities, bool savechenges = true)
         {
             foreach (var entity in entities)
             {
                 _dbContext.Entry(entity).State = EntityState.Added;
             }
-            await _dbContext.SaveChangesAsync();
+            if (savechenges)
+                await _dbContext.SaveChangesAsync();
         }
+
+
+        public async Task UpdateRangeAsync(IEnumerable<T> entities, bool savechenges = true)
+        {
+            foreach (var entity in entities)
+            {
+                _dbContext.Entry(entity).State = EntityState.Modified;
+            }
+            if (savechenges)
+                await _dbContext.SaveChangesAsync();
+        }
+
+
+
+        public async Task RemoveRangeAsync(IEnumerable<T> entities, bool savechenges = true)
+        {
+            foreach (var entity in entities)
+            {
+                _dbContext.Set<T>().Remove(entity);
+            }
+            if (savechenges)
+                await _dbContext.SaveChangesAsync();
+        }
+
     }
 }
