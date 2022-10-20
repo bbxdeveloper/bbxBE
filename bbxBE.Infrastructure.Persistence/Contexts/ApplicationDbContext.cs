@@ -28,7 +28,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
           */
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             ChangeTracker.LazyLoadingEnabled = false;
-            //ChangeTracker.AutoDetectChangesEnabled = false;
+            ChangeTracker.AutoDetectChangesEnabled = false;
 
             _dateTime = dateTime;
             _loggerFactory = loggerFactory;
