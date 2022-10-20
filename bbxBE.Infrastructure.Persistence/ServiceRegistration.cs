@@ -61,6 +61,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<ICustomerRepositoryAsync, CustomerRepositoryAsync>();
             services.AddTransient<IProductGroupRepositoryAsync, ProductGroupRepositoryAsync>();
             services.AddTransient<IOriginRepositoryAsync, OriginRepositoryAsync>();
+            services.AddTransient<IProductCodeRepositoryAsync, ProductCodeRepositoryAsync>();
             services.AddTransient<IProductRepositoryAsync, ProductRepositoryAsync>();
             services.AddTransient<IWarehouseRepositoryAsync, WarehouseRepositoryAsync>();
             services.AddTransient<ICounterRepositoryAsync, CounterRepositoryAsync>();

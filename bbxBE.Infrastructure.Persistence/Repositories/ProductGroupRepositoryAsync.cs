@@ -106,7 +106,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (pg != null)
                 {
 
-
                     _cacheService.TryRemove(pg);
 
                     await RemoveAsync(pg);
