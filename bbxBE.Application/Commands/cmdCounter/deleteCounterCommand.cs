@@ -34,10 +34,8 @@ namespace bbxBE.Application.Commands.cmdCounter
         public async Task<Response<long>> Handle(DeleteCounterCommand request, CancellationToken cancellationToken)
         {
             var pg = _mapper.Map<Counter>(request);
-            await _CounterRepository.DeleteAsync(pg);
+            await _CounterRepository.RemoveAsync(pg);
             return new Response<long>(pg.ID);
         }
-
-      
     }
 }

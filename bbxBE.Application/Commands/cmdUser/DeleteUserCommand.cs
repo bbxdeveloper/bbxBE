@@ -34,7 +34,7 @@ namespace bbxBE.Application.Commands.cmdUser
         public async Task<Response<long>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
             var usr = _mapper.Map<Users>(request);
-            await _userRepository.DeleteAsync(usr);
+            await _userRepository.RemoveAsync(usr);
             return new Response<long>(usr.ID);
         }
 

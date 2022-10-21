@@ -13,9 +13,7 @@ namespace bbxBE.Application.Interfaces.Repositories
     public interface IInvCtrlRepositoryAsync : IGenericRepositoryAsync<InvCtrl>
     {
         Task<InvCtrl> AddInvCtrlAsync(InvCtrl p_InvCtrl);
-        Task<bool> AddRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl);
         Task<InvCtrl> UpdateInvCtrlAsync(InvCtrl p_InvCtrl);
-        Task<bool> UpdateRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl);
         Task<bool> AddOrUpdateRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl);
 
         Task<InvCtrl> DeleteInvCtrlAsync(long ID);

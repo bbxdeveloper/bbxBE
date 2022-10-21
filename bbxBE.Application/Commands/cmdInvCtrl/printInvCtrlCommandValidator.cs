@@ -27,7 +27,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
                 .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(p => p.InvPeriodTitle)
-                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(p => p.IsInStock)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
         }

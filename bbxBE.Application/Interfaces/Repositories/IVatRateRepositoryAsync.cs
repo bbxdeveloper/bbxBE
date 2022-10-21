@@ -12,8 +12,8 @@ namespace bbxBE.Application.Interfaces.Repositories
     public interface IVatRateRepositoryAsync : IGenericRepositoryAsync<VatRate>
     {
     
-        Task<Entity> GetVatRateAsync(long ID);
-        Task<VatRate> GetVatRateByCodeAsync(string vatRateCode);
+        Entity GetVatRate(long ID);
+        VatRate GetVatRateByCode(string vatRateCode);
         (IEnumerable<Entity> data, RecordsCount recordsCount) QueryPagedVatRate(QueryVatRate requestParameter);
         Task<VatRate> AddVatRateAsync(VatRate p_vatRate);
         Task<VatRate> UpdateVatRateAsync(VatRate p_vatRate);

@@ -58,12 +58,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     var wh = _dbContext.Warehouse.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
                     p_Counter.WarehouseID = wh.ID;
-                   // p_Counter.Warehouse = wh;
-
                 }
 
-                _dbContext.Counter.Add(p_Counter);
-                await _dbContext.SaveChangesAsync();
+                await AddAsync(p_Counter);
                 await dbContextTransaction.CommitAsync();
 
             }
@@ -84,13 +81,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         var wh = _dbContext.Warehouse.SingleOrDefault(x => x.WarehouseCode == p_WarehouseCode);
                         p_Counter.WarehouseID = wh.ID;
-                    //    p_Counter.Warehouse = wh;
                     }
 
-                    _dbContext.Counter.Update(p_Counter);
-                    await _dbContext.SaveChangesAsync();
+                    await UpdateAsync(p_Counter);
                     await dbContextTransaction.CommitAsync();
-
 
                 }
                 else
@@ -155,9 +149,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             counter.CounterPool.Add(new CounterPoolItem() { CounterValue = NextValue, Ticks = DateTime.UtcNow.Ticks });
                         }
                     }
-                    _dbContext.Counter.Update(counter);
-
-                    await _dbContext.SaveChangesAsync();
+                    
+                    await UpdateAsync(counter);
                     await dbContextTransaction.CommitAsync();
                 }
                 else
@@ -189,9 +182,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         counter.CounterPool = counter.CounterPool.Where(w => w .CounterValue != counterValue).ToList();
                         //       _dbContext.Entry<Counter>(counter).State = EntityState.Modified;
-                        _dbContext.Counter.Update(counter);
 
-                        await _dbContext.SaveChangesAsync();
+                        await UpdateAsync(counter);
                         await dbContextTransaction.CommitAsync();
                         result = true;
                     }
@@ -228,8 +220,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             if (c != null)
                             {
                                 c.Ticks = 0;
-                                _dbContext.Counter.Update(counter);
-                                await _dbContext.SaveChangesAsync();
+                                await UpdateAsync(counter);
                                 await dbContextTransaction.CommitAsync();
                                 result = true;
                             }

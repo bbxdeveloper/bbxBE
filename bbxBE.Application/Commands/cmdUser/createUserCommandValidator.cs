@@ -40,6 +40,10 @@ namespace bbxBE.Application.Commands.cmdUser
 
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.ERR_MAXLEN);
+
+            RuleFor(p => p.Password)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
+
         }
 
         private async Task<bool> IsUniqueNameAsync(string p_UserName, CancellationToken cancellationToken)

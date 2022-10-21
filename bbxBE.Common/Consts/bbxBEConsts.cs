@@ -90,7 +90,7 @@ namespace bbxBE.Common.Consts
         public static string ERR_INVCTRLPERIOD_DATE1 = "{PropertyName}: Helytelen leltáridőszak!";
         public static string ERR_INVCTRLPERIOD_DATE2 = "{PropertyName}: A megadott leltáridőszak ütközik más időszakkal!";
         public static string ERR_INVCTRLPERIODNOTFOUND = "Leltáridőszak nem található, ID:{0} ";
-        public static string ERR_INVCTRLPERIOD_CANTBEDELETED = "{PropertyName}: A leltáridőszak már nem törölhető!";
+        public static string ERR_INVCTRLPERIOD_CANTBEDELETED = "A leltáridőszak már nem törölhető!";
         public static string ERR_INVCTRLPERIOD_CANTBECLOSED = "A leltáridőszak nem zárható le!";
         public static string ERR_INVCTRLPERIOD_NOTCLOSED = "A leltáridőszak nincs lezárva!";
         public static string ERR_INVCTRLPERIOD_ALREADYCLOSED = "A leltáridőszak már lezárt!";

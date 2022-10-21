@@ -50,7 +50,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             t.GetAwaiter().GetResult();
         }
 
-        public async Task<VatRate> GetVatRateByCodeAsync(string vatRateCode)
+        public VatRate GetVatRateByCode(string vatRateCode)
         {
             VatRate vr = null;
 
@@ -62,7 +62,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
 
-        public async Task<Entity> GetVatRateAsync(long ID)
+        public Entity GetVatRate(long ID)
         {
             var query = _cacheService.QueryCache();
             var item = query.Where(x => x.ID== ID).FirstOrDefault();
@@ -85,17 +85,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
 
-            await _dbContext.VatRate.AddAsync(p_vatRate);
-            await _dbContext.SaveChangesAsync();
-
+            await AddAsync(p_vatRate);
             _cacheService.AddOrUpdate(p_vatRate);
             return p_vatRate;
         }
         public async Task<VatRate> UpdateVatRateAsync(VatRate p_vatRate)
         {
             _cacheService.AddOrUpdate(p_vatRate);
-            _dbContext.VatRate.Update(p_vatRate);
-            await _dbContext.SaveChangesAsync();
+            await UpdateAsync(p_vatRate);
             return p_vatRate;
         }
         public async Task<VatRate> DeleteVatRateAsync(long ID)
@@ -110,8 +107,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
                 _cacheService.TryRemove(vr);
-                _dbContext.VatRate.Remove(vr);
-                await _dbContext.SaveChangesAsync();
+                await RemoveAsync(vr);
 
             }
             else

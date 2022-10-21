@@ -211,7 +211,7 @@ namespace bxBE.Application.Commands.cmdOffer
 					{
 						throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
 					}
-					var vatRate = await _VatRateRepository.GetVatRateByCodeAsync(rln.VatRateCode);
+					var vatRate = _VatRateRepository.GetVatRateByCode(rln.VatRateCode);
 					if (vatRate == null)
 					{
 						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATECODENOTFOUND, rln.VatRateCode));

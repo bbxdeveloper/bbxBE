@@ -21,6 +21,7 @@ using bbxBE.Common.Consts;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections;
 using EFCore.BulkExtensions;
+using bbxBE.Application.Queries.qStock;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -49,15 +50,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<InvCtrlPeriod> AddInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
         {
-            await _dbContext.InvCtrlPeriod.AddAsync(p_invCtrlPeriod);
-            await _dbContext.SaveChangesAsync();
+            await AddAsync(p_invCtrlPeriod);
             return p_invCtrlPeriod;
         }
 
         public async Task<InvCtrlPeriod> UpdateInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
         {
-            _dbContext.InvCtrlPeriod.Update(p_invCtrlPeriod);
-            await _dbContext.SaveChangesAsync();
+            await UpdateAsync(p_invCtrlPeriod);
             return p_invCtrlPeriod;
         }
         public async Task<InvCtrlPeriod> DeleteInvCtrlPeriodAsync(long ID)
@@ -71,7 +70,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
 
 
-                _dbContext.InvCtrlPeriod.Remove(icp);
+                await RemoveAsync(icp);
                 await _dbContext.SaveChangesAsync();
 
             }
@@ -87,7 +86,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             var itemExisting = await _dbContext.InvCtrl.AsNoTracking()
                           .Where(x => x.InvCtlPeriodID == ID).AnyAsync();
-            return itemExisting;
+            return !itemExisting;
         }
         public async Task<bool> CanCloseAsync(long ID)
         {
@@ -250,10 +249,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var invCtrlItems = await _dbContext.InvCtrl.AsNoTracking().Where(x => x.InvCtlPeriodID == ID).ToListAsync();
                     var stockList = await _StockRepository.MaintainStockByInvCtrlAsync(invCtrlItems, 
                                 invCtrlPeriod.Warehouse.WarehouseCode + "-" + invCtrlPeriod.Warehouse.WarehouseDescription + " " + invCtrlPeriod.DateFrom.ToString(bbxBEConsts.DEF_DATEFORMAT) + "-" + invCtrlPeriod.DateTo.ToString(bbxBEConsts.DEF_DATEFORMAT));
-                    invCtrlPeriod.Closed = true;
-                    _dbContext.InvCtrlPeriod.Update(invCtrlPeriod);
 
-                    await _dbContext.SaveChangesAsync();
+
+                    invCtrlPeriod.Closed = true;
+                    await UpdateAsync(invCtrlPeriod);
                     await dbContextTransaction.CommitAsync();
 
 

@@ -34,7 +34,7 @@ namespace bbxBE.Application.Commands.cmdWarehouse
         public async Task<Response<long>> Handle(DeleteWarehouseCommand request, CancellationToken cancellationToken)
         {
             var pg = _mapper.Map<Warehouse>(request);
-            await _WarehouseRepository.DeleteAsync(pg);
+            await _WarehouseRepository.RemoveAsync(pg);
             return new Response<long>(pg.ID);
         }
 

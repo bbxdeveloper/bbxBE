@@ -10,8 +10,15 @@ namespace bbxBE.Application.BLL
         public static decimal GetNewAvgCost(decimal currAvgCost, decimal currQty, decimal chgQty, decimal newPrice)
         {
             //Ez tűnik a legjobb megközelítésnek (a negatív készlet miatt)
-
-            return (Math.Abs(currAvgCost * currQty) + (chgQty * newPrice)) / (Math.Abs(currQty) + chgQty);
+            //
+            if ((Math.Abs(currQty) + chgQty) != 0)
+            {
+                return (Math.Abs(currAvgCost * currQty) + (chgQty * newPrice)) / (Math.Abs(currQty) + chgQty);
+            }
+            else
+            {
+                return Math.Abs(currAvgCost * currQty) + (chgQty * newPrice);
+            }
         }
     }
 }

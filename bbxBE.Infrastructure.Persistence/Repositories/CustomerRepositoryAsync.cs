@@ -71,10 +71,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Customer> AddCustomerAsync(Customer p_customer)
         {
 
-            await _dbContext.Customer.AddAsync(p_customer);
-            //            _dbContext.ChangeTracker.AcceptAllChanges();
-            await _dbContext.SaveChangesAsync();
-
+            await AddAsync(p_customer);
             _cacheService.AddOrUpdate(p_customer);
             return p_customer;
         }
@@ -99,8 +96,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Customer> UpdateCustomerAsync(Customer p_customer)
         {
             _cacheService.AddOrUpdate(p_customer);
-            _dbContext.Customer.Update(p_customer);
-            await _dbContext.SaveChangesAsync();
+            await UpdateAsync(p_customer);
             return p_customer;
         }
 
@@ -118,9 +114,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     _cacheService.TryRemove(cust);
 
-                    _dbContext.Customer.Remove(cust);
-
-                    await _dbContext.SaveChangesAsync();
+                    await RemoveAsync(cust);
                     await dbContextTransaction.CommitAsync();
 
                 }

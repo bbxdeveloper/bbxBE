@@ -67,9 +67,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
 
-            await _dbContext.ProductGroup.AddAsync(p_productGroup);
-            await _dbContext.SaveChangesAsync();
-
+            await AddAsync(p_productGroup);
             _cacheService.AddOrUpdate(p_productGroup);
             return p_productGroup;
         }
@@ -78,9 +76,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
 
-                await _dbContext.ProductGroup.AddRangeAsync(p_productGroupList);
-                await _dbContext.SaveChangesAsync();
-
+                await AddRangeAsync(p_productGroupList);
                 await RefreshProductGroupCache();
             return p_productGroupList.Count;
         }
@@ -88,15 +84,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<ProductGroup> UpdateProductGroupAsync(ProductGroup p_productGroup)
         {
             _cacheService.AddOrUpdate(p_productGroup);
-            _dbContext.ProductGroup.Update(p_productGroup);
-            await _dbContext.SaveChangesAsync();
+            await UpdateAsync(p_productGroup);
             return p_productGroup;
         }
 
         public async Task<long> UpdateProductGroupRangeAsync(List<ProductGroup> p_productGroupList)
         {
-            _dbContext.ProductGroup.UpdateRange(p_productGroupList);
-            await _dbContext.SaveChangesAsync();
+            await UpdateRangeAsync(p_productGroupList);
             await RefreshProductGroupCache();
             return p_productGroupList.Count;
         }
@@ -112,12 +106,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (pg != null)
                 {
 
-
                     _cacheService.TryRemove(pg);
 
-                    _dbContext.ProductGroup.Remove(pg);
-
-                    await _dbContext.SaveChangesAsync();
+                    await RemoveAsync(pg);
                     await dbContextTransaction.CommitAsync();
 
                 }

@@ -27,6 +27,7 @@ using EFCore.BulkExtensions;
 using bbxBE.Common.Locking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static Dapper.SqlMapper;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -42,7 +43,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<ProductGroup> _productGroupCacheService;
         private readonly ICacheService<Origin> _originCacheService;
         private readonly ICacheService<VatRate> _vatRateCacheService;
-        private List<ProductCode> pcList = new List<ProductCode>();
+
+        private readonly IProductCodeRepositoryAsync _productCodeRepository;
 
         /*
            "id": 2272,
@@ -70,7 +72,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ICacheService<Product> productCacheService,
             ICacheService<ProductGroup> productGroupCacheService,
             ICacheService<Origin> originCacheService,
-            ICacheService<VatRate> vatRateCacheService
+            ICacheService<VatRate> vatRateCacheService,
+            IProductCodeRepositoryAsync productCodeRepository
             ) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -84,6 +87,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productGroupCacheService = productGroupCacheService;
             _originCacheService = originCacheService;
             _vatRateCacheService = vatRateCacheService;
+            _productCodeRepository = productCodeRepository;
         }
 
 
@@ -162,9 +166,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (pg != null)
                 {
 
-                    //_dbContext.Entry(pg).State = EntityState.Unchanged;
                     p_product.ProductGroupID = pg.ID;
                     p_product.ProductGroup = pg;
+                    _dbContext.Entry(pg).State = EntityState.Unchanged;
 
                 }
             }
@@ -184,10 +188,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (og != null)
                 {
 
-                    //_dbContext.Entry(og).State = EntityState.Unchanged;
                     p_product.OriginID = og.ID;
                     p_product.Origin = og;
-                }
+                    _dbContext.Entry(og).State = EntityState.Unchanged;
+          }
             }
 
             VatRate vr;
@@ -214,9 +218,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
             }
 
-            //_dbContext.Entry(vr).State = EntityState.Unchanged;
             p_product.VatRateID = vr.ID;
             p_product.VatRate = vr;
+            _dbContext.Entry(vr).State = EntityState.Unchanged;
 
             foreach (var pc in p_product.ProductCodes)
             {
@@ -226,30 +230,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return p_product;
         }
-        private void PrepareProductForSave(Product p_product)
-        {
-            p_product.ProductGroup = null;
-            p_product.Origin = null;
-            p_product.VatRate = null;
-        }
+
 
         public async Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
-            Product prodForCache = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
                     p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
-                    prodForCache = (Product)p_product.Clone();
-                    PrepareProductForSave(p_product);
 
-                    await _dbContext.Product.AddAsync(p_product);
-                    await _dbContext.SaveChangesAsync();
+                    await AddAsync(p_product);
                     await dbContextTransaction.CommitAsync();
 
-                    prodForCache.ID = p_product.ID;
-                    _productcacheService.AddOrUpdate(prodForCache);
+                   _productcacheService.AddOrUpdate(p_product);
                 }
                 catch (Exception e)
                 {
@@ -257,7 +251,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     throw;
                 }
             }
-            return prodForCache;
+            return p_product;
         }
     
 
@@ -269,13 +263,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var prod in p_productList)
             {
                 PrepareNewProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
-                PrepareProductForSave(prod);
                 item++;
             }
 
             try
             {
-                _dbContext.Database.SetCommandTimeout(3600);
                 await _dbContext.BulkInsertAsync(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
                 await _dbContext.SaveChangesAsync();
             }
@@ -305,133 +297,70 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         private Product PrepareUpdateProduct(Product p_productUpd, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
-            Product prodOri = null;
-            if (!_productcacheService.TryGetValue(p_productUpd.ID, out prodOri))
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, p_productUpd.ID));
-
-            /*
-            var prod = _dbContext.Product.AsNoTracking()
-                        .Include(p => p.ProductCodes).AsNoTracking()
-                        .Include(pg => pg.ProductGroup).AsNoTracking()
-                        .Include(o => o.Origin).AsNoTracking()
-                        .Include(v => v.VatRate).AsNoTracking()
-                        .Where(x => x.ID == p_product.ID).FirstOrDefault();
-            */
 
 
-            if (prodOri != null)
+            if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
             {
-
-                if (!string.IsNullOrWhiteSpace(p_ProductGroupCode))
+                ProductGroup pg = null;
+                if (_productGroupCacheService.IsCacheNull())
                 {
-                    ProductGroup pg = null;
-                    if (_productGroupCacheService.IsCacheNull())
-                    {
 
-                        pg =  _dbContext.ProductGroup.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
-                    }
-                    else
-                    {
-                        var query = _productGroupCacheService.QueryCache();
-                        pg = query.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
-                    }
-                    if (pg != null)
-                    {
-                        p_productUpd.ProductGroupID = pg.ID;
-                        p_productUpd.ProductGroup = pg;
-                    }
+                    pg = _dbContext.ProductGroup.AsNoTracking().SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
                 }
-
-                if (!string.IsNullOrWhiteSpace(p_OriginCode))
+                else
                 {
-                    Origin origin = null;
-
-                    if (_originCacheService.IsCacheNull())
-                    {
-
-                        origin = _dbContext.Origin.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
-                    }
-                    else
-                    {
-                        var query = _originCacheService.QueryCache();
-                        origin = query.SingleOrDefault(x => x.OriginCode == p_OriginCode);
-                    }
-                    if (origin != null)
-                    {
-                        p_productUpd.OriginID = origin.ID;
-                        p_productUpd.Origin = origin;
-                    }
+                    var query = _productGroupCacheService.QueryCache();
+                    pg = query.SingleOrDefault(x => x.ProductGroupCode == p_ProductGroupCode);
                 }
-
-                if (!string.IsNullOrWhiteSpace(p_VatRateCode))
+                if (pg != null)
                 {
-                    VatRate vatRate = null;
-
-
-                    if (_vatRateCacheService.IsCacheNull())
-                    {
-
-                        vatRate = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
-                    }
-                    else
-                    {
-                        var query = _vatRateCacheService.QueryCache();
-                        vatRate = query.SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
-                    }
-                    if (vatRate != null)
-                    {
-                        p_productUpd.VatRateID = vatRate.ID;
-                        p_productUpd.VatRate = vatRate;
-                    }
-                }
-
-                //Elvileg a p_product.ProductCodes.SingleOrDefault nem nyúl DB-hez
-                //
-
-                var pc = p_productUpd.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString());
-                if (pc != null)
-                {
-                    var pcID = prodOri.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())?.ID;
-                    if (pcID != null)
-                        pc.ID = pcID.Value;
-                }
-
-                var vtsz = p_productUpd.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString());
-                if (vtsz != null)
-                {
-                    var vtszID = prodOri.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString())?.ID;
-                    if (vtszID != null)
-                        vtsz.ID = vtszID.Value;
-                }
-
-
-
-                var eanOrig = prodOri.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
-                if (eanOrig != null)
-                {
-                    var eanUpd = p_productUpd.ProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
-                    if (eanUpd != null)
-                        eanUpd.ID = eanOrig.ID;
-                    else
-                    {
-
-                       //ez nem akar működni egyelőre nem kell
-                       //_dbContext.Entry(eanOrig).State = EntityState.Deleted;
-
-                        //_dbContext.ProductCode.Remove(eanOrig);
-                    }
-                }
-
-                foreach (var pcx in p_productUpd.ProductCodes)
-                {
-                    pcx.ProductCodeValue = pcx.ProductCodeValue.ToUpper();
+                    p_productUpd.ProductGroupID = pg.ID;
+                    p_productUpd.ProductGroup = pg;
                 }
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(p_OriginCode))
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, p_productUpd.ID));
+                Origin origin = null;
+
+                if (_originCacheService.IsCacheNull())
+                {
+
+                    origin = _dbContext.Origin.AsNoTracking().SingleOrDefault(x => x.OriginCode == p_OriginCode);
+                }
+                else
+                {
+                    var query = _originCacheService.QueryCache();
+                    origin = query.SingleOrDefault(x => x.OriginCode == p_OriginCode);
+                }
+                if (origin != null)
+                {
+                    p_productUpd.OriginID = origin.ID;
+                    p_productUpd.Origin = origin;
+                }
             }
 
+            if (!string.IsNullOrWhiteSpace(p_VatRateCode))
+            {
+                VatRate vatRate = null;
+
+
+                if (_vatRateCacheService.IsCacheNull())
+                {
+
+                    vatRate = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
+                }
+                else
+                {
+                    var query = _vatRateCacheService.QueryCache();
+                    vatRate = query.SingleOrDefault(x => x.VatRateCode == p_VatRateCode);
+                }
+                if (vatRate != null)
+                {
+                    p_productUpd.VatRateID = vatRate.ID;
+                    p_productUpd.VatRate = vatRate;
+                }
+            }
             return p_productUpd;
         }
 
@@ -440,21 +369,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
 
-            Product prodForCache = null;
+            Product prodOri = null;
+            if (!_productcacheService.TryGetValue(p_product.ID, out prodOri))
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, p_product.ID));
+
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
 
                 try
+
+
                 {
                     p_product = PrepareUpdateProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
-                    prodForCache = (Product)p_product.Clone();
-                    PrepareProductForSave(p_product);
 
-                    _dbContext.Product.Update(p_product);
+                    await _productCodeRepository.MaintainProductCodeListAsync(prodOri.ProductCodes, p_product.ProductCodes);
+                    await UpdateAsync(p_product, false);
                     await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 
-                    _productcacheService.AddOrUpdate(prodForCache);
+                    _productcacheService.AddOrUpdate(p_product);
 
                 }
                 catch (Exception e)
@@ -463,7 +396,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     throw;
                 }
             }
-            return prodForCache;
+            return p_product;
         }
 
         public async Task<int> UpdateProductRangeAsync(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList)
@@ -474,7 +407,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var prod in p_productList)
             {
                 PrepareUpdateProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
-                PrepareProductForSave(prod);
                 item++;
             }
 
@@ -519,16 +451,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (prod != null)
                 {
 
-                    if (prod.ProductCodes != null)
-                    {
-
-                        _dbContext.ProductCode.RemoveRange(prod.ProductCodes.ToList());
-                    }
                     _productcacheService.TryRemove(prod);
-
-                    _dbContext.Product.Remove(prod);
-
-                    await _dbContext.SaveChangesAsync();
+                    await RemoveAsync(prod);
                     await dbContextTransaction.CommitAsync();
 
                 }
