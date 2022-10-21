@@ -89,11 +89,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
                     //Ha másolatot insert-elünk, a biztonság kedvéért kiürítjük az ID-ket
-                    p_Offer.OfferLines.ToList().ForEach(e => {
-                        e.Product = null;
-                        e.VatRate = null;
+                    p_Offer.OfferLines.ToList().ForEach(e =>
+                    {
+                        if (e.Product != null)
+                            _dbContext.Entry(e.Product).State = EntityState.Unchanged;
+                        if (e.VatRate != null)
+                            _dbContext.Entry(e.VatRate).State = EntityState.Unchanged;
+                        _dbContext.Entry(e).State = EntityState.Added;
+
                         e.OfferID = 0;
-                        e.ID = 0; }
+                        e.ID = 0;
+                    }
                     );
 
                     p_Offer.ID = 0;
