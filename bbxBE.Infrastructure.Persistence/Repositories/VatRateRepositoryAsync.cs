@@ -50,19 +50,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             t.GetAwaiter().GetResult();
         }
 
-        public async Task<VatRate> GetVatRateByCodeAsync(string vatRateCode)
+        public VatRate GetVatRateByCode(string vatRateCode)
         {
             VatRate vr = null;
 
             var query = _cacheService.QueryCache();
-            vr = await query.Where(x => x.VatRateCode.ToUpper() == vatRateCode.ToUpper()).FirstOrDefaultAsync();
+            vr = query.Where(x => x.VatRateCode.ToUpper() == vatRateCode.ToUpper()).FirstOrDefault();
             return vr;
         }
 
 
 
 
-        public async Task<Entity> GetVatRateAsync(long ID)
+        public Entity GetVatRate(long ID)
         {
             var query = _cacheService.QueryCache();
             var item = query.Where(x => x.ID== ID).FirstOrDefault();

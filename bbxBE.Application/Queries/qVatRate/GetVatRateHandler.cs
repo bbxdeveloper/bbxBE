@@ -35,7 +35,7 @@ namespace bbxBE.Application.Queries.qVatRate
 
         public async Task<Entity> Handle(GetVatRate request, CancellationToken cancellationToken)
         {
-            var entity = await _vatRateRepository.GetVatRateAsync(request.ID);
+            var entity = _vatRateRepository.GetVatRate(request.ID);
             var data = entity.MapItemFieldsByMapToAnnotation<GetVatRateViewModel>();
 
             // response wrapper
