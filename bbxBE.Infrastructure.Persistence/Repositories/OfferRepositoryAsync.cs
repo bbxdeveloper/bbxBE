@@ -18,6 +18,7 @@ using bbxBE.Application.Queries.qOffer;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
+using static Dapper.SqlMapper;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -53,11 +54,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly IOfferLineRepositoryAsync _offerLineRepository;
 
         public OfferRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Offer> dataShaperOffer,
             IDataShapeHelper<GetOfferViewModel> dataShaperGetOfferViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
+            IOfferLineRepositoryAsync offerLineRepository) : base(dbContext)
         {
             _dbContext = dbContext;
     
@@ -66,6 +69,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _offerLineRepository = offerLineRepository;
         }
 
 
@@ -85,11 +89,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
                     //Ha másolatot insert-elünk, a biztonság kedvéért kiürítjük az ID-ket
-                    p_Offer.OfferLines.ToList().ForEach(e => {
-                        e.Product = null;
-                        e.VatRate = null;
+                    p_Offer.OfferLines.ToList().ForEach(e =>
+                    {
+                        if (e.Product != null)
+                            _dbContext.Entry(e.Product).State = EntityState.Unchanged;
+                        if (e.VatRate != null)
+                            _dbContext.Entry(e.VatRate).State = EntityState.Unchanged;
+                        _dbContext.Entry(e).State = EntityState.Added;
+
                         e.OfferID = 0;
-                        e.ID = 0; }
+                        e.ID = 0;
+                    }
                     );
 
                     p_Offer.ID = 0;
@@ -117,28 +127,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     //Az előző verziók érvénytelenítése
                     //
                     var prevVerisons = await _dbContext.Offer
-                      .Where(x => x.OfferNumber == p_Offer.OfferNumber && x.OfferVersion < p_Offer.OfferVersion).ToListAsync();
-                    prevVerisons.ForEach(i => i.LatestVersion = false);
+                      .Where(x => x.OfferNumber == p_Offer.OfferNumber && x.OfferVersion < p_Offer.OfferVersion && x.ID != p_Offer.ID).ToListAsync();
+                    prevVerisons.ForEach(i =>
+                    {
+                        i.LatestVersion = false;
+                        _dbContext.Entry(i).State = EntityState.Modified;
+                    });
 
                     //Az aktuális minden esetben Latest!
                     p_Offer.LatestVersion = true;
 
 
-                    var curentLines = await _dbContext.OfferLine.Where(w => w.OfferID == p_Offer.ID).ToListAsync();
-                    foreach (var existingLine in curentLines)
-                    {
-                        if (!p_Offer.OfferLines.Any(a => a.ID == existingLine.ID))
-                        {
-                            _dbContext.OfferLine.Remove(existingLine);
-                         //   await RemoveAsync(existingLine, false);
-                        }
-                    }
+                    var oriLines = await _dbContext.OfferLine.Where(w => w.OfferID == p_Offer.ID).ToListAsync();
+                    await _offerLineRepository.RemoveRangeAsync(oriLines.Where(w => !p_Offer.OfferLines.Any(a => a.ID == w.ID)).ToList(), true);
+
 
                     p_Offer.OfferLines.ToList().ForEach(e => {
-                        e.Product = null;
-                        e.VatRate = null;
-                        e.OfferID = 0;
-                        e.ID = 0;
+                        if(e.Product != null)
+                            _dbContext.Entry(e.Product).State = EntityState.Unchanged;
+                        if (e.VatRate != null)
+                            _dbContext.Entry(e.VatRate).State = EntityState.Unchanged;
+                        _dbContext.Entry(e).State = (e.ID == 0  ? EntityState.Added : EntityState.Modified);
                     });
 
 

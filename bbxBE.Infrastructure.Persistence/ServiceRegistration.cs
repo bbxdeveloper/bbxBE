@@ -68,6 +68,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IInvoiceRepositoryAsync, InvoiceRepositoryAsync>();
             services.AddTransient<IVatRateRepositoryAsync, VatRateRepositoryAsync>();
             services.AddTransient<IOfferRepositoryAsync, OfferRepositoryAsync>();
+            services.AddTransient<IOfferLineRepositoryAsync, OfferLineRepositoryAsync>();
             services.AddTransient<IStockRepositoryAsync, StockRepositoryAsync>();
             services.AddTransient<IStockCardRepositoryAsync, StockCardRepositoryAsync>();
             services.AddTransient<IInvCtrlPeriodRepositoryAsync, InvCtrlPeriodRepositoryAsync>();
