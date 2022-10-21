@@ -33,6 +33,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<Origin> _cacheService;
         private readonly ICacheService<Product> _productCacheService;
 
+
         public OriginRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Origin> dataShaperOrigin,
             IDataShapeHelper<GetOriginViewModel> dataShaperGetOriginViewModel,
@@ -48,7 +49,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
             _cacheService = originGroupCacheService;
             _productCacheService = productCacheService;
-
         }
 
 
