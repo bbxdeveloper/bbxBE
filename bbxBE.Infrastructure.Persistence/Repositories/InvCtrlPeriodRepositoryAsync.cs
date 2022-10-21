@@ -86,7 +86,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             var itemExisting = await _dbContext.InvCtrl.AsNoTracking()
                           .Where(x => x.InvCtlPeriodID == ID).AnyAsync();
-            return itemExisting;
+            return !itemExisting;
         }
         public async Task<bool> CanCloseAsync(long ID)
         {
