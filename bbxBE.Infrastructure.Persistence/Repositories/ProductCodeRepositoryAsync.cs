@@ -89,7 +89,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
 
-            await RemoveRangeAsync(p_lstOldProductCodes.Where(w=> !p_lstNewProductCodes.Any( a=>a.ID == w.ID)).ToList(), false);
+            var deletedProductCodes = p_lstOldProductCodes.Where(w => !p_lstNewProductCodes.Any(a => a.ID == w.ID)).ToList();
+            if (deletedProductCodes.Count > 0)
+            {
+                //mivel a p_lstOldProductCodes-ból szedjük ki a törölt tételeket, SaveChangesAsync kell a removeRange után
+                //hogy törlődjenek ezek a tételek a ChangeTrackerből is
+                //
+                await RemoveRangeAsync(deletedProductCodes, true);
+            }
             await AddRangeAsync(p_lstNewProductCodes.Where(w => !p_lstOldProductCodes.Any(a => a.ID == w.ID)).ToList(), false);
             await UpdateRangeAsync(p_lstNewProductCodes.Where(w => p_lstOldProductCodes.Any(a => a.ID == w.ID)).ToList(), true);
 

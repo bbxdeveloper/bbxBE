@@ -7,6 +7,7 @@ using bbxBE.Domain.Entities;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal;
 
 namespace bbxBE.Infrastructure.Persistence.Contexts
 {
@@ -30,6 +31,15 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
             ChangeTracker.LazyLoadingEnabled = false;
             ChangeTracker.AutoDetectChangesEnabled = false;
 
+            var sqlExt = options.GetExtension<SqlServerOptionsExtension>();
+            if (sqlExt.CommandTimeout != null)
+            {
+                Database.SetCommandTimeout(sqlExt.CommandTimeout);
+            }
+            else
+            {
+                Database.SetCommandTimeout(3600);
+            }
             _dateTime = dateTime;
             _loggerFactory = loggerFactory;
           }

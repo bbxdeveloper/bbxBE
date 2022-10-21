@@ -27,6 +27,7 @@ using EFCore.BulkExtensions;
 using bbxBE.Common.Locking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static Dapper.SqlMapper;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -165,9 +166,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (pg != null)
                 {
 
-                    //_dbContext.Entry(pg).State = EntityState.Unchanged;
                     p_product.ProductGroupID = pg.ID;
                     p_product.ProductGroup = pg;
+                    _dbContext.Entry(pg).State = EntityState.Unchanged;
 
                 }
             }
@@ -187,10 +188,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (og != null)
                 {
 
-                    //_dbContext.Entry(og).State = EntityState.Unchanged;
                     p_product.OriginID = og.ID;
                     p_product.Origin = og;
-                }
+                    _dbContext.Entry(og).State = EntityState.Unchanged;
+          }
             }
 
             VatRate vr;
@@ -217,9 +218,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
             }
 
-            //_dbContext.Entry(vr).State = EntityState.Unchanged;
             p_product.VatRateID = vr.ID;
             p_product.VatRate = vr;
+            _dbContext.Entry(vr).State = EntityState.Unchanged;
 
             foreach (var pc in p_product.ProductCodes)
             {
@@ -230,21 +231,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return p_product;
         }
 
+
         public async Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
-            Product prodForCache = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
                     p_product = PrepareNewProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
-                    prodForCache = (Product)p_product.Clone();
 
                     await AddAsync(p_product);
                     await dbContextTransaction.CommitAsync();
 
-                    prodForCache.ID = p_product.ID;
-                    _productcacheService.AddOrUpdate(prodForCache);
+                   _productcacheService.AddOrUpdate(p_product);
                 }
                 catch (Exception e)
                 {
@@ -252,7 +251,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     throw;
                 }
             }
-            return prodForCache;
+            return p_product;
         }
     
 
@@ -269,7 +268,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             try
             {
-                _dbContext.Database.SetCommandTimeout(3600);
                 await _dbContext.BulkInsertAsync(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
                 await _dbContext.SaveChangesAsync();
             }
@@ -385,9 +383,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     p_product = PrepareUpdateProduct(p_product, p_ProductGroupCode, p_OriginCode, p_VatRateCode);
 
                     await _productCodeRepository.MaintainProductCodeListAsync(prodOri.ProductCodes, p_product.ProductCodes);
-                    await UpdateAsync(p_product);
-
-            //        await _dbContext.SaveChangesAsync();
+                    await UpdateAsync(p_product, false);
+                    await _dbContext.SaveChangesAsync();
                     await dbContextTransaction.CommitAsync();
 
                     _productcacheService.AddOrUpdate(p_product);
@@ -454,15 +451,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (prod != null)
                 {
 
-                    if (prod.ProductCodes != null)
-                    {
-                        foreach (var pc in prod.ProductCodes)
-                        {
-                            _dbContext.Set<ProductCode>().Remove(pc);
-                        }
-                    }
                     _productcacheService.TryRemove(prod);
-
                     await RemoveAsync(prod);
                     await dbContextTransaction.CommitAsync();
 
