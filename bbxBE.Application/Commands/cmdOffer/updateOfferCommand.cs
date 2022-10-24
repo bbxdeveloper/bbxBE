@@ -18,6 +18,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AngleSharp.Html.Parser;
+using AngleSharp.Html;
+using System.IO;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
@@ -190,8 +193,38 @@ namespace bxBE.Application.Commands.cmdOffer
 		{
 			var offer = _mapper.Map<Offer>(request);
 
-			//Egyelőre csak forintos ajántatokról van szó
-			offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
+            if (!string.IsNullOrWhiteSpace(offer.Notice))
+            {
+                var parser = new HtmlParser();
+
+                var document = parser.ParseDocument(offer.Notice);
+
+                var sw = new StringWriter();
+                document.ToHtml(sw, new PrettyMarkupFormatter());
+
+                offer.Notice = sw.ToString();
+
+                /*TidyManaged
+				using (Document doc = Document.FromString(offer.Notice))
+				{
+					doc.ShowWarnings = false;
+					doc.Quiet = true;
+					doc.OutputXhtml = true;
+					doc.OutputXml = true;
+					doc.IndentBlockElements = AutoBool.Yes;
+					doc.IndentAttributes = false;
+					doc.IndentCdata = true;
+					doc.AddVerticalSpace = false;
+					doc.WrapAt = 220;
+
+					doc.CleanAndRepair();
+					offer.Notice = doc.Save();
+				}
+				*/
+            }
+
+            //Egyelőre csak forintos ajántatokról van szó
+            offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
 			offer.ExchangeRate = 1;
 
 			var counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
