@@ -47,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.17.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="EFCore.BulkExtensions-UDIntel.Fork" Version="3.2.5" />
     <PackageReference Include="FluentValidation" Version="10.3.3" />

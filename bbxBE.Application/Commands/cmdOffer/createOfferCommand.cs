@@ -18,6 +18,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AngleSharp.Html.Parser;
+using AngleSharp.Html;
+using System.IO;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
@@ -59,7 +62,7 @@ namespace bxBE.Application.Commands.cmdOffer
 	public class CreateOfferCommand : IRequest<Response<Offer>>
 	{
 
-		
+
 		[Description("Árajánlat-sor")]
 		public class OfferLine
 		{
@@ -89,7 +92,7 @@ namespace bxBE.Application.Commands.cmdOffer
 			[ColumnLabel("Árengedmény megjelenítés?")]
 			[Description("Árengedmény megjelenítés)")]
 			public bool ShowDiscount { get; set; }
-			
+
 			/*
 			[ColumnLabel("Áfa ID")]
 			[Description("Áfa ID")]
@@ -97,7 +100,7 @@ namespace bxBE.Application.Commands.cmdOffer
 			*/
 
 
-	[ColumnLabel("Áfaleíró-kód")]
+			[ColumnLabel("Áfaleíró-kód")]
 			[Description("Áfaleíró-kód")]
 			public string VatRateCode { get; set; }
 
@@ -144,8 +147,8 @@ namespace bxBE.Application.Commands.cmdOffer
 	}
 
 	public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Response<Offer>>
-    {
-        private readonly IOfferRepositoryAsync _OfferRepository;
+	{
+		private readonly IOfferRepositoryAsync _OfferRepository;
 		private readonly ICounterRepositoryAsync _CounterRepository;
 		private readonly ICustomerRepositoryAsync _CustomerRepository;
 		private readonly IProductRepositoryAsync _ProductRepository;
@@ -153,14 +156,14 @@ namespace bxBE.Application.Commands.cmdOffer
 		private readonly IMapper _mapper;
 		private readonly IConfiguration _configuration;
 
-        public CreateOfferCommandHandler(IOfferRepositoryAsync OfferRepository,
+		public CreateOfferCommandHandler(IOfferRepositoryAsync OfferRepository,
 						ICounterRepositoryAsync CounterRepository,
 						ICustomerRepositoryAsync CustomerRepository,
 						IProductRepositoryAsync ProductRepository,
 						IVatRateRepositoryAsync VatRateRepository,
 						IMapper mapper, IConfiguration configuration)
-        {
-            _OfferRepository = OfferRepository;
+		{
+			_OfferRepository = OfferRepository;
 			_CounterRepository = CounterRepository;
 			_CustomerRepository = CustomerRepository;
 			_ProductRepository = ProductRepository;
@@ -168,17 +171,50 @@ namespace bxBE.Application.Commands.cmdOffer
 
 
 			_mapper = mapper;
-            _configuration = configuration;
-        }
+			_configuration = configuration;
+		}
 
-        public async Task<Response<Offer>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
-        {
-            var offer = _mapper.Map<Offer>(request);
+		public async Task<Response<Offer>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
+		{
+			var offer = _mapper.Map<Offer>(request);
+			if (!string.IsNullOrWhiteSpace(offer.Notice))
+			{
+				if (!string.IsNullOrWhiteSpace(offer.Notice))
+				{
+					var parser = new HtmlParser();
+
+					var document = parser.ParseDocument(offer.Notice);
+
+					var sw = new StringWriter();
+					var formatter = new PrettyMarkupFormatter();
+					document.ToHtml(sw, formatter);
+
+					offer.Notice = sw.ToString();
+
+					/* TidyManaged
+					using (Document doc = Document.FromString(offer.Notice))
+					{
+						doc.ShowWarnings = false;
+						doc.Quiet = true;
+						doc.OutputXhtml = true;
+						doc.OutputXml = true;
+						doc.IndentBlockElements = AutoBool.Yes;
+						doc.IndentAttributes = false;
+						doc.IndentCdata = true;
+						doc.AddVerticalSpace = false;
+						doc.WrapAt = 220;
+
+						doc.CleanAndRepair();
+						offer.Notice = doc.Save();
+					}
+					*/
+				}
+			}
 
 			//Egyelőre csak forintos ajántatokról van szó
 			offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
 			offer.ExchangeRate = 1;
-			
+
 			var counterCode = "";
 			try
 			{
@@ -214,7 +250,7 @@ namespace bxBE.Application.Commands.cmdOffer
 					//	ln.VatRate = vatRate;
 					ln.VatRateID = vatRate.ID;
 					ln.VatPercentage = vatRate.VatPercentage;
-					
+
 				}
 
 
