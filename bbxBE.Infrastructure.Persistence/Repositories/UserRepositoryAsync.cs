@@ -72,6 +72,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             return await _dbContext.Users.FirstOrDefaultAsync(p => p.Name.ToUpper() == name.ToUpper());
         }
+        public async Task<Users> GetUserRecordByIDAsync(long ID)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(p => p.ID == ID);
+        }
         public async Task<Users> GetUserRecordByLoginNameAsync(string loginName)
         {
             return await _dbContext.Users.FirstOrDefaultAsync(p => p.LoginName.ToUpper() == loginName.ToUpper());
