@@ -13,6 +13,7 @@ using System.Configuration;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using bbxBE.Common.Exceptions;
 
 namespace bbxBE.Application.Commands.cmdUser
 {
@@ -49,7 +50,21 @@ namespace bbxBE.Application.Commands.cmdUser
 
             var usr = _mapper.Map<Users>(request);
 
-            usr.PasswordHash = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt));
+            if (!string.IsNullOrWhiteSpace(request.Password))
+            {
+                //Jelszóváltozás
+                usr.PasswordHash = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt));
+            }
+            else
+            {
+                var oriUsr = await _usrRepository.GetUserRecordByIDAsync(request.ID);
+                if( oriUsr == null)
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_USERNOTFOUND, request.ID));
+                usr.PasswordHash = oriUsr.PasswordHash;
+            }
+
+
+
 
             await _usrRepository.UpdateAsync(usr);
             return new Response<Users>(usr);
