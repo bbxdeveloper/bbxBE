@@ -79,5 +79,8 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("EAN")]
         [Description("Vonalkód")]
         public string EAN { get; set; }
+        [ColumnLabel("Eng.tilt")]
+        [Description("Engedmény adás tiltása")]
+        public string NoDiscount { get; set; }
     }
 }
