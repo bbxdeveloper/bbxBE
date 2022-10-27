@@ -55,6 +55,9 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Aktív?")]
         [Description("Aktív?")]
         public bool Active { get; set; }
+        [ColumnLabel("Eng.tilt")]
+        [Description("Engedmény adás tiltása")]
+        public string NoDiscount { get; set; }
 
 
         //relációk

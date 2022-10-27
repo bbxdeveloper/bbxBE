@@ -66,6 +66,9 @@ namespace bxBE.Application.Commands.cmdProduct
         [ColumnLabel("Aktív?")]
         [Description("Aktív?")]
         public bool Active { get; set; }
+        [ColumnLabel("Eng.tilt")]
+        [Description("Engedmény adás tiltása")]
+        public string NoDiscount { get; set; }
         [ColumnLabel("VTSZ")]
         [Description("Vámtarifa-szám")]
         public string VTSZ { get; set; }

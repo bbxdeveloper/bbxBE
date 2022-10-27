@@ -14,6 +14,8 @@ using System.Linq;
 using System.Reflection;
 using Hangfire;
 using Microsoft.Extensions.Logging;
+using FluentMigrator.Runner.Initialization;
+using System;
 
 namespace bbxBE.Infrastructure.Persistence
 {
@@ -94,6 +96,7 @@ namespace bbxBE.Infrastructure.Persistence
             .AddFluentMigratorCore()
             .ConfigureRunner(c => c.AddSqlServer2012()
                 .WithGlobalConnectionString(configuration.GetConnectionString("bbxdbconnection"))
+                .WithGlobalCommandTimeout(TimeSpan.FromMinutes(30))
                 .ScanIn(Assembly.GetExecutingAssembly()).For.Migrations());
 
         }
