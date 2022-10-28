@@ -1,8 +1,10 @@
 ﻿using bbxBE.Application.Commands.cmdUser;
 using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qStock;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -41,6 +43,14 @@ namespace bbxBE.WebApi.Controllers.v1
 
             await _productRepositoryAsync.RefreshProductCache();
             return Ok(true);
+        }
+
+
+        [HttpGet("currencycodes")]
+        public async Task<IActionResult> GetCurrencyCodes()
+        {
+            var req = new GetEnum() { type = typeof(enCurrencyCodes) };
+            return Ok(await Mediator.Send(req));
         }
     }
 }
