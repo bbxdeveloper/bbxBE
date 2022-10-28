@@ -133,7 +133,17 @@ namespace bxBE.Application.Commands.cmdOffer
 		[Description("Érvényesség dátuma")]
 		public DateTime OfferVaidityDate { get; set; }
 
-		[ColumnLabel("Megjegyzés")]
+        [ColumnLabel("Pénznem")]
+        [Description("Pénznem")]
+        public string CurrencyCode { get; set; }
+
+
+        [ColumnLabel("Árfolyam")]
+        [Description("Árfolyam")]
+        public decimal ExchangeRate { get; set; }
+
+
+        [ColumnLabel("Megjegyzés")]
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }
 
@@ -212,8 +222,11 @@ namespace bxBE.Application.Commands.cmdOffer
 			}
 
 			//Egyelőre csak forintos ajántatokról van szó
-			offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
-			offer.ExchangeRate = 1;
+			if (string.IsNullOrWhiteSpace(offer.CurrencyCode))
+			{
+				offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
+				offer.ExchangeRate = 1;
+			}
 
 			var counterCode = "";
 			try
