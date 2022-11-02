@@ -19,6 +19,7 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using static Dapper.SqlMapper;
+using bbxBE.Common.Enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -235,12 +236,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var itemModel = _mapper.Map<Offer, GetOfferViewModel>(item);
 
             //a requestParameter.FullData kezelés miatt a SumNetAmount és SumBrtAmount mezőket ki kell számolni 
-            itemModel.SumNetAmount = Math.Round(itemModel.OfferLines.Sum(s => s.NetAmount), 0);
-            itemModel.SumBrtAmount = Math.Round(itemModel.OfferLines.Sum(s => s.BrtAmount), 0);
+            itemModel.SumNetAmount = Math.Round(itemModel.OfferLines.Sum(s => s.NetAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
+            itemModel.SumBrtAmount = Math.Round(itemModel.OfferLines.Sum(s => s.BrtAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
             if (!FullData)
             {
-            //itemModel.OfferLines = new List<GetOfferViewModel.OfferLine>();
-            itemModel.OfferLines = null;
+                //itemModel.OfferLines = new List<GetOfferViewModel.OfferLine>();
+                itemModel.OfferLines = null;
             }
 
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();

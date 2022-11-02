@@ -109,7 +109,7 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Bruttó érték")]
 			[DataMember]
 			[NotDBField] 
-			public decimal BrtAmount { get { return Math.Round(Quantity * UnitPrice * ( 1 + VatPercentage), 0); } }
+			public decimal BrtAmount { get { return Math.Round(Quantity * UnitPrice * ( 1 + VatPercentage),  1); } }
 
 		}
 
