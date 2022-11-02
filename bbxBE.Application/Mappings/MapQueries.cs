@@ -96,7 +96,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.OfferNumberX, opt => opt.MapFrom((src, dest) =>
              {
                  return src.OfferVersion > 0 ? src.OfferNumber + "/" + src.OfferVersion : src.OfferNumber;
-              }))
+             }))
              .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => src.Customer.CustomerName))
              .ForMember(dst => dst.CustomerBankAccountNumber, opt => opt.MapFrom(src => src.Customer.CustomerBankAccountNumber))
              .ForMember(dst => dst.CustomerTaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.Customer.TaxpayerId, src.Customer.VatCode, src.Customer.CountyCode)))
@@ -104,7 +104,8 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CustomerPostalCode, opt => opt.MapFrom(src => src.Customer.PostalCode))
              .ForMember(dst => dst.CustomerCity, opt => opt.MapFrom(src => src.Customer.City))
              .ForMember(dst => dst.CustomerAdditionalAddressDetail, opt => opt.MapFrom(src => src.Customer.AdditionalAddressDetail))
-             .ForMember(dst => dst.CustomerComment, opt => opt.MapFrom(src => src.Customer.Comment));
+             .ForMember(dst => dst.CustomerComment, opt => opt.MapFrom(src => src.Customer.Comment))
+             .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.CurrencyCode)));
 
             CreateMap<OfferLine, GetOfferViewModel.OfferLine>()
              .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver( src.UnitOfMeasure)))
@@ -186,5 +187,15 @@ namespace bbxBE.Queries.Mappings
             return "";
         }
 
+
+        private static string CurrencyCodeResolver(string CurrencyCode)
+        {
+            if (!string.IsNullOrWhiteSpace(CurrencyCode))
+            {
+                var _currencyCode = (enCurrencyCodes)Enum.Parse(typeof(enCurrencyCodes), CurrencyCode);
+                return Common.Utils.GetEnumDescription(_currencyCode);
+            }
+            return "";
+        }
     }
 }

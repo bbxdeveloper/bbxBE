@@ -32,7 +32,28 @@ namespace bbxBE.Domain.Entities
 		public long CustomerID { get; set; }
 
 
-		[ColumnLabel("Példány")]
+        [ColumnLabel("Pénznem")]
+        [Description("Pénznem")]
+        private enCurrencyCodes currencyCode;
+        public string CurrencyCode
+        {
+            get { return Enum.GetName(typeof(enCurrencyCodes), currencyCode); }
+            set
+            {
+                if (value != null)
+                    currencyCode = (enCurrencyCodes)Enum.Parse(typeof(enCurrencyCodes), value);
+                else
+                    currencyCode = enCurrencyCodes.HUF;
+
+            }
+        }
+
+        [ColumnLabel("Árfolyam")]
+        [Description("Árfolyam")]
+        public decimal ExchangeRate { get; set; }
+
+
+        [ColumnLabel("Példány")]
 		[Description("Nyomtatott példány száma")]
 		public short Copies { get; set; }
 
@@ -47,26 +68,6 @@ namespace bbxBE.Domain.Entities
 		[ColumnLabel("Legutolsó verzió?")]
 		[Description("Legutolsó verzió?")]
 		public bool LatestVersion { get; set; }
-
-
-		[ColumnLabel("Pénznem")]
-		[Description("Pénznem")]
-		private enCurrencyCodes currencyCode;
-		public string CurrencyCode
-		{
-			get { return Enum.GetName(typeof(enCurrencyCodes), currencyCode); }
-			set
-			{
-				if (value != null)
-					currencyCode = (enCurrencyCodes)Enum.Parse(typeof(enCurrencyCodes), value);
-				else
-					currencyCode = enCurrencyCodes.HUF;
-
-			}
-		}
-		[ColumnLabel("Árfolyam")]
-		[Description("Árfolyam")]
-		public decimal ExchangeRate { get; set; }
 
 
 		//relációk

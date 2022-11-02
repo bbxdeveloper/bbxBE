@@ -40,12 +40,25 @@ namespace bbxBE.Application.Commands.cmdOffer
             RuleFor(r => new { r.OfferIssueDate, r.OfferVaidityDate}).Must(m => m.OfferIssueDate <= m.OfferVaidityDate)
                 .WithMessage(bbxBEConsts.ERR_OFFER_DATE1);
 
+            RuleFor(r => r.CurrencyCode)
+                .Must(CheckCurrency).WithMessage(bbxBEConsts.ERR_INVCURRENCY);
+
             //Offerline-ekre !!
             RuleForEach(r => r.OfferLines)
             .SetValidator(model => new UpdateOfferLinesCommandValidatror());
 
         }
 
+        private bool CheckCurrency(string Currency)
+        {
+            if (string.IsNullOrWhiteSpace(Currency))
+            {
+                return true;
+            }
+            var valid = Enum.TryParse(Currency, out enCurrencyCodes curr);
+            return valid;
+        }
+    
     }
 
     public class UpdateOfferLinesCommandValidatror : AbstractValidator<UpdateOfferCommand.OfferLine>

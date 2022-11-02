@@ -181,6 +181,18 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Nyomtatott példány száma")]
 		public short Copies { get; set; }
 
+        [ColumnLabel("Pénznem kód")]
+        [Description("Pénznem kód")]
+        public string CurrencyCode { get; set; }
+
+        [ColumnLabel("Pénznem")]
+        [Description("Pénznem")]
+        public string CurrencyCodeX { get; set; }
+
+        [ColumnLabel("Árfolyam")]
+        [Description("Árfolyam")]
+        public decimal ExchangeRate { get; set; }
+        
 		[ColumnLabel("Megjegyzés")]
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }

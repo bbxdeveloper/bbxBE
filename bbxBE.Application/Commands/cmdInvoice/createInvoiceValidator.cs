@@ -101,6 +101,8 @@ namespace bbxBE.Application.Commands.cmdInvoice
 
     }
 
+
+  
     public class CreateInvoiceLinesCommandValidatror : AbstractValidator<CreateInvoiceCommand.InvoiceLine>
     {
         public CreateInvoiceLinesCommandValidatror()

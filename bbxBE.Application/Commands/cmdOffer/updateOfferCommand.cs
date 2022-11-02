@@ -97,7 +97,15 @@ namespace bxBE.Application.Commands.cmdOffer
 			[Description("Árengedmény megjelenítés)")]
 			public bool ShowDiscount { get; set; }
 
-			[ColumnLabel("Mennyiség")]
+            [ColumnLabel("Pénznem")]
+            [Description("Pénznem")]
+            public string CurrencyCode { get; set; }
+
+
+            [ColumnLabel("Árfolyam")]
+            [Description("Árfolyam")]
+            public decimal ExchangeRate { get; set; }
+            [ColumnLabel("Mennyiség")]
 			[Description("Mennyiség")]
 			public decimal Quantity { get; set; }
 
@@ -141,6 +149,14 @@ namespace bxBE.Application.Commands.cmdOffer
 		[Description("Érvényesség dátuma")]
 		public DateTime OfferVaidityDate { get; set; }
 
+        [ColumnLabel("Pénznem")]
+        [Description("Pénznem")]
+        public string CurrencyCode { get; set; }
+
+        [ColumnLabel("Árfolyam")]
+        [Description("Árfolyam")]
+        public decimal ExchangeRate { get; set; }
+        
 		[ColumnLabel("Megjegyzés")]
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }
