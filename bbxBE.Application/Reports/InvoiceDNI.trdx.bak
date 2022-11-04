@@ -513,7 +513,7 @@
         </Panel>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="2.3cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="1.8cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
@@ -631,11 +631,6 @@
             </TextBox>
           </Items>
         </Panel>
-        <TextBox Width="18.645cm" Height="0.5cm" Left="0.055cm" Top="1.8cm" Value="Köszönjük a vásárlást!" Name="textBox59">
-          <Style VerticalAlign="Middle">
-            <Font Name="Courier New" Size="9pt" />
-          </Style>
-        </TextBox>
       </Items>
     </ReportFooterSection>
   </Items>
