@@ -509,7 +509,7 @@
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="3.905cm" Height="0.498cm" Left="3.2cm" Top="0cm" Value="Eredeti biz." Name="textBox63">
+            <TextBox Width="3.905cm" Height="0.498cm" Left="3.2cm" Top="0cm" Value="Eredeti bizonylat" Name="textBox63">
               <Style TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" Bold="True" />
               </Style>

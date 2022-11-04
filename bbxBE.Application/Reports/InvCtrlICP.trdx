@@ -104,7 +104,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="4" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="17mm" Height="6.09mm" Left="0cm" Top="0cm" Value="=Fields.latestIn" Format="{0:d}" Name="textBox3" StyleName="">
+                  <TextBox Width="17mm" Height="6.09mm" Left="0cm" Top="0cm" Value="=Fields.latestIn" Format="{0:yyyy.MM.dd}" Name="textBox3" StyleName="">
                     <Style TextAlign="Right" VerticalAlign="Middle">
                       <Font Name="Tahoma" Size="7pt" />
                       <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
@@ -114,7 +114,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="5" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="17mm" Height="6.09mm" Left="0cm" Top="0cm" Value="=Fields.latestOut" Format="{0:d}" Name="textBox14" StyleName="">
+                  <TextBox Width="17mm" Height="6.09mm" Left="0cm" Top="0cm" Value="=Fields.latestOut" Format="{0:yyyy.MM.dd}" Name="textBox14" StyleName="">
                     <Style TextAlign="Right" VerticalAlign="Middle">
                       <Font Name="Tahoma" Size="7pt" />
                       <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
