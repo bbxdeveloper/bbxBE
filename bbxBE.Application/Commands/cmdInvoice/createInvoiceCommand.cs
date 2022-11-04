@@ -230,12 +230,16 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 
 				//ID-k feloldása
-				if (!string.IsNullOrWhiteSpace(request.WarehouseCode))
+				if (string.IsNullOrWhiteSpace(request.WarehouseCode))
 				{
 					request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;      //Átmenetileg
 				}
-
-				var wh = await _WarehouseRepository.GetWarehouseByCodeAsync(request.WarehouseCode);
+                
+				if (string.IsNullOrWhiteSpace(request.CurrencyCode))
+                {
+                    request.CurrencyCode = enCurrencyCodes.HUF.ToString();      
+                }
+                var wh = await _WarehouseRepository.GetWarehouseByCodeAsync(request.WarehouseCode);
 				if (wh == null)
 				{
 					throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
@@ -279,10 +283,12 @@ namespace bxBE.Application.Commands.cmdInvoice
 					invoice.PaymentMethod = PaymentMethodType.OTHER.ToString();
                 }
 
+				//áfa kerekítése
+                invoice.InvoiceVatAmount = Math.Round(invoice.InvoiceVatAmount, (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
 
                 //Kiszámítható mezők kiszámolása
                 invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;
-				invoice.InvoiceVatAmountHUF = invoice.InvoiceVatAmount * invoice.ExchangeRate;
+				invoice.InvoiceVatAmountHUF = Math.Round(  invoice.InvoiceVatAmount * invoice.ExchangeRate, 0);
 
 				invoice.InvoiceGrossAmount = invoice.InvoiceNetAmount + invoice.InvoiceVatAmount;
 				invoice.invoiceGrossAmountHUF = invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF;
