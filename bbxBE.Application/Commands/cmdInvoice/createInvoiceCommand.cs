@@ -176,51 +176,86 @@ namespace bxBE.Application.Commands.cmdInvoice
 			_mapper = mapper;
             _configuration = configuration;
         }
-		/*
-		 {
-		  "incoming": false,
-		  "invoiceType": "INV",
-		  "warehouseCode": "001",
-		  "invoiceIssueDate": "2022-04-29",
-		  "invoiceDeliveryDate": "2022-04-29",
-		  "paymentDate": "2022-04-29",
-		  "customerID": 12,
-		  "paymentMethod": "TRANSFER",
-		 "currencyCode": "HUF",
-		  "exchangeRate": 1,		  "notice": "Megjegyzés",
-		  "invoiceNetAmount": 110,
-		  "invoiceVatAmount": 297,
-		  "invoiceLines": [
-			{
-			  "lineNumber": 1,
-			  "productCode": "TOK-7238",
-			  "vatRateCode": "27%",
-			  "quantity": 1,
-			  "unitOfMeasure": "PIECE",
-			  "unitPrice": 10,
-			  "lineNetAmount": 10,
-			  "lineVatAmount": 27,
-			  "lineGrossAmount": 127
-			},
-			{
-			  "lineNumber": 2,
-			  "productCode": "MUA-571",
-			  "vatRateCode": "27%",
-			  "quantity": 1,
-			  "unitOfMeasure": "PIECE",
-			  "unitPrice": 100,
-			  "lineNetAmount": 100,
-			  "lineVatAmount": 270,
-			  "lineGrossAmount": 1270
-			}
-		  ]
-		}	
-
+        /*
+{
+  "lineGrossAmount": 352040993.90999997,
+  "invoiceVatAmount": 0,
+  "invoiceNetAmount": 277197633,
+  "invoiceLines": [
+    {
+      "lineNumber": 1,
+      "productCode": "000-0MEGT",
+      "productDescription": "megr. temér",
+      "quantity": 2,
+      "unitOfMeasure": "KILOGRAM",
+      "unitPrice": 32,
+      "vatRate": 0.27,
+      "vatRateCode": "27%",
+      "lineNetAmount": 64,
+      "lineVatAmount": 17.28,
+      "lineGrossAmount": 81,
+      "unitOfMeasureX": "Kilogram"
+    },
+    {
+      "lineNumber": 2,
+      "productCode": "SCH-004600600",
+      "productDescription": "Fali modul STR107",
+      "quantity": 10,
+      "unitOfMeasure": "PIECE",
+      "unitPrice": 56876,
+      "vatRate": 0.27,
+      "vatRateCode": "27%",
+      "lineNetAmount": 568760,
+      "lineVatAmount": 153565.2,
+      "lineGrossAmount": 722325,
+      "unitOfMeasureX": "DB"
+    },
+    {
+      "lineNumber": 3,
+      "productCode": "SCH-LC1BP33M22",
+      "productDescription": "Mágneskapcsoló 3P 2000A 220V",
+      "quantity": 33,
+      "unitOfMeasure": "PIECE",
+      "unitPrice": 7933040,
+      "vatRate": 0.27,
+      "vatRateCode": "27%",
+      "lineNetAmount": 261790320,
+      "lineVatAmount": 70683386.4,
+      "lineGrossAmount": 332473706,
+      "unitOfMeasureX": "DB"
+    },
+    {
+      "lineNumber": 4,
+      "productCode": "SCH-LC1D093ED",
+      "productDescription": "Mágneskapcsoló 1250A 220VAC",
+      "quantity": 3,
+      "unitOfMeasure": "PIECE",
+      "unitPrice": 4946163,
+      "vatRate": 0.27,
+      "vatRateCode": "27%",
+      "lineNetAmount": 14838489,
+      "lineVatAmount": 4006392.0300000003,
+      "lineGrossAmount": 18844881,
+      "unitOfMeasureX": "DB"
+    }
+  ],
+  "warehouseCode": "001",
+  "customerID": 215074,
+  "invoiceDeliveryDate": "2022-11-04",
+  "invoiceIssueDate": "2022-11-04",
+  "notice": "nagy szla 2",
+  "paymentDate": "2022-11-04",
+  "paymentMethod": "TRANSFER",
+  "currencyCode": "HUF",
+  "exchangeRate": 1,
+  "incoming": false,
+  "invoiceType": "INV"
+}
 
 		 */
 
 
-		public async Task<Response<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
         {
 			var invoice = _mapper.Map<Invoice>(request);
 
@@ -282,18 +317,7 @@ namespace bxBE.Application.Commands.cmdInvoice
                 {
 					invoice.PaymentMethod = PaymentMethodType.OTHER.ToString();
                 }
-
-				//áfa kerekítése
-                invoice.InvoiceVatAmount = Math.Round(invoice.InvoiceVatAmount, (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
-
-                //Kiszámítható mezők kiszámolása
-                invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;
-				invoice.InvoiceVatAmountHUF = Math.Round(  invoice.InvoiceVatAmount * invoice.ExchangeRate, 0);
-
-				invoice.InvoiceGrossAmount = invoice.InvoiceNetAmount + invoice.InvoiceVatAmount;
-				invoice.invoiceGrossAmountHUF = invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF;
-
-				//Tételsorok
+			//Tételsorok
 				foreach (var ln in invoice.InvoiceLines)
 				{
 					var rln = request.InvoiceLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
@@ -334,8 +358,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 					ln.lineGrossAmountNormal = ln.LineNetAmount + ln.lineVatAmount;
 					ln.lineGrossAmountNormalHUF = ln.lineGrossAmountNormal * invoice.ExchangeRate;
 
-					//Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
-					if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
+                    //Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
+                    if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
 					{
 						ln.PendingDNQuantity = ln.Quantity;
 					}
@@ -343,17 +367,27 @@ namespace bxBE.Application.Commands.cmdInvoice
 
                 }
 
+                //áfa kerekítése
+                invoice.InvoiceVatAmount = Math.Round(invoice.InvoiceVatAmount, (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
+
+                //HUF mezők kiszámolása
+                invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;
+                invoice.InvoiceVatAmountHUF = Math.Round(invoice.InvoiceVatAmount * invoice.ExchangeRate, 0);
+
+                invoice.InvoiceGrossAmount = invoice.InvoiceNetAmount + invoice.InvoiceVatAmount;
+                invoice.invoiceGrossAmountHUF = invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF;
 
 
-				//SummaryByVatrate
-				invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
+
+                //SummaryByVatrate
+                invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
 							.Select(g => new SummaryByVatRate()
 							{
 								VatRateID = g.Key,
 								VatNetAmount = g.Sum(s => s.LineNetAmount),
 								VatNetAmountHUF = g.Sum(s => s.LineNetAmountHUF),
-								VatRateNetAmount = g.Sum(s => s.lineVatAmount),
-								VatRateNetAmountHUF = g.Sum(s => s.lineVatAmountHUF),
+								VatRateNetAmount = Math.Round(g.Sum(s => s.lineVatAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1)),
+								VatRateNetAmountHUF = Math.Round(g.Sum(s => s.lineVatAmountHUF),0),
 
 							}
 							).ToList();

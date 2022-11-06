@@ -222,7 +222,7 @@
         <BorderWidth Bottom="1pt" />
       </Style>
       <Items>
-        <Panel Width="19.039cm" Height="2.943cm" Left="0cm" Top="0cm" Name="panel6">
+        <Panel Width="19.039cm" Height="3.1cm" Left="0cm" Top="0cm" Name="panel6">
           <Style>
             <BorderStyle Top="Solid" Bottom="Solid" Left="None" Right="None" />
             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
@@ -270,7 +270,7 @@
                               <Font Size="7pt" Bold="True" />
                             </Style>
                           </TextBox>
-                          <TextBox Width="2.4cm" Height="0.4cm" Left="2.82cm" Top="0.5cm" Value="= Fields.lineNetAmount" Format="{0:N2}" Name="textBox38">
+                          <TextBox Width="2.4cm" Height="0.4cm" Left="2.82cm" Top="0.5cm" Value="= Fields.unitPrice" Format="{0:N2}" Name="textBox38">
                             <Style TextAlign="Right" VerticalAlign="Middle">
                               <Font Size="7pt" />
                             </Style>
@@ -517,7 +517,7 @@
                 <Cells>
                   <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
                     <ReportItem>
-                      <TextBox Width="4.587cm" Height="0.4cm" Left="0cm" Top="0cm" Value="Áfaalap {Fields.vatRateCode}" Name="textBox68">
+                      <TextBox Width="4.587cm" Height="0.4cm" Left="0cm" Top="0cm" Value="Áfa {Fields.vatRateCode}" Name="textBox68">
                         <Style>
                           <Font Name="Courier New" Size="9pt" />
                         </Style>
@@ -621,7 +621,7 @@
             </TextBox>
           </Items>
         </Panel>
-        <TextBox Width="18.645cm" Height="0.5cm" Left="0.055cm" Top="1.8cm" Value="Köszönjük a vásárlást!" Name="textBox59">
+        <TextBox Width="18.984cm" Height="0.5cm" Left="0.055cm" Top="1.8cm" Value="Köszönjük a vásárlást!" Name="textBox59">
           <Style VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
