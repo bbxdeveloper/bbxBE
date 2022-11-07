@@ -15,48 +15,60 @@ namespace bbxBE.Application.Queries.ViewModels
         [MapToEntity("ID")]
         public long ID { get; set; }
 
+        [MapToEntity("customerName")]
         public string CustomerName { get; set; }
 
+        [MapToEntity("customerBankAccountNumber")]
         public string CustomerBankAccountNumber { get; set; }
+        [MapToEntity("customerVatStatus")]
         public string CustomerVatStatus { get; set; }
 
-        
         //     [NotDBField]
         [MapToEntity("TaxpayerNumber")]
         [NotDBFieldAttribute]
         public string TaxpayerNumber { get; set; }
-        
-
+ 
         [MapToEntity("FullAddress")]
         [NotDBFieldAttribute]
         public string FullAddress { get; set; }
-      
 
 
-//        [NotModelFieldAttribute]
 
+        //        [NotModelFieldAttribute]
+
+        [MapToEntity("taxpayerId")]
         public string TaxpayerId { get; set; }
- //       [NotModelFieldAttribute]
+        //       [NotModelFieldAttribute]
 
+        [MapToEntity("vatCode")]
         public string VatCode { get; set; }
-  //      [NotModelFieldAttribute]
+        //      [NotModelFieldAttribute]
+        [MapToEntity("countyCode")]
         public string CountyCode { get; set; }
-        
+
+        [MapToEntity("thirdStateTaxId")]
         public string ThirdStateTaxId { get; set; }
+        [MapToEntity("countryCode")]
         public string CountryCode { get; set; }
+        [MapToEntity("region")]
         public string Region { get; set; }
 
-  //      [NotModelFieldAttribute]
+        //      [NotModelFieldAttribute]
+        [MapToEntity("postalCode")]
         public string PostalCode { get; set; }
-  //      [NotModelFieldAttribute]
+        //      [NotModelFieldAttribute]
+        [MapToEntity("city")]
         public string City { get; set; }
-   //     [NotModelFieldAttribute]
+        //     [NotModelFieldAttribute]
+        [MapToEntity("additionalAddressDetail")]
         public string AdditionalAddressDetail { get; set; }
 
+        [MapToEntity("email")]
         [ColumnLabel("Email")]
         [Description("Email")]
         public string Email { get; set; }
 
+        [MapToEntity("isOwnData")]
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
         public bool IsOwnData { get; set; }
