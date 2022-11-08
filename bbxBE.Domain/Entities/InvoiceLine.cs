@@ -73,16 +73,16 @@ namespace bbxBE.Domain.Entities
 		public decimal LineNetAmountHUF { get; set; }
 		[ColumnLabel("Áfa érték")]
 		[Description("Áfa a számla pénznemében")]
-		public decimal lineVatAmount { get; set; }
+		public decimal LineVatAmount { get; set; }
 		[ColumnLabel("Áfa érték HUF")]
 		[Description("Áfa forintban")]
-		public decimal lineVatAmountHUF { get; set; }
+		public decimal LineVatAmountHUF { get; set; }
 		[ColumnLabel("Bruttó érték")]
 		[Description("Bruttó a számla pénznemében")]
-		public decimal lineGrossAmountNormal { get; set; }
+		public decimal LineGrossAmountNormal { get; set; }
 		[ColumnLabel("Bruttó érték HUF")]
 		[Description("Bruttó forintban")]
-		public decimal lineGrossAmountNormalHUF { get; set; }
+		public decimal LineGrossAmountNormalHUF { get; set; }
 
 		//javítószámla esetén töltött
 		[ColumnLabel("Az eredeti számla tételének sorszáma")]

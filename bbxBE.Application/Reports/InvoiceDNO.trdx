@@ -526,7 +526,7 @@
                   </TableCell>
                   <TableCell RowIndex="0" ColumnIndex="2" RowSpan="1" ColumnSpan="1">
                     <ReportItem>
-                      <TextBox Width="2.985cm" Height="0.4cm" Left="0cm" Top="0cm" Value="=Fields.vatRateNetAmount" Format="{0:N2}" Name="textBox72">
+                      <TextBox Width="2.985cm" Height="0.4cm" Left="0cm" Top="0cm" Value="= Fields.vatRateVatAmount" Format="{0:N2}" Name="textBox72">
                         <Style TextAlign="Right" VerticalAlign="Middle">
                           <Font Name="Courier New" Size="9pt" />
                         </Style>
