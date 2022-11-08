@@ -81,6 +81,6 @@ namespace bbxBE.Application.Queries.ViewModels
         public string EAN { get; set; }
         [ColumnLabel("Eng.tilt")]
         [Description("Engedmény adás tiltása")]
-        public string NoDiscount { get; set; }
+        public bool NoDiscount { get; set; }
     }
 }
