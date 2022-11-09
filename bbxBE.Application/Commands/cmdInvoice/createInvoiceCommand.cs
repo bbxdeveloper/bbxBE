@@ -313,6 +313,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATECODENOTFOUND, rln.VatRateCode));
 					}
 
+					ln.LineExchangeRate = invoice.ExchangeRate;				//gyűjtőszámla esetén is egy árfolyam lesz!
+
 					//	ln.Product = prod;
 					ln.ProductID = prod.ID;
 					ln.ProductCode = rln.ProductCode;
@@ -329,15 +331,16 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 					ln.LineNatureIndicator = prod.NatureIndicator;
 
-					ln.UnitPriceHUF = ln.UnitPrice * invoice.ExchangeRate;
-					ln.LineNetAmountHUF = ln.LineNetAmount * invoice.ExchangeRate;
-					ln.LineVatAmountHUF = ln.LineVatAmount * invoice.ExchangeRate;
+					ln.UnitPriceHUF = ln.UnitPrice * ln.LineExchangeRate;
 
-					ln.LineGrossAmountNormal = ln.LineNetAmount + ln.LineVatAmount;
-					ln.LineGrossAmountNormalHUF = ln.LineGrossAmountNormal * invoice.ExchangeRate;
+                    ln.LineNetAmount = Math.Round( ln.Quantity * ln.UnitPrice ,1);
+                    ln.LineNetAmountHUF = Math.Round( ln.LineNetAmount * invoice.ExchangeRate, 1);
 
-					
-					ln.LineExchangeRate = invoice.ExchangeRate;				//gyűjtőszámla esetén is egy árfolyam lesz!
+                    ln.LineVatAmount = Math.Round(ln.LineNetAmount * vatRate.VatPercentage, 1);
+                    ln.LineVatAmountHUF = Math.Round(ln.LineVatAmount * ln.LineExchangeRate, 1);
+
+                    ln.LineGrossAmountNormal = ln.LineNetAmount + ln.LineVatAmount;
+					ln.LineGrossAmountNormalHUF = ln.LineNetAmountHUF + ln.LineVatAmountHUF;
 
 
                     //Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
