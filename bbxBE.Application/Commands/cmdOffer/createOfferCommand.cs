@@ -27,38 +27,27 @@ namespace bxBE.Application.Commands.cmdOffer
 	/*
 	 * 
  {
-"customerID": 5,
-  "offerIssueDate": "2022-05-20",
-  "offerVaidityDate": "2022-05-20",
-  "notice": "elsï ajánlat",
+  "customerID": 185997,
+  "offerIssueDate": "2022-11-09",
+  "offerVaidityDate": "2022-11-14",
+  "notice": "<div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><div>&#160; <br></div><div>&#160;<br></div>",
   "offerLines": [
     {
-     "lineNumber": 1,
-      "productCode": "VEG-2973",
-      "lineDescription": "Boyler 600W f√tïbetét",
-"UnitOfMeasure" : "PIECE",
-     "vatRateCode": "27%",
-      "discount": 10,
+      "productCode": "000-0MEGT",
+      "lineDescription": "megr. temér",
+      "vatRateCode": "27%",
+      "unitPrice": 32,
+      "unitGross": 41,
+      "discount": 0,
       "showDiscount": true,
-       "unitPrice": 10,
-      "unitVat": 2.7,
-      "unitGross": 12.7
-    },
-      {
-     "lineNumber": 2,
-      "productCode": "IZZ-861",
-      "lineDescription": "HANDY 10139 Érvéghüvely prés",
-     "vatRateCode": "27%",
-"UnitOfMeasure" : "PIECE",
-      "discount": 10,
-      "showDiscount": true,
-       "unitPrice": 100,
-      "unitVat": 27,
-      "unitGross": 127
+      "unitOfMeasure": "KILOGRAM",
+      "quantity": 1,
+      "lineNumber": 1
     }
-  ]
-}
-	*/
+  ],
+  "offerGrossAmount": 41,
+  "offerNetAmount": 32
+}	*/
 	public class CreateOfferCommand : IRequest<Response<Offer>>
 	{
 
@@ -199,8 +188,20 @@ namespace bxBE.Application.Commands.cmdOffer
 					var formatter = new PrettyMarkupFormatter();
 					document.ToHtml(sw, formatter);
 
-					offer.Notice = sw.ToString();
+					foreach (var element in document.All)
+					{
+						if (string.IsNullOrWhiteSpace(element.TextContent))
+							element.Remove();
+					}
 
+					if (!string.IsNullOrWhiteSpace(document.TextContent))
+					{
+						offer.Notice = sw.ToString();
+					}
+					else
+                    {
+						offer.Notice = "";
+					}
 					/* TidyManaged
 					using (Document doc = Document.FromString(offer.Notice))
 					{
