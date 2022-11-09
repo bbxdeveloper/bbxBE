@@ -58,14 +58,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[Description("Ár a számla pénznemében")]
 			public decimal LineNetAmount { get; set; }
 			
-			[ColumnLabel("Áfa érték")]
-			[Description("Áfa a számla pénznemében")]
-			public decimal lineVatAmount { get; set; }
-
-			[ColumnLabel("Bruttó érték")]
-			[Description("Bruttó értéka számla pénznemében")]
-			public decimal lineGrossAmount { get; set; }
-
 		}
 
 		[ColumnLabel("B/K")]
@@ -333,7 +325,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 					ln.UnitPriceHUF = ln.UnitPrice * ln.LineExchangeRate;
 
-                    ln.LineNetAmount = Math.Round( ln.Quantity * ln.UnitPrice ,1);
+                    // A LineNetAmount a modelből jön !!! ln.LineNetAmount = Math.Round( ln.Quantity * ln.UnitPrice ,1);
                     ln.LineNetAmountHUF = Math.Round( ln.LineNetAmount * ln.LineExchangeRate, 1);
 
                     ln.LineVatAmount = Math.Round(ln.LineNetAmount * vatRate.VatPercentage, 1);
