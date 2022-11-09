@@ -39,13 +39,16 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                  UPDATE [dbo].[SummaryByVatRate] set VatRateGrossAmount = ROUND( VatRateNetAmount+VatRateNetAmount,1),  VatRateGrossAmountHUF = ROUND( VatRateNetAmountHUF+VatRateNetAmountHUF,1)
                  "));
 
-            Delete.Column("VatRateNetAmount").FromTable("SummaryByVatRate");
-            Delete.Column("VatRateNetAmountHUF").FromTable("SummaryByVatRate");
+            Delete.Column("VatNetAmount").FromTable("SummaryByVatRate");
+            Delete.Column("VatNetAmountHUF").FromTable("SummaryByVatRate");
 
+            //elírások javítása
             Rename.Column("lineVatAmount").OnTable("InvoiceLine").To("LineVatAmount");
             Rename.Column("lineVatAmountHUF").OnTable("InvoiceLine").To("LineVatAmountHUF");
             Rename.Column("lineGrossAmountNormal").OnTable("InvoiceLine").To("LineGrossAmountNormal");
             Rename.Column("lineGrossAmountNormalHUF").OnTable("InvoiceLine").To("LineGrossAmountNormalHUF");
+
+            Rename.Column("invoiceGrossAmountHUF").OnTable("Invoice").To("InvoiceGrossAmountHUF");
         }
     }
 }
