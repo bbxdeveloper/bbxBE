@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using AngleSharp.Html.Parser;
 using AngleSharp.Html;
 using System.IO;
+using bbxBE.Common;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
@@ -176,51 +177,8 @@ namespace bxBE.Application.Commands.cmdOffer
 		public async Task<Response<Offer>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
 		{
 			var offer = _mapper.Map<Offer>(request);
-			if (!string.IsNullOrWhiteSpace(offer.Notice))
-			{
-				if (!string.IsNullOrWhiteSpace(offer.Notice))
-				{
-					var parser = new HtmlParser();
 
-					var document = parser.ParseDocument(offer.Notice);
-
-					var sw = new StringWriter();
-					var formatter = new PrettyMarkupFormatter();
-					document.ToHtml(sw, formatter);
-
-					foreach (var element in document.All)
-					{
-						if (string.IsNullOrWhiteSpace(element.TextContent))
-							element.Remove();
-					}
-
-					if (!string.IsNullOrWhiteSpace(document.TextContent))
-					{
-						offer.Notice = sw.ToString();
-					}
-					else
-                    {
-						offer.Notice = "";
-					}
-					/* TidyManaged
-					using (Document doc = Document.FromString(offer.Notice))
-					{
-						doc.ShowWarnings = false;
-						doc.Quiet = true;
-						doc.OutputXhtml = true;
-						doc.OutputXml = true;
-						doc.IndentBlockElements = AutoBool.Yes;
-						doc.IndentAttributes = false;
-						doc.IndentCdata = true;
-						doc.AddVerticalSpace = false;
-						doc.WrapAt = 220;
-
-						doc.CleanAndRepair();
-						offer.Notice = doc.Save();
-					}
-					*/
-				}
-			}
+			offer.Notice = Utils.TidyHtml(offer.Notice);
 
 			//Egyelőre csak forintos ajántatokról van szó
 			if (string.IsNullOrWhiteSpace(offer.CurrencyCode))
