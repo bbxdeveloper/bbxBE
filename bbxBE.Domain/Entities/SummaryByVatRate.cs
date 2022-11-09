@@ -19,19 +19,26 @@ namespace bbxBE.Domain.Entities
 		public long VatRateID { get; set; }
 
 		[ColumnLabel("Áfaalap")]
-		[Description("Áfaalap a számla pénznemében")]
-		public decimal VatNetAmount { get; set; }
-
+		[Description("Áfaalap számla pénznemében")]
+		public decimal VatRateNetAmount { get; set; }
 		[ColumnLabel("Áfaalap HUF")]
-		[Description("Áfaalap a forintban")]
-		public decimal VatNetAmountHUF { get; set; }
+		[Description("Áfaalap forintban")]
+		public decimal VatRateNetAmountHUF { get; set; }
 
 		[ColumnLabel("Áfa értéke")]
-		[Description("Áfa értéke a számla pénznemében")]
-		public decimal VatRateNetAmount { get; set; }
-		[ColumnLabel("Áfa HUF")]
+		[Description("Áfa értéke számla pénznemében")]
+		public decimal VatRateVatAmount { get; set; }
+		[ColumnLabel("Áfa értéke HUF")]
 		[Description("Áfa értéke forintban")]
-		public decimal VatRateNetAmountHUF { get; set; }
+		public decimal VatRateVatAmountHUF { get; set; }
+
+		[ColumnLabel("Bruttó érték")]
+		[Description("Bruttó érték számla pénznemében")]
+		public decimal VatRateGrossAmount { get; set; }
+		[ColumnLabel("Bruttó érték HUF")]
+		[Description("Bruttó érték forintban")]
+		public decimal VatRateGrossAmountHUF { get; set; }
+
 
 		//Relációk
 		[ForeignKey("InvoiceID")]

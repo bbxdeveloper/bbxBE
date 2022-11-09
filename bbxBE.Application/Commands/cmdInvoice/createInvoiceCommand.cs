@@ -65,19 +65,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 			public decimal lineGrossAmount { get; set; }
 
 		}
-		/*
-				[Description("Számla áfánkénti összesítő")]
-				public class SummaryByVatRate 
-				{
-					[ColumnLabel("Áfakód")]
-					[Description("Áfakód")]
-					public string VatRateCode { get; set; }
-
-					[ColumnLabel("Áfa értéke")]
-					[Description("Áfa értéke a számla pénznemében")]
-					public decimal VatRateNetAmount { get; set; }
-				}
-		*/
 
 		[ColumnLabel("B/K")]
 		[Description("Bejővő/Kimenő")]
@@ -120,7 +107,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 		[Description("Pénznem")]
 		public string CurrencyCode { get; set; }
 
-
 		[ColumnLabel("Árfolyam")]
 		[Description("Árfolyam")]
 		public decimal ExchangeRate { get; set; }
@@ -129,23 +115,10 @@ namespace bxBE.Application.Commands.cmdInvoice
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }	//AdditionalInvoiceData-ban tároljuk!
 
-		[ColumnLabel("Nettó")]
-		[Description("A számla nettó összege a számla pénznemében")]
-		public decimal InvoiceNetAmount { get; set; }
-
-		[ColumnLabel("Áfa")]
-		[Description("A számla áfa összege a számla pénznemében")]
-		public decimal InvoiceVatAmount { get; set; }
-
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
 		public List<InvoiceLine> InvoiceLines { get; set; } = new List<InvoiceLine>();
 
-		/*
-		[ColumnLabel("Áfaösszesítők")]
-		[Description("Áfaösszesítők")]
-		public List<SummaryByVatRate> SummaryByVatRates { get; set; } = new List<SummaryByVatRate>();
-		*/
 	}
 
 	public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, Response<Invoice>>
@@ -353,10 +326,10 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 					ln.UnitPriceHUF = ln.UnitPrice * invoice.ExchangeRate;
 					ln.LineNetAmountHUF = ln.LineNetAmount * invoice.ExchangeRate;
-					ln.lineVatAmountHUF = ln.lineVatAmount * invoice.ExchangeRate;
+					ln.LineVatAmountHUF = ln.LineVatAmount * invoice.ExchangeRate;
 
-					ln.lineGrossAmountNormal = ln.LineNetAmount + ln.lineVatAmount;
-					ln.lineGrossAmountNormalHUF = ln.lineGrossAmountNormal * invoice.ExchangeRate;
+					ln.LineGrossAmountNormal = ln.LineNetAmount + ln.LineVatAmount;
+					ln.LineGrossAmountNormalHUF = ln.LineGrossAmountNormal * invoice.ExchangeRate;
 
                     //Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
                     if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
@@ -367,8 +340,22 @@ namespace bxBE.Application.Commands.cmdInvoice
 
                 }
 
-                //áfa kerekítése
-                invoice.InvoiceVatAmount = Math.Round(invoice.InvoiceVatAmount, (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
+				//SummaryByVatrate
+				invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
+							.Select(g => new SummaryByVatRate()
+							{
+								VatRateID = g.Key,
+								VatRateNetAmount = g.Sum(s => s.LineNetAmount),
+								VatRateNetAmountHUF = g.Sum(s => s.LineNetAmountHUF),
+								VatRateVatAmount = g.Sum(s => s.LineVatAmount),
+								VatRateVatAmountHUF = g.Sum(s => s.LineVatAmountHUF),
+								VatRateGrossAmount = Math.Round(g.Sum(s => s.LineNetAmount + s.LineVatAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1)),
+								VatRateGrossAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF + s.LineVatAmountHUF), 0)
+							}
+							).ToList();
+				
+				//áfa kerekítése
+				invoice.InvoiceVatAmount = Math.Round(invoice.InvoiceVatAmount, (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
 
                 //HUF mezők kiszámolása
                 invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;
@@ -379,18 +366,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 
 
-                //SummaryByVatrate
-                invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
-							.Select(g => new SummaryByVatRate()
-							{
-								VatRateID = g.Key,
-								VatNetAmount = g.Sum(s => s.LineNetAmount),
-								VatNetAmountHUF = g.Sum(s => s.LineNetAmountHUF),
-								VatRateNetAmount = Math.Round(g.Sum(s => s.lineVatAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1)),
-								VatRateNetAmountHUF = Math.Round(g.Sum(s => s.lineVatAmountHUF),0),
-
-							}
-							).ToList();
 
 				await _InvoiceRepository.AddInvoiceAsync(invoice);
 				await _CounterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);

@@ -21,44 +21,34 @@ using System.Threading.Tasks;
 using AngleSharp.Html.Parser;
 using AngleSharp.Html;
 using System.IO;
+using bbxBE.Common;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
 	/*
 	 * 
  {
-"customerID": 5,
-  "offerIssueDate": "2022-05-20",
-  "offerVaidityDate": "2022-05-20",
-  "notice": "elsï ajánlat",
+  "customerID": 185997,
+  "offerIssueDate": "2022-11-09",
+  "offerVaidityDate": "2022-11-14",
+  "notice": "<div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><div>&#160; <br></div><div>&#160;<br></div>",
   "offerLines": [
     {
-     "lineNumber": 1,
-      "productCode": "VEG-2973",
-      "lineDescription": "Boyler 600W f√tïbetét",
-"UnitOfMeasure" : "PIECE",
-     "vatRateCode": "27%",
-      "discount": 10,
+      "productCode": "000-0MEGT",
+      "lineDescription": "megr. temér",
+      "vatRateCode": "27%",
+      "unitPrice": 32,
+      "unitGross": 41,
+      "discount": 0,
       "showDiscount": true,
-       "unitPrice": 10,
-      "unitVat": 2.7,
-      "unitGross": 12.7
-    },
-      {
-     "lineNumber": 2,
-      "productCode": "IZZ-861",
-      "lineDescription": "HANDY 10139 Érvéghüvely prés",
-     "vatRateCode": "27%",
-"UnitOfMeasure" : "PIECE",
-      "discount": 10,
-      "showDiscount": true,
-       "unitPrice": 100,
-      "unitVat": 27,
-      "unitGross": 127
+      "unitOfMeasure": "KILOGRAM",
+      "quantity": 1,
+      "lineNumber": 1
     }
-  ]
-}
-	*/
+  ],
+  "offerGrossAmount": 41,
+  "offerNetAmount": 32
+}	*/
 	public class CreateOfferCommand : IRequest<Response<Offer>>
 	{
 
@@ -187,39 +177,8 @@ namespace bxBE.Application.Commands.cmdOffer
 		public async Task<Response<Offer>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
 		{
 			var offer = _mapper.Map<Offer>(request);
-			if (!string.IsNullOrWhiteSpace(offer.Notice))
-			{
-				if (!string.IsNullOrWhiteSpace(offer.Notice))
-				{
-					var parser = new HtmlParser();
 
-					var document = parser.ParseDocument(offer.Notice);
-
-					var sw = new StringWriter();
-					var formatter = new PrettyMarkupFormatter();
-					document.ToHtml(sw, formatter);
-
-					offer.Notice = sw.ToString();
-
-					/* TidyManaged
-					using (Document doc = Document.FromString(offer.Notice))
-					{
-						doc.ShowWarnings = false;
-						doc.Quiet = true;
-						doc.OutputXhtml = true;
-						doc.OutputXml = true;
-						doc.IndentBlockElements = AutoBool.Yes;
-						doc.IndentAttributes = false;
-						doc.IndentCdata = true;
-						doc.AddVerticalSpace = false;
-						doc.WrapAt = 220;
-
-						doc.CleanAndRepair();
-						offer.Notice = doc.Save();
-					}
-					*/
-				}
-			}
+			offer.Notice = Utils.TidyHtml(offer.Notice);
 
 			//Egyelőre csak forintos ajántatokról van szó
 			if (string.IsNullOrWhiteSpace(offer.CurrencyCode))

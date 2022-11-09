@@ -15,6 +15,9 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 using MimeKit;
+using AngleSharp.Html.Parser;
+using AngleSharp.Html;
+using AngleSharp.Dom;
 
 namespace bbxBE.Common
 {
@@ -233,7 +236,7 @@ namespace bbxBE.Common
                 return p_value.ToString();
         }
 
-    
+
         public static IEnumerable<TEnum> FilterEnumWithAttributeOf<TEnum, TAttribute>()
             where TEnum : struct
             where TAttribute : class
@@ -307,7 +310,7 @@ namespace bbxBE.Common
                 yield return str.Substring(i, Math.Min(maxChunkSize, str.Length - i));
         }
 
- 
+
         public static String HexColor(System.Drawing.Color c)
         {
             return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
@@ -662,7 +665,7 @@ namespace bbxBE.Common
             //Cycle through the properties.
             foreach (PropertyInfo p in o.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
- 
+
                 if (!p.PropertyType.IsGenericType)
                 {
                     if (p.GetValue(original, null) != null && p.GetValue(altered, null) != null)
@@ -745,7 +748,7 @@ namespace bbxBE.Common
         public static string LoadEmbeddedResource(Stream stream, Assembly assembly)
         {
             string result = "";
-//            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            //            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
                 using (StreamReader reader = new StreamReader(stream))
                 {
@@ -778,6 +781,67 @@ namespace bbxBE.Common
 
             return await Task.FromResult(MailboxAddress.TryParse(po, p_Email, out _)).ConfigureAwait(false);
         }
-    }
 
+        public static string TidyHtml(string p_HtmlText)
+        {
+            if (!string.IsNullOrWhiteSpace(p_HtmlText))
+            {
+                var parser = new HtmlParser();
+
+                var document = parser.ParseDocument(p_HtmlText);
+
+                var hasValidElement = false;
+                var delElements = new List<IElement>();
+
+                for (int i = 0; i < document.All.Count(); i++)
+                {
+                    var element = document.All[i];
+                    if (string.IsNullOrWhiteSpace(element.TextContent))
+                    { 
+                        delElements.Add(element);
+                    }
+                    else
+                    {
+                        hasValidElement = true;
+                    }
+                }
+                delElements.ForEach(e => e.Remove());
+
+
+                if (hasValidElement)
+                {
+                    var sw = new StringWriter();
+                    var formatter = new PrettyMarkupFormatter();
+                    document.ToHtml(sw, formatter);
+
+                    return sw.ToString();
+
+                    /* TidyManaged
+                        using (Document doc = Document.FromString(offer.Notice))
+                        {
+                            doc.ShowWarnings = false;
+                            doc.Quiet = true;
+                            doc.OutputXhtml = true;
+                            doc.OutputXml = true;
+                            doc.IndentBlockElements = AutoBool.Yes;
+                            doc.IndentAttributes = false;
+                            doc.IndentCdata = true;
+                            doc.AddVerticalSpace = false;
+                            doc.WrapAt = 220;
+
+                            doc.CleanAndRepair();
+                            offer.Notice = doc.Save();
+                        }
+                        */
+
+                }
+                else
+                {
+                    return "";
+                }
+
+            }
+            return "";
+        }
+    }
 }

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.17.1" />
     <PackageReference Include="BouncyCastle.NetCore" Version="1.8.10" />
     <PackageReference Include="FluentValidation" Version="10.3.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
