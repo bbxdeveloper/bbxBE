@@ -334,7 +334,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 					ln.UnitPriceHUF = ln.UnitPrice * ln.LineExchangeRate;
 
                     ln.LineNetAmount = Math.Round( ln.Quantity * ln.UnitPrice ,1);
-                    ln.LineNetAmountHUF = Math.Round( ln.LineNetAmount * invoice.ExchangeRate, 1);
+                    ln.LineNetAmountHUF = Math.Round( ln.LineNetAmount * ln.LineExchangeRate, 1);
 
                     ln.LineVatAmount = Math.Round(ln.LineNetAmount * vatRate.VatPercentage, 1);
                     ln.LineVatAmountHUF = Math.Round(ln.LineVatAmount * ln.LineExchangeRate, 1);
