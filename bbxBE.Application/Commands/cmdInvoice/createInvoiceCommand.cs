@@ -19,6 +19,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Common.NAV;
+using Microsoft.EntityFrameworkCore.Storage;
+using Newtonsoft.Json.Linq;
 
 namespace bxBE.Application.Commands.cmdInvoice
 {
@@ -289,9 +291,12 @@ namespace bxBE.Application.Commands.cmdInvoice
                 if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
                 {
 					invoice.PaymentMethod = PaymentMethodType.OTHER.ToString();
-                }
-			//Tételsorok
-				foreach (var ln in invoice.InvoiceLines)
+				}
+
+				var paymentMethod = (PaymentMethodType)Enum.Parse(typeof(PaymentMethodType), invoice.PaymentMethod);
+
+            //Tételsorok
+                foreach (var ln in invoice.InvoiceLines)
 				{
 					var rln = request.InvoiceLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
 
@@ -331,6 +336,10 @@ namespace bxBE.Application.Commands.cmdInvoice
 					ln.LineGrossAmountNormal = ln.LineNetAmount + ln.LineVatAmount;
 					ln.LineGrossAmountNormalHUF = ln.LineGrossAmountNormal * invoice.ExchangeRate;
 
+					
+					ln.LineExchangeRate = invoice.ExchangeRate;				//gyűjtőszámla esetén is egy árfolyam lesz!
+
+
                     //Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
                     if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
 					{
@@ -345,26 +354,35 @@ namespace bxBE.Application.Commands.cmdInvoice
 							.Select(g => new SummaryByVatRate()
 							{
 								VatRateID = g.Key,
-								VatRateNetAmount = g.Sum(s => s.LineNetAmount),
-								VatRateNetAmountHUF = g.Sum(s => s.LineNetAmountHUF),
-								VatRateVatAmount = g.Sum(s => s.LineVatAmount),
-								VatRateVatAmountHUF = g.Sum(s => s.LineVatAmountHUF),
+								VatRateNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
+                                VatRateNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF),1),
+								VatRateVatAmount = Math.Round(g.Sum(s => s.LineVatAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1)),
+                                VatRateVatAmountHUF = Math.Round(g.Sum(s => s.LineVatAmountHUF), 0),
 								VatRateGrossAmount = Math.Round(g.Sum(s => s.LineNetAmount + s.LineVatAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1)),
 								VatRateGrossAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF + s.LineVatAmountHUF), 0)
 							}
 							).ToList();
-				
-				//áfa kerekítése
-				invoice.InvoiceVatAmount = Math.Round(invoice.InvoiceVatAmount, (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
 
-                //HUF mezők kiszámolása
-                invoice.InvoiceNetAmountHUF = invoice.InvoiceNetAmount * invoice.ExchangeRate;
-                invoice.InvoiceVatAmountHUF = Math.Round(invoice.InvoiceVatAmount * invoice.ExchangeRate, 0);
+                //kp-s kerekítések HUF számla esetén
+                if( invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() 
+					&& invoice.PaymentMethod == PaymentMethodType.CASH.ToString())
+				{
+                    foreach( var item in  invoice.SummaryByVatRates)
+					{
+                        item.VatRateGrossAmount = CASHRound(item.VatRateGrossAmount);
+                        item.VatRateGrossAmountHUF = CASHRound(item.VatRateGrossAmountHUF);
 
-                invoice.InvoiceGrossAmount = invoice.InvoiceNetAmount + invoice.InvoiceVatAmount;
-                invoice.invoiceGrossAmountHUF = invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF;
+                    }
+                }	
 
 
+                //összesítők
+                invoice.InvoiceNetAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateNetAmount);
+                invoice.InvoiceNetAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateNetAmountHUF);
+                invoice.InvoiceVatAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmount);
+                invoice.InvoiceVatAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmountHUF);
+                invoice.InvoiceGrossAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateGrossAmount);
+                invoice.InvoiceGrossAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateGrossAmountHUF);
 
 
 				await _InvoiceRepository.AddInvoiceAsync(invoice);
@@ -388,6 +406,35 @@ namespace bxBE.Application.Commands.cmdInvoice
 			return null;
         }
 
+		private decimal CASHRound(decimal p_num)
+		{
+			if (p_num == 0)
+				return p_num;
+
+            var lastDigit = (p_num % 10);
+			var roundNum = 5;
+			if(lastDigit >= 8)
+			{
+				roundNum = 10;
+            }
+			else if (lastDigit <= 2)
+            {
+                roundNum = 10;
+            }
+			else
+			{
+               roundNum = 5;
+            }
+
+			if(p_num > 0)
+			{
+				return p_num - lastDigit + roundNum;
+            }	
+			else
+			{
+                return p_num + lastDigit - roundNum;
+            }
+        }
 
     }
 }
