@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -49,6 +50,16 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpGet("currencycodes")]
         public async Task<IActionResult> GetCurrencyCodes()
         {
+
+            //todo: refaktorálni !!
+            string userID = null;
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null && identity.FindFirst(ClaimTypes.NameIdentifier) != null)
+            {
+                userID = identity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            }
+
+
             var req = new GetEnum() { type = typeof(enCurrencyCodes) };
             return Ok(await Mediator.Send(req));
         }
