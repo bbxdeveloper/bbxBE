@@ -86,6 +86,11 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(filter));
         }
 
+        /// <summary>
+        /// Get Offer report in PDF format
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [HttpPost("print")]
         public async Task<IActionResult> Print(PrintOfferCommand command)
         {
