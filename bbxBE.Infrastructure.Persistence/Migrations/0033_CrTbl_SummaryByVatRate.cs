@@ -42,10 +42,13 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
             Delete.Column("VatNetAmount").FromTable("SummaryByVatRate");
             Delete.Column("VatNetAmountHUF").FromTable("SummaryByVatRate");
 
+            //elírások javítása
             Rename.Column("lineVatAmount").OnTable("InvoiceLine").To("LineVatAmount");
             Rename.Column("lineVatAmountHUF").OnTable("InvoiceLine").To("LineVatAmountHUF");
             Rename.Column("lineGrossAmountNormal").OnTable("InvoiceLine").To("LineGrossAmountNormal");
             Rename.Column("lineGrossAmountNormalHUF").OnTable("InvoiceLine").To("LineGrossAmountNormalHUF");
+
+            Rename.Column("invoiceGrossAmountHUF").OnTable("Invoice").To("InvoiceGrossAmountHUF");
         }
     }
 }

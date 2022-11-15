@@ -195,7 +195,7 @@ namespace bbxBE.Domain.Entities
 		public decimal InvoiceGrossAmount { get; set; }
 		[ColumnLabel("Bruttó HUF")]
 		[Description("A számla végösszege forintban")]
-		public decimal invoiceGrossAmountHUF { get; set; }
+		public decimal InvoiceGrossAmountHUF { get; set; }
 
 		[ColumnLabel("Felhasználó ID")]
 		[Description("Felhasználó ID")]

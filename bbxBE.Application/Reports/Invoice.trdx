@@ -599,7 +599,7 @@
                 <Font Name="Courier New" Size="9pt" Bold="False" />
               </Style>
             </TextBox>
-            <TextBox Width="2.976cm" Height="0.35cm" Left="5.14cm" Top="0.753cm" Value="= Round(Fields.invoiceGrossAmount,2) - Round(Fields.invoiceGrossAmount,0)" Format="{0:N2}" Name="textBox56">
+            <TextBox Width="2.976cm" Height="0.35cm" Left="5.14cm" Top="0.753cm" Value="= Fields.invoiceGrossAmount - Round(Fields.invoiceNetAmount + Fields.invoiceVatAmount,0)" Format="{0:N2}" Name="textBox56">
               <Style TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
