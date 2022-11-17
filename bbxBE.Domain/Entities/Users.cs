@@ -33,10 +33,13 @@ namespace bbxBE.Domain.Entities
         public bool Active { get; set; }
 
 
+        [ColumnLabel("Számlák/Szállítólevele")]
+        [Description("Számlák/Szállítólevele")]
+        public virtual List<Invoice> InvoiceList { get; set; }
+
         [ColumnLabel("Árajánlat")]
         [Description("Árajánlat")]
-        //		[InverseProperty("ID")]
-        public virtual Offer? Offer { get; set; }
+        public virtual List<Offer> OfferList { get; set; }
 
     }
 }

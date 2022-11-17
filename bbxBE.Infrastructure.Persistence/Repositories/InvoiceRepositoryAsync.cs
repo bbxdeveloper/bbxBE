@@ -167,6 +167,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                   .Include(a => a.AdditionalInvoiceData).AsNoTracking()
                   .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
                   .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                  .Include(u => u.User).AsNoTracking()
                   .Where(x => x.ID == ID).FirstOrDefaultAsync();
             }
             else
@@ -300,15 +301,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(c => c.Customer).AsNoTracking()
                  .Include(a => a.AdditionalInvoiceData).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
-                 .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking();
-            }
+                 .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                 .Include(u => u.User).AsNoTracking();
+     }
             else
             {
                 query = _dbContext.Invoice.AsNoTracking()
                  .Include(w => w.Warehouse).AsNoTracking()
                  .Include(s => s.Supplier).AsNoTracking()
                  .Include(c => c.Customer).AsNoTracking()
-                 .Include(a => a.AdditionalInvoiceData).AsNoTracking();
+                 .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+                 .Include(u => u.User).AsNoTracking();
 
             }
 

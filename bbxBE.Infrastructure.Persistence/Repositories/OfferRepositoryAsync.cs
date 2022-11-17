@@ -260,6 +260,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             item = await _dbContext.Offer.AsNoTracking()
                   .Include(c => c.Customer).AsNoTracking()
+                  .Include(u => u.User).AsNoTracking()
                   .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
                   .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
             return item;
@@ -281,6 +282,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IQueryable<Offer> query;
                    query = _dbContext.Offer.AsNoTracking()
                  .Include(c => c.Customer).AsNoTracking()
+                 .Include(u => u.User).AsNoTracking()
                  .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking();
 
 

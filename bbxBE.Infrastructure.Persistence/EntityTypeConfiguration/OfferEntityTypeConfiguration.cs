@@ -19,13 +19,6 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .HasForeignKey(s => s.OfferID)
             .IsRequired();
 
-            builder
-            .HasOne<Users>( u => u.User).WithOne( u=>u.Offer).HasForeignKey( k => k.
-            
-
-
-
-
         }
     }
 }

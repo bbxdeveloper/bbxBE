@@ -225,17 +225,21 @@ namespace bbxBE.Domain.Entities
 
 		[ColumnLabel("Egyéb adat")]
 		[Description("A számlára vonatkozó egyéb adat")]
-//		[InverseProperty("ID")]
 		public virtual ICollection<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
 
 		[ColumnLabel("Áfa összesítő")]
 		[Description("Összesítés áfa-mérték szerint")]
-//		[InverseProperty("ID")]
 		public virtual ICollection<SummaryByVatRate> SummaryByVatRates { get; set; }
 
-		[ColumnLabel("Számlasorok")]
+
+        [ForeignKey("UserID")]
+        [ColumnLabel("Felhasználó")]
+        [Description("Felhasználó")]
+        public virtual Users User { get; set; }
+
+
+        [ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
-//		[InverseProperty("ID")]
 		public virtual ICollection<InvoiceLine> InvoiceLines { get; set; }
 
 	}
