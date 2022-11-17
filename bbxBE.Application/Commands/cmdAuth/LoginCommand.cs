@@ -68,7 +68,7 @@ namespace bxBE.Application.Commands.cmdAuth
             var JWTAudience = JWTSettings.GetValue<string>(bbxBEConsts.CONF_JWTAudience);
             var JWTDurationInMinutes = JWTSettings.GetValue<double>(bbxBEConsts.CONF_JWTDurationInMinutes);
 
-            var token = BllAuth.GenerateJSONWebToken(usr, JWTKey, JWTIssuer, JWTDurationInMinutes);
+            var token = BllAuth.GenerateJSONWebToken(usr, JWTKey, JWTIssuer, JWTAudience, JWTDurationInMinutes);
 
             return new Response<LoginInfo>(new LoginInfo() {  Token = token, User = usr});
         }

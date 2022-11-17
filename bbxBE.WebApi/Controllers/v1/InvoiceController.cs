@@ -4,6 +4,7 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static bbxBE.Common.NAV.NAV_enums;
 
@@ -59,6 +61,11 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPost]
         public async Task<IActionResult> Create(CreateInvoiceCommand command)
         {
+            if (command.UserID == null || command.UserID == 0)
+            {
+                var identity = HttpContext.User.Identity as ClaimsIdentity;
+                command.UserID = Utils.GetUserIDFromClaimsIdentity(identity);
+            }
             return Ok(await Mediator.Send(command));
         }
 

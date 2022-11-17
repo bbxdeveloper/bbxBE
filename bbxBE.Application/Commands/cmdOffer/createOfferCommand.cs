@@ -142,11 +142,14 @@ namespace bxBE.Application.Commands.cmdOffer
 		public List<CreateOfferCommand.OfferLine> OfferLines { get; set; } = new List<CreateOfferCommand.OfferLine>();
 
 
+        [ColumnLabel("Felhasználó ID")]
+        [Description("Felhasználó ID")]
+        public long? UserID { get; set; } = 0;
 
 
-	}
+    }
 
-	public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Response<Offer>>
+    public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Response<Offer>>
 	{
 		private readonly IOfferRepositoryAsync _OfferRepository;
 		private readonly ICounterRepositoryAsync _CounterRepository;
