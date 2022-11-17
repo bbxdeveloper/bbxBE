@@ -223,8 +223,16 @@ namespace bbxBE.Application.Queries.ViewModels
 		//public decimal SumBrtAmount { get { return Math.Round(OfferLines.Sum(s => s.BrtAmount), 0); } }
 		public decimal SumBrtAmount { get; set; }
 
+        [ColumnLabel("Felhasználó ID")]
+        [Description("Felhasználó ID")]
+        public long UserID { get; set; }
 
-		[ColumnLabel("Ajánlatsorok")]
+        [ColumnLabel("Felhasználó")]
+        [Description("Felhasználó")]
+        [MapToEntity("UserName")]
+        public string UserName { get; set; }
+
+        [ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
 		[MapToEntity("offerLines")]
 		public List<GetOfferViewModel.OfferLine> OfferLines { get; set; } = new List<GetOfferViewModel.OfferLine>();

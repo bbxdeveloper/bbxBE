@@ -47,19 +47,12 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
 
+     //   [Authorize]
         [HttpGet("currencycodes")]
         public async Task<IActionResult> GetCurrencyCodes()
         {
 
-            //todo: refaktorálni !!
-            string userID = null;
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null && identity.FindFirst(ClaimTypes.NameIdentifier) != null)
-            {
-                userID = identity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            }
-
-
+          
             var req = new GetEnum() { type = typeof(enCurrencyCodes) };
             return Ok(await Mediator.Send(req));
         }

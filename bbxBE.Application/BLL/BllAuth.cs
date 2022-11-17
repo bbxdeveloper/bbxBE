@@ -25,7 +25,7 @@ namespace bbxBE.Application.BLL
                 numBytesRequested: 256 / 8));
         }
 
-        public static string GenerateJSONWebToken(Users user, string JWTKey, string JWTIssuer, double JWTTokenExpire)
+        public static string GenerateJSONWebToken(Users user, string JWTKey, string JWTIssuer, string JWTAudience, double JWTTokenExpire)
         {
             ShortGuid tokenID = ShortGuid.NewGuid();
             List<Claim> claims = new List<Claim>()
@@ -34,12 +34,12 @@ namespace bbxBE.Application.BLL
                 new Claim( ClaimTypes.Name, user.Name),
                 new Claim( ClaimTypes.NameIdentifier, user.ID.ToString())
           };
-            return GenerateJSONWebToken(tokenID, claims,  JWTKey,  JWTIssuer,  JWTTokenExpire);
+            return GenerateJSONWebToken(tokenID, claims,  JWTKey,  JWTIssuer, JWTAudience, JWTTokenExpire);
         }
 
 
         //https://stackoverflow.com/questions/18223868/how-to-encrypt-jwt-security-token
-        public static string GenerateJSONWebToken(ShortGuid p_tokenID, List<Claim> p_claims, string JWTKey, string JWTIssuer, double JWTTokenExpire)
+        public static string GenerateJSONWebToken(ShortGuid p_tokenID, List<Claim> p_claims, string JWTKey, string JWTIssuer, string JWTAudience, double JWTTokenExpire)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -49,7 +49,7 @@ namespace bbxBE.Application.BLL
 
             var jwtSecurityToken = new JwtSecurityTokenHandler().CreateJwtSecurityToken(
                 JWTIssuer,
-                JWTIssuer,       //Issuer=Audience..
+                JWTAudience,      
                 new ClaimsIdentity(p_claims),
                 null,
                 DateTime.UtcNow.AddMinutes(JWTTokenExpire),

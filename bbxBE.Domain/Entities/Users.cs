@@ -1,6 +1,9 @@
-﻿using bbxBE.Domain.Common;
+﻿using bbxBE.Common.Attributes;
+using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -28,5 +31,12 @@ namespace bbxBE.Domain.Entities
 
         [DataMember]
         public bool Active { get; set; }
+
+
+        [ColumnLabel("Árajánlat")]
+        [Description("Árajánlat")]
+        //		[InverseProperty("ID")]
+        public virtual Offer? Offer { get; set; }
+
     }
 }

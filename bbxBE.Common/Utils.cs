@@ -18,6 +18,8 @@ using MimeKit;
 using AngleSharp.Html.Parser;
 using AngleSharp.Html;
 using AngleSharp.Dom;
+using System.Net.Http;
+using System.Security.Claims;
 
 namespace bbxBE.Common
 {
@@ -843,5 +845,15 @@ namespace bbxBE.Common
             }
             return "";
         }
-    }
+        public static long GetUserIDFromClaimsIdentity(ClaimsIdentity p_ClaimsIdentity)
+        {
+            //todo: refaktorálni !!
+            long userID = 0;
+            if (p_ClaimsIdentity != null && p_ClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier) != null)
+            {
+                userID = Int64.Parse( p_ClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value);
+            }
+            return userID;
+        }
+}
 }

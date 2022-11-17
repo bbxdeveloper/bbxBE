@@ -175,10 +175,13 @@ namespace bxBE.Application.Commands.cmdOffer
 		[Description("Ajánlatsorok")]
 		public List<UpdateOfferCommand.OfferLine> OfferLines { get; set; } = new List<UpdateOfferCommand.OfferLine>();
 
-	}
+        [ColumnLabel("Felhasználó ID")]
+        [Description("Felhasználó ID")]
+        public long? UserID { get; set; } = 0;
+    }
 
 
-	public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand, Response<Offer>>
+    public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand, Response<Offer>>
 	{
 		private readonly IOfferRepositoryAsync _OfferRepository;
 		private readonly ICounterRepositoryAsync _CounterRepository;
