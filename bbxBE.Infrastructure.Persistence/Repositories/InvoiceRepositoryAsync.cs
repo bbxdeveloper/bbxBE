@@ -350,20 +350,43 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             */
 
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
-
             // retrieve data to list
-            var resultData = await query.ToListAsync();
+            List<Invoice> resultData;
+
+            //Ha van ID, akkor azt a lapot keressük ki, amelyiken az ID- van.
+            if (requestParameter.ID.HasValue && requestParameter.ID.Value > 0)
+            {
+
+                // Összes elem lekérdezése
+                resultData = await query.ToListAsync();
+                var itemIndex = resultData.Select((Invoice, index) => (Invoice, index)).First(i=>i.Invoice.ID == requestParameter.ID.Value).index;
+                if(itemIndex > 0)
+                {
+                    pageNumber = (int)((itemIndex)/pageSize) + 1;
+                    requestParameter.PageNumber = pageNumber;
+                }
+
+                //nincs meg a keresett tétel, visszaadjuk a kért lapot
+                resultData = resultData
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize).ToList();
+            }
+            else
+            {
+                // paging
+                query = query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize);
+
+                // retrieve data to list
+                resultData = await query.ToListAsync();
+            }
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetInvoiceViewModel>();
             resultData.ForEach(i => resultDataModel.Add(
                _mapper.Map<Invoice, GetInvoiceViewModel>(i))
             );
-
 
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 
