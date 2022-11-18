@@ -14,7 +14,7 @@ namespace bbxBE.Application.Interfaces.Repositories
     
         Entity GetVatRate(long ID);
         VatRate GetVatRateByCode(string vatRateCode);
-        (IEnumerable<Entity> data, RecordsCount recordsCount) QueryPagedVatRate(QueryVatRate requestParameter);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedVatRate(QueryVatRate requestParameter);
         Task<VatRate> AddVatRateAsync(VatRate p_vatRate);
         Task<VatRate> UpdateVatRateAsync(VatRate p_vatRate);
         Task<VatRate> DeleteVatRateAsync(long ID);

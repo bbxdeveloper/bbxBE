@@ -21,6 +21,7 @@ using System.ComponentModel;
 using static Dapper.SqlMapper;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using bbxBE.Common.Enums;
+using bbxBE.Application.Interfaces.Queries;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -278,9 +279,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
         {
 
-
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetInvoiceViewModel, Invoice>();
@@ -350,20 +348,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             */
 
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
-
             // retrieve data to list
-            var resultData = await query.ToListAsync();
+            List<Invoice> resultData = await GetPagedData(query, requestParameter);
+
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetInvoiceViewModel>();
             resultData.ForEach(i => resultDataModel.Add(
                _mapper.Map<Invoice, GetInvoiceViewModel>(i))
             );
-
 
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 

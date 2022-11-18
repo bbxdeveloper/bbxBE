@@ -222,9 +222,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockCardAsync(QueryStockCard requestParameter)
         {
 
-
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetStockCardViewModel, StockCard>();
@@ -292,15 +289,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 query = query.Select<StockCard>("new(" + fields + ")");
             }
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
 
             // retrieve data to list
-            var resultData = query.ToList();
+            var resultData = await GetPagedData(query, requestParameter, false);
 
-            //TODO: szebben megoldani
             var resultDataModel = new List<GetStockCardViewModel>();
             resultData.ForEach(i => resultDataModel.Add(
                _mapper.Map<StockCard, GetStockCardViewModel>(i))

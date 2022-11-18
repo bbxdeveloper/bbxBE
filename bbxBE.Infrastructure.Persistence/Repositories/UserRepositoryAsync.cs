@@ -1,6 +1,5 @@
 ﻿using LinqKit;
 using Microsoft.EntityFrameworkCore;
-//using bbxBE.Application.Features.Positions.Queries.GetPositions;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -11,12 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
 using bbxBE.Application.Queries.qUser;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -84,27 +82,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             var SearchString = requestParameter.SearchString;
-
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetUsersViewModel, Users>();
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _dbContext.Users
+            var query = _dbContext.Users
                 .AsNoTracking()
                 .AsExpandable();
 
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterByColumns(ref result, SearchString);
+            FilterByColumns(ref query, SearchString);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = await query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -116,21 +111,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                query = query.OrderBy(orderBy);
             }
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<Users>("new(" + fields + ")");
+                query = query.Select<Users>("new(" + fields + ")");
             }
-            // paging
-            result = result
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = await GetPagedData(query, requestParameter);
+
+
             // shape data
             var shapeData = _dataShaper.ShapeData(resultData, fields);
 
