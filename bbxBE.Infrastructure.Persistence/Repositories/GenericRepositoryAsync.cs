@@ -10,6 +10,8 @@ using bbxBE.Common.Consts;
 using static bbxBE.Common.NAV.NAV_enums;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using bbxBE.Domain.Common;
+using bbxBE.Domain.Entities;
+using bbxBE.Application.Parameters;
 
 namespace bbxBE.Infrastructure.Persistence.Repository
 {
@@ -118,6 +120,69 @@ namespace bbxBE.Infrastructure.Persistence.Repository
             if (savechenges)
                 await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<List<T>> GetPagedData(IQueryable<T> query, QueryParameter queryParameter, bool asynch = true)
+        {
+            List<T> resultData;
+            if (queryParameter.ID.HasValue && queryParameter.ID.Value > 0)
+            {
+
+                // Összes elem lekérdezése
+                if (asynch)
+                {
+                    resultData = await query.ToListAsync();
+                }
+                else
+                {
+                    resultData = query.ToList();
+                }
+
+                long itemIndex;
+                try
+                {
+                    itemIndex = resultData.Select((emtity, index) => (emtity, index)).First(i => i.emtity.ID == queryParameter.ID.Value).index;
+                }
+                catch(InvalidOperationException ioa)
+                {
+                    return new List<T>();           //nincs ilyen elem
+                }
+                catch( Exception e)
+                {
+                    throw;
+                }
+
+
+                if (itemIndex > 0)
+                {
+                    queryParameter.PageNumber = (int)((itemIndex) / queryParameter.PageSize) + 1;
+                }
+
+                //nincs meg a keresett tétel, visszaadjuk a kért lapot
+                resultData = resultData
+                    .Skip((queryParameter.PageNumber - 1) * queryParameter.PageSize)
+                    .Take(queryParameter.PageSize).ToList();
+            }
+            else
+            {
+                // paging
+                query = query
+                    .Skip((queryParameter.PageNumber - 1) * queryParameter.PageSize)
+                    .Take(queryParameter.PageSize);
+
+                // retrieve data to list
+                if (asynch)
+                {
+                    resultData = await query.ToListAsync();
+                }
+                else
+                {
+                    resultData = query.ToList();
+                }
+            }
+
+            return resultData;
+        }
+
 
     }
 }

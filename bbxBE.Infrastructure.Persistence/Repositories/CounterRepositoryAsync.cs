@@ -246,8 +246,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var searchString = requestParameter.SearchString;
 
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetCounterViewModel, Counter>();
@@ -290,13 +288,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             */
 
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
+             // retrieve data to list
+            var resultData = await GetPagedData(query, requestParameter);
 
-            // retrieve data to list
-            var resultData = await query.ToListAsync();
+
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetCounterViewModel>();

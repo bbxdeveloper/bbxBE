@@ -22,6 +22,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections;
 using EFCore.BulkExtensions;
 using bbxBE.Application.Queries.qStock;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -144,8 +145,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlPeriodAsync(QueryInvCtrlPeriod requestParameter)
         {
 
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetInvCtrlPeriodViewModel, InvCtrlPeriod>();
@@ -154,18 +153,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var result = _dbContext.InvCtrlPeriod.AsNoTracking()
+            var query = _dbContext.InvCtrlPeriod.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking()
                 .AsExpandable();
 
             // Count records total
-            recordsTotal = await result.CountAsync();
+            recordsTotal = await query.CountAsync();
 
             // filter data
             // nincs keresőfilter FilterBySearchString(ref result, searchString);
 
             // Count records after filter
-            recordsFiltered = await result.CountAsync();
+            recordsFiltered = await query.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -177,21 +176,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                result = result.OrderBy(orderBy);
+                query = query.OrderBy(orderBy);
             }
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                result = result.Select<InvCtrlPeriod>("new(" + fields + ")");
+                query = query.Select<InvCtrlPeriod>("new(" + fields + ")");
             }
-            // paging
-            result = result
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
 
             // retrieve data to list
-            var resultData = await result.ToListAsync();
+            var resultData = await GetPagedData(query, requestParameter);
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetInvCtrlPeriodViewModel>();

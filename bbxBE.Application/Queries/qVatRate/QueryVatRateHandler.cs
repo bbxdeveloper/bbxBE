@@ -35,11 +35,10 @@ namespace bbxBE.Application.Queries.qVatRate
         public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryVatRate request, CancellationToken cancellationToken)
         {
             var validFilter = request;
-            var pagination = request;
             
             // query based on filter
-            var entities = _VatRateRepository.QueryPagedVatRate(validFilter);
-            var data = entities.data.MapItemsFieldsByMapToAnnotation<GetVatRateViewModel>();
+            var entities = await _VatRateRepository.QueryPagedVatRate(validFilter);
+            var data =   entities.data.MapItemsFieldsByMapToAnnotation<GetVatRateViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 
             // response wrapper

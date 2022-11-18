@@ -269,8 +269,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOfferAsync(QueryOffer requestParameter)
         {
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetOfferViewModel, Offer>();
@@ -318,13 +316,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             */
 
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
-
             // retrieve data to list
-            var resultData = await query.ToListAsync();
+            var resultData = await GetPagedData(query, requestParameter);
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetOfferViewModel>();

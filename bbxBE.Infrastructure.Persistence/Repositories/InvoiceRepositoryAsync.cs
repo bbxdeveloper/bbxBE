@@ -21,6 +21,7 @@ using System.ComponentModel;
 using static Dapper.SqlMapper;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using bbxBE.Common.Enums;
+using bbxBE.Application.Interfaces.Queries;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -278,9 +279,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
         {
 
-
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetInvoiceViewModel, Invoice>();
@@ -351,36 +349,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
 
             // retrieve data to list
-            List<Invoice> resultData;
+            List<Invoice> resultData = await GetPagedData(query, requestParameter);
 
-            //Ha van ID, akkor azt a lapot keressük ki, amelyiken az ID- van.
-            if (requestParameter.ID.HasValue && requestParameter.ID.Value > 0)
-            {
-
-                // Összes elem lekérdezése
-                resultData = await query.ToListAsync();
-                var itemIndex = resultData.Select((Invoice, index) => (Invoice, index)).First(i=>i.Invoice.ID == requestParameter.ID.Value).index;
-                if(itemIndex > 0)
-                {
-                    pageNumber = (int)((itemIndex)/pageSize) + 1;
-                    requestParameter.PageNumber = pageNumber;
-                }
-
-                //nincs meg a keresett tétel, visszaadjuk a kért lapot
-                resultData = resultData
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize).ToList();
-            }
-            else
-            {
-                // paging
-                query = query
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize);
-
-                // retrieve data to list
-                resultData = await query.ToListAsync();
-            }
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetInvoiceViewModel>();

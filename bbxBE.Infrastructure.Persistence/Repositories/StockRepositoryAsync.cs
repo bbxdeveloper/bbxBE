@@ -239,9 +239,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameter)
         {
 
-
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetStockViewModel, Stock>();
@@ -311,13 +308,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 query = query.Select<Stock>("new(" + fields + ")");
             }
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
 
             // retrieve data to list
-            var resultData =  query.ToList();
+            var resultData = await GetPagedData(query, requestParameter, false);
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetStockViewModel>();

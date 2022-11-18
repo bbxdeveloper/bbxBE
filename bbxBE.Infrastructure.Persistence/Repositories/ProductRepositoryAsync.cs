@@ -10,22 +10,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
 using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using static bbxBE.Common.NAV.NAV_enums;
-using bbxBE.Infrastructure.Persistence.Caches;
-using Hangfire;
-using System.Threading;
 using EFCore.BulkExtensions;
-using bbxBE.Common.Locking;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Dapper.SqlMapper;
 
@@ -521,8 +513,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var searchString = requestParameter.SearchString;
 
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
 
             int recordsTotal, recordsFiltered;
@@ -564,13 +554,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             }
 
-            // paging
-            query = query
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize);
-
             // retrieve data to list
-            var resultData = query.ToList();
+            var resultData = await GetPagedData(query, requestParameter, false);
 
             var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
