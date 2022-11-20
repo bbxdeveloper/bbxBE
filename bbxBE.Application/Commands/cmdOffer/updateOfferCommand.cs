@@ -26,7 +26,7 @@ using bbxBE.Common;
 namespace bxBE.Application.Commands.cmdOffer
 {
 
-	/*
+    /*
 	 
  {
   "offerVersion": 1,
@@ -49,6 +49,8 @@ namespace bxBE.Application.Commands.cmdOffer
       "discount": 10,
       "showDiscount": true,
        "unitPrice": 10,
+      "unitPriceOriginal": 12,
+      "unitPriceSwitch": false,
       "unitVat": 2.7,
       "unitGross": 12.7
     },
@@ -69,7 +71,7 @@ namespace bxBE.Application.Commands.cmdOffer
 }
 
 	 */
-	public class UpdateOfferCommand : IRequest<Response<Offer>>
+    public class UpdateOfferCommand : IRequest<Response<Offer>>
 	{
 
 		[Description("Árajánlat-sor")]
@@ -122,13 +124,21 @@ namespace bxBE.Application.Commands.cmdOffer
 			[Description("Ár")]
 			public decimal UnitPrice { get; set; }
 
-			/*
-			[ColumnLabel("Áfa értéke")]
-			[Description("Áfa értéke")]
-			public decimal UnitVat { get; set; }
-			*/
+            [ColumnLabel("Eredeti ár")]                 //a törzsbeli ár
+            [Description("Eredeti ár")]
+            public decimal OriginalUnitPrice { get; set; }
 
-			[ColumnLabel("Bruttó ár")]
+
+            [ColumnLabel("E/L")]                        //Eygségár/listaár flag
+            [Description("Egységár/Listaár")]
+            public bool UnitPriceSwitch { get; set; }
+            /*
+                [ColumnLabel("Áfa értéke")]
+                [Description("Áfa értéke")]
+                public decimal UnitVat { get; set; }
+                */
+
+            [ColumnLabel("Bruttó ár")]
 			[Description("Bruttó ár")]
 			public decimal UnitGross { get; set; }
 		}

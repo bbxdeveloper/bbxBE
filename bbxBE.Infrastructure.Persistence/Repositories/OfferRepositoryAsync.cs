@@ -56,12 +56,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly IOfferLineRepositoryAsync _offerLineRepository;
+        private readonly ICacheService<Product> _productCacheService;
 
         public OfferRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Offer> dataShaperOffer,
             IDataShapeHelper<GetOfferViewModel> dataShaperGetOfferViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
-            IOfferLineRepositoryAsync offerLineRepository) : base(dbContext)
+            IOfferLineRepositoryAsync offerLineRepository,
+            ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
     
@@ -71,6 +73,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _offerLineRepository = offerLineRepository;
+            _productCacheService = productCacheService;
         }
 
 
@@ -238,11 +241,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //a requestParameter.FullData kezelés miatt a SumNetAmount és SumBrtAmount mezőket ki kell számolni 
             itemModel.SumNetAmount = Math.Round(itemModel.OfferLines.Sum(s => s.NetAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
             itemModel.SumBrtAmount = Math.Round(itemModel.OfferLines.Sum(s => s.BrtAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
-            if (!FullData)
+            if (FullData)
+            {
+                //Aktuális árak feltöltése a sorokban
+                itemModel.OfferLines.ForEach(ol =>
+                {
+                    if (ol.ProductID.HasValue)
+                    {
+                        Product prod = null;
+                        _productCacheService.TryGetValue(ol.ProductID.Value, out prod);
+                        if (prod != null)
+                        {
+                            ol.UnitPrice1 = prod.UnitPrice1;
+                            ol.UnitPrice2 = prod.UnitPrice2;
+                        }
+                    }
+                });
+            }   
+            else
             {
                 //itemModel.OfferLines = new List<GetOfferViewModel.OfferLine>();
                 itemModel.OfferLines = null;
             }
+            
 
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
 
@@ -330,9 +351,26 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 i.SumNetAmount = Math.Round(i.OfferLines.Sum(s => s.NetAmount),0);
                 i.SumBrtAmount = Math.Round(i.OfferLines.Sum(s => s.BrtAmount),0);
-                if (!requestParameter.FullData)
+                if (requestParameter.FullData)
                 {
-                    //i.OfferLines = new List<GetOfferViewModel.OfferLine>();
+                    //Aktuális árak feltöltése a sorokban
+                    i.OfferLines.ForEach(ol =>
+                    {
+                        if (ol.ProductID.HasValue)
+                        {
+                            Product prod = null;
+                            _productCacheService.TryGetValue(ol.ProductID.Value, out prod);
+                            if (prod != null)
+                            {
+                                ol.UnitPrice1 = prod.UnitPrice1;
+                                ol.UnitPrice2 = prod.UnitPrice2;
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    //itemModel.OfferLines = new List<GetOfferViewModel.OfferLine>();
                     i.OfferLines = null;
                 }
             });

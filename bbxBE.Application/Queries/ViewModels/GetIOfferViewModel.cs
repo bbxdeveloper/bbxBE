@@ -84,7 +84,24 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
 			public decimal VatPercentage { get; set; }
 
-			[ColumnLabel("Ár")]
+            [ColumnLabel("Egységár")]                 //aktuális törzsbeli UnitPrice1
+            [Description("Aktuális egységár")]
+            public decimal UnitPrice1 { get; set; }
+
+            [ColumnLabel("Listaár")]                 //aktuális törzsbeli UnitPrice2
+            [Description("Aktuális listaár")]
+            public decimal UnitPrice2 { get; set; }
+
+            [ColumnLabel("Eredeti ár")]                 //a törzsbeli ár
+            [Description("Eredeti ár")]
+            public decimal OriginalUnitPrice { get; set; }
+
+
+            [ColumnLabel("E/L")]                        //Eygségár/listaár flag
+            [Description("Egységár/Listaár")]
+            public bool UnitPriceSwitch { get; set; }
+
+            [ColumnLabel("Ár")]
 			[Description("Ár")]
 			public decimal UnitPrice { get; set; }
 

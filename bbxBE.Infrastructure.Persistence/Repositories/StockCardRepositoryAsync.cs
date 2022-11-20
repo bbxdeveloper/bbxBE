@@ -33,13 +33,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private readonly ICacheService<Product> _productcacheService;
+        private readonly ICacheService<Product> _productCacheService;
 
         public StockCardRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<StockCard> dataShaperStockCard,
             IDataShapeHelper<GetStockCardViewModel> dataShaperGetStockCardViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
-            ICacheService<Product> productcacheService) : base(dbContext)
+            ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperStockCard = dataShaperStockCard;
@@ -47,7 +47,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _productcacheService = productcacheService;
+            _productCacheService = productCacheService;
         }
 
 
@@ -247,7 +247,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultList = await preQuery.ToListAsync();
 
             //Ezután feltöltjük a cache-ből a productot
-            var prodCachedList = _productcacheService.ListCache();
+            var prodCachedList = _productCacheService.ListCache();
             resultList.ForEach(i =>
                 i.Product = prodCachedList.FirstOrDefault(f => f.ID == i.ProductID)
                 );
