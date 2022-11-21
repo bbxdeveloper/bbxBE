@@ -239,8 +239,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var itemModel = _mapper.Map<Offer, GetOfferViewModel>(item);
 
             //a requestParameter.FullData kezelés miatt a SumNetAmount és SumBrtAmount mezőket ki kell számolni 
-            itemModel.SumNetAmount = Math.Round(itemModel.OfferLines.Sum(s => s.NetAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
-            itemModel.SumBrtAmount = Math.Round(itemModel.OfferLines.Sum(s => s.BrtAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
+            itemModel.SumNetAmount = Math.Round(itemModel.OfferLines.Sum(s => s.NetAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2));
+            itemModel.SumBrtAmount = Math.Round(itemModel.OfferLines.Sum(s => s.BrtAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2));
             if (FullData)
             {
                 //Aktuális árak feltöltése a sorokban
@@ -349,8 +349,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //a requestParameter.FullData kezelés miatt a SumNetAmount és SumBrtAmount mezőket ki kell számolni 
             resultDataModel.ForEach(i =>
             {
-                i.SumNetAmount = Math.Round(i.OfferLines.Sum(s => s.NetAmount),0);
-                i.SumBrtAmount = Math.Round(i.OfferLines.Sum(s => s.BrtAmount),0);
+                i.SumNetAmount = Math.Round(i.OfferLines.Sum(s => s.NetAmount), (i.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2));
+                i.SumBrtAmount = Math.Round(i.OfferLines.Sum(s => s.BrtAmount), (i.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2));
                 if (requestParameter.FullData)
                 {
                     //Aktuális árak feltöltése a sorokban
