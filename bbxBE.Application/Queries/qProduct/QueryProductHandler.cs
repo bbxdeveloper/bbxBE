@@ -17,6 +17,9 @@ namespace bbxBE.Application.Queries.qProduct
     public class QueryProduct : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
         public string SearchString { get; set; }
+        public bool FilterByCode { get; set; } = true;
+        public bool FilterByName { get; set; } = true;
+
     }
 
     public class QueryProductHandler : IRequestHandler<QueryProduct, PagedResponse<IEnumerable<Entity>>>
@@ -34,18 +37,15 @@ namespace bbxBE.Application.Queries.qProduct
 
         public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryProduct request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-            
      
             // query based on filter
-            var entities = await _ProductRepository.QueryPagedProductAsync(validFilter);
+            var entities = await _ProductRepository.QueryPagedProductAsync(request);
 
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetProductViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 
             // response wrapper
-            return new PagedResponse<IEnumerable<Entity>>(data, validFilter.PageNumber, validFilter.PageSize, recordCount);
+            return new PagedResponse<IEnumerable<Entity>>(data, request.PageNumber, request.PageSize, recordCount);
         }
     }
 }
