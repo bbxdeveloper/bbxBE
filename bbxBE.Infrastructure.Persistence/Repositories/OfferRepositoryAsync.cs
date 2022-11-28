@@ -362,8 +362,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             _productCacheService.TryGetValue(ol.ProductID.Value, out prod);
                             if (prod != null)
                             {
-                                ol.UnitPrice1 = prod.UnitPrice1;
-                                ol.UnitPrice2 = prod.UnitPrice2;
+                                ol.UnitPrice1 = Math.Round(prod.UnitPrice1 / i.ExchangeRate, 2);
+                                ol.UnitPrice2 = Math.Round(prod.UnitPrice2 / i.ExchangeRate, 2);
                             }
                         }
                     });
