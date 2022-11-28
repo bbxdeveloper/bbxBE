@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report DataSourceName="webServiceDataSource1" Width="190.46mm" UnitOfMeasure="Mm" Name="Offer" Zoom="2" SnapGridSize="10mm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
+<Report DataSourceName="webServiceDataSource1" Width="190.46mm" UnitOfMeasure="Mm" Name="Offer" Zoom="1.5" SnapGridSize="10mm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
     <WebServiceDataSource ParameterValues="{&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;ID&quot;:&quot;7&quot;,&quot;JWT&quot;:&quot;132344&quot;,&quot;FullData&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Offer" Name="webServiceDataSource1">
       <Parameters>
@@ -347,7 +347,7 @@
         <TextBox Width="49.37mm" Height="6mm" Left="139.25mm" Top="5mm" Value="= Now()" Format="{0:yyyy.MM.dd hh:mm}" Name="textBox33">
           <Style TextAlign="Right" />
         </TextBox>
-        <TextBox Width="149.37mm" Height="5mm" Left="0mm" Top="0mm" Value="= &quot;Az árajánlatot készítette:................................................................&quot;" Name="textBox4">
+        <TextBox Width="149.37mm" Height="5mm" Left="0mm" Top="0mm" Value="= IIf(Fields.userID = 0, &quot;Az árajánlatot készítette:................................................................&quot;, &quot;Az árajánlatot készítette: &quot; + Fields.userName)" Name="textBox4">
           <Style>
             <Font Name="Calibri" Size="11pt" Bold="False" />
           </Style>
