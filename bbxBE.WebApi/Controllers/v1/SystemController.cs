@@ -12,8 +12,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
@@ -56,5 +58,65 @@ namespace bbxBE.WebApi.Controllers.v1
             var req = new GetEnum() { type = typeof(enCurrencyCodes) };
             return Ok(await Mediator.Send(req));
         }
+
+        //   [Authorize]
+        [HttpGet("exchangerate")]
+        public async Task<IActionResult> GetExchangeRate([FromQuery] DateTime ExchengeRateDate, string Currency)
+        {
+            decimal ExchangeRate = -1;
+
+            ServiceReference1.MNBArfolyamServiceSoapClient sm = new ServiceReference1.MNBArfolyamServiceSoapClient();
+            var body = new ServiceReference1.GetExchangeRatesRequestBody();
+            body.currencyNames = Currency.ToUpper();
+
+            bool bCompleted = false;
+            DateTime CurrExchengeRateDate = ExchengeRateDate;
+            while (!bCompleted)
+            {
+                body.startDate = CurrExchengeRateDate.ToString("yyyy-MM-dd");
+                body.endDate = CurrExchengeRateDate.ToString("yyyy-MM-dd");
+                try
+                {
+                    var res = await sm.GetExchangeRatesAsync(body);
+                    string xml = res.GetExchangeRatesResponse1.GetExchangeRatesResult;
+                    if (!string.IsNullOrWhiteSpace(xml))
+                    {
+                        XmlDocument xmlDoc = new XmlDocument();
+                        xmlDoc.LoadXml(xml);
+
+                        if ((xmlDoc.ChildNodes.Count > 0) && (xmlDoc.ChildNodes[0].ChildNodes.Count > 0))
+                        {
+                            foreach (XmlNode oNode in xmlDoc.ChildNodes[0].ChildNodes[0].ChildNodes)
+                            {
+                                if (oNode.Attributes["curr"].Value.ToUpper() == Currency.ToUpper())
+                                {
+                                    try
+                                    {
+                                        ExchangeRate = Convert.ToDecimal(oNode.InnerText.Replace(",", "."));
+                                    }
+                                    catch
+                                    {
+                                        ExchangeRate = -1;
+                                    }
+                                    bCompleted = true;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            CurrExchengeRateDate = CurrExchengeRateDate.AddDays(-1);
+                        }
+                    }
+                }
+                catch
+                {
+                    ExchangeRate = -1;
+                    bCompleted = true;
+                }
+            }
+            return Ok(ExchangeRate);
+        }
+
     }
 }
