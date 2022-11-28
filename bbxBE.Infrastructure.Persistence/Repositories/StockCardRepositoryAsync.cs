@@ -33,13 +33,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private readonly ICacheService<Product> _productcacheService;
+        private readonly ICacheService<Product> _productCacheService;
 
         public StockCardRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<StockCard> dataShaperStockCard,
             IDataShapeHelper<GetStockCardViewModel> dataShaperGetStockCardViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
-            ICacheService<Product> productcacheService) : base(dbContext)
+            ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperStockCard = dataShaperStockCard;
@@ -47,7 +47,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _productcacheService = productcacheService;
+            _productCacheService = productCacheService;
         }
 
 
@@ -222,9 +222,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockCardAsync(QueryStockCard requestParameter)
         {
 
-
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetStockCardViewModel, StockCard>();
@@ -239,7 +236,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // Először lekérdezünk
             var preQuery = _dbContext.StockCard.AsNoTracking()
-                        .Include(w => w.Warehouse).AsNoTracking();
+                        .Include(w => w.Warehouse).AsNoTracking()
+                        .Include(u => u.User).AsNoTracking();
 
             // Count records total
             recordsTotal = await preQuery.CountAsync();
@@ -249,7 +247,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultList = await preQuery.ToListAsync();
 
             //Ezután feltöltjük a cache-ből a productot
-            var prodCachedList = _productcacheService.ListCache();
+            var prodCachedList = _productCacheService.ListCache();
             resultList.ForEach(i =>
                 i.Product = prodCachedList.FirstOrDefault(f => f.ID == i.ProductID)
                 );
@@ -291,15 +289,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 query = query.Select<StockCard>("new(" + fields + ")");
             }
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
 
             // retrieve data to list
-            var resultData = query.ToList();
+            var resultData = await GetPagedData(query, requestParameter, false);
 
-            //TODO: szebben megoldani
             var resultDataModel = new List<GetStockCardViewModel>();
             resultData.ForEach(i => resultDataModel.Add(
                _mapper.Map<StockCard, GetStockCardViewModel>(i))

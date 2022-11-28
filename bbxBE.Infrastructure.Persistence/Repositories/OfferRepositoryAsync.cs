@@ -56,12 +56,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly IOfferLineRepositoryAsync _offerLineRepository;
+        private readonly ICacheService<Product> _productCacheService;
 
         public OfferRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<Offer> dataShaperOffer,
             IDataShapeHelper<GetOfferViewModel> dataShaperGetOfferViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
-            IOfferLineRepositoryAsync offerLineRepository) : base(dbContext)
+            IOfferLineRepositoryAsync offerLineRepository,
+            ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
     
@@ -71,6 +73,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _offerLineRepository = offerLineRepository;
+            _productCacheService = productCacheService;
         }
 
 
@@ -236,13 +239,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var itemModel = _mapper.Map<Offer, GetOfferViewModel>(item);
 
             //a requestParameter.FullData kezelés miatt a SumNetAmount és SumBrtAmount mezőket ki kell számolni 
-            itemModel.SumNetAmount = Math.Round(itemModel.OfferLines.Sum(s => s.NetAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
-            itemModel.SumBrtAmount = Math.Round(itemModel.OfferLines.Sum(s => s.BrtAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
-            if (!FullData)
+            itemModel.SumNetAmount = Math.Round(itemModel.OfferLines.Sum(s => s.NetAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2));
+            itemModel.SumBrtAmount = Math.Round(itemModel.OfferLines.Sum(s => s.BrtAmount), (itemModel.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2));
+            if (FullData)
+            {
+                //Aktuális árak feltöltése a sorokban
+                itemModel.OfferLines.ForEach(ol =>
+                {
+                    if (ol.ProductID.HasValue)
+                    {
+                        Product prod = null;
+                        _productCacheService.TryGetValue(ol.ProductID.Value, out prod);
+                        if (prod != null)
+                        {
+                            ol.UnitPrice1 = Math.Round(prod.UnitPrice1 / itemModel.ExchangeRate, 2);
+                            ol.UnitPrice2 = Math.Round(prod.UnitPrice2 / itemModel.ExchangeRate, 2);
+                        }
+                    }
+                });
+            }   
+            else
             {
                 //itemModel.OfferLines = new List<GetOfferViewModel.OfferLine>();
                 itemModel.OfferLines = null;
             }
+            
 
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
 
@@ -260,6 +281,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             item = await _dbContext.Offer.AsNoTracking()
                   .Include(c => c.Customer).AsNoTracking()
+                  .Include(u => u.User).AsNoTracking()
                   .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
                   .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
             return item;
@@ -268,8 +290,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOfferAsync(QueryOffer requestParameter)
         {
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetOfferViewModel, Offer>();
@@ -281,6 +301,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IQueryable<Offer> query;
                    query = _dbContext.Offer.AsNoTracking()
                  .Include(c => c.Customer).AsNoTracking()
+                 .Include(u => u.User).AsNoTracking()
                  .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking();
 
 
@@ -316,13 +337,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             */
 
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
-
             // retrieve data to list
-            var resultData = await query.ToListAsync();
+            var resultData = await GetPagedData(query, requestParameter);
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetOfferViewModel>();
@@ -333,11 +349,28 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //a requestParameter.FullData kezelés miatt a SumNetAmount és SumBrtAmount mezőket ki kell számolni 
             resultDataModel.ForEach(i =>
             {
-                i.SumNetAmount = Math.Round(i.OfferLines.Sum(s => s.NetAmount),0);
-                i.SumBrtAmount = Math.Round(i.OfferLines.Sum(s => s.BrtAmount),0);
-                if (!requestParameter.FullData)
+                i.SumNetAmount = Math.Round(i.OfferLines.Sum(s => s.NetAmount), (i.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2));
+                i.SumBrtAmount = Math.Round(i.OfferLines.Sum(s => s.BrtAmount), (i.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2));
+                if (requestParameter.FullData)
                 {
-                    //i.OfferLines = new List<GetOfferViewModel.OfferLine>();
+                    //Aktuális árak feltöltése a sorokban
+                    i.OfferLines.ForEach(ol =>
+                    {
+                        if (ol.ProductID.HasValue)
+                        {
+                            Product prod = null;
+                            _productCacheService.TryGetValue(ol.ProductID.Value, out prod);
+                            if (prod != null)
+                            {
+                                ol.UnitPrice1 = Math.Round(prod.UnitPrice1 / i.ExchangeRate, 2);
+                                ol.UnitPrice2 = Math.Round(prod.UnitPrice2 / i.ExchangeRate, 2);
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    //itemModel.OfferLines = new List<GetOfferViewModel.OfferLine>();
                     i.OfferLines = null;
                 }
             });

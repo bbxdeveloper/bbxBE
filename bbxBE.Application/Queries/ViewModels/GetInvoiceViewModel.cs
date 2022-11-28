@@ -280,7 +280,16 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("A számla végösszege a számla pénznemében")]
 		public decimal InvoiceGrossAmount { get; set; }
 
-		[ColumnLabel("Számlasorok")]
+        [ColumnLabel("Felhasználó ID")]
+        [Description("Felhasználó ID")]
+        public long UserID { get; set; }
+
+        [ColumnLabel("Felhasználó")]
+        [Description("Felhasználó")]
+        [MapToEntity("UserName")]
+        public string UserName { get; set; }
+
+        [ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
 		[MapToEntity("invoiceLines")]
 		public List<GetInvoiceViewModel.InvoiceLine> InvoiceLines { get; set; } = new List<GetInvoiceViewModel.InvoiceLine>();

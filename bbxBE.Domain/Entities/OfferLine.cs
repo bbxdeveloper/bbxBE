@@ -56,7 +56,16 @@ namespace bbxBE.Domain.Entities
 		[Description("Mennyiségi egység")]
 		public string UnitOfMeasure { get; set; }
 
-		[ColumnLabel("Ár")]
+        [ColumnLabel("Eredeti ár")]					//a törzsbeli ár
+        [Description("Eredeti ár")]
+        public decimal OriginalUnitPrice { get; set; }
+
+
+        [ColumnLabel("E/L")]						//Eygségár/listaár flag
+        [Description("Egységár/Listaár")]
+        public bool UnitPriceSwitch { get; set; }
+
+        [ColumnLabel("Ár")]
 		[Description("Ár")]
 		public decimal UnitPrice { get; set; }
 		

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -46,9 +47,12 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
 
+     //   [Authorize]
         [HttpGet("currencycodes")]
         public async Task<IActionResult> GetCurrencyCodes()
         {
+
+          
             var req = new GetEnum() { type = typeof(enCurrencyCodes) };
             return Ok(await Mediator.Send(req));
         }

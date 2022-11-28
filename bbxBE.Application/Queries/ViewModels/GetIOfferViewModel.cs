@@ -84,7 +84,24 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
 			public decimal VatPercentage { get; set; }
 
-			[ColumnLabel("Ár")]
+            [ColumnLabel("Egységár")]                 //aktuális törzsbeli UnitPrice1
+            [Description("Aktuális egységár")]
+            public decimal UnitPrice1 { get; set; }
+
+            [ColumnLabel("Listaár")]                 //aktuális törzsbeli UnitPrice2
+            [Description("Aktuális listaár")]
+            public decimal UnitPrice2 { get; set; }
+
+            [ColumnLabel("Eredeti ár")]                 //a törzsbeli ár
+            [Description("Eredeti ár")]
+            public decimal OriginalUnitPrice { get; set; }
+
+
+            [ColumnLabel("E/L")]                        //Eygségár/listaár flag
+            [Description("Egységár/Listaár")]
+            public bool UnitPriceSwitch { get; set; }
+
+            [ColumnLabel("Ár")]
 			[Description("Ár")]
 			public decimal UnitPrice { get; set; }
 
@@ -223,8 +240,16 @@ namespace bbxBE.Application.Queries.ViewModels
 		//public decimal SumBrtAmount { get { return Math.Round(OfferLines.Sum(s => s.BrtAmount), 0); } }
 		public decimal SumBrtAmount { get; set; }
 
+        [ColumnLabel("Felhasználó ID")]
+        [Description("Felhasználó ID")]
+        public long UserID { get; set; }
 
-		[ColumnLabel("Ajánlatsorok")]
+        [ColumnLabel("Felhasználó")]
+        [Description("Felhasználó")]
+        [MapToEntity("UserName")]
+        public string UserName { get; set; }
+
+        [ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
 		[MapToEntity("offerLines")]
 		public List<GetOfferViewModel.OfferLine> OfferLines { get; set; } = new List<GetOfferViewModel.OfferLine>();

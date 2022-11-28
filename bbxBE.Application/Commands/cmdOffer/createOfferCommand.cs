@@ -25,7 +25,7 @@ using bbxBE.Common;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
-	/*
+    /*
 	 * 
  {
   "customerID": 185997,
@@ -37,6 +37,8 @@ namespace bxBE.Application.Commands.cmdOffer
       "productCode": "000-0MEGT",
       "lineDescription": "megr. temér",
       "vatRateCode": "27%",
+      "unitPriceOriginal": 30,
+      "unitPriceSwitch": true,
       "unitPrice": 32,
       "unitGross": 41,
       "discount": 0,
@@ -49,7 +51,7 @@ namespace bxBE.Application.Commands.cmdOffer
   "offerGrossAmount": 41,
   "offerNetAmount": 32
 }	*/
-	public class CreateOfferCommand : IRequest<Response<Offer>>
+    public class CreateOfferCommand : IRequest<Response<Offer>>
 	{
 
 
@@ -98,14 +100,23 @@ namespace bxBE.Application.Commands.cmdOffer
 			[Description("Ár")]
 			public decimal UnitPrice { get; set; }
 
+            [ColumnLabel("Eredeti ár")]                 //a törzsbeli ár
+            [Description("Eredeti ár")]
+            public decimal OriginalUnitPrice { get; set; }
+
+
+            [ColumnLabel("E/L")]                        //Eygségár/listaár flag
+            [Description("Egységár/Listaár")]
+            public bool UnitPriceSwitch { get; set; }
+            
 			/*
-			[ColumnLabel("Áfa értéke")]
-			[Description("Áfa értéke")]
-			public decimal UnitVat { get; set; }
-			*/
+                [ColumnLabel("Áfa értéke")]
+                [Description("Áfa értéke")]
+                public decimal UnitVat { get; set; }
+                */
 
 
-			[ColumnLabel("Bruttó ár")]
+            [ColumnLabel("Bruttó ár")]
 			[Description("Bruttó ár")]
 			public decimal UnitGross { get; set; }
 		}
@@ -142,11 +153,14 @@ namespace bxBE.Application.Commands.cmdOffer
 		public List<CreateOfferCommand.OfferLine> OfferLines { get; set; } = new List<CreateOfferCommand.OfferLine>();
 
 
+        [ColumnLabel("Felhasználó ID")]
+        [Description("Felhasználó ID")]
+        public long? UserID { get; set; } = 0;
 
 
-	}
+    }
 
-	public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Response<Offer>>
+    public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Response<Offer>>
 	{
 		private readonly IOfferRepositoryAsync _OfferRepository;
 		private readonly ICounterRepositoryAsync _CounterRepository;

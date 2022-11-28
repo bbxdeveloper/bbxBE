@@ -118,13 +118,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return vr;
         }
 
-        public (IEnumerable<Entity> data, RecordsCount recordsCount) QueryPagedVatRate(QueryVatRate requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedVatRate(QueryVatRate requestParameter)
         {
 
             var searchString = requestParameter.SearchString;
 
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetVatRateViewModel, VatRate>();
@@ -161,13 +159,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 query = query.Select<VatRate>("new(" + fields + ")");
             }
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
 
             // retrieve data to list
-            var resultData = query.ToList();
+            var resultData = await GetPagedData(query, requestParameter, false);
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetVatRateViewModel>();

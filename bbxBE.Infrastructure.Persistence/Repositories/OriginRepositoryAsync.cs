@@ -198,8 +198,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var searchString = requestParameter.SearchString;
 
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetOriginViewModel, Origin>();
@@ -237,13 +235,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 query = query.Select<Origin>("new(" + fields + ")");
             }
-            // paging
-            query = query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
 
             // retrieve data to list
-            var resultData = query.ToList();
+            var resultData = await GetPagedData(query, requestParameter, false);
+
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetOriginViewModel>();

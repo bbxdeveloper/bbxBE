@@ -179,6 +179,13 @@
             <param name="filter"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.OfferController.Print(bbxBE.Application.Commands.cmdOffer.PrintOfferCommand)">
+            <summary>
+            Get Offer report in PDF format
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.OfferController.SendOfferEmail(bbxBE.Application.Commands.cmdOffer.sendOfferEmailCommand)">
             <summary>
             POST - Send email with: @from, @to, @subject, @plainTextBody, @htmlBody parameters

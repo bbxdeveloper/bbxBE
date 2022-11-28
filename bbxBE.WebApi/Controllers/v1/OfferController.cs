@@ -4,6 +4,7 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qOffer;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static bbxBE.Common.NAV.NAV_enums;
 
@@ -58,6 +60,12 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPost]
         public async Task<IActionResult> Create(CreateOfferCommand command)
         {
+
+            if (command.UserID == null || command.UserID == 0)
+            {
+                var identity = HttpContext.User.Identity as ClaimsIdentity;
+                command.UserID = Utils.GetUserIDFromClaimsIdentity(identity);
+            }
             return Ok(await Mediator.Send(command));
         }
 
@@ -66,6 +74,11 @@ namespace bbxBE.WebApi.Controllers.v1
         //       [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UpdateOfferCommand command)
         {
+            if (command.UserID == null || command.UserID == 0)
+            {
+                var identity = HttpContext.User.Identity as ClaimsIdentity;
+                command.UserID = Utils.GetUserIDFromClaimsIdentity(identity);
+            }
             return Ok(await Mediator.Send(command));
         }
 
@@ -86,6 +99,11 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(filter));
         }
 
+        /// <summary>
+        /// Get Offer report in PDF format
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [HttpPost("print")]
         public async Task<IActionResult> Print(PrintOfferCommand command)
         {

@@ -107,8 +107,12 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 		[ColumnLabel("Megjegyzés")]
 		[Description("Megjegyzés")]
-		public string Notice { get; set; }	//AdditionalInvoiceData-ban tároljuk!
+		public string Notice { get; set; }  //AdditionalInvoiceData-ban tároljuk!
 
+        [ColumnLabel("Felhasználó ID")]
+        [Description("Felhasználó ID")]
+        public long? UserID { get; set; } = 0;
+        
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
 		public List<InvoiceLine> InvoiceLines { get; set; } = new List<InvoiceLine>();

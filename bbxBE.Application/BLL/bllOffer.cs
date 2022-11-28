@@ -55,7 +55,15 @@ namespace bbxBE.Application.BLL
 
             //throw new Exception(String.Join(",", reportSource.Parameters) + "::::" + ((Telerik.Reporting.ReportItemBase)reportSource.ReportDocument).Name);
 
-            Telerik.Reporting.Processing.RenderingResult result = reportProcessor.RenderReport("PDF", reportSource, deviceInfo);
+            Telerik.Reporting.Processing.RenderingResult result = null;
+            try
+            {
+                result = reportProcessor.RenderReport("PDF", reportSource, deviceInfo);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
             if (result == null)
                 throw new Exception("Offer report result is null!");

@@ -10,22 +10,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
 using System;
 using AutoMapper;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using static bbxBE.Common.NAV.NAV_enums;
-using bbxBE.Infrastructure.Persistence.Caches;
-using Hangfire;
-using System.Threading;
 using EFCore.BulkExtensions;
-using bbxBE.Common.Locking;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Dapper.SqlMapper;
 
@@ -191,7 +183,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     p_product.OriginID = og.ID;
                     p_product.Origin = og;
                     _dbContext.Entry(og).State = EntityState.Unchanged;
-          }
+                }
             }
 
             VatRate vr;
@@ -243,7 +235,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await AddAsync(p_product);
                     await dbContextTransaction.CommitAsync();
 
-                   _productcacheService.AddOrUpdate(p_product);
+                    _productcacheService.AddOrUpdate(p_product);
                 }
                 catch (Exception e)
                 {
@@ -253,7 +245,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return p_product;
         }
-    
+
 
 
         public async Task<int> AddProductRangeAsync(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList)
@@ -275,7 +267,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 throw e;
             }
-            
+
 
             var productCodes = new List<ProductCode>();
             foreach (var product in p_productList)
@@ -288,7 +280,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             await _dbContext.BulkInsertAsync(productCodes);
 
-            await RefreshProductCache();            
+            await RefreshProductCache();
             await _dbContext.SaveChangesAsync();
 
             return item;
@@ -473,7 +465,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Entity GetProductEntity(long ID)
         {
 
-           Product prod = null;
+            Product prod = null;
             if (!_productcacheService.TryGetValue(ID, out prod))
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, ID));
 
@@ -498,7 +490,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public Entity GetProductEntityByProductCode(string productCode)
         {
-            var prod  = GetProductByProductCode(productCode);
+            var prod = GetProductByProductCode(productCode);
 
             //            var fields = requestParameter.Fields;
             if (prod != null)
@@ -519,15 +511,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedProductAsync(QueryProduct requestParameter)
         {
 
-            var searchString = requestParameter.SearchString;
-
-            var pageNumber = requestParameter.PageNumber;
-            var pageSize = requestParameter.PageSize;
             var orderBy = requestParameter.OrderBy;
 
             int recordsTotal, recordsFiltered;
-
-
 
             var query = _productcacheService.QueryCache();
 
@@ -535,7 +521,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = query.Count();
 
             // filter query
-            FilterBySearchString(ref query, searchString);
+            FilterBySearchString(ref query, requestParameter.SearchString, requestParameter.FilterByCode, requestParameter.FilterByName);
 
             // Count records after filter
             recordsFiltered = query.Count();
@@ -564,13 +550,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             }
 
-            // paging
-            query = query
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize);
-
             // retrieve data to list
-            var resultData = query.ToList();
+            var resultData = await GetPagedData(query, requestParameter, false);
 
             var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
@@ -586,21 +567,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString)
+        private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool p_filterByCode, bool p_filterByName)
         {
             if (!p_items.Any())
                 return;
 
-            if (string.IsNullOrWhiteSpace(p_searchString))
+            if (string.IsNullOrWhiteSpace(p_searchString) || (!p_filterByCode && !p_filterByName))
                 return;
 
             var predicate = PredicateBuilder.New<Product>();
 
             var srcFor = p_searchString.ToUpper().Trim();
 
-            predicate = predicate.And(p => p.Description.ToUpper().Contains(srcFor) ||
-                    p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
-                    a.ProductCodeValue.ToUpper().Contains(srcFor)));
+            predicate = predicate.And(p => (!p_filterByName || p.Description.ToUpper().Contains(srcFor)) 
+                    &&
+                    (!p_filterByCode || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                    a.ProductCodeValue.ToUpper().Contains(srcFor)))
+                    );
 
             p_items = p_items.Where(predicate);
         }
