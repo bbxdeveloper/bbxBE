@@ -115,6 +115,8 @@ namespace bbxBE.Common.Consts
 
         public static string ERR_NAV_TAXPAYER = "A lekérdezéshez használt adószámnak 8 jeygűnek kell lennie!";
 
+        public static string ERR_CITYNOTFOUND = "Város nem található, IRSZ:{0} ";
+
 
         public static string ERR_CACHE_NOTUSED = "A gyorsítótár nincs használatban:{0}!";
 

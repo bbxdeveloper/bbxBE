@@ -67,6 +67,10 @@ namespace bbxBE.Application.Queries
             services.AddScoped<IDataShapeHelper<CustDiscount>, DataShapeHelper<CustDiscount>>();
             services.AddScoped<IDataShapeHelper<GetCustDiscountViewModel>, DataShapeHelper<GetCustDiscountViewModel>>();
 
+            services.AddScoped<IDataShapeHelper<Zip>, DataShapeHelper<Zip>>();
+            services.AddScoped<IDataShapeHelper<GetZipViewModel>, DataShapeHelper<GetZipViewModel>>();
+
+
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>
             {
                 services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
