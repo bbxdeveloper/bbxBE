@@ -144,6 +144,12 @@ namespace bbxBE.Queries.Mappings
             .ForMember(dst => dst.InvoiceNumber, opt => opt.MapFrom(src => src.Invoice.InvoiceNumber))
             .ForMember(dst => dst.InvoiceIssueDate, opt => opt.MapFrom(src => src.Invoice.InvoiceIssueDate));
 
+            CreateMap<List<Zip>, List<GetZipViewModel>>();
+            CreateMap<Zip, GetZipViewModel>();
+
+            CreateMap<List<Location>, List<GetLocationViewModel>>();
+            CreateMap<Location, GetLocationViewModel>();
+
 
         }
 

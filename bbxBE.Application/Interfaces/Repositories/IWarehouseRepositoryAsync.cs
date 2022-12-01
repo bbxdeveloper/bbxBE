@@ -11,6 +11,11 @@ namespace bbxBE.Application.Interfaces.Repositories
     public interface IWarehouseRepositoryAsync : IGenericRepositoryAsync<Warehouse>
     {
         Task<bool> IsUniqueWarehouseCodeAsync(string WarehouseCode, long? ID = null);
+        Task<Warehouse> AddWarehouseAsync(Warehouse p_Warehouse);
+        Task<Warehouse> UpdateWarehouseAsync(Warehouse p_Warehouse);
+
+        Task<Warehouse> DeleteWarehouseAsync(long ID);
+
         Task<bool> SeedDataAsync(int rowCount);
         Task<Warehouse> GetWarehouseByCodeAsync(string WarehouseCode);
 

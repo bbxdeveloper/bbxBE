@@ -40,7 +40,7 @@ namespace bxBE.Application.Commands.cmdWarehouse
         {
             var wh = _mapper.Map<Warehouse>(request);
 
-            await _WarehouseRepository.AddAsync(wh);
+            await _WarehouseRepository.AddWarehouseAsync(wh);
             return new Response<Warehouse>(wh);
         }
 
