@@ -7,7 +7,7 @@ namespace bbxBE.Common.Consts
     public static  class bbxBEConsts
     {
         public static int CodeLen = 12;
-        public static int DescriptionLen = 12;
+        public static int DescriptionLen = 80;
 
         public static string CNTRY_HU = "HU";
         public static string CONF_PwdSalt = "PwdSalt";
