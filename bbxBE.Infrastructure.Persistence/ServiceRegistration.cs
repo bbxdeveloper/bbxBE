@@ -76,6 +76,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IInvCtrlPeriodRepositoryAsync, InvCtrlPeriodRepositoryAsync>();
             services.AddTransient<IInvCtrlRepositoryAsync, InvCtrlRepositoryAsync>();
             services.AddTransient<ICustDiscountRepositoryAsync, CustDiscountRepositoryAsync>();
+            services.AddTransient<IZipRepositoryAsync, ZipRepositoryAsync>();
 
 
 

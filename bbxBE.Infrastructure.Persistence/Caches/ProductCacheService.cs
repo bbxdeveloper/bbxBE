@@ -25,7 +25,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
                  .Include(p => p.ProductCodes).AsNoTracking()
                  .Include(pg => pg.ProductGroup).AsNoTracking()
                  .Include(o => o.Origin).AsNoTracking()
-                 .Include(v => v.VatRate).AsNoTracking();//.Where( w => w.ID== 120985); //.Take(1000);
+                 .Include(v => v.VatRate).AsNoTracking(); //.Where( w => w.ID== 120985); //.Take(1000);
 
 
 #endif
