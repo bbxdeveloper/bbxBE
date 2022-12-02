@@ -69,6 +69,11 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpGet("exchangerate")]
         public async Task<IActionResult> GetExchangeRate([FromQuery] DateTime ExchengeRateDate, string Currency)
         {
+            if (Currency == enCurrencyCodes.HUF.ToString())
+            {
+                return Ok(1);
+            }
+
             decimal ExchangeRate = -1;
 
             ServiceReference1.MNBArfolyamServiceSoapClient sm = new ServiceReference1.MNBArfolyamServiceSoapClient();
