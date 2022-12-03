@@ -6,7 +6,7 @@ namespace bbxBE.Common.NAV
     public class NAVGlobal
     {
 
-        public const string DEF_softwareId = "HU66259428";
+        public const string DEF_softwareId = "HU-BBX";
 
         public const string DEF_softwareOperation = "LOCAL_SOFTWARE";       //vagy : ONLINE_SERVICE
         public const string DEF_softwareDevName = "bbx";
