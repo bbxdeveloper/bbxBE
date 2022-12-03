@@ -178,7 +178,7 @@ namespace bbxBE.Application.BLL
                 var request = (HttpWebRequest)WebRequest.Create(p_uri);
                 request.Method = "POST";
                 request.ContentType = "application/xml; charset=utf-8";
-                request.ContentType = "application/xml";
+           //     request.ContentType = "application/xml";
                 byte[] postBytes = Encoding.UTF8.GetBytes(p_content);
                 request.ContentLength = postBytes.Length;
                 var requestStream = request.GetRequestStream();
