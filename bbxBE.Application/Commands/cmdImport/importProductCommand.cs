@@ -53,6 +53,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string ProductCodeFieldName = "ProductCode";
         private const string EANFieldName = "EAN";
         private const string VTSZFieldName = "VTSZ";
+        private const string NODISCOUNTFieldName = "NODISCOUNT";
 
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IProductGroupRepositoryAsync _productGroupRepository;
@@ -364,6 +365,8 @@ namespace bbxBE.Application.Commands.cmdImport
                 createPRoductCommand.ProductGroupCode = productMapper.ContainsKey(ProductGroupCodeFieldName) ? currentFieldsArray[productMapper[ProductGroupCodeFieldName]].Replace("\"", "").Trim() : null;
                 createPRoductCommand.VatRateCode = "27%";
                 //createPRoductCommand.LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]]) : 0;
+                createPRoductCommand.NoDiscount = (productMapper.ContainsKey(NODISCOUNTFieldName)) && (currentFieldsArray[productMapper[NODISCOUNTFieldName]].Equals("IGAZ"))
+                        ? true : false;
 
                 return new Dictionary<string, CreateProductCommand> {
                     {
