@@ -130,7 +130,13 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
         [HttpGet("citybyzip")]
-        public async Task<IActionResult> GetCityByIrsz([FromQuery] GetCityByZip req)
+        public async Task<IActionResult> GetCityByZipCode([FromQuery] GetCityByZip req)
+        {
+            return Ok(await Mediator.Send(req));
+        }
+
+        [HttpGet("zipbycity")]
+        public async Task<IActionResult> GetZipcodeByCity([FromQuery] GetZipByCity req)
         {
             return Ok(await Mediator.Send(req));
         }

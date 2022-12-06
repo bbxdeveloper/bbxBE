@@ -37,10 +37,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
         }
 
-         public async Task<Zip> GetCityBzZip(string zipCode)
+        public async Task<Zip> GetCityByZip(string zipCode)
         {
             Zip Zip = await _dbContext.Zip
                     .Where(x => x.ZipCode == zipCode && !x.Deleted)
+                    .FirstOrDefaultAsync();
+
+            return Zip;
+        }
+        public async Task<Zip> GetZipByCity(string zipCity)
+        {
+            Zip Zip = await _dbContext.Zip
+                    .Where(x => x.ZipCity.ToUpper() == zipCity.ToUpper() && !x.Deleted)
                     .FirstOrDefaultAsync();
 
             return Zip;
