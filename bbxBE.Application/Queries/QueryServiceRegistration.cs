@@ -70,6 +70,9 @@ namespace bbxBE.Application.Queries
             services.AddScoped<IDataShapeHelper<Zip>, DataShapeHelper<Zip>>();
             services.AddScoped<IDataShapeHelper<GetZipViewModel>, DataShapeHelper<GetZipViewModel>>();
 
+            services.AddScoped<IDataShapeHelper<Location>, DataShapeHelper<Location>>();
+            services.AddScoped<IDataShapeHelper<GetLocationViewModel>, DataShapeHelper<GetLocationViewModel>>();
+
 
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>
             {

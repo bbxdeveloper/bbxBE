@@ -158,6 +158,27 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.LocationController.Get(bbxBE.Application.Queries.qLocation.GetLocation)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.LocationController.Query(bbxBE.Application.Queries.qLocation.QueryLocation)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.LocationController.Create(bxBE.Application.Commands.cmdLocation.CreateLocationCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.OfferController.Get(bbxBE.Application.Queries.qOffer.GetOffer)">
             <summary>
             GET: api/controller

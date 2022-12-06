@@ -26,9 +26,9 @@ namespace bbxBE.Application.Commands.cmdCounter
             RuleFor(p => p.CounterCode)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .MustAsync(
-                        async (model, Name, cancellation) =>
+                        async (model, CounterCode, cancellation) =>
                         {
-                            return await IsUniqueCounterCodeAsync(Name, cancellation);
+                            return await IsUniqueCounterCodeAsync(CounterCode, cancellation);
                         }
                     ).WithMessage(bbxBEConsts.ERR_EXISTS)
                 .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.ERR_MAXLEN);

@@ -67,6 +67,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<CustDiscount> CustDiscount { get; set; }
         public DbSet<Zip> Zip { get; set; }
 
+        public DbSet<Location> Location { get; set; }
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var entry in ChangeTracker.Entries<BaseEntity>())

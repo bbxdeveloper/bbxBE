@@ -1,4 +1,4 @@
-﻿using LinqKit;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -12,84 +12,87 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using System;
 using AutoMapper;
-using bbxBE.Application.Queries.qWarehouse;
+using bbxBE.Application.Queries.qLocation;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using bbxBE.Infrastructure.Persistence.Caches;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
-    public class WarehouseRepositoryAsync : GenericRepositoryAsync<Warehouse>, IWarehouseRepositoryAsync
+    public class LocationRepositoryAsync : GenericRepositoryAsync<Location>, ILocationRepositoryAsync
     {
         private readonly ApplicationDbContext _dbContext;
-        private IDataShapeHelper<Warehouse> _dataShaperWarehouse;
-        private IDataShapeHelper<GetWarehouseViewModel> _dataShaperGetWarehouseViewModel;
+        private IDataShapeHelper<Location> _dataShaperLocation;
+        private IDataShapeHelper<GetLocationViewModel> _dataShaperGetLocationViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
 
-        public WarehouseRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Warehouse> dataShaperWarehouse,
-            IDataShapeHelper<GetWarehouseViewModel> dataShaperGetWarehouseViewModel,
+        public LocationRepositoryAsync(ApplicationDbContext dbContext,
+            IDataShapeHelper<Location> dataShaperLocation,
+            IDataShapeHelper<GetLocationViewModel> dataShaperGetLocationViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperWarehouse = dataShaperWarehouse;
-            _dataShaperGetWarehouseViewModel = dataShaperGetWarehouseViewModel;
+            _dataShaperLocation = dataShaperLocation;
+            _dataShaperGetLocationViewModel = dataShaperGetLocationViewModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
         }
 
 
-        public async Task<Warehouse> AddWarehouseAsync(Warehouse p_Warehouse)
+        public async Task<bool> IsUniqueLocationCodeAsync(string LocationCode, long? ID = null)
+        {
+            return !await _dbContext.Location.AsNoTracking().AnyAsync(p => p.LocationCode == LocationCode && !p.Deleted && (ID == null || p.ID != ID.Value));
+        }
+
+
+        public async Task<Location> AddLocationAsync(Location p_Location)
         {
 
-            await AddAsync(p_Warehouse);
-            return p_Warehouse;
+            await AddAsync(p_Location);
+            return p_Location;
         }
-        public async Task<Warehouse> UpdateWarehouseAsync(Warehouse p_Warehouse)
+        public async Task<Location> UpdateLocationAsync(Location p_Location)
         {
-            await UpdateAsync(p_Warehouse);
+            await UpdateAsync(p_Location);
             //                await dbContextTransaction.CommitAsync();
 
-            return p_Warehouse;
+            return p_Location;
         }
 
-        public async Task<Warehouse> DeleteWarehouseAsync(long ID)
+        public async Task<Location> DeleteLocationAsync(long ID)
         {
 
-            Warehouse Warehouse = null;
+            Location Location = null;
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                Warehouse = _dbContext.Warehouse.Where(x => x.ID == ID).FirstOrDefault();
+                Location = _dbContext.Location.Where(x => x.ID == ID).FirstOrDefault();
 
-                if (Warehouse != null)
+                if (Location != null)
                 {
 
-                    await RemoveAsync(Warehouse);
+                    await RemoveAsync(Location);
                     await dbContextTransaction.CommitAsync();
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, ID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_LOCATIONOTFOUND, ID));
                 }
             }
-            return Warehouse;
+            return Location;
         }
 
-        public async Task<bool> IsUniqueWarehouseCodeAsync(string WarehouseCode, long? ID = null)
+        public async Task<Location> GetLocationByCodeAsync(string LocationCode)
         {
-            return !await _dbContext.Warehouse.AsNoTracking().AnyAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted && (ID == null || p.ID != ID.Value));
-        }
-        public async Task<Warehouse> GetWarehouseByCodeAsync(string WarehouseCode)
-        {
-            return await _dbContext.Warehouse.AsNoTracking().FirstOrDefaultAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted );
+            return await _dbContext.Location.AsNoTracking().FirstOrDefaultAsync(p => p.LocationCode == LocationCode && !p.Deleted);
         }
 
 
-        public async Task<Entity> GetWarehouseAsync(long ID)
+        public async Task<Entity> GetLocationAsync(long ID)
         {
 
             var item = await GetByIdAsync(ID);
@@ -98,30 +101,30 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (item == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_LOCATIONOTFOUND, ID));
             }
 
-            var itemModel = _mapper.Map<Warehouse, GetWarehouseViewModel>(item);
-            var listFieldsModel = _modelHelper.GetModelFields<GetWarehouseViewModel>();
+            var itemModel = _mapper.Map<Location, GetLocationViewModel>(item);
+            var listFieldsModel = _modelHelper.GetModelFields<GetLocationViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetWarehouseViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetLocationViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
             return shapeData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedWarehouseAsync(QueryWarehouse requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedLocationAsync(QueryLocation requestParameter)
         {
 
             var searchString = requestParameter.SearchString;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetWarehouseViewModel, Warehouse>();
+            var fields = _modelHelper.GetQueryableFields<GetLocationViewModel, Location>();
 
 
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var query = _dbContext.Warehouse
+            var query = _dbContext.Location
                 .AsNoTracking()
                 .AsExpandable();
 
@@ -150,27 +153,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                query = query.Select<Warehouse>("new(" + fields + ")");
+                query = query.Select<Location>("new(" + fields + ")");
             }
 
             // retrieve data to list
             var resultData = await GetPagedData(query, requestParameter);
 
             //TODO: szebben megoldani
-            var resultDataModel = new List<GetWarehouseViewModel>();
+            var resultDataModel = new List<GetLocationViewModel>();
             resultData.ForEach(i => resultDataModel.Add(
-               _mapper.Map<Warehouse, GetWarehouseViewModel>(i))
+               _mapper.Map<Location, GetLocationViewModel>(i))
             );
 
 
-            var listFieldsModel = _modelHelper.GetModelFields<GetWarehouseViewModel>();
+            var listFieldsModel = _modelHelper.GetModelFields<GetLocationViewModel>();
 
-            var shapeData = _dataShaperGetWarehouseViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetLocationViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Warehouse> p_item, string p_searchString)
+        private void FilterBySearchString(ref IQueryable<Location> p_item, string p_searchString)
         {
             if (!p_item.Any())
                 return;
@@ -178,10 +181,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
-            var predicate = PredicateBuilder.New<Warehouse>();
+            var predicate = PredicateBuilder.New<Location>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.WarehouseDescription.ToUpper().Contains(srcFor));
+            predicate = predicate.And(p => p.LocationDescription.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }
@@ -191,6 +194,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-   
+
     }
 }

@@ -63,6 +63,7 @@ namespace bbxBE.Common.Consts
         public static string ERR_CUSTOMERNOTFOUND = "Partner nem található, ID:{0}";
         public static string ERR_STOCKNOTFOUND = "Raktárkészlet nem található, ID:{0} ";
         public static string ERR_STOCKCARDNOTFOUND = "Készletkarton nem található, ID:{0} ";
+        public static string ERR_LOCATIONOTFOUND = "Helyiség nem található, ID:{0} ";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 

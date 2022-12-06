@@ -1,8 +1,6 @@
-using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Parameters;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
@@ -10,17 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
 using System;
 using AutoMapper;
-using bbxBE.Application.Queries.qZip;
 using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Collections;
-using Org.BouncyCastle.Asn1.X500;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {

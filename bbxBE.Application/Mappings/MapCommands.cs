@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Commands.cmdCounter;
 using bbxBE.Application.Commands.cmdCustomer;
+using bbxBE.Application.Commands.cmdLocation;
 using bbxBE.Application.Commands.cmdOrigin;
 using bbxBE.Application.Commands.cmdProduct;
 using bbxBE.Application.Commands.cmdProductGroup;
@@ -16,6 +17,7 @@ using bxBE.Application.Commands.cmdCustomer;
 using bxBE.Application.Commands.cmdInvCtrl;
 using bxBE.Application.Commands.cmdInvCtrlPeriod;
 using bxBE.Application.Commands.cmdInvoice;
+using bxBE.Application.Commands.cmdLocation;
 using bxBE.Application.Commands.cmdOffer;
 using bxBE.Application.Commands.cmdOrigin;
 using bxBE.Application.Commands.cmdProduct;
@@ -142,6 +144,11 @@ namespace bbxBE.Command.Mappings
             //    CreateMap<UpdateInvCtrlCommand, InvCtrl>();
 
             CreateMap<CreateCustDiscountCommand.CustDiscountItem, CustDiscount>();
-       }
+
+            CreateMap<CreateLocationCommand, Location>();
+            CreateMap<UpdateLocationCommand, Location>();
+            CreateMap<DeleteLocationCommand, Location>();
+
+        }
     }
 }
