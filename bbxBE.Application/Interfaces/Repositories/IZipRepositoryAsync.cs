@@ -10,6 +10,7 @@ namespace bbxBE.Application.Interfaces.Repositories
 {
     public interface IZipRepositoryAsync : IGenericRepositoryAsync<Zip>
     {
-        Task<Zip> GetCityBzZip(string zipCode);
+        Task<Zip> GetCityByZip(string zipCode);
+        Task<Zip> GetZipByCity(string zipCity);
     }
 }
