@@ -109,6 +109,10 @@ namespace bxBE.Application.Commands.cmdInvoice
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }  //AdditionalInvoiceData-ban tároljuk!
 
+        [ColumnLabel("Kedvezmény%")]
+        [Description("A számlára adott teljes kedvezmény %")]
+        public decimal InvoiceDiscountPercent { get; set; }
+
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long? UserID { get; set; } = 0;
@@ -240,12 +244,12 @@ namespace bxBE.Application.Commands.cmdInvoice
 				{
 					request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;      //Átmenetileg
 				}
-                
+
 				if (string.IsNullOrWhiteSpace(request.CurrencyCode))
-                {
-                    request.CurrencyCode = enCurrencyCodes.HUF.ToString();      
-                }
-                var wh = await _WarehouseRepository.GetWarehouseByCodeAsync(request.WarehouseCode);
+				{
+					request.CurrencyCode = enCurrencyCodes.HUF.ToString();
+				}
+				var wh = await _WarehouseRepository.GetWarehouseByCodeAsync(request.WarehouseCode);
 				if (wh == null)
 				{
 					throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
@@ -264,7 +268,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 					invoice.CustomerID = ownData.ID;
 				}
 				else
-                {
+				{
 					invoice.SupplierID = ownData.ID;
 					invoice.CustomerID = request.CustomerID;
 				}
@@ -283,16 +287,16 @@ namespace bxBE.Application.Commands.cmdInvoice
 				invoice.InvoiceNumber = await _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
 				invoice.Copies = 1;
 
-                //Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
-                if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
-                {
+				//Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
+				if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
+				{
 					invoice.PaymentMethod = PaymentMethodType.OTHER.ToString();
 				}
 
 				var paymentMethod = (PaymentMethodType)Enum.Parse(typeof(PaymentMethodType), invoice.PaymentMethod);
 
-            //Tételsorok
-                foreach (var ln in invoice.InvoiceLines)
+				//Tételsorok
+				foreach (var ln in invoice.InvoiceLines)
 				{
 					var rln = request.InvoiceLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
 
@@ -309,7 +313,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATECODENOTFOUND, rln.VatRateCode));
 					}
 
-					ln.LineExchangeRate = invoice.ExchangeRate;				//gyűjtőszámla esetén is egy árfolyam lesz!
+					ln.LineExchangeRate = invoice.ExchangeRate;             //gyűjtőszámla esetén is egy árfolyam lesz!
 
 					//	ln.Product = prod;
 					ln.ProductID = prod.ID;
@@ -329,62 +333,79 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 					ln.UnitPriceHUF = ln.UnitPrice * ln.LineExchangeRate;
 
-                    // A LineNetAmount a modelből jön !!! ln.LineNetAmount = Math.Round( ln.Quantity * ln.UnitPrice ,1);
-                    ln.LineNetAmountHUF = Math.Round( ln.LineNetAmount * ln.LineExchangeRate, 1);
+					// A LineNetAmount a modelből jön !!! ln.LineNetAmount = Math.Round( ln.Quantity * ln.UnitPrice ,1);
+					ln.LineNetAmountHUF = Math.Round(ln.LineNetAmount * ln.LineExchangeRate, 1);
 
-                    ln.LineVatAmount = Math.Round(ln.LineNetAmount * vatRate.VatPercentage, 1);
-                    ln.LineVatAmountHUF = Math.Round(ln.LineVatAmount * ln.LineExchangeRate, 1);
+					ln.LineVatAmount = Math.Round(ln.LineNetAmount * vatRate.VatPercentage, 1);
+					ln.LineVatAmountHUF = Math.Round(ln.LineVatAmount * ln.LineExchangeRate, 1);
 
-                    ln.LineGrossAmountNormal = ln.LineNetAmount + ln.LineVatAmount;
+					ln.LineGrossAmountNormal = ln.LineNetAmount + ln.LineVatAmount;
 					ln.LineGrossAmountNormalHUF = ln.LineNetAmountHUF + ln.LineVatAmountHUF;
 
 
-                    //Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
-                    if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
+					//Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
+					if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
 					{
 						ln.PendingDNQuantity = ln.Quantity;
 					}
 
 
-                }
+				}
 
 				//SummaryByVatrate
 				invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
-							.Select(g => new SummaryByVatRate()
+							.Select(g =>
 							{
-								VatRateID = g.Key,
-								VatRateNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
-                                VatRateNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF),1),
-								VatRateVatAmount = Math.Round(g.Sum(s => s.LineVatAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1)),
-                                VatRateVatAmountHUF = Math.Round(g.Sum(s => s.LineVatAmountHUF), 0),
-								VatRateGrossAmount = Math.Round(g.Sum(s => s.LineNetAmount + s.LineVatAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1)),
-								VatRateGrossAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF + s.LineVatAmountHUF), 0)
+								var VatRateNetAmount = Math.Round(g.Sum(s => s.LineNetAmount * (1 - request.InvoiceDiscountPercent / 100)), 1);
+								var VatRateNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF * (1 - request.InvoiceDiscountPercent / 100)), 1);
+
+								var VatRateVatAmount = Math.Round(g.Sum(s => s.LineNetAmount * (1 - request.InvoiceDiscountPercent / 100) * (1 + s.VatPercentage / 100)), 1);
+								var VatRateVatAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF * (1 - request.InvoiceDiscountPercent / 100) * (1 + s.VatPercentage / 100)), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
+
+								var VatRateGrossAmount = VatRateNetAmount + VatRateVatAmount;
+								var VatRateGrossAmountHUF = VatRateNetAmountHUF + VatRateVatAmountHUF;
+
+								return new SummaryByVatRate()
+								{
+									VatRateID = g.Key,
+									VatRateNetAmount = VatRateNetAmount,
+									VatRateNetAmountHUF = VatRateNetAmountHUF,
+									VatRateVatAmount = VatRateVatAmount,
+									VatRateVatAmountHUF = VatRateVatAmountHUF,
+									VatRateGrossAmount = VatRateGrossAmount,
+									VatRateGrossAmountHUF = VatRateGrossAmountHUF
+								};
 							}
 							).ToList();
 
-                //kp-s kerekítések HUF számla esetén
-                if( invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() 
-					&& invoice.PaymentMethod == PaymentMethodType.CASH.ToString())
-				{
-                    foreach( var item in  invoice.SummaryByVatRates)
-					{
-                        item.VatRateGrossAmount = CASHRound(item.VatRateGrossAmount);
-                        item.VatRateGrossAmountHUF = CASHRound(item.VatRateGrossAmountHUF);
-
-                    }
-                }	
-
-
                 //összesítők
-                invoice.InvoiceNetAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateNetAmount);
-                invoice.InvoiceNetAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateNetAmountHUF);
+
+                var InvoiceNetAmountWithoutDiscount = invoice.InvoiceLines.Sum(s => s.LineNetAmountHUF);
+                var InvoiceNetAmountWithoutDiscountHUF = invoice.InvoiceLines.Sum(s => s.LineNetAmountHUF);
+
+                invoice.InvoiceDiscount = Math.Round(InvoiceNetAmountWithoutDiscount * (1 - invoice.InvoiceDiscountPercent / 100), 1);
+                invoice.InvoiceDiscountHUF = Math.Round(InvoiceNetAmountWithoutDiscountHUF * (1 - invoice.InvoiceDiscountPercent / 100), 1);
+
+                invoice.InvoiceNetAmount = InvoiceNetAmountWithoutDiscount - invoice.InvoiceDiscount;
+                invoice.InvoiceNetAmountHUF = InvoiceNetAmountWithoutDiscountHUF - invoice.InvoiceDiscountHUF;
+
                 invoice.InvoiceVatAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmount);
                 invoice.InvoiceVatAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmountHUF);
-                invoice.InvoiceGrossAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateGrossAmount);
-                invoice.InvoiceGrossAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateGrossAmountHUF);
+
+                invoice.InvoiceGrossAmount = invoice.InvoiceNetAmount + invoice.InvoiceVatAmount;
+                invoice.InvoiceGrossAmountHUF = invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF;
+
+                //kp-s kerekítések HUF számla esetén
+                if (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString()
+                    && invoice.PaymentMethod == PaymentMethodType.CASH.ToString())
+				{
+                    invoice.InvoiceGrossAmount = CASHRound(invoice.InvoiceGrossAmount);
+                    invoice.InvoiceGrossAmountHUF = CASHRound(invoice.InvoiceGrossAmountHUF);
+
+                }
 
 
-				await _InvoiceRepository.AddInvoiceAsync(invoice);
+                await _InvoiceRepository.AddInvoiceAsync(invoice);
 				await _CounterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
 
 					

@@ -177,14 +177,26 @@ namespace bbxBE.Domain.Entities
 		[Description("Bevételhez kapcsolódó számla")]
 		public string CustomerInvoiceNumber { get; set; }
 
-		[ColumnLabel("Nettó")]
+        [ColumnLabel("Kedvezmény%")]
+        [Description("A számlára adott teljes kedvezmény %")]
+        public decimal InvoiceDiscountPercent { get; set; }
+        [ColumnLabel("Kedvezmény")]
+        [Description("A számlára adott teljes kedvezmény % értéke a számla pénznemében")]
+        public decimal InvoiceDiscount { get; set; }
+
+        [ColumnLabel("Kedvezmény HUF")]
+        [Description("A számlára adott teljes kedvezmény % értéke fortintban")]
+        public decimal InvoiceDiscountHUF { get; set; }
+
+        [ColumnLabel("Nettó")]
 		[Description("A számla nettó összege a számla pénznemében")]
 		public decimal InvoiceNetAmount { get; set; }
 
 		[ColumnLabel("Nettó HUF")]
 		[Description("A számla nettó összege forintban")]
 		public decimal InvoiceNetAmountHUF { get; set; }
-		[ColumnLabel("Áfa")]
+
+         [ColumnLabel("Áfa")]
 		[Description("A számla áfa összege a számla pénznemében")]
 		public decimal InvoiceVatAmount { get; set; }
 		[ColumnLabel("Áfa HUF")]

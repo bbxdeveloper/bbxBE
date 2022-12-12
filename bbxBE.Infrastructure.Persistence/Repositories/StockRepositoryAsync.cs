@@ -101,7 +101,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 Common.Enums.enStockCardType.INV_DLV,
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
-                                0, invoiceLine.UnitPrice,
+                                0, Math.Round( invoiceLine.UnitPriceHUF * (1-invoice.InvoiceDiscountPercent/100),1),
                                 invoice.InvoiceNumber + ( invoice.Incoming ? ";" + invoice.CustomerInvoiceNumber : "" ));
 
 
