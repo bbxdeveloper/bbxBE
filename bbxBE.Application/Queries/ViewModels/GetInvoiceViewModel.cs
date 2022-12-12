@@ -268,7 +268,19 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Nyomtatott példány száma")]
 		public short Copies { get; set; }
 
-		[ColumnLabel("Nettó")]
+        [ColumnLabel("Kedvezmény%")]
+        [Description("A számlára adott teljes kedvezmény %")]
+        public decimal InvoiceDiscountPercent { get; set; }
+        [ColumnLabel("Kedvezmény")]
+        [Description("A számlára adott teljes kedvezmény % értéke a számla pénznemében")]
+        public decimal InvoiceDiscount { get; set; }
+
+        [ColumnLabel("Kedvezmény HUF")]
+        [Description("A számlára adott teljes kedvezmény % értéke fortintban")]
+        public decimal InvoiceDiscountHUF { get; set; }
+
+
+        [ColumnLabel("Nettó")]
 		[Description("A számla nettó összege a számla pénznemében")]
 		public decimal InvoiceNetAmount { get; set; }
 
