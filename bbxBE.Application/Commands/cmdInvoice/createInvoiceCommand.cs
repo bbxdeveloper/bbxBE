@@ -24,12 +24,12 @@ using Newtonsoft.Json.Linq;
 
 namespace bxBE.Application.Commands.cmdInvoice
 {
-    public class CreateInvoiceCommand : IRequest<Response<Invoice>>
-    {
+	public class CreateInvoiceCommand : IRequest<Response<Invoice>>
+	{
 
 		[Description("Számlasor")]
 		public class InvoiceLine
-		{ 
+		{
 
 			[ColumnLabel("#")]
 			[Description("Sor száma")]
@@ -53,11 +53,11 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[ColumnLabel("Ár")]
 			[Description("Ár")]
 			public decimal UnitPrice { get; set; }
-			
+
 			[ColumnLabel("Nettó érték")]
 			[Description("Ár a számla pénznemében")]
 			public decimal LineNetAmount { get; set; }
-			
+
 		}
 
 		[ColumnLabel("B/K")]
@@ -109,10 +109,14 @@ namespace bxBE.Application.Commands.cmdInvoice
 		[Description("Megjegyzés")]
 		public string Notice { get; set; }  //AdditionalInvoiceData-ban tároljuk!
 
-        [ColumnLabel("Felhasználó ID")]
-        [Description("Felhasználó ID")]
-        public long? UserID { get; set; } = 0;
-        
+		[ColumnLabel("Kedvezmény%")]
+		[Description("A számlára adott teljes kedvezmény %")]
+		public decimal InvoiceDiscountPercent { get; set; }
+
+		[ColumnLabel("Felhasználó ID")]
+		[Description("Felhasználó ID")]
+		public long? UserID { get; set; } = 0;
+
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
 		public List<InvoiceLine> InvoiceLines { get; set; } = new List<InvoiceLine>();
@@ -120,7 +124,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 	}
 
 	public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, Response<Invoice>>
-    {
+	{
 		private readonly IInvoiceRepositoryAsync _InvoiceRepository;
 		private readonly ICounterRepositoryAsync _CounterRepository;
 		private readonly IWarehouseRepositoryAsync _WarehouseRepository;
@@ -128,106 +132,70 @@ namespace bxBE.Application.Commands.cmdInvoice
 		private readonly IProductRepositoryAsync _ProductRepository;
 		private readonly IVatRateRepositoryAsync _VatRateRepository;
 		private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
+		private readonly IConfiguration _configuration;
 
-        public CreateInvoiceCommandHandler(IInvoiceRepositoryAsync InvoiceRepository,
+		public CreateInvoiceCommandHandler(IInvoiceRepositoryAsync InvoiceRepository,
 			ICounterRepositoryAsync CounterRepository,
 			IWarehouseRepositoryAsync WarehouseRepository,
 			ICustomerRepositoryAsync CustomerRepository,
 			IProductRepositoryAsync ProductRepository,
 			IVatRateRepositoryAsync VatRateRepository,
 			IMapper mapper, IConfiguration configuration)
-        {
-            _InvoiceRepository = InvoiceRepository;
+		{
+			_InvoiceRepository = InvoiceRepository;
 			_CounterRepository = CounterRepository;
 			_WarehouseRepository = WarehouseRepository;
 			_CustomerRepository = CustomerRepository;
 			_ProductRepository = ProductRepository;
 			_VatRateRepository = VatRateRepository;
 			_mapper = mapper;
-            _configuration = configuration;
-        }
-        /*
+			_configuration = configuration;
+		}
+		/*
 {
-  "lineGrossAmount": 352040993.90999997,
-  "invoiceVatAmount": 0,
-  "invoiceNetAmount": 277197633,
+  "customerID": 206568,
+  "invoiceDeliveryDate": "2022-12-13",
+  "invoiceIssueDate": "2022-12-13",
   "invoiceLines": [
     {
+      "lineNetAmount": 23296,
       "lineNumber": 1,
-      "productCode": "000-0MEGT",
-      "productDescription": "megr. temér",
-      "quantity": 2,
-      "unitOfMeasure": "KILOGRAM",
-      "unitPrice": 32,
+      "quantity": 1,
+      "productCode": "SCH-004600100",
+      "productDescription": "Fali modul STR100",
+      "unitOfMeasure": "PIECE",
+      "unitPrice": 23296,
       "vatRate": 0.27,
-      "vatRateCode": "27%",
-      "lineNetAmount": 64,
-      "lineVatAmount": 17.28,
-      "lineGrossAmount": 81,
-      "unitOfMeasureX": "Kilogram"
+      "vatRateCode": "27%"
     },
     {
+      "lineNetAmount": 440,
       "lineNumber": 2,
-      "productCode": "SCH-004600600",
-      "productDescription": "Fali modul STR107",
       "quantity": 10,
+      "productCode": "001-TESZTÚJ",
+      "productDescription": "Új tesztadat neki nincs DÜW engedménye",
       "unitOfMeasure": "PIECE",
-      "unitPrice": 56876,
+      "unitPrice": 44,
       "vatRate": 0.27,
-      "vatRateCode": "27%",
-      "lineNetAmount": 568760,
-      "lineVatAmount": 153565.2,
-      "lineGrossAmount": 722325,
-      "unitOfMeasureX": "DB"
-    },
-    {
-      "lineNumber": 3,
-      "productCode": "SCH-LC1BP33M22",
-      "productDescription": "Mágneskapcsoló 3P 2000A 220V",
-      "quantity": 33,
-      "unitOfMeasure": "PIECE",
-      "unitPrice": 7933040,
-      "vatRate": 0.27,
-      "vatRateCode": "27%",
-      "lineNetAmount": 261790320,
-      "lineVatAmount": 70683386.4,
-      "lineGrossAmount": 332473706,
-      "unitOfMeasureX": "DB"
-    },
-    {
-      "lineNumber": 4,
-      "productCode": "SCH-LC1D093ED",
-      "productDescription": "Mágneskapcsoló 1250A 220VAC",
-      "quantity": 3,
-      "unitOfMeasure": "PIECE",
-      "unitPrice": 4946163,
-      "vatRate": 0.27,
-      "vatRateCode": "27%",
-      "lineNetAmount": 14838489,
-      "lineVatAmount": 4006392.0300000003,
-      "lineGrossAmount": 18844881,
-      "unitOfMeasureX": "DB"
+      "vatRateCode": "27%"
     }
   ],
-  "warehouseCode": "001",
-  "customerID": 215074,
-  "invoiceDeliveryDate": "2022-11-04",
-  "invoiceIssueDate": "2022-11-04",
-  "notice": "nagy szla 2",
-  "paymentDate": "2022-11-04",
+  "notice": "megjegyzés szövehg",
+  "paymentDate": "2022-12-13",
   "paymentMethod": "TRANSFER",
+  "warehouseCode": "001",
   "currencyCode": "HUF",
   "exchangeRate": 1,
   "incoming": false,
-  "invoiceType": "INV"
+  "invoiceType": "INV",
+  "invoiceDiscountPercent": 10
 }
 
 		 */
 
 
-        public async Task<Response<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
-        {
+		public async Task<Response<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
+		{
 			var invoice = _mapper.Map<Invoice>(request);
 
 			var counterCode = "";
@@ -240,12 +208,12 @@ namespace bxBE.Application.Commands.cmdInvoice
 				{
 					request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;      //Átmenetileg
 				}
-                
+
 				if (string.IsNullOrWhiteSpace(request.CurrencyCode))
-                {
-                    request.CurrencyCode = enCurrencyCodes.HUF.ToString();      
-                }
-                var wh = await _WarehouseRepository.GetWarehouseByCodeAsync(request.WarehouseCode);
+				{
+					request.CurrencyCode = enCurrencyCodes.HUF.ToString();
+				}
+				var wh = await _WarehouseRepository.GetWarehouseByCodeAsync(request.WarehouseCode);
 				if (wh == null)
 				{
 					throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
@@ -264,7 +232,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 					invoice.CustomerID = ownData.ID;
 				}
 				else
-                {
+				{
 					invoice.SupplierID = ownData.ID;
 					invoice.CustomerID = request.CustomerID;
 				}
@@ -283,16 +251,21 @@ namespace bxBE.Application.Commands.cmdInvoice
 				invoice.InvoiceNumber = await _CounterRepository.GetNextValueAsync(counterCode, wh.ID);
 				invoice.Copies = 1;
 
-                //Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
-                if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
-                {
+				//Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
+				if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
+				{
 					invoice.PaymentMethod = PaymentMethodType.OTHER.ToString();
 				}
 
 				var paymentMethod = (PaymentMethodType)Enum.Parse(typeof(PaymentMethodType), invoice.PaymentMethod);
 
-            //Tételsorok
-                foreach (var ln in invoice.InvoiceLines)
+				//Nettóból adott kedvezmény mértéke
+				decimal InvoiceDiscount = 0;
+				decimal InvoiceDiscountHUF = 0;
+
+
+				//Tételsorok
+				foreach (var ln in invoice.InvoiceLines)
 				{
 					var rln = request.InvoiceLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
 
@@ -309,7 +282,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATECODENOTFOUND, rln.VatRateCode));
 					}
 
-					ln.LineExchangeRate = invoice.ExchangeRate;				//gyűjtőszámla esetén is egy árfolyam lesz!
+					ln.LineExchangeRate = invoice.ExchangeRate;             //gyűjtőszámla esetén is egy árfolyam lesz!
 
 					//	ln.Product = prod;
 					ln.ProductID = prod.ID;
@@ -329,111 +302,139 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 					ln.UnitPriceHUF = ln.UnitPrice * ln.LineExchangeRate;
 
-                    // A LineNetAmount a modelből jön !!! ln.LineNetAmount = Math.Round( ln.Quantity * ln.UnitPrice ,1);
-                    ln.LineNetAmountHUF = Math.Round( ln.LineNetAmount * ln.LineExchangeRate, 1);
+					// A LineNetAmount a modelből jön !!! ln.LineNetAmount = Math.Round( ln.Quantity * ln.UnitPrice ,1);
+					ln.LineNetAmountHUF = Math.Round(ln.LineNetAmount * ln.LineExchangeRate, 1);
 
-                    ln.LineVatAmount = Math.Round(ln.LineNetAmount * vatRate.VatPercentage, 1);
-                    ln.LineVatAmountHUF = Math.Round(ln.LineVatAmount * ln.LineExchangeRate, 1);
+					ln.LineVatAmount = Math.Round(ln.LineNetAmount * vatRate.VatPercentage, 1);
+					ln.LineVatAmountHUF = Math.Round(ln.LineVatAmount * ln.LineExchangeRate, 1);
 
-                    ln.LineGrossAmountNormal = ln.LineNetAmount + ln.LineVatAmount;
+					ln.LineGrossAmountNormal = ln.LineNetAmount + ln.LineVatAmount;
 					ln.LineGrossAmountNormalHUF = ln.LineNetAmountHUF + ln.LineVatAmountHUF;
 
 
-                    //Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
-                    if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
+					//Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
+					if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
 					{
 						ln.PendingDNQuantity = ln.Quantity;
 					}
 
-
-                }
+					//Bizonylatkedvezmény
+					if (!prod.NoDiscount)
+					{
+						InvoiceDiscount += Math.Round(ln.LineNetAmount * request.InvoiceDiscountPercent / 100, 2);
+						InvoiceDiscountHUF += Math.Round(ln.LineNetAmountHUF * request.InvoiceDiscountPercent / 100, 2);
+					}
+				}
 
 				//SummaryByVatrate
 				invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
-							.Select(g => new SummaryByVatRate()
+						.Select(g =>
+						{
+							var VatRateNetAmount = Math.Round(g.Sum(s => s.LineNetAmount * (1 - request.InvoiceDiscountPercent / 100)), 1);
+							var VatRateNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF * (1 - request.InvoiceDiscountPercent / 100)), 1);
+							var VatPercentage = g.First().VatPercentage;    //Áfa kulcs
+
+							var VatRateVatAmount = Math.Round(VatRateNetAmount * VatPercentage, (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
+							var VatRateVatAmountHUF = Math.Round(VatRateNetAmountHUF * VatPercentage, 0);
+
+							var VatRateGrossAmount = VatRateNetAmount + VatRateVatAmount;
+							var VatRateGrossAmountHUF = VatRateNetAmountHUF + VatRateVatAmountHUF;
+
+							return new SummaryByVatRate()
 							{
 								VatRateID = g.Key,
-								VatRateNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
-                                VatRateNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF),1),
-								VatRateVatAmount = Math.Round(g.Sum(s => s.LineVatAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1)),
-                                VatRateVatAmountHUF = Math.Round(g.Sum(s => s.LineVatAmountHUF), 0),
-								VatRateGrossAmount = Math.Round(g.Sum(s => s.LineNetAmount + s.LineVatAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1)),
-								VatRateGrossAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF + s.LineVatAmountHUF), 0)
-							}
-							).ToList();
+								VatRateNetAmount = VatRateNetAmount,
+								VatRateNetAmountHUF = VatRateNetAmountHUF,
+								VatRateVatAmount = VatRateVatAmount,
+								VatRateVatAmountHUF = VatRateVatAmountHUF,
+								VatRateGrossAmount = VatRateGrossAmount,
+								VatRateGrossAmountHUF = VatRateGrossAmountHUF
+							};
+						}
+						).ToList();
 
-                //kp-s kerekítések HUF számla esetén
-                if( invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() 
+				//összesítők
+
+				//Kedvezmény nélküli nettó
+				var InvoiceNetAmountWithoutDiscount = invoice.InvoiceLines.Sum(s => s.LineNetAmountHUF);
+				var InvoiceNetAmountWithoutDiscountHUF = invoice.InvoiceLines.Sum(s => s.LineNetAmountHUF);
+
+				//Nettóból adott kedvezmény mértéke
+				invoice.InvoiceDiscount = Math.Round(InvoiceDiscount, 1);
+				invoice.InvoiceDiscountHUF = Math.Round(InvoiceDiscountHUF, 1);
+
+				//Kedvezménnyel csökkentett nettó
+				invoice.InvoiceNetAmount = InvoiceNetAmountWithoutDiscount - invoice.InvoiceDiscount;
+				invoice.InvoiceNetAmountHUF = InvoiceNetAmountWithoutDiscountHUF - invoice.InvoiceDiscountHUF;
+
+				//Áfa értéke
+				invoice.InvoiceVatAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmount);
+				invoice.InvoiceVatAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmountHUF);
+
+				//Számla bruttó értéke (kedvezménnyel együtt)
+				invoice.InvoiceGrossAmount = Math.Round(invoice.InvoiceNetAmount + invoice.InvoiceVatAmount, (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
+				invoice.InvoiceGrossAmountHUF = Math.Round(invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF, 0);
+
+				//kp-s kerekítések HUF számla esetén
+				if (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString()
 					&& invoice.PaymentMethod == PaymentMethodType.CASH.ToString())
 				{
-                    foreach( var item in  invoice.SummaryByVatRates)
-					{
-                        item.VatRateGrossAmount = CASHRound(item.VatRateGrossAmount);
-                        item.VatRateGrossAmountHUF = CASHRound(item.VatRateGrossAmountHUF);
+					invoice.InvoiceGrossAmount = CASHRound(invoice.InvoiceGrossAmount);
+					invoice.InvoiceGrossAmountHUF = CASHRound(invoice.InvoiceGrossAmountHUF);
 
-                    }
-                }	
-
-
-                //összesítők
-                invoice.InvoiceNetAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateNetAmount);
-                invoice.InvoiceNetAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateNetAmountHUF);
-                invoice.InvoiceVatAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmount);
-                invoice.InvoiceVatAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmountHUF);
-                invoice.InvoiceGrossAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateGrossAmount);
-                invoice.InvoiceGrossAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateGrossAmountHUF);
+				}
 
 
 				await _InvoiceRepository.AddInvoiceAsync(invoice);
 				await _CounterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
 
-					
+
 				invoice.InvoiceLines.Clear();
 				invoice.SummaryByVatRates.Clear();
-				if(invoice.AdditionalInvoiceData != null) 
+				if (invoice.AdditionalInvoiceData != null)
 					invoice.AdditionalInvoiceData.Clear();
 				return new Response<Invoice>(invoice);
 			}
 			catch (Exception ex)
-			{ 
-				if( !string.IsNullOrWhiteSpace( invoice.InvoiceNumber) && !string.IsNullOrWhiteSpace(counterCode))
-                {
+			{
+				if (!string.IsNullOrWhiteSpace(invoice.InvoiceNumber) && !string.IsNullOrWhiteSpace(counterCode))
+				{
 					await _CounterRepository.RollbackValueAsync(counterCode, invoice.WarehouseID, invoice.InvoiceNumber);
 				}
 				throw;
 			}
 			return null;
-        }
+		}
 
 		private decimal CASHRound(decimal p_num)
 		{
 			if (p_num == 0)
 				return p_num;
 
-            var lastDigit = (p_num % 10);
+			var lastDigit = (p_num % 10);
 			var roundNum = 5;
-			if(lastDigit >= 8)
+			if (lastDigit >= 8)
 			{
 				roundNum = 10;
-            }
+			}
 			else if (lastDigit <= 2)
-            {
-                roundNum = 10;
-            }
+			{
+				roundNum = 10;
+			}
 			else
 			{
-               roundNum = 5;
-            }
+				roundNum = 5;
+			}
 
-			if(p_num > 0)
+			if (p_num > 0)
 			{
 				return p_num - lastDigit + roundNum;
-            }	
+			}
 			else
 			{
-                return p_num + lastDigit - roundNum;
-            }
-        }
+				return p_num + lastDigit - roundNum;
+			}
+		}
 
-    }
+	}
 }

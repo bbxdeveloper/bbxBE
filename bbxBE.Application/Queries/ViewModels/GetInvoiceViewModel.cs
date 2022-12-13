@@ -268,17 +268,42 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Nyomtatott példány száma")]
 		public short Copies { get; set; }
 
-		[ColumnLabel("Nettó")]
+        [ColumnLabel("Kedvezmény%")]
+        [Description("A számlára adott teljes kedvezmény %")]
+        public decimal InvoiceDiscountPercent { get; set; }
+        [ColumnLabel("Kedvezmény")]
+        [Description("A számlára adott teljes kedvezmény % értéke a számla pénznemében")]
+        public decimal InvoiceDiscount { get; set; }
+
+        [ColumnLabel("Kedvezmény HUF")]
+        [Description("A számlára adott teljes kedvezmény % értéke fortintban")]
+        public decimal InvoiceDiscountHUF { get; set; }
+
+
+        [ColumnLabel("Nettó")]
 		[Description("A számla nettó összege a számla pénznemében")]
 		public decimal InvoiceNetAmount { get; set; }
 
+        [ColumnLabel("Nettó HUF")]
+        [Description("A számla nettó összege forintban")]
+        public decimal InvoiceNetAmountHUF { get; set; }
+        
 		[ColumnLabel("Áfa")]
 		[Description("A számla áfa összege a számla pénznemében")]
 		public decimal InvoiceVatAmount { get; set; }
 
-		[ColumnLabel("Bruttó")]
+        [ColumnLabel("Áfa HUF")]
+        [Description("A számla áfa összege forintban")]
+        public decimal InvoiceVatAmountHUF { get; set; }
+
+        [ColumnLabel("Bruttó")]
 		[Description("A számla végösszege a számla pénznemében")]
 		public decimal InvoiceGrossAmount { get; set; }
+
+        [ColumnLabel("Bruttó HUF")]
+        [Description("A számla végösszege forintban")]
+        public decimal InvoiceGrossAmountHUF { get; set; }
+
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
