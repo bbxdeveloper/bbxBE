@@ -17,8 +17,8 @@ namespace bbxBE.Application.Queries.qProduct
     public class QueryProduct : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
         public string SearchString { get; set; }
-        public bool FilterByCode { get; set; } = true;
-        public bool FilterByName { get; set; } = true;
+        public bool? FilterByCode { get; set; }
+        public bool? FilterByName { get; set; }
 
     }
 
