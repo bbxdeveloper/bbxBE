@@ -567,24 +567,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool p_filterByCode, bool p_filterByName)
+        private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool? p_filterByCode, bool? p_filterByName)
         {
             if (!p_items.Any())
                 return;
 
-            if (string.IsNullOrWhiteSpace(p_searchString) || (!p_filterByCode && !p_filterByName))
+            if (string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
             var predicate = PredicateBuilder.New<Product>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-
-            predicate = predicate.And(p => (!p_filterByName || p.Description.ToUpper().Contains(srcFor)) 
+            if (p_filterByName.HasValue && p_filterByCode.HasValue)
+            {
+                predicate = predicate.And(p => (!p_filterByName.Value || p.Description.ToUpper().Contains(srcFor))
                     &&
-                    (!p_filterByCode || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                    (!p_filterByCode.Value || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
                     a.ProductCodeValue.ToUpper().Contains(srcFor)))
                     );
+            }
+            else
+            {
+                //Ha nem adjuk át a filterByCode ill. filterByName paramétert, akkor a kód VAGY név tartalomra keressen.
+                predicate = predicate.And(p => (p.Description.ToUpper().Contains(srcFor))
+                                        ||  // ITT A KÜLÖNBSÉG
+                                        (p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                                        a.ProductCodeValue.ToUpper().Contains(srcFor)))
+                                        );
 
+            }
             p_items = p_items.Where(predicate);
         }
 
