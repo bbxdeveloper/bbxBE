@@ -589,8 +589,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             else
             {
                 //Ha nem adjuk át a filterByCode ill. filterByName paramétert, akkor a kód VAGY név tartalomra keressen.
-
-
                 predicate = predicate.And(p => (p.Description.ToUpper().Contains(srcFor))
                                         ||  // ITT A KÜLÖNBSÉG
                                         (p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
