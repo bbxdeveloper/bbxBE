@@ -24,15 +24,16 @@ using Telerik.Reporting.Processing;
 using Telerik.Reporting.XmlSerialization;
 using bbxBE.Domain.Enums;
 using bbxBE.Common.Enums;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 
 namespace bbxBE.Application.Commands.cmdInvoice
 {
     public class PrintInvoiceCommand : IRequest<FileStreamResult>
     {
         public long ID { get; set; }
-        public string InvoiceNumber { get; set; }
-
         public string baseURL;
+        public int Copies { get; set; } = 1;
     }
 
     public class PrintInvoiceCommandHandler : IRequestHandler<PrintInvoiceCommand, FileStreamResult>
@@ -88,38 +89,58 @@ namespace bbxBE.Application.Commands.cmdInvoice
                     }
             }
 
-            using (System.Xml.XmlReader xmlReader = XmlReader.Create(new StringReader(reportTRDX), settings))
+
+            var resultPdf = new PdfDocument();
+            for (int cp = 0; cp < request.Copies; cp++)
             {
-                ReportXmlSerializer xmlSerializer = new ReportXmlSerializer();
-                rep = (Telerik.Reporting.Report)xmlSerializer.Deserialize(xmlReader);
-                reportSource = new Telerik.Reporting.InstanceReportSource();
 
-                reportSource.ReportDocument = rep;
+
+                using (System.Xml.XmlReader xmlReader = XmlReader.Create(new StringReader(reportTRDX), settings))
+                {
+                    ReportXmlSerializer xmlSerializer = new ReportXmlSerializer();
+                    rep = (Telerik.Reporting.Report)xmlSerializer.Deserialize(xmlReader);
+                    reportSource = new Telerik.Reporting.InstanceReportSource();
+
+                    reportSource.ReportDocument = rep;
+                }
+
+                reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvoiceID", request.ID));
+                reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
+
+                ReportProcessor reportProcessor = new ReportProcessor();
+
+                System.Collections.Hashtable deviceInfo = new System.Collections.Hashtable();
+
+                Telerik.Reporting.Processing.RenderingResult result = reportProcessor.RenderReport("PDF", reportSource, deviceInfo);
+
+                if (result == null)
+                    throw new Exception("Invoice report result is null!");
+                if (result.Errors.Length > 0)
+                    throw new Exception("Invoice report finished with error:" + result.Errors[0].Message);
+
+                //Példányszám beállítása
+                //
+                invoice.Copies++;
+                await _invoiceRepository.UpdateInvoiceAsync(invoice);
+
+                //TODO : Az eredeti példány folderbe el kell rakni ay első a PDF-et
+                Stream stream = new MemoryStream(result.DocumentBytes);
+                var codPdf = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+                foreach (PdfPage page in codPdf.Pages)
+                {
+                    resultPdf.AddPage(page);
+                }
+
             }
-
-            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvoiceID", request.ID));
-            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
-
-            ReportProcessor reportProcessor = new ReportProcessor();
-
-            System.Collections.Hashtable deviceInfo = new System.Collections.Hashtable();
-
-            Telerik.Reporting.Processing.RenderingResult result = reportProcessor.RenderReport("PDF", reportSource, deviceInfo);
-
-            if (result == null)
-                throw new Exception("Invoice report result is null!");
-            if (result.Errors.Length > 0)
-                throw new Exception("Invoice report finished with error:" + result.Errors[0].Message);
-
-            //Példányszám beállítása
-            //
-            invoice.Copies++;
-            await _invoiceRepository.UpdateInvoiceAsync(invoice);
-
-            Stream stream = new MemoryStream(result.DocumentBytes);
             string fileName = $"Invoice{invoice.InvoiceNumber.Replace("/", "-")}.pdf";
 
-            var fsr = new FileStreamResult(stream, $"application/pdf") { FileDownloadName = fileName };
+            MemoryStream resultStream = new MemoryStream();
+            resultPdf.Save(resultStream, false);
+            resultPdf.Close();
+
+            resultStream.Position = 0;
+
+            var fsr = new FileStreamResult(resultStream, $"application/pdf") { FileDownloadName = fileName };
 
             return fsr;
         }
