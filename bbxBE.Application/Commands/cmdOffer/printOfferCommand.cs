@@ -30,6 +30,7 @@ namespace bbxBE.Application.Commands.cmdOffer
     {
         public long ID { get; set; }
         public string baseURL;
+        public int Copies { get; set; } = 1;
     }
 
     public class PrintOfferCommandHandler : IRequestHandler<PrintOfferCommand, FileStreamResult>
