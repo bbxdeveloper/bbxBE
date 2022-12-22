@@ -128,6 +128,9 @@ namespace bbxBE.Common.Consts
         public static string VATCODE_FA = "FA";
 
         public static string FIELD_PRODUCTCODE = "PRODUCTCODE";
+        public static string FIELD_PRODUCTGROUP = "PRODUCTGROUP";
+        public static string FIELD_ORIGIN = "ORIGIN";
+        public static string FIELD_UNITOFMEASUREX = "UNITOFMEASUREX";
         public static string FIELD_PRODUCT = "PRODUCT";
         public static string DEF_WAREHOUSE = "001";
         public static long DEF_WAREHOUSE_ID = 1;

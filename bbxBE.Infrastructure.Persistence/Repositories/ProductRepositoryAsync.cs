@@ -20,6 +20,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 using EFCore.BulkExtensions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Dapper.SqlMapper;
+using bbxBE.Queries.Mappings;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -537,17 +538,38 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
+                bool isDesc = orderBy.ToUpper().EndsWith(" DESC");
+                if (isDesc)
+                {
+                    orderBy = orderBy.Substring(0, orderBy.Length - 5);
+                }
                 if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
                 {
                     //Kis heka...
                     query = query.OrderBy(o => o.ProductCodes.Single(s =>
                                 s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
                 }
+                else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTGROUP)
+                {
+                    query = query.OrderBy(o => o.ProductGroup != null ? o.ProductGroup.ProductGroupCode : "");
+                }
+                else if (orderBy.ToUpper() == bbxBEConsts.FIELD_ORIGIN)
+                {
+                    query = query.OrderBy(o => o.Origin != null ? o.Origin.OriginCode : "");
+                }
+                else if (orderBy.ToUpper() == bbxBEConsts.FIELD_UNITOFMEASUREX)
+                {
+                    query = query.OrderBy(o => MapQueries.enUnitOfMeasureNameResolver(o.UnitOfMeasure));
+                }
                 else
                 {
                     query = query.OrderBy(orderBy);
                 }
 
+                if (isDesc)
+                {
+                    query = query.Reverse();
+                }
             }
 
             // retrieve data to list
