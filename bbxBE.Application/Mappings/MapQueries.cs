@@ -163,7 +163,7 @@ namespace bbxBE.Queries.Mappings
             return "";
         }
 
-        private static string enUnitOfMeasureNameResolver(string UnitOfMeasure)
+        public static string enUnitOfMeasureNameResolver(string UnitOfMeasure)
         {
             if (!string.IsNullOrWhiteSpace(UnitOfMeasure))
             {
