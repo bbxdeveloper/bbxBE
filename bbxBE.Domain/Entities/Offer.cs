@@ -69,6 +69,10 @@ namespace bbxBE.Domain.Entities
 		[Description("Legutolsó verzió?")]
 		public bool LatestVersion { get; set; }
 
+		[ColumnLabel("Bruttó árak?")]
+		[Description("Bruttó árak megjelenítése?")]
+		public bool IsBrutto { get; set; }
+		
 
 		//relációk
 

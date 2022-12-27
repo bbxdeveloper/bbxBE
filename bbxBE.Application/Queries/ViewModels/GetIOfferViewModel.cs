@@ -222,6 +222,11 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Legutolsó verzió?")]
 		public bool LatestVersion { get; set; }
 
+		[ColumnLabel("Bruttó árak?")]
+		[Description("Bruttó árak megjelenítése?")]
+		public bool IsBrutto { get; set; }
+
+
 		[ColumnLabel("Nettó összérték")]
 		[Description("Nettó összérték")]
 		[DataMember]

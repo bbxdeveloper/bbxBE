@@ -160,7 +160,11 @@ namespace bxBE.Application.Commands.cmdOffer
 		[Description("Érvényesség dátuma")]
 		public DateTime OfferVaidityDate { get; set; }
 
-        [ColumnLabel("Pénznem")]
+		[ColumnLabel("Bruttó árak?")]
+		[Description("Bruttó árak megjelenítése?")]
+		public bool IsBrutto { get; set; }
+
+		[ColumnLabel("Pénznem")]
         [Description("Pénznem")]
         public string CurrencyCode { get; set; }
 
