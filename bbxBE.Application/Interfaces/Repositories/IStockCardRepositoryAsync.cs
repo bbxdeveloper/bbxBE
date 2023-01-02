@@ -15,9 +15,7 @@ namespace bbxBE.Application.Interfaces.Repositories
     {
         Task<StockCard> CreateStockCard(Stock p_Stock, DateTime p_StockCardDate,
             long p_WarehouseID, long? p_ProductID, long? p_UserID, long? p_InvoiceLineID, long? p_CustomerID,
-            enStockCardType p_ScType,
-            decimal p_XCalcQty, decimal p_XRealQty, decimal p_XOutQty, decimal p_UnitPrice,
-            string p_XRel);
+            enStockCardType p_ScType, decimal p_XRealQty, decimal p_UnitPrice, string p_XRel);
         Task<Entity> GetStockCardAsync(long ID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockCardAsync(QueryStockCard requestParameters);
     }

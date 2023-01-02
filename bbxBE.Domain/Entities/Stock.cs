@@ -19,18 +19,10 @@ namespace bbxBE.Domain.Entities
         [Description("Termék ID")]
         public long ProductID { get; set; }
 
-
-        [ColumnLabel("Krt.")]
-        [Description("Karton szerinti mennyiség")]
-        public decimal CalcQty { get; set; }
-
         [ColumnLabel("Valós")]
         [Description("Valós mennyiség")]
         public decimal RealQty { get; set; }
 
-        [ColumnLabel("Kiadott")]
-        [Description("Kiadott mennyiség")]
-        public decimal OutQty { get; set; }
 
         [ColumnLabel("ELÁBÉ")]
         [Description("Átlagolt beszerzési egységár")]

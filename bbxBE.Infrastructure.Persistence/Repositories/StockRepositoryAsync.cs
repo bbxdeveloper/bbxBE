@@ -100,22 +100,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
                                 Common.Enums.enStockCardType.INV_DLV,
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
-                                invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
-                                0, Math.Round( invoiceLine.UnitPriceHUF * (1-invoice.InvoiceDiscountPercent/100),1),
+                                Math.Round( invoiceLine.UnitPriceHUF * (1-invoice.InvoiceDiscountPercent/100),1),
                                 invoice.InvoiceNumber + ( invoice.Incoming ? ";" + invoice.CustomerInvoiceNumber : "" ));
 
 
                     if (invoice.Incoming)
                     {
 
-                        stock.CalcQty += invoiceLine.Quantity;
                         stock.RealQty += invoiceLine.Quantity;
                         stock.LatestIn = DateTime.UtcNow;
 
                     }
                     else
                     {
-                        stock.CalcQty -= invoiceLine.Quantity;
                         stock.RealQty -= invoiceLine.Quantity;
                         stock.LatestOut = DateTime.UtcNow;
                     }
@@ -168,21 +165,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
 
                 //beaktualizáljuk az InvCtrl-be az aktuális raktárkészletet
-                invCtrl.OCalcQty = stock.CalcQty;
                 invCtrl.ORealQty = stock.RealQty;
 
 
                 var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invCtrl.InvCtrlDate,
                             invCtrl.WarehouseID, invCtrl.ProductID, invCtrl.UserID, 0, ownData.ID,
                             invCtrl.InvCtrlType == enInvCtrlType.ICP.ToString() ? enStockCardType.ICP : enStockCardType.ICC,
-                            invCtrl.NCalcQty - invCtrl.OCalcQty,        //csak a különbséget kell átadni!!!
                             invCtrl.NRealQty - invCtrl.ORealQty,        //csak a különbséget kell átadni!!!
-                            0, stock.AvgCost,
+                            stock.AvgCost,
                             XRel);
 
 
 
-                stock.CalcQty = invCtrl.NCalcQty;
                 stock.RealQty = invCtrl.NRealQty;
                 stock.AvgCost = invCtrl.AvgCost;
 
@@ -384,7 +378,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var absenedItems = stockItems.Where(s =>
                         !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
-                        (!requestParameter.IsInStock || s.CalcQty != 0 || s.RealQty != 0)).ToList();
+                        (!requestParameter.IsInStock ||s.RealQty != 0)).ToList();
 
             if (!requestParameter.IsInStock)
             {
@@ -398,9 +392,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         WarehouseID = invCtrlPeriod.WarehouseID,
                         ProductID = p.ID,
-                        CalcQty = 0,
                         RealQty = 0,
-                        OutQty = 0,
                         AvgCost = 0,
                         LatestIn = null,
                         LatestOut = null,

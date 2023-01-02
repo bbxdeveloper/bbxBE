@@ -86,10 +86,6 @@ namespace bbxBE.Application.Queries.ViewModels
         #endregion
 
 
-        [ColumnLabel("E.Krt")]
-        [Description("Eredeti karton szerinti mennyiség")]
-        public decimal OCalcQty { get; set; }
-
         [ColumnLabel("E.Valós")]
         [Description("Eredeti valós mennyiség")]
         public decimal ORealQty { get; set; }
@@ -98,9 +94,6 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Eredeti kiadott mennyiség")]
         public decimal OOutQty { get; set; }
 
-        [ColumnLabel("V.Krt")]
-        [Description("Karton szerinti mennyiség változás")]
-        public decimal XCalcQty { get; set; }
 
         [ColumnLabel("V.Valós")]
         [Description("Valós mennyiség változás")]
@@ -109,10 +102,6 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("V.Kiadott")]
         [Description("Kiadott mennyiség változás")]
         public decimal XOutQty { get; set; }
-
-        [ColumnLabel("Új Krt")]
-        [Description("Új karton szerinti mennyiség")]
-        public decimal NCalcQty { get; set; }
 
         [ColumnLabel("Új Valós")]
         [Description("Új Valós mennyiség")]

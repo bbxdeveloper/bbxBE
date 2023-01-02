@@ -120,8 +120,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         //* leltári tétel rekord kiegészítése *
                         //************************************
 
-                        invCtrlItem.NCalcQty = invCtrlItem.NRealQty;
-
                         //nyilvántartási egységár meghatározása
                         // 1. Raktárkészlet alapján?
                         var stock = await _dbContext.Stock

@@ -32,10 +32,6 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Termékmegnevezés, leírás")]
         public string Product { get; set; }
 
-        [ColumnLabel("Krt.")]
-        [Description("Karton szerinti mennyiség")]
-        public decimal CalcQty { get; set; }
-
         [ColumnLabel("Valós")]
         [Description("Valós mennyiség")]
         public decimal RealQty { get; set; }
