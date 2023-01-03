@@ -90,27 +90,18 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Eredeti valós mennyiség")]
         public decimal ORealQty { get; set; }
 
-        [ColumnLabel("E.Kiadott")]
-        [Description("Eredeti kiadott mennyiség")]
-        public decimal OOutQty { get; set; }
 
 
         [ColumnLabel("V.Valós")]
         [Description("Valós mennyiség változás")]
         public decimal XRealQty { get; set; }
 
-        [ColumnLabel("V.Kiadott")]
-        [Description("Kiadott mennyiség változás")]
-        public decimal XOutQty { get; set; }
-
+ 
         [ColumnLabel("Új Valós")]
         [Description("Új Valós mennyiség")]
         public decimal NRealQty { get; set; }
 
-        [ColumnLabel("Új Kiadott")]
-        [Description("Új Kiadott mennyiség")]
-        public decimal NOutQty { get; set; }
-
+ 
         [ColumnLabel("Ár")]
         [Description("Ár")]
         public decimal UnitPrice { get; set; }

@@ -36,9 +36,6 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Valós mennyiség")]
         public decimal RealQty { get; set; }
 
-        [ColumnLabel("Kiadott")]
-        [Description("Kiadott mennyiség")]
-        public decimal OutQty { get; set; }
 
         [ColumnLabel("ELÁBÉ")]
         [Description("Átlagolt beszerzési egységár")]
