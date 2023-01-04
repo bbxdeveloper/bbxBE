@@ -51,18 +51,9 @@ namespace bbxBE.Domain.Entities
         [Description("Leltározás dátuma")]
         public DateTime InvCtrlDate { get; set; }
 
-
-        [ColumnLabel("E.Klt")]
-        [Description("Eredeti karton szerinti mennyiség")]
-        public decimal OCalcQty { get; set; }
-
         [ColumnLabel("E.Valós")]
         [Description("Eredeti valós mennyiség")]
         public decimal ORealQty { get; set; }
-
-        [ColumnLabel("Leltári Klt")]
-        [Description("Leltári karton szerinti mennyiség")]
-        public decimal NCalcQty { get; set; }
 
         [ColumnLabel("Leltári  valós")]                       
         [Description("Leltári  valós mennyiség")]

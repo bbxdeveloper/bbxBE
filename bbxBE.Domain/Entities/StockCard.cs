@@ -59,42 +59,19 @@ namespace bbxBE.Domain.Entities
         }
         #endregion 
 
-        [ColumnLabel("E.Krt")]
-        [Description("Eredeti karton szerinti mennyiség")]
-        public decimal OCalcQty { get; set; }
-
         [ColumnLabel("E.Valós")]
         [Description("Eredeti valós mennyiség")]
         public decimal ORealQty { get; set; }
-
-        [ColumnLabel("E.Kiadott")]
-        [Description("Eredeti kiadott mennyiség")]
-        public decimal OOutQty { get; set; }
-
-        [ColumnLabel("V.Krt")]
-        [Description("Karton szerinti mennyiség változás")]
-        public decimal XCalcQty { get; set; }
 
         [ColumnLabel("V.Valós")]
         [Description("Valós mennyiség változás")]
         public decimal XRealQty { get; set; }
 
-        [ColumnLabel("V.Kiadott")]
-        [Description("Kiadott mennyiség változás")]
-        public decimal XOutQty { get; set; }
-
-        [ColumnLabel("Új Krt")]
-        [Description("Új karton szerinti mennyiség")]
-        public decimal NCalcQty { get; set; }
-
         [ColumnLabel("Új valós")]
         [Description("Új valós mennyiség")]
         public decimal NRealQty { get; set; }
 
-        [ColumnLabel("Új kiadott")]
-        [Description("Új kiadott mennyiség")]
-        public decimal NOutQty { get; set; }
-
+ 
         [ColumnLabel("Ár")]
         [Description("Ár")]
         public decimal UnitPrice { get; set; }

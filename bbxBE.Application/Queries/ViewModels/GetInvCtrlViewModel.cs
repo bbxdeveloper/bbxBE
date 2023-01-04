@@ -68,17 +68,9 @@ namespace bbxBE.Application.Queries.ViewModels
         public DateTime InvCtrlDate { get; set; }
 
 
-        [ColumnLabel("E.Krt")]
-        [Description("Eredeti karton szerinti mennyiség")]
-        public decimal OCalcQty { get; set; }
-
         [ColumnLabel("E.Valós")]
         [Description("Eredeti valós mennyiség")]
         public decimal ORealQty { get; set; }
-
-        [ColumnLabel("Új Krt")]
-        [Description("Új karton szerinti mennyiség")]
-        public decimal NCalcQty { get; set; }
 
         [ColumnLabel("Új valós")]
         [Description("Új valós mennyiség")]
