@@ -128,7 +128,14 @@ namespace bbxBE.Application.Queries.ViewModels
 			[NotDBField] 
 			public decimal BrtAmount { get { return Math.Round(Quantity * UnitPrice * ( 1 + VatPercentage),  1); } }
 
-		}
+
+            [ColumnLabel("Bruttó érték megjelenítés?")]
+            [Description("Bruttó érték megjelenítés?")]
+            [DataMember]
+            [NotDBField]
+            public bool ShowBrtAmount { get; set; }
+
+        }
 
 
 
@@ -259,5 +266,12 @@ namespace bbxBE.Application.Queries.ViewModels
 		[MapToEntity("offerLines")]
 		public List<GetOfferViewModel.OfferLine> OfferLines { get; set; } = new List<GetOfferViewModel.OfferLine>();
 
-	}
+        public void FillOfferLines()
+        {
+            foreach (var item in OfferLines)
+            {
+                item.ShowBrtAmount = IsBrutto;
+            }
+        }
+    }
 }

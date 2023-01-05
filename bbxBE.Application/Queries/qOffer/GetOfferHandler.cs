@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using MediatR;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -46,8 +47,21 @@ namespace bbxBE.Application.Queries.qOffer
                 var entityOffer = await _OfferRepository.GetOfferAsync(request.ID, request.FullData);
             var data = entityOffer.MapItemFieldsByMapToAnnotation<GetOfferViewModel>();
 
+            FillOfferLinesData(data);
+
             // response wrapper
             return data;
+        }
+
+        private void FillOfferLinesData(Entity data)
+        {
+            data.TryGetValue("IsBrutto", out object IsBruttoValue);
+            data.TryGetValue("offerLines", out object OfferLinesArray);
+            var _offerLines = OfferLinesArray as List<GetOfferViewModel.OfferLine>;
+            foreach (var offerLine in _offerLines)
+            {
+                offerLine.ShowBrtAmount = Convert.ToBoolean(IsBruttoValue);
+            }
         }
     }
 }
