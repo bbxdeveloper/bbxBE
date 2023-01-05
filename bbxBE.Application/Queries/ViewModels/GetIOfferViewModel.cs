@@ -242,6 +242,12 @@ namespace bbxBE.Application.Queries.ViewModels
 		//public decimal SumNetAmount { get { return Math.Round(OfferLines.Sum(s => s.NetAmount), 0); } }
 		public decimal SumNetAmount { get; set; }
 
+		[ColumnLabel("Áfa összérték")]
+		[Description("Áfa összérték")]
+		[DataMember]
+		[NotDBField]
+		public decimal SumVatAmount { get { return SumBrtAmount - SumNetAmount; }  }
+
 
 		[ColumnLabel("Bruttó összérték")]
 		[Description("Bruttó összérték")]
