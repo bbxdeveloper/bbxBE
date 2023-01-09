@@ -58,6 +58,8 @@ namespace bbxBE.Application.Queries.qOffer
             data.TryGetValue("IsBrutto", out object IsBruttoValue);
             data.TryGetValue("offerLines", out object OfferLinesArray);
             var _offerLines = OfferLinesArray as List<GetOfferViewModel.OfferLine>;
+            if (_offerLines == null)
+                return;
             foreach (var offerLine in _offerLines)
             {
                 offerLine.ShowBrtAmount = Convert.ToBoolean(IsBruttoValue);
