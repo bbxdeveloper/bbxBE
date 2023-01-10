@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report DataSourceName="webServiceDataSource1" Width="190.46mm" UnitOfMeasure="Mm" Name="Offer" SnapGridSize="10mm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
+<Report DataSourceName="webServiceDataSource1" Width="190.46mm" UnitOfMeasure="Mm" Name="Offer" Zoom="1.5" SnapGridSize="10mm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
     <WebServiceDataSource ParameterValues="{&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;ID&quot;:&quot;200&quot;,&quot;JWT&quot;:&quot;132344&quot;,&quot;FullData&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Offer" Name="webServiceDataSource1">
       <Parameters>
@@ -114,7 +114,7 @@
     </PageHeaderSection>
     <DetailSection Height="1.102in" Name="detailSection1">
       <Items>
-        <Table DataSourceName="webServiceDataSource1" Width="189.63mm" Height="10mm" Left="0.2mm" Top="0.2mm" RowHeadersPrintOnEveryPage="True" Name="table1" StyleName="Normal.TableNormal">
+        <Table DataSourceName="webServiceDataSource1" Width="189.63mm" Height="15mm" Left="0.02cm" Top="0.2mm" RowHeadersPrintOnEveryPage="True" Anchoring="Left, Right" Name="table1" StyleName="Normal.TableNormal">
           <Body>
             <Cells>
               <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
@@ -219,6 +219,52 @@
                   </TextBox>
                 </ReportItem>
               </TableCell>
+              <TableCell RowIndex="1" ColumnIndex="7" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="= Sum(Fields.unitVat)" Format="{0:## ### ##0.00}" Name="textBox48" StyleName="Normal.TableBody">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Size="7pt" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="1" ColumnIndex="8" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="= Sum(Fields.netAmount)" Format="{0:## ### ##0.00}" Name="textBox49" StyleName="Normal.TableBody">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Size="7pt" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="1" ColumnIndex="9" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="= Sum(Fields.brtAmount)" Format="{0:## ### ##0.00}" Name="textBox50" StyleName="Normal.TableBody">
+                    <Style Visible="False" TextAlign="Right" VerticalAlign="Middle">
+                      <Font Size="7pt" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    </Style>
+                    <ConditionalFormatting>
+                      <FormattingRule>
+                        <Style Visible="True" />
+                        <Filters>
+                          <Filter Expression="= Last(Fields.showBrtAmount)" Operator="Equal" Value="= True" />
+                        </Filters>
+                      </FormattingRule>
+                    </ConditionalFormatting>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="1" ColumnIndex="0" RowSpan="1" ColumnSpan="7">
+                <ReportItem>
+                  <TextBox Width="129.63mm" Height="5mm" Left="0cm" Top="0cm" Value="= &quot;Összesen:&quot; + Last(Fields.showBrtAmount)" Name="textBox31" StyleName="Normal.TableBody">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Size="7pt" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
             </Cells>
             <Columns>
               <Column Width="6.96mm" />
@@ -233,6 +279,7 @@
               <Column Width="20mm" />
             </Columns>
             <Rows>
+              <Row Height="5mm" />
               <Row Height="5mm" />
             </Rows>
           </Body>
@@ -250,6 +297,11 @@
               <Groupings>
                 <Grouping />
               </Groupings>
+            </TableGroup>
+            <TableGroup Name="group11">
+              <ChildGroups>
+                <TableGroup Name="group12" />
+              </ChildGroups>
             </TableGroup>
           </RowGroups>
           <ColumnGroups>
@@ -360,60 +412,11 @@
             <Binding Path="DataSource" Expression="= Fields.offerLines" />
           </Bindings>
         </Table>
-        <TextBox Width="129.49mm" Height="5mm" Left="0.2mm" Top="10.2mm" Value="Összesen:" Format="{0:## ### ##0.00}" Name="textBox42">
-          <Style TextAlign="Right" VerticalAlign="Middle">
-            <Font Name="Tahoma" Size="7pt" />
-            <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
-            <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
-            <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
-          </Style>
-        </TextBox>
-        <HtmlTextBox Width="189.41mm" Height="10mm" Left="0.2mm" Top="17.23mm" Value="= Iif(Len(Fields.notice) &gt; 0, Fields.notice, &quot;&quot;)" CanShrink="True" Name="htmlTextBox1">
+        <HtmlTextBox Width="189.41mm" Height="10mm" Left="0.2mm" Top="16.92mm" Value="= Iif(Len(Fields.notice) &gt; 0, Fields.notice, &quot;&quot;)" CanShrink="True" Name="htmlTextBox1">
           <Style>
             <Font Italic="True" />
           </Style>
         </HtmlTextBox>
-        <TextBox Width="20mm" Height="5mm" Left="149.83mm" Top="10.2mm" Value="textBox13" Format="{0:## ### ##0.00}" Name="textBox43">
-          <Style TextAlign="Right" VerticalAlign="Middle">
-            <Font Name="Tahoma" Size="7pt" />
-            <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
-            <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
-            <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
-          </Style>
-          <Bindings>
-            <Binding Path="Value" Expression="= Fields.sumNetAmount" />
-          </Bindings>
-        </TextBox>
-        <TextBox Width="20mm" Height="5mm" Left="169.83mm" Top="10.2mm" Value="textBox13" Format="{0:## ### ##0.00}" Name="textBox39">
-          <Style Visible="True" TextAlign="Right" VerticalAlign="Middle">
-            <Font Name="Tahoma" Size="7pt" />
-            <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
-            <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
-            <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
-          </Style>
-          <ConditionalFormatting>
-            <FormattingRule>
-              <Style Visible="False" />
-              <Filters>
-                <Filter Expression="= Fields.isBrutto" Operator="Equal" Value="= False" />
-              </Filters>
-            </FormattingRule>
-          </ConditionalFormatting>
-          <Bindings>
-            <Binding Path="Value" Expression="= Fields.sumBrtAmount" />
-          </Bindings>
-        </TextBox>
-        <TextBox Width="20.13mm" Height="5mm" Left="129.7mm" Top="10.2mm" Value="textBox13" Format="{0:## ### ##0.00}" Name="textBox13">
-          <Style TextAlign="Right" VerticalAlign="Middle">
-            <Font Name="Tahoma" Size="7pt" />
-            <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
-            <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
-            <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
-          </Style>
-          <Bindings>
-            <Binding Path="Value" Expression="= Fields.sumVatAmount" />
-          </Bindings>
-        </TextBox>
       </Items>
     </DetailSection>
     <PageFooterSection Height="0.433in" Name="pageFooterSection1">
