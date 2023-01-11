@@ -63,8 +63,9 @@ namespace bbxBE.Domain.Entities
 		public decimal UnitPrice { get; set; }
 		[ColumnLabel("Ár HUF")]
 		[Description("Ár forintban")]
-		
-		public decimal UnitPriceHUF { get; set; }
+
+        #region Nyomtatványon megjelenő mezők
+        public decimal UnitPriceHUF { get; set; }
 		[ColumnLabel("Nettó érték")]
 		[Description("Ár a számla pénznemében")]
 		public decimal LineNetAmount { get; set; }
@@ -83,9 +84,31 @@ namespace bbxBE.Domain.Entities
 		[ColumnLabel("Bruttó érték HUF")]
 		[Description("Bruttó forintban")]
 		public decimal LineGrossAmountNormalHUF { get; set; }
+        #endregion
 
-		//javítószámla esetén töltött
-		[ColumnLabel("Az eredeti számla tételének sorszáma")]
+        #region Feldolgozásokban résztvevő mezők
+        [ColumnLabel("Kedvezményel csökkentett nettó érték HUF")]
+        [Description("Kedvezményel csökkentett ár forintban")]
+        public decimal LineNetDiscountedAmount { get; set; }
+        [ColumnLabel("Kedvezményel csökkentett nettó érték HUF")]
+        [Description("Kedvezményel csökkentett ár forintban")]
+        public decimal LineNetDiscountedAmountHUF { get; set; }
+        [ColumnLabel("Kedvezményel csökkentett áfa érték")]
+        [Description("Kedvezményel csökkentett áfa a számla pénznemében")]
+        public decimal LineVatDiscountedAmount { get; set; }
+        [ColumnLabel("Kedvezményel csökkentett áfa érték HUF")]
+        [Description("Kedvezményel csökkentett áfa forintban")]
+        public decimal LineVatDiscountedAmountHUF { get; set; }
+        [ColumnLabel("Kedvezményel csökkentett bruttó érték")]
+        [Description("Kedvezményel csökkentett bruttó a számla pénznemében")]
+        public decimal LineGrossDiscountedAmountNormal { get; set; }
+        [ColumnLabel("Kedvezményel csökkentett bruttó érték HUF")]
+        [Description("Kedvezményel csökkentett bruttó forintban")]
+        public decimal LineGrossDiscountedAmountNormalHUF { get; set; }
+        #endregion
+
+        //javítószámla esetén töltött
+        [ColumnLabel("Az eredeti számla tételének sorszáma")]
 		[Description("Az eredeti számla módosítással érintett tételének sorszáma,(lineNumber).Új tétel létrehozása esetén az új tétel sorszáma, az eredeti számla folytatásaként")]
 		public short LineNumberReference { get; set; }
 		[ColumnLabel("Modosítás jellege")]

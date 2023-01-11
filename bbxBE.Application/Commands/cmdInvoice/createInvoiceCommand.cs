@@ -264,8 +264,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 				decimal InvoiceDiscountHUF = 0;
 
 
-				//Tételsorok
-				foreach (var ln in invoice.InvoiceLines)
+                //Tételsorok
+                foreach (var ln in invoice.InvoiceLines)
 				{
 					var rln = request.InvoiceLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
 
@@ -319,23 +319,41 @@ namespace bxBE.Application.Commands.cmdInvoice
 					}
 
 					//Bizonylatkedvezmény
-					if (!prod.NoDiscount)
+					if (!prod.NoDiscount && request.InvoiceDiscountPercent != 0)
 					{
 						InvoiceDiscount += Math.Round(ln.LineNetAmount * request.InvoiceDiscountPercent / 100, 2);
 						InvoiceDiscountHUF += Math.Round(ln.LineNetAmountHUF * request.InvoiceDiscountPercent / 100, 2);
-					}
-				}
 
-				//SummaryByVatrate
+						ln.LineNetDiscountedAmount = Math.Round(ln.LineNetAmount * (1-request.InvoiceDiscountPercent / 100), 2);
+						ln.LineNetDiscountedAmountHUF = Math.Round(ln.LineNetAmountHUF * (1 - request.InvoiceDiscountPercent / 100), 2);
+						ln.LineVatDiscountedAmount = Math.Round(ln.LineVatAmount * (1 - request.InvoiceDiscountPercent / 100), 2);
+						ln.LineVatDiscountedAmountHUF = Math.Round(ln.LineVatAmountHUF * (1 - request.InvoiceDiscountPercent / 100), 2);
+                        ln.LineGrossDiscountedAmountNormal = Math.Round(ln.LineGrossAmountNormal * (1 - request.InvoiceDiscountPercent / 100), 2);
+						ln.LineGrossDiscountedAmountNormalHUF = Math.Round(ln.LineGrossAmountNormalHUF * (1 - request.InvoiceDiscountPercent / 100), 2);
+                    }
+					else
+					{
+						ln.LineNetDiscountedAmount = ln.LineNetAmount;
+						ln.LineNetDiscountedAmountHUF = ln.LineNetAmountHUF;
+						ln.LineVatDiscountedAmount = ln.LineVatAmount;
+						ln.LineVatDiscountedAmountHUF = ln.LineVatAmountHUF;
+						ln.LineGrossDiscountedAmountNormal = ln.LineGrossAmountNormal;
+						ln.LineGrossDiscountedAmountNormalHUF = ln.LineGrossAmountNormalHUF;
+                    }
+                }
+
+				//SummaryByVatrate (Megj: A Bizonylatkedvezménnyel csökkentett árral kell )
+
 				invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
 						.Select(g =>
 						{
-							var VatRateNetAmount = Math.Round(g.Sum(s => s.LineNetAmount * (1 - request.InvoiceDiscountPercent / 100)), 1);
-							var VatRateNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF * (1 - request.InvoiceDiscountPercent / 100)), 1);
+							var VatRateNetAmount = Math.Round(g.Sum(s => s.LineNetDiscountedAmount), 1);
+							var VatRateNetAmountHUF = Math.Round(g.Sum(s => s.LineNetDiscountedAmountHUF), 1);
 							var VatPercentage = g.First().VatPercentage;    //Áfa kulcs
 
-							var VatRateVatAmount = Math.Round(VatRateNetAmount * VatPercentage, (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
-							var VatRateVatAmountHUF = Math.Round(VatRateNetAmountHUF * VatPercentage, 0);
+                            var VatRateVatAmount = Math.Round(g.Sum(s => s.LineVatDiscountedAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
+                            var VatRateVatAmountHUF = Math.Round(g.Sum(s => s.LineVatDiscountedAmountHUF), 0);
+
 
 							var VatRateGrossAmount = VatRateNetAmount + VatRateVatAmount;
 							var VatRateGrossAmountHUF = VatRateNetAmountHUF + VatRateVatAmountHUF;

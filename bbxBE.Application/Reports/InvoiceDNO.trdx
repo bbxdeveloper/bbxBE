@@ -691,7 +691,7 @@
                 <Binding Path="DataSource" Expression="= Fields.summaryByVatRates" />
               </Bindings>
             </Table>
-            <TextBox Width="4.573cm" Height="0.35cm" Left="0.013cm" Top="0.002cm" Value="Összesen" Name="textBox75">
+            <TextBox Width="4.573cm" Height="0.35cm" Left="0.013cm" Top="0.002cm" Value="Tételek összesen" Name="textBox75">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
@@ -736,7 +736,7 @@
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2.976cm" Height="0.35cm" Left="5.14cm" Top="0.002cm" Value="= Fields.invoiceNetAmount" Format="{0:N2}" Name="textBox50">
+            <TextBox Width="2.976cm" Height="0.35cm" Left="5.14cm" Top="0.002cm" Value="= Fields.invoiceNetAmount + Fields.invoiceDiscount" Format="{0:N2}" Name="textBox50">
               <Style TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
