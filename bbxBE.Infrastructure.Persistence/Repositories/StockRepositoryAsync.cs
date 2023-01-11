@@ -95,12 +95,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         await AddAsync(stock);
                     }
 
+                    //Ha van bizonylatkedvezmény, akkor a LineNetDiscountedAmountHUF-ból kell visszaszámolni a  realInvoiceUnitPriceHUF-t
+                    var realInvoiceUnitPriceHUF = invoiceLine.UnitPriceHUF;
+                   if( !invoiceLine.Product.NoDiscount && invoice.InvoiceDiscountPercent != 0)
+                    {
+                        realInvoiceUnitPriceHUF = Math.Round(invoiceLine.LineNetDiscountedAmountHUF / invoiceLine.Quantity, 1);
+                    }
+
                     var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
                                 invoice.WarehouseID, invoiceLine.ProductID, invoice.UserID, invoiceLine.ID,
                                 (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
                                 Common.Enums.enStockCardType.INV_DLV,
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
-                                Math.Round( invoiceLine.UnitPriceHUF * (1-invoice.InvoiceDiscountPercent/100),1),
+                                realInvoiceUnitPriceHUF,
                                 invoice.InvoiceNumber + ( invoice.Incoming ? ";" + invoice.CustomerInvoiceNumber : "" ));
 
 
