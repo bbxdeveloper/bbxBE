@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq.Dynamic.Core;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using Microsoft.Extensions.DependencyInjection;
+using AsyncKeyedLock;
 
 namespace bbxBE.Infrastructure.Persistence.Caches
 {
@@ -112,7 +113,11 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             }
         }
 
-        private static LockProvider<string> CacheLockProvider = new LockProvider<string>();
+        private static AsyncKeyedLocker<string> CacheLockProvider = new AsyncKeyedLocker<string>(o =>
+        {
+            o.PoolSize = 20;
+            o.PoolInitialFill = 1;
+        });
 
         public async Task RefreshCache(IQueryable<T> query = null)
         {
@@ -122,33 +127,33 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             var waitForCacheInSeconds = _configuration
                 .GetRequiredSection(bbxBEConsts.CONF_CacheSettings).GetValue<int>(bbxBEConsts.CONF_WaitForCacheInSeconds);
 
-            bool bOK = await CacheLockProvider.WaitAsync(_cacheID, waitForCacheInSeconds * 1000);
+            bool bOK = await CacheLockProvider.TryLockAsync(_cacheID, async () =>
+            {
+                try
+                {
+
+                    if (query != null)
+                    {
+                        _cacheQuery = query;
+                    }
+                    else
+                    {
+                        if (_cacheQuery == null)
+                            throw new NoCacheQueryException(bbxBEConsts.ERR_NOCACHEQUERY);
+                    }
+                    var result = await _cacheQuery.ToDictionaryAsync(i => i.ID);
+                    Cache = new System.Collections.Concurrent.ConcurrentDictionary<long, T>(result);
+                }
+                finally
+                {
+                    _logger.LogInformation($"{className} cache refresh END");
+                }
+            }, waitForCacheInSeconds * 1000).ConfigureAwait(false);
+
             if (!bOK)
             {
                 _logger.LogError($"{className} cache LOCKED");
                 throw new LockedCacheException(string.Format($"{className}:" + bbxBEConsts.ERR_LOCKEDCACHE));
-            }
-
-            try
-            {
-
-                if (query != null)
-                {
-                    _cacheQuery = query;
-                }
-                else
-                {
-                    if (_cacheQuery == null)
-                        throw new NoCacheQueryException(bbxBEConsts.ERR_NOCACHEQUERY);
-                }
-                var result = await _cacheQuery.ToDictionaryAsync(i => i.ID);
-                Cache = new System.Collections.Concurrent.ConcurrentDictionary<long, T>(result);
-            }
-            finally
-            {
-                // release the lock
-                CacheLockProvider.Release(_cacheID);
-                _logger.LogInformation($"{className} cache refresh END");
             }
 
         }
