@@ -38,6 +38,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
+        private readonly ILocationRepositoryAsync _locationRepository;
         private readonly ICacheService<Product> _productcacheService;
 
         public StockRepositoryAsync(ApplicationDbContext dbContext,
@@ -48,6 +49,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IProductRepositoryAsync productRepository,
             IInvCtrlRepositoryAsync invCtrlRepository,
             ICustomerRepositoryAsync customerRepository,
+            ILocationRepositoryAsync locationRepository,
             ICacheService<Product> productcacheService  
           ) : base(dbContext)
         {
@@ -62,6 +64,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _invCtrlRepository = invCtrlRepository;
             _customerRepository = customerRepository;
             _productcacheService = productcacheService;
+            _locationRepository = locationRepository;
         }
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
@@ -479,6 +482,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
+        public async Task<Stock> UpdateStockLocationAsync(long ID, long? LocationID)
+        {
+            var stock = await GetByIdAsync(ID);
 
+                if (stock == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_STOCKNOTFOUND, ID));
+            }
+
+            if (LocationID.HasValue)
+            {
+                var loc = await _locationRepository.GetByIdAsync(LocationID.Value);
+                if (loc == null)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_LOCATIONOTFOUND, LocationID.Value));
+                }
+                stock.LocationID = ID;
+            }
+            else
+            {
+                stock.LocationID = null;
+            }
+
+            await UpdateAsync(stock);
+
+            return stock;
+        }
     }
 }

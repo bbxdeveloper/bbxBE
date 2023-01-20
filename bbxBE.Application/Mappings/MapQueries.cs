@@ -115,7 +115,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
              .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.Product.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description))
-             .ForMember(dst => dst.Location, opt => opt.MapFrom(src => (src.Location != null ? src.Location.LocationCode + "-" + src.Origin.LocationCode : "")));
+             .ForMember(dst => dst.Location, opt => opt.MapFrom(src => (src.Location != null ? src.Location.LocationCode + "-" + src.Location.LocationDescription : "")));
 
             CreateMap<StockCard, GetStockCardViewModel>()
              .ForMember(dst => dst.ScTypeX, opt => opt.MapFrom(src => enStockCardTypeNameResolver(src.ScType)))

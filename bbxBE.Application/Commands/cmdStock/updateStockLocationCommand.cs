@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace bxBE.Application.Commands.cmdLocation
 {
-    public class updateStockLocationCommand : IRequest<Response<Stock>>
+    public class UpdateStockLocationCommand : IRequest<Response<Stock>>
     {
         [ColumnLabel("ID")]
         [Description("ID")]
@@ -30,27 +30,24 @@ namespace bxBE.Application.Commands.cmdLocation
         public long? LocationID { get; set; }
     }
 
-    public class updateStockLocationCommandHandler : IRequestHandler<updateStockLocationCommand, Response<Stock>>
+    public class UpdateStockLocationCommandHandler : IRequestHandler<UpdateStockLocationCommand, Response<Stock>>
     {
-        private readonly ILocationRepositoryAsync _LocationRepository;
+        private readonly IStockRepositoryAsync _StockRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public updateStockLocationCommandHandler(ILocationRepositoryAsync LocationRepository, IMapper mapper, IConfiguration configuration)
+        public UpdateStockLocationCommandHandler(IStockRepositoryAsync stockRepositoryy, IMapper mapper, IConfiguration configuration)
         {
-            _LocationRepository = LocationRepository;
+            _StockRepository = stockRepositoryy;
             _mapper = mapper;
             _configuration = configuration;
         }
 
-        public async Task<Response<Location>> Handle(UpdateLocationCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Stock>> Handle(UpdateStockLocationCommand request, CancellationToken cancellationToken)
         {
-            var cust = _mapper.Map<Location>(request);
-
-            await _LocationRepository.UpdateLocationAsync(cust);
-            return new Response<Location>(cust);
+            var stock = await _StockRepository.UpdateStockLocationAsync(request.ID, request.LocationID);
+            return new Response<Stock>(stock);
         }
-
 
     }
 }
