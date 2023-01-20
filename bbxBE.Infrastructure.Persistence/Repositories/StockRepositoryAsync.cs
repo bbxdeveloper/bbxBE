@@ -206,6 +206,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var item = await _dbContext.Stock.AsNoTracking()
              .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
              .Include(w => w.Warehouse).AsNoTracking()
+             .Include(l => l.Location).AsNoTracking()
              .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
                         && w.ID == ID && !w.Deleted).FirstOrDefaultAsync();
 
@@ -228,6 +229,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Stock> GetStockRecordAsync( long warehouseID, long productID)
         {
             var item = await _dbContext.Stock.AsNoTracking()
+             .Include(l => l.Location).AsNoTracking()
              .Where(w => w.WarehouseID == warehouseID && w.ProductID == productID && !w.Deleted).FirstOrDefaultAsync();
 
             if(item == null)        //Jeremi kérése
@@ -254,6 +256,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //raktárra lekrédezés
             var preQuery = _dbContext.Stock.AsNoTracking()
                         .Include(w => w.Warehouse).AsNoTracking()
+                        .Include(l => l.Location).AsNoTracking()
                         .Where(w => !w.Deleted && w.WarehouseID == requestParameter.WarehouseID);
 
             // Count records total
@@ -376,6 +379,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var prodItems = _productcacheService.ListCache();
             var stockItems = await _dbContext.Stock.AsNoTracking()
                              .Include(w => w.Warehouse).AsNoTracking()
+                             .Include(l => l.Location).AsNoTracking()
                              .Where(w => w.WarehouseID == invCtrlPeriod.WarehouseID && !w.Deleted).ToListAsync();
 
             stockItems.ForEach(i =>

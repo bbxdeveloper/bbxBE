@@ -49,5 +49,14 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Legutolsó kiadás dátuma")]
         public DateTime? LatestOut { get; set; }
 
+        [ColumnLabel("Elhelyezés ID")]
+        [Description("Elhelyezés ID")]
+        public long? LocationID { get; set; }
+
+        [ColumnLabel("Elhelyezés")]
+        [Description("Elhelyezés")]
+        public string Location { get; set; }
+
+
     }
 }
