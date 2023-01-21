@@ -54,7 +54,7 @@ namespace bbxBE.Domain.Entities
         [ForeignKey("LocationID")]
         [ColumnLabel("Elhelyezés")]
         [Description("Elhelyezés")]
-        public virtual Location? Location { get; set; }
+        public virtual Location Location { get; set; }
 
         [ColumnLabel("Leltári tételek")]
         [Description("Leltári tételek")]

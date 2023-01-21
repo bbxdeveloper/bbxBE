@@ -19,7 +19,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
         {
 
             Alter.Table("Stock")
-                   .AddColumn("LocationID").AsDecimal().Nullable();
+                   .AddColumn("LocationID").AsInt64().Nullable();
         }
     }
 }

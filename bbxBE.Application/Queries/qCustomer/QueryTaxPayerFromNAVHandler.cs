@@ -54,8 +54,6 @@ namespace bbxBE.Application.Queries.qCustomer
 
         public async Task<Response<Customer>> Handle(QueryTaxPayer request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.Taxnumber) || request.Taxnumber.Length != 8)
-                throw new ValidationException(new List<string>() { bbxBEConsts.ERR_NAV_TAXPAYER });
 
             var bllNavObj = new bllNAV(_NAVSettings, _logger);
             var resTaxpayer = bllNavObj.QueryTaxPayer(request);
