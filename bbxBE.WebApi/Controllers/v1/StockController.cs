@@ -3,6 +3,8 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qStock;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
+using bxBE.Application.Commands.cmdLocation;
+using bxBE.Application.Commands.cmdProductGroup;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -59,6 +61,12 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> QueryInvCtrlStockAbsent([FromQuery] QueryInvCtrlStockAbsent filter)
         {
             return Ok(await Mediator.Send(filter));
+        }
+
+        [HttpPut("updatelocation")]
+        public async Task<IActionResult> UpdateLocation(UpdateStockLocationCommand command)
+        {
+            return Ok(await Mediator.Send(command));
         }
     }
 }

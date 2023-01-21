@@ -36,6 +36,9 @@ namespace bbxBE.Domain.Entities
         [Description("Legutolsó kiadás dátuma")]
         public DateTime? LatestOut { get; set; }
 
+        [ColumnLabel("Elhelyezés ID")]
+        [Description("Elhelyezés ID")]
+        public long? LocationID { get; set; }
 
         //relációk
         [ForeignKey("WarehouseID")]
@@ -47,6 +50,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Termék")]
         [Description("Termék")]
         public virtual Product Product { get; set; }
+
+        [ForeignKey("LocationID")]
+        [ColumnLabel("Elhelyezés")]
+        [Description("Elhelyezés")]
+        public virtual Location Location { get; set; }
 
         [ColumnLabel("Leltári tételek")]
         [Description("Leltári tételek")]

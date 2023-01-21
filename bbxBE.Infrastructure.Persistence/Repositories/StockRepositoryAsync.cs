@@ -38,6 +38,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
+        private readonly ILocationRepositoryAsync _locationRepository;
         private readonly ICacheService<Product> _productcacheService;
 
         public StockRepositoryAsync(ApplicationDbContext dbContext,
@@ -48,7 +49,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IProductRepositoryAsync productRepository,
             IInvCtrlRepositoryAsync invCtrlRepository,
             ICustomerRepositoryAsync customerRepository,
-            ICacheService<Product> productcacheService  
+            ILocationRepositoryAsync locationRepository,
+            ICacheService<Product> productcacheService
           ) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -62,6 +64,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _invCtrlRepository = invCtrlRepository;
             _customerRepository = customerRepository;
             _productcacheService = productcacheService;
+            _locationRepository = locationRepository;
         }
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
@@ -70,7 +73,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             foreach (var invoiceLine in invoice.InvoiceLines)
             {
-                if (invoiceLine.ProductID.HasValue && invoiceLine.Product.IsStock )
+                if (invoiceLine.ProductID.HasValue && invoiceLine.Product.IsStock)
                 {
 
                     var stock = lstStock.FirstOrDefault(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID);
@@ -97,7 +100,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     //Ha van bizonylatkedvezmény, akkor a LineNetDiscountedAmountHUF-ból kell visszaszámolni a  realInvoiceUnitPriceHUF-t
                     var realInvoiceUnitPriceHUF = invoiceLine.UnitPriceHUF;
-                   if( !invoiceLine.Product.NoDiscount && invoice.InvoiceDiscountPercent != 0)
+                    if (!invoiceLine.Product.NoDiscount && invoice.InvoiceDiscountPercent != 0)
                     {
                         realInvoiceUnitPriceHUF = Math.Round(invoiceLine.LineNetDiscountedAmountHUF / invoiceLine.Quantity, 1);
                     }
@@ -108,7 +111,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 Common.Enums.enStockCardType.INV_DLV,
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
                                 realInvoiceUnitPriceHUF,
-                                invoice.InvoiceNumber + ( invoice.Incoming ? ";" + invoice.CustomerInvoiceNumber : "" ));
+                                invoice.InvoiceNumber + (invoice.Incoming ? ";" + invoice.CustomerInvoiceNumber : ""));
 
 
                     if (invoice.Incoming)
@@ -147,7 +150,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var invCtrl in invCtrlList)
             {
 
-                
+
 
                 var stock = lstStock.FirstOrDefault(x => x.WarehouseID == invCtrl.WarehouseID && x.ProductID == invCtrl.ProductID); //már foglalkoztunk a készlettel ?
                 if (stock == null)
@@ -187,7 +190,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 stock.RealQty = invCtrl.NRealQty;
                 stock.AvgCost = invCtrl.AvgCost;
 
- 
+
                 invCtrl.StockID = stock.ID;
 
                 lstStock.Add(stock);
@@ -206,6 +209,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var item = await _dbContext.Stock.AsNoTracking()
              .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
              .Include(w => w.Warehouse).AsNoTracking()
+             .Include(l => l.Location).AsNoTracking()
              .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
                         && w.ID == ID && !w.Deleted).FirstOrDefaultAsync();
 
@@ -225,15 +229,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return shapeData;
         }
 
-        public async Task<Stock> GetStockRecordAsync( long warehouseID, long productID)
+        public async Task<Stock> GetStockRecordAsync(long warehouseID, long productID)
         {
             var item = await _dbContext.Stock.AsNoTracking()
+             .Include(l => l.Location).AsNoTracking()
              .Where(w => w.WarehouseID == warehouseID && w.ProductID == productID && !w.Deleted).FirstOrDefaultAsync();
 
-            if(item == null)        //Jeremi kérése
+            if (item == null)        //Jeremi kérése
             {
                 item = new Stock();
-            }    
+            }
             return item;
         }
 
@@ -254,6 +259,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //raktárra lekrédezés
             var preQuery = _dbContext.Stock.AsNoTracking()
                         .Include(w => w.Warehouse).AsNoTracking()
+                        .Include(l => l.Location).AsNoTracking()
                         .Where(w => !w.Deleted && w.WarehouseID == requestParameter.WarehouseID);
 
             // Count records total
@@ -332,7 +338,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!p_item.Any())
                 return;
 
-            if ( p_warehouseID == 0 && string.IsNullOrWhiteSpace(p_searchString))
+            if (p_warehouseID == 0 && string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
             var predicate = PredicateBuilder.New<Stock>();
@@ -367,7 +373,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var invCtrlPeriod = await _dbContext.InvCtrlPeriod.AsNoTracking()
                                         .Include(w => w.Warehouse).AsNoTracking()
-                                        .Where( i=>i.ID == requestParameter.InvCtrlPeriodID).SingleOrDefaultAsync();
+                                        .Where(i => i.ID == requestParameter.InvCtrlPeriodID).SingleOrDefaultAsync();
             if (invCtrlPeriod == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, requestParameter.InvCtrlPeriodID));
@@ -376,6 +382,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var prodItems = _productcacheService.ListCache();
             var stockItems = await _dbContext.Stock.AsNoTracking()
                              .Include(w => w.Warehouse).AsNoTracking()
+                             .Include(l => l.Location).AsNoTracking()
                              .Where(w => w.WarehouseID == invCtrlPeriod.WarehouseID && !w.Deleted).ToListAsync();
 
             stockItems.ForEach(i =>
@@ -385,7 +392,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var absenedItems = stockItems.Where(s =>
                         !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
-                        (!requestParameter.IsInStock ||s.RealQty != 0)).ToList();
+                        (!requestParameter.IsInStock || s.RealQty != 0)).ToList();
 
             if (!requestParameter.IsInStock)
             {
@@ -414,12 +421,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = absenedItems.Count();
 
             // filter data
-            if( !string.IsNullOrEmpty(requestParameter.SearchString))
+            if (!string.IsNullOrEmpty(requestParameter.SearchString))
             {
                 absenedItems = absenedItems.Where(p => p.Product.Description.ToUpper().Contains(requestParameter.SearchString) ||
                         p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
                         a.ProductCodeValue.ToUpper().Contains(requestParameter.SearchString))).ToList();
-            }    
+            }
 
             // Count records after filter
             recordsFiltered = absenedItems.Count();
@@ -457,7 +464,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var absenedItemsPaged = absenedItemsOrdered.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
             // retrieve data to list
-          
+
             //TODO: szebben megoldani
             var resultDataModel = new List<GetStockViewModel>();
             absenedItemsPaged.ForEach(i => resultDataModel.Add(
@@ -475,6 +482,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
+        public async Task<Stock> UpdateStockLocationAsync(long ID, long? LocationID)
+        {
+            var stock = await GetByIdAsync(ID);
 
+            if (stock == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_STOCKNOTFOUND, ID));
+            }
+
+            if (LocationID.HasValue)
+            {
+                var loc = await _locationRepository.GetByIdAsync(LocationID.Value);
+                if (loc == null)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_LOCATIONOTFOUND, LocationID.Value));
+                }
+                stock.LocationID = LocationID;
+            }
+            else
+            {
+                stock.LocationID = null;
+            }
+
+            await UpdateAsync(stock);
+
+            return stock;
+        }
     }
 }
