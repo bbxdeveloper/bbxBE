@@ -69,33 +69,33 @@
         </TextBox>
       </Items>
     </PageHeaderSection>
-    <DetailSection Height="3.3cm" Name="detailSection1">
+    <DetailSection Height="2.1cm" Name="detailSection1">
       <Style>
         <BorderStyle Bottom="Solid" />
         <BorderColor Bottom="Black" />
         <BorderWidth Bottom="1pt" />
       </Style>
       <Items>
-        <Panel Width="19.127cm" Height="3.292cm" Left="0cm" Top="0cm" Name="panel6">
+        <Panel Width="19.127cm" Height="2.1cm" Left="0cm" Top="0cm" Name="panel6">
           <Style>
             <BorderStyle Top="None" Bottom="None" Left="None" Right="None" />
             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
           </Style>
           <Items>
-            <Table Width="19.072cm" Height="2.295cm" Left="0.055cm" Top="0.998cm" KeepTogether="True" Name="tableLines">
+            <Table Width="18.924cm" Height="2.03cm" Left="0.055cm" Top="0cm" ColumnHeadersPrintOnEveryPage="True" FreezeRowHeaders="True" FreezeColumnHeaders="True" KeepTogether="True" Name="tableLines">
               <Body>
                 <Cells>
                   <TableCell RowIndex="0" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
                     <ReportItem>
-                      <Panel Width="113.79px" Height="1.068cm" Left="9cm" Top="0.9cm" Name="panel4" StyleName="">
+                      <Panel Width="112.44px" Height="1.068cm" Left="9cm" Top="0.9cm" Name="panel4" StyleName="">
                         <Style>
-                          <Font Name="Courier New" Size="9pt" Bold="True" />
+                          <Font Name="Courier New" Size="8pt" Bold="True" />
                         </Style>
                         <Items>
                           <TextBox Width="2.975cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.productCode" Name="textBox33">
                             <Style VerticalAlign="Middle">
-                              <Font Size="9pt" Bold="True" />
+                              <Font Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                         </Items>
@@ -104,49 +104,49 @@
                   </TableCell>
                   <TableCell RowIndex="0" ColumnIndex="2" RowSpan="1" ColumnSpan="7">
                     <ReportItem>
-                      <Panel Width="13.491cm" Height="1.068cm" Left="9.367cm" Top="0.865cm" Name="panel8" StyleName="">
+                      <Panel Width="13.403cm" Height="1.068cm" Left="0cm" Top="0cm" Name="panel8" StyleName="">
                         <Style>
-                          <Font Name="Courier New" Size="9pt" />
+                          <Font Name="Courier New" Size="8pt" />
                         </Style>
                         <Items>
                           <TextBox Width="1.586cm" Height="0.4cm" Left="0cm" Top="0.5cm" Value="= Fields.quantity" Format="{0:N2}" Name="textBox36">
                             <Style TextAlign="Right" VerticalAlign="Middle">
-                              <Font Size="9pt" />
+                              <Font Size="8pt" />
                             </Style>
                           </TextBox>
                           <TextBox Width="1.234cm" Height="0.4cm" Left="1.586cm" Top="0.5cm" Value="= Fields.unitOfMeasureX" Name="textBox37">
                             <Style VerticalAlign="Middle">
-                              <Font Size="9pt" />
+                              <Font Size="8pt" />
                             </Style>
                           </TextBox>
                           <TextBox Width="13.386cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.lineDescription" Name="textBox35">
                             <Style VerticalAlign="Middle">
-                              <Font Size="9pt" Bold="True" />
+                              <Font Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                           <TextBox Width="2.4cm" Height="0.4cm" Left="2.82cm" Top="0.5cm" Value="= Fields.unitPrice" Format="{0:N2}" Name="textBox38">
                             <Style TextAlign="Right" VerticalAlign="Middle">
-                              <Font Size="9pt" />
+                              <Font Size="8pt" />
                             </Style>
                           </TextBox>
                           <TextBox Width="2.4cm" Height="0.4cm" Left="5.22cm" Top="0.509cm" Value="= Fields.lineNetAmount" Format="{0:N2}" Name="textBox39">
                             <Style TextAlign="Right" VerticalAlign="Middle">
-                              <Font Size="9pt" />
+                              <Font Size="8pt" />
                             </Style>
                           </TextBox>
                           <TextBox Width="0.836cm" Height="0.4cm" Left="7.62cm" Top="0.5cm" Value="= Fields.vatPercentage*100" Format="{0:N0}" Name="textBox40">
                             <Style TextAlign="Right" VerticalAlign="Middle">
-                              <Font Size="9pt" />
+                              <Font Size="8pt" />
                             </Style>
                           </TextBox>
                           <TextBox Width="2.243cm" Height="0.4cm" Left="8.456cm" Top="0.5cm" Value="= Fields.lineVatAmount" Format="{0:N2}" Name="textBox41">
                             <Style TextAlign="Right" VerticalAlign="Middle">
-                              <Font Size="9pt" />
+                              <Font Size="8pt" />
                             </Style>
                           </TextBox>
                           <TextBox Width="2.687cm" Height="0.4cm" Left="10.716cm" Top="0.5cm" Value="= Fields.lineGrossAmountNormal" Format="{0:N2}" Name="textBox42">
                             <Style TextAlign="Right" VerticalAlign="Middle">
-                              <Font Size="9pt" />
+                              <Font Size="8pt" />
                             </Style>
                           </TextBox>
                         </Items>
@@ -155,124 +155,44 @@
                   </TableCell>
                   <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
                     <ReportItem>
-                      <Panel Width="2.57cm" Height="1.068cm" Left="0cm" Top="0cm" Name="panel9" StyleName="">
+                      <Panel Width="2.545cm" Height="1.068cm" Left="0cm" Top="0cm" Name="panel9" StyleName="">
                         <Style>
-                          <Font Name="Courier New" Size="9pt" Bold="True" />
+                          <Font Name="Courier New" Size="8pt" Bold="True" />
                         </Style>
                         <Items>
                           <TextBox Width="2.545cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.vtsz" Name="textBox16">
                             <Style VerticalAlign="Middle">
-                              <Font Size="9pt" Bold="True" />
+                              <Font Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                         </Items>
                       </Panel>
                     </ReportItem>
                   </TableCell>
-                  <TableCell RowIndex="1" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
-                    <ReportItem>
-                      <TextBox Width="2.57cm" Height="0.265cm" Left="0cm" Top="0cm" Name="textBox61" StyleName="">
-                        <Style>
-                          <Font Name="Courier New" Size="9pt" Bold="True" />
-                        </Style>
-                      </TextBox>
-                    </ReportItem>
-                  </TableCell>
-                  <TableCell RowIndex="1" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
-                    <ReportItem>
-                      <TextBox Width="113.79px" Height="0.265cm" Left="0cm" Top="0cm" Name="textBox62" StyleName="">
-                        <Style>
-                          <Font Name="Courier New" Size="9pt" Bold="True" />
-                        </Style>
-                      </TextBox>
-                    </ReportItem>
-                  </TableCell>
-                  <TableCell RowIndex="1" ColumnIndex="2" RowSpan="1" ColumnSpan="1">
-                    <ReportItem>
-                      <TextBox Width="1.603cm" Height="0.265cm" Left="0cm" Top="0cm" Name="textBox65" StyleName="">
-                        <Style>
-                          <Font Name="Courier New" Size="9pt" />
-                        </Style>
-                      </TextBox>
-                    </ReportItem>
-                  </TableCell>
-                  <TableCell RowIndex="1" ColumnIndex="3" RowSpan="1" ColumnSpan="1">
-                    <ReportItem>
-                      <TextBox Width="1.234cm" Height="0.265cm" Left="0cm" Top="0cm" Name="textBox67" StyleName="">
-                        <Style>
-                          <Font Name="Courier New" Size="9pt" />
-                        </Style>
-                      </TextBox>
-                    </ReportItem>
-                  </TableCell>
-                  <TableCell RowIndex="1" ColumnIndex="4" RowSpan="1" ColumnSpan="1">
-                    <ReportItem>
-                      <TextBox Width="2.4cm" Height="0.265cm" Left="0cm" Top="0cm" Name="textBox70" StyleName="">
-                        <Style>
-                          <Font Name="Courier New" Size="9pt" />
-                        </Style>
-                      </TextBox>
-                    </ReportItem>
-                  </TableCell>
-                  <TableCell RowIndex="1" ColumnIndex="5" RowSpan="1" ColumnSpan="1">
-                    <ReportItem>
-                      <TextBox Width="2.4cm" Height="0.265cm" Left="0cm" Top="0cm" Name="textBox76" StyleName="">
-                        <Style>
-                          <Font Name="Courier New" Size="9pt" />
-                        </Style>
-                      </TextBox>
-                    </ReportItem>
-                  </TableCell>
-                  <TableCell RowIndex="1" ColumnIndex="6" RowSpan="1" ColumnSpan="1">
-                    <ReportItem>
-                      <TextBox Width="0.924cm" Height="0.265cm" Left="0cm" Top="0cm" Name="textBox77" StyleName="">
-                        <Style>
-                          <Font Name="Courier New" Size="9pt" />
-                        </Style>
-                      </TextBox>
-                    </ReportItem>
-                  </TableCell>
-                  <TableCell RowIndex="1" ColumnIndex="7" RowSpan="1" ColumnSpan="1">
-                    <ReportItem>
-                      <TextBox Width="2.243cm" Height="0.265cm" Left="0cm" Top="0cm" Name="textBox78" StyleName="">
-                        <Style>
-                          <Font Name="Courier New" Size="9pt" />
-                        </Style>
-                      </TextBox>
-                    </ReportItem>
-                  </TableCell>
-                  <TableCell RowIndex="1" ColumnIndex="8" RowSpan="1" ColumnSpan="1">
-                    <ReportItem>
-                      <TextBox Width="2.687cm" Height="0.265cm" Left="0cm" Top="0cm" Name="textBox79" StyleName="">
-                        <Style>
-                          <Font Name="Courier New" Size="9pt" />
-                        </Style>
-                      </TextBox>
-                    </ReportItem>
-                  </TableCell>
                 </Cells>
                 <Columns>
-                  <Column Width="2.57cm" />
-                  <Column Width="113.79px" />
-                  <Column Width="1.603cm" />
+                  <Column Width="2.545cm" />
+                  <Column Width="112.47px" />
+                  <Column Width="1.516cm" />
                   <Column Width="1.234cm" />
-                  <Column Width="2.4cm" />
+                  <Column Width="2.397cm" />
                   <Column Width="2.4cm" />
                   <Column Width="0.924cm" />
                   <Column Width="2.243cm" />
-                  <Column Width="2.687cm" />
+                  <Column Width="2.688cm" />
                 </Columns>
                 <Rows>
                   <Row Height="1.068cm" />
-                  <Row Height="0.265cm" />
                 </Rows>
               </Body>
               <Corner />
+              <Style>
+                <Font Size="8pt" />
+              </Style>
               <RowGroups>
                 <TableGroup Name="detailTableGroup">
                   <ChildGroups>
                     <TableGroup Name="group7" />
-                    <TableGroup Name="group" />
                   </ChildGroups>
                   <Groupings>
                     <Grouping />
@@ -280,11 +200,11 @@
                 </TableGroup>
               </RowGroups>
               <ColumnGroups>
-                <TableGroup Name="tableGroup">
+                <TableGroup Name="group1">
                   <ReportItem>
-                    <TextBox Width="2.57cm" Height="0.5cm" Left="0cm" Top="0cm" Value="VTSZ/SZTJ" Name="textBox52" StyleName="">
+                    <TextBox Width="2.545cm" Height="0.5cm" Left="0cm" Top="0cm" Value="VTSZ/SZTJ" Name="textBox52" StyleName="">
                       <Style TextAlign="Center" VerticalAlign="Middle">
-                        <Font Name="Courier New" Size="9pt" Bold="True" />
+                        <Font Name="Courier New" Size="8pt" Bold="True" />
                         <BorderStyle Top="Solid" Bottom="None" />
                       </Style>
                     </TextBox>
@@ -292,9 +212,9 @@
                   <ChildGroups>
                     <TableGroup Name="group8">
                       <ReportItem>
-                        <TextBox Width="2.57cm" Height="0.462cm" Left="0cm" Top="0cm" Value="" Name="textBox9">
+                        <TextBox Width="2.545cm" Height="0.462cm" Left="0cm" Top="0cm" Value="" Name="textBox9">
                           <Style TextAlign="Center" VerticalAlign="Middle">
-                            <Font Name="Courier New" Size="9pt" Bold="True" />
+                            <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
                             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
@@ -304,11 +224,11 @@
                     </TableGroup>
                   </ChildGroups>
                 </TableGroup>
-                <TableGroup Name="tableGroup1">
+                <TableGroup Name="group2">
                   <ReportItem>
-                    <TextBox Width="113.79px" Height="0.5cm" Left="0cm" Top="0cm" Value="Termékkód" Name="textBox54" StyleName="">
+                    <TextBox Width="112.44px" Height="0.5cm" Left="0cm" Top="0cm" Value="Termékkód" Name="textBox54" StyleName="">
                       <Style TextAlign="Center" VerticalAlign="Middle">
-                        <Font Name="Courier New" Size="9pt" Bold="True" />
+                        <Font Name="Courier New" Size="8pt" Bold="True" />
                         <BorderStyle Top="Solid" Bottom="None" />
                       </Style>
                     </TextBox>
@@ -316,9 +236,9 @@
                   <ChildGroups>
                     <TableGroup Name="group9">
                       <ReportItem>
-                        <TextBox Width="113.79px" Height="0.462cm" Left="0cm" Top="0cm" Value="Rendelés szám" Name="textBox15">
+                        <TextBox Width="112.44px" Height="0.462cm" Left="0cm" Top="0cm" Value="Rendelés szám" Name="textBox15">
                           <Style TextAlign="Center" VerticalAlign="Middle">
-                            <Font Name="Courier New" Size="9pt" Bold="True" />
+                            <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
                             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
@@ -328,11 +248,11 @@
                     </TableGroup>
                   </ChildGroups>
                 </TableGroup>
-                <TableGroup Name="tableGroup2">
+                <TableGroup Name="group3">
                   <ReportItem>
-                    <TextBox Width="13.491cm" Height="0.5cm" Left="0cm" Top="0cm" Value="Terméknév" Name="textBox55" StyleName="">
+                    <TextBox Width="1.516cm" Height="0.5cm" Left="0cm" Top="0cm" Value="Terméknév" Name="textBox55" StyleName="">
                       <Style TextAlign="Left" VerticalAlign="Middle">
-                        <Font Name="Courier New" Size="9pt" Bold="True" />
+                        <Font Name="Courier New" Size="8pt" Bold="True" />
                         <BorderStyle Top="Solid" Bottom="None" />
                       </Style>
                     </TextBox>
@@ -340,9 +260,9 @@
                   <ChildGroups>
                     <TableGroup Name="group10">
                       <ReportItem>
-                        <TextBox Width="1.603cm" Height="0.462cm" Left="0cm" Top="0cm" KeepTogether="True" Value="Menny." CanShrink="True" Name="textBox18">
+                        <TextBox Width="1.516cm" Height="0.462cm" Left="0cm" Top="0cm" KeepTogether="True" Value="Menny." CanShrink="True" Name="textBox18">
                           <Style TextAlign="Center" VerticalAlign="Middle">
-                            <Font Name="Courier New" Size="9pt" Bold="True" />
+                            <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
                             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
@@ -350,11 +270,23 @@
                         </TextBox>
                       </ReportItem>
                     </TableGroup>
+                  </ChildGroups>
+                </TableGroup>
+                <TableGroup Name="group18">
+                  <ReportItem>
+                    <TextBox Width="1.234cm" Height="0.5cm" Left="0cm" Top="0cm" Name="textBox90" StyleName="">
+                      <Style VerticalAlign="Middle">
+                        <Font Name="Courier New" Size="8pt" Bold="True" />
+                        <BorderStyle Top="Solid" />
+                      </Style>
+                    </TextBox>
+                  </ReportItem>
+                  <ChildGroups>
                     <TableGroup Name="group11">
                       <ReportItem>
                         <TextBox Width="1.234cm" Height="0.462cm" Left="0cm" Top="0cm" Value="Me.e" Name="textBox22" StyleName="">
                           <Style TextAlign="Center" VerticalAlign="Middle">
-                            <Font Name="Courier New" Size="9pt" Bold="True" />
+                            <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
                             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
@@ -362,11 +294,23 @@
                         </TextBox>
                       </ReportItem>
                     </TableGroup>
+                  </ChildGroups>
+                </TableGroup>
+                <TableGroup Name="group19">
+                  <ReportItem>
+                    <TextBox Width="2.397cm" Height="0.5cm" Left="0cm" Top="0cm" Name="textBox91" StyleName="">
+                      <Style VerticalAlign="Middle">
+                        <Font Name="Courier New" Size="8pt" Bold="True" />
+                        <BorderStyle Top="Solid" />
+                      </Style>
+                    </TextBox>
+                  </ReportItem>
+                  <ChildGroups>
                     <TableGroup Name="group12">
                       <ReportItem>
-                        <TextBox Width="2.4cm" Height="0.462cm" Left="0cm" Top="0cm" Value="Nettó ár" Name="textBox20" StyleName="">
+                        <TextBox Width="2.397cm" Height="0.462cm" Left="0cm" Top="0cm" Value="Nettó ár" Name="textBox20" StyleName="">
                           <Style TextAlign="Center" VerticalAlign="Middle">
-                            <Font Name="Courier New" Size="9pt" Bold="True" />
+                            <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
                             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
@@ -374,11 +318,23 @@
                         </TextBox>
                       </ReportItem>
                     </TableGroup>
+                  </ChildGroups>
+                </TableGroup>
+                <TableGroup Name="group20">
+                  <ReportItem>
+                    <TextBox Width="2.4cm" Height="0.5cm" Left="0cm" Top="0cm" Name="textBox92" StyleName="">
+                      <Style VerticalAlign="Middle">
+                        <Font Name="Courier New" Size="8pt" Bold="True" />
+                        <BorderStyle Top="Solid" />
+                      </Style>
+                    </TextBox>
+                  </ReportItem>
+                  <ChildGroups>
                     <TableGroup Name="group13">
                       <ReportItem>
                         <TextBox Width="2.4cm" Height="0.462cm" Left="0cm" Top="0cm" Value="Nettó érték" Name="textBox30" StyleName="">
                           <Style TextAlign="Center" VerticalAlign="Middle">
-                            <Font Name="Courier New" Size="9pt" Bold="True" />
+                            <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
                             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
@@ -386,11 +342,23 @@
                         </TextBox>
                       </ReportItem>
                     </TableGroup>
+                  </ChildGroups>
+                </TableGroup>
+                <TableGroup Name="group21">
+                  <ReportItem>
+                    <TextBox Width="0.924cm" Height="0.5cm" Left="0cm" Top="0cm" Name="textBox93" StyleName="">
+                      <Style VerticalAlign="Middle">
+                        <Font Name="Courier New" Size="8pt" Bold="True" />
+                        <BorderStyle Top="Solid" />
+                      </Style>
+                    </TextBox>
+                  </ReportItem>
+                  <ChildGroups>
                     <TableGroup Name="group14">
                       <ReportItem>
                         <TextBox Width="0.924cm" Height="0.462cm" Left="0cm" Top="0cm" Value="Áfa%" CanShrink="True" Name="textBox28" StyleName="">
                           <Style TextAlign="Center" VerticalAlign="Middle">
-                            <Font Name="Courier New" Size="9pt" Bold="True" />
+                            <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
                             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
@@ -398,11 +366,23 @@
                         </TextBox>
                       </ReportItem>
                     </TableGroup>
+                  </ChildGroups>
+                </TableGroup>
+                <TableGroup Name="group22">
+                  <ReportItem>
+                    <TextBox Width="2.243cm" Height="0.5cm" Left="0cm" Top="0cm" Name="textBox94" StyleName="">
+                      <Style VerticalAlign="Middle">
+                        <Font Name="Courier New" Size="8pt" Bold="True" />
+                        <BorderStyle Top="Solid" />
+                      </Style>
+                    </TextBox>
+                  </ReportItem>
+                  <ChildGroups>
                     <TableGroup Name="group15">
                       <ReportItem>
                         <TextBox Width="2.243cm" Height="0.462cm" Left="0cm" Top="0cm" Value="Áfa értéke" Name="textBox26" StyleName="">
                           <Style TextAlign="Center" VerticalAlign="Middle">
-                            <Font Name="Courier New" Size="9pt" Bold="True" />
+                            <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
                             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
@@ -410,11 +390,23 @@
                         </TextBox>
                       </ReportItem>
                     </TableGroup>
+                  </ChildGroups>
+                </TableGroup>
+                <TableGroup Name="group23">
+                  <ReportItem>
+                    <TextBox Width="2.688cm" Height="0.5cm" Left="0cm" Top="0cm" Name="textBox95" StyleName="">
+                      <Style VerticalAlign="Middle">
+                        <Font Name="Courier New" Size="8pt" Bold="True" />
+                        <BorderStyle Top="Solid" />
+                      </Style>
+                    </TextBox>
+                  </ReportItem>
+                  <ChildGroups>
                     <TableGroup Name="group16">
                       <ReportItem>
-                        <TextBox Width="2.687cm" Height="0.462cm" Left="0cm" Top="0cm" Value="Bruttó érték" Name="textBox24" StyleName="">
+                        <TextBox Width="2.688cm" Height="0.462cm" Left="0cm" Top="0cm" Value="Bruttó érték" Name="textBox24" StyleName="">
                           <Style TextAlign="Center" VerticalAlign="Middle">
-                            <Font Name="Courier New" Size="9pt" Bold="True" />
+                            <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
                             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
@@ -429,69 +421,6 @@
                 <Binding Path="DataSource" Expression="= Fields.invoiceLines" />
               </Bindings>
             </Table>
-            <TextBox Width="3.145cm" Height="0.5cm" Left="0.055cm" Top="0.498cm" Value="= Fields.paymentMethodX" Name="lbPaymentMethod">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.145cm" Height="0.498cm" Left="0.055cm" Top="0cm" Value="Fizetés módja" Name="textBox14">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" Bold="True" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.698cm" Height="0.498cm" Left="15.209cm" Top="0cm" Value="Bizonylatszám" Name="textBox12">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" Bold="True" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.698cm" Height="0.5cm" Left="15.209cm" Top="0.498cm" Value="= Fields.invoiceNumber" Name="lbDocumentNumber">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" Bold="True" />
-                <BorderStyle Bottom="None" />
-                <BorderColor Bottom="Black" />
-                <BorderWidth Bottom="1pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="2.701cm" Height="0.498cm" Left="7.105cm" Top="0cm" Value="Telj.dát." Name="textBox8">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" Bold="True" />
-              </Style>
-            </TextBox>
-            <TextBox Width="2.701cm" Height="0.5cm" Left="7.105cm" Top="0.498cm" Value="= Fields.invoiceDeliveryDate" Format="{0:yyyy.MM.dd}" Name="lbFinishDate">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="2.701cm" Height="0.498cm" Left="9.806cm" Top="0cm" Value="Kelt." Name="textBox11">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" Bold="True" />
-              </Style>
-            </TextBox>
-            <TextBox Width="2.701cm" Height="0.5cm" Left="9.806cm" Top="0.498cm" Value="= Fields.invoiceIssueDate" Format="{0:yyyy.MM.dd}" Name="lbDateStamp">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="2.701cm" Height="0.498cm" Left="12.508cm" Top="0cm" Value="Fiz.hat." Name="textBox17">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" Bold="True" />
-              </Style>
-            </TextBox>
-            <TextBox Width="2.701cm" Height="0.5cm" Left="12.508cm" Top="0.498cm" Value="= Fields.paymentDate" Format="{0:yyyy.MM.dd}" Name="lbPaymentDate">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.905cm" Height="0.498cm" Left="3.2cm" Top="0cm" Value="Eredeti bizonylat" Name="textBox63">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" Bold="True" />
-              </Style>
-            </TextBox>
-            <TextBox Width="3.905cm" Height="0.5cm" Left="3.2cm" Top="0.498cm" Value="= Fields.customerInvoiceNumber" Format="{0:yyyy.MM.dd}" Name="textBox60">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" />
-              </Style>
-            </TextBox>
           </Items>
         </Panel>
       </Items>
@@ -653,7 +582,7 @@
             </TextBox>
           </Items>
         </Panel>
-        <TextBox Width="18.645cm" Height="0.5cm" Left="0.055cm" Top="2.192cm" Value="Köszönjük a vásárlást!" Name="textBox59">
+        <TextBox Width="18.839cm" Height="0.5cm" Left="0.055cm" Top="2.192cm" Value="Köszönjük a vásárlást!" Name="textBox59">
           <Style VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -882,6 +811,87 @@
       </Selectors>
     </StyleRule>
   </StyleSheet>
+  <Groups>
+    <Group Name="group17">
+      <GroupHeader>
+        <GroupHeaderSection PrintOnEveryPage="True" Height="1cm" Name="groupHeaderSection">
+          <Items>
+            <TextBox Width="3.905cm" Height="0.498cm" Left="3.187cm" Top="0.002cm" Value="Eredeti bizonylat" CanShrink="True" Name="textBox63">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" Bold="True" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.145cm" Height="0.498cm" Left="0.042cm" Top="0.002cm" Value="Fizetés módja" CanShrink="True" Name="textBox14">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" Bold="True" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.698cm" Height="0.498cm" Left="15.196cm" Top="0.002cm" Value="Bizonylatszám" CanShrink="True" Name="textBox12">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" Bold="True" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.698cm" Height="0.5cm" Left="15.196cm" Top="0.5cm" Value="= Fields.invoiceNumber" Name="lbDocumentNumber">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" Bold="True" />
+                <BorderStyle Bottom="None" />
+                <BorderColor Bottom="Black" />
+                <BorderWidth Bottom="1pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="2.701cm" Height="0.498cm" Left="7.092cm" Top="0.002cm" Value="Telj.dát." CanShrink="True" Name="textBox8">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" Bold="True" />
+              </Style>
+            </TextBox>
+            <TextBox Width="2.701cm" Height="0.5cm" Left="7.092cm" Top="0.5cm" Value="= Fields.invoiceDeliveryDate" Format="{0:yyyy.MM.dd}" Name="lbFinishDate">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="2.701cm" Height="0.498cm" Left="9.793cm" Top="0.002cm" Value="Kelt." CanShrink="True" Name="textBox11">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" Bold="True" />
+              </Style>
+            </TextBox>
+            <TextBox Width="2.701cm" Height="0.5cm" Left="9.793cm" Top="0.5cm" Value="= Fields.invoiceIssueDate" Format="{0:yyyy.MM.dd}" Name="lbDateStamp">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="2.701cm" Height="0.498cm" Left="12.495cm" Top="0.002cm" Value="Fiz.hat." CanShrink="True" Name="textBox17">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" Bold="True" />
+              </Style>
+            </TextBox>
+            <TextBox Width="2.701cm" Height="0.5cm" Left="12.495cm" Top="0.5cm" Value="= Fields.paymentDate" Format="{0:yyyy.MM.dd}" Name="lbPaymentDate">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.145cm" Height="0.5cm" Left="0.042cm" Top="0.5cm" Value="= Fields.paymentMethodX" Name="lbPaymentMethod">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="3.905cm" Height="0.5cm" Left="3.187cm" Top="0.5cm" Value="= Fields.customerInvoiceNumber" Format="{0:yyyy.MM.dd}" Name="textBox60">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+            </TextBox>
+          </Items>
+        </GroupHeaderSection>
+      </GroupHeader>
+      <GroupFooter>
+        <GroupFooterSection Height="0.132cm" Name="groupFooterSection">
+          <Style Visible="False" />
+        </GroupFooterSection>
+      </GroupFooter>
+      <Groupings>
+        <Grouping Expression="= Fields.invoiceLines" />
+      </Groupings>
+    </Group>
+  </Groups>
   <ReportParameters>
     <ReportParameter Name="InvoiceID" Type="Integer" Text="InvoiceID" Visible="True">
       <Value>
