@@ -213,8 +213,13 @@ namespace bbxBE.Domain.Entities
 		[Description("Felhasználó ID")]
 		public long? UserID { get; set; } = 0;
 
-		//relációk
-		[ForeignKey("WarehouseID")]
+        [ColumnLabel("Munkaszám")]
+        [Description("Munkaszám")]
+        public string WorkNumber  { get; set; } = 0;
+
+
+        //relációk
+        [ForeignKey("WarehouseID")]
 		[ColumnLabel("Raktár")]
 		[Description("Raktár")]
 		public virtual Warehouse Warehouse { get; set; }
