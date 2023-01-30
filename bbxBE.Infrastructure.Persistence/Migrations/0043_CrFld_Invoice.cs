@@ -8,25 +8,23 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00018, "v00.00.01-Invoice.UserID")]
-    public class InitialTables_00018 : Migration
+    [Migration(00043, "v00.00.01-Invoice.UserID")]
+    public class InitialTables_00043: Migration
     {
         public override void Down()
         {
-            Delete.Column("UserID").FromTable("Invoice");
+            Delete.Column("WorkNumber").FromTable("Invoice");
+            Delete.Column("PriceReview").FromTable("InvoiceLine");
         }
         public override void Up()
         {
 
 
             Alter.Table("Invoice")
-                .AddColumn("UserID").AsInt64().Nullable().WithDefaultValue(0);
+                .AddColumn("WorkNumber").AsString().Nullable();
+            Alter.Table("InvoiceLine")
+                .AddColumn("PriceReview").AsBoolean().Nullable().WithDefaultValue(false);
 
-            /*
-            Update.Table("Invoice").Set(new { UserID = 0 }).AllRows();
-            Alter.Table("Invoice")
-                 .AddColumn("UserID").AsInt64().NotNullable().WithDefaultValue(0);
-            */
         }
     }
 }
