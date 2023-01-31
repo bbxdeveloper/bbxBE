@@ -215,8 +215,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Munkaszám")]
         [Description("Munkaszám")]
-        public string WorkNumber  { get; set; } = 0;
-
+        public string WorkNumber  { get; set; }
 
         //relációk
         [ForeignKey("WarehouseID")]

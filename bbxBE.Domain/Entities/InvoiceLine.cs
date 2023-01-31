@@ -171,7 +171,7 @@ namespace bbxBE.Domain.Entities
 		[Description("Termékdíj összege forintban")]
 		public decimal ProductFeeAmount { get; set; }
 
-        [ColumnLabel("Ár felülvizsgálat_")]
+        [ColumnLabel("Ár felülvizsgálat?")]
         [Description("Ár felülvizsgálat?")]
         public bool? PriceReview { get; set; } = false;
 

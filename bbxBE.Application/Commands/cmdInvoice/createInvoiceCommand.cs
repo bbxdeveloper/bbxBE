@@ -117,7 +117,16 @@ namespace bxBE.Application.Commands.cmdInvoice
 		[Description("Felhasználó ID")]
 		public long? UserID { get; set; } = 0;
 
-		[ColumnLabel("Számlasorok")]
+        [ColumnLabel("Munkaszám")]
+        [Description("Munkaszám")]
+        public string WorkNumber { get; set; }
+
+        [ColumnLabel("Ár felülvizsgálat?")]
+        [Description("Ár felülvizsgálat?")]
+        public bool? PriceReview { get; set; } = false;
+
+
+        [ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
 		public List<InvoiceLine> InvoiceLines { get; set; } = new List<InvoiceLine>();
 
@@ -151,11 +160,11 @@ namespace bxBE.Application.Commands.cmdInvoice
 			_mapper = mapper;
 			_configuration = configuration;
 		}
-		/*
+        /*
 {
   "customerID": 206568,
-  "invoiceDeliveryDate": "2022-12-13",
-  "invoiceIssueDate": "2022-12-13",
+  "invoiceDeliveryDate": "2023-01-30",
+  "invoiceIssueDate": "2023-01-30",
   "invoiceLines": [
     {
       "lineNetAmount": 23296,
@@ -180,21 +189,22 @@ namespace bxBE.Application.Commands.cmdInvoice
       "vatRateCode": "27%"
     }
   ],
-  "notice": "megjegyzés szövehg",
-  "paymentDate": "2022-12-13",
-  "paymentMethod": "TRANSFER",
+  "notice": "megjegyzés szöveg",
+  "paymentDate": "2023-01-30",
+  "paymentMethod": "OTHER",
   "warehouseCode": "001",
   "currencyCode": "HUF",
   "exchangeRate": 1,
   "incoming": false,
-  "invoiceType": "INV",
-  "invoiceDiscountPercent": 10
+  "invoiceType": "DNO",
+  "invoiceDiscountPercent": 10,
+  "workNumber": "workNumber #1",
+  "priceReview": true
 }
-
 		 */
 
 
-		public async Task<Response<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
 		{
 			var invoice = _mapper.Map<Invoice>(request);
 
@@ -281,6 +291,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 					{
 						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATECODENOTFOUND, rln.VatRateCode));
 					}
+
+					ln.PriceReview = request.PriceReview;
 
 					ln.LineExchangeRate = invoice.ExchangeRate;             //gyűjtőszámla esetén is egy árfolyam lesz!
 
