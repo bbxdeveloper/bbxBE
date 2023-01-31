@@ -86,9 +86,13 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Bruttó a számla pénznemében")]
 			public decimal LineGrossAmountNormal { get; set; }
 
-		}
+            [ColumnLabel("Ár felülvizsgálat?")]
+            [Description("Ár felülvizsgálat?")]
+            public bool? PriceReview { get; set; } = false;
 
-		[Description("Áfaösszesítő")]
+        }
+
+        [Description("Áfaösszesítő")]
 		public class SummaryByVatRate 
 		{
 			[ColumnLabel("Áfa ID")]
@@ -313,6 +317,14 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Felhasználó")]
         [MapToEntity("UserName")]
         public string UserName { get; set; }
+
+        [ColumnLabel("Munkaszám")]
+        [Description("Munkaszám")]
+        public string WorkNumber { get; set; }
+
+        [ColumnLabel("Ár felülvizsgálat?")]
+        [Description("Ár felülvizsgálat?")]
+        public bool PriceReview { get; set; } = false;
 
         [ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]

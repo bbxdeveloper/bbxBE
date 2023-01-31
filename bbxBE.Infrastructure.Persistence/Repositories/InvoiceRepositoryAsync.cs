@@ -90,7 +90,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         il.Product = null;
                         il.VatRate = null;
-                         
+
 
                     }
 
@@ -145,6 +145,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
 
             var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);
+
+            if (!FullData)
+            {
+                itemModel.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+            }
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 
             // shape data
@@ -178,6 +184,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                   .Include(s => s.Supplier).AsNoTracking()
                   .Include(c => c.Customer).AsNoTracking()
                   .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+                  .Include(i => i.InvoiceLines).AsNoTracking()                   //nem full data esetén is szüség van az invoiceLines-re
                   .Where(x => x.ID == ID).FirstOrDefaultAsync();
             }
             return item;
@@ -195,8 +202,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 var q1 = from InvoiceLine in _dbContext.InvoiceLine
                          join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
                          join Customer in _dbContext.Customer on Invoice.SupplierID equals Customer.ID
-                         where InvoiceLine.PendingDNQuantity > 0 
-                            && Invoice.Incoming == incoming 
+                         where InvoiceLine.PendingDNQuantity > 0
+                            && Invoice.Incoming == incoming
                             && Invoice.WarehouseID == warehouseID
                             && Invoice.InvoiceType == enInvoiceType.DNI.ToString()
                             && Invoice.CurrencyCode == currencyCode
@@ -251,14 +258,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Include(t => t.VatRate).AsNoTracking()
                 .Include(i => i.Invoice).ThenInclude(s => s.Supplier)
                 .Include(i => i.Invoice).ThenInclude(c => c.Customer).AsNoTracking()
-                .Where(w => w.PendingDNQuantity > 0 
-                        && w.Invoice.Incoming == incoming 
-                        && w.Invoice.WarehouseID == warehouseID 
-                        && w.Invoice.InvoiceType ==  (incoming ? enInvoiceType.DNI.ToString() : enInvoiceType.DNO.ToString())
+                .Where(w => w.PendingDNQuantity > 0
+                        && w.Invoice.Incoming == incoming
+                        && w.Invoice.WarehouseID == warehouseID
+                        && w.Invoice.InvoiceType == (incoming ? enInvoiceType.DNI.ToString() : enInvoiceType.DNO.ToString())
                         && w.Invoice.SupplierID == (incoming ? customerID : own.ID)
                         && w.Invoice.CustomerID == (incoming ? own.ID : customerID)
                         )
-                .OrderBy( o => o.Invoice.InvoiceNumber);
+                .OrderBy(o => o.Invoice.InvoiceNumber);
 
             var resultData = await query.ToListAsync();
 
@@ -301,7 +308,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
                  .Include(u => u.User).AsNoTracking();
-     }
+            }
             else
             {
                 query = _dbContext.Invoice.AsNoTracking()
@@ -309,8 +316,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(s => s.Supplier).AsNoTracking()
                  .Include(c => c.Customer).AsNoTracking()
                  .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+                 .Include(i => i.InvoiceLines).AsNoTracking()                   //nem full data esetén is szüség van az invoiceLines-re
                  .Include(u => u.User).AsNoTracking();
-
             }
 
 
@@ -318,11 +325,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await query.CountAsync();
 
             // filter data
-            
+
             FilterBy(ref query, requestParameter.Incoming, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
                     requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
                     requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo);
-            
+
 
             // Count records after filter
             recordsFiltered = await query.CountAsync();
@@ -354,8 +361,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetInvoiceViewModel>();
-            resultData.ForEach(i => resultDataModel.Add(
-               _mapper.Map<Invoice, GetInvoiceViewModel>(i))
+            resultData.ForEach(i =>
+            {
+                var im = _mapper.Map<Invoice, GetInvoiceViewModel>(i);
+                if (!requestParameter.FullData)
+                {
+                    im.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
+                    im.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                }
+                resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
+
+            }
             );
 
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
@@ -383,9 +399,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             predicate = predicate.And(p => p.Incoming == Incoming
                             && (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
                             && (InvoiceNumber == null || p.InvoiceNumber.Contains(InvoiceNumber))
-                            && ( !InvoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= InvoiceIssueDateFrom.Value)
-                            && ( !InvoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= InvoiceIssueDateTo.Value)
-                            && ( !InvoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= InvoiceDeliveryDateFrom.Value)
+                            && (!InvoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= InvoiceIssueDateFrom.Value)
+                            && (!InvoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= InvoiceIssueDateTo.Value)
+                            && (!InvoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= InvoiceDeliveryDateFrom.Value)
                             && (!InvoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= InvoiceDeliveryDateTo.Value)
                            );
 
@@ -397,6 +413,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-   
+
     }
 }
