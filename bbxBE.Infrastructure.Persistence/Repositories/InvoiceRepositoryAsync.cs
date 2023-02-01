@@ -199,10 +199,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var lstEntities = new List<GetPendigDeliveryNotesSummaryModel>();
 
             IQueryable< GetPendigDeliveryNotesSummaryModel> q1;
-            
+
             //a tételsorokben lévő PriceReview miatt nested groupra van szükség
-
-
+            
+            //1. groupolunk ügyfélre és PriceReview típusra
+            //
             if (incoming)
             {
                 //először grouo-olunk ccustomerre és PriceReview
@@ -252,6 +253,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                       };
             }
 
+            //q1-et még egyszer meggroupoljuk, hogy a PriceReview==true előfordulást ki tudjuk kérdezni
+            //
             var q2 = from res in q1
                      group res by
                      new { CustomerID = res.CustomerID, Customer = res.Customer }
@@ -261,12 +264,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          WarehouseID = warehouseID,
                          CustomerID = grpOuter.Key.CustomerID,
                          Customer = grpOuter.Key.Customer,
-                         PriceReview = grpOuter.Any(a => a.PriceReview),
+                         PriceReview = grpOuter.Count(c => c.PriceReview) > 0,
                          SumNetAmount = grpOuter.Sum(s => s.SumNetAmount)
                      };
-
+            
             q2 = q2.OrderBy(o => o.Customer);
-
+            
             lstEntities = await q2.ToListAsync();
 
 
