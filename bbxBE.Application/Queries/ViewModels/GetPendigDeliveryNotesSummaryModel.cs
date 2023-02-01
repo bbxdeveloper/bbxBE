@@ -31,7 +31,11 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Ügyfélnév")]
 		public string Customer { get; set; }
 
-		[ColumnLabel("Nettó")]
+        [ColumnLabel("Cím")]
+        [Description("Cím")]
+        public string FullAddress { get; set; }
+
+        [ColumnLabel("Nettó")]
 		[Description("A kiszámlázatan összérték a szállítólevél pénznemében")]
 		public decimal SumNetAmount { get; set; }
 
