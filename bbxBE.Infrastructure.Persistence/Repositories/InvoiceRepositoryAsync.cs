@@ -22,6 +22,8 @@ using static Dapper.SqlMapper;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using bbxBE.Common.Enums;
 using bbxBE.Application.Interfaces.Queries;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -196,10 +198,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var lstEntities = new List<GetPendigDeliveryNotesSummaryModel>();
 
+            IQueryable< GetPendigDeliveryNotesSummaryModel> q1;
+            
+            //a tételsorokben lévő PriceReview miatt nested groupra van szükség
+
 
             if (incoming)
             {
-                var q1 = from InvoiceLine in _dbContext.InvoiceLine
+                //először grouo-olunk ccustomerre és PriceReview
+                q1 = from InvoiceLine in _dbContext.InvoiceLine
                          join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
                          join Customer in _dbContext.Customer on Invoice.SupplierID equals Customer.ID
                          where InvoiceLine.PendingDNQuantity > 0
@@ -208,22 +215,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             && Invoice.InvoiceType == enInvoiceType.DNI.ToString()
                             && Invoice.CurrencyCode == currencyCode
                          group InvoiceLine by
-                         new { CustomerID = Invoice.SupplierID, CustomerName = Customer.CustomerName } into grp
-                         orderby grp.Key.CustomerName
-
+                         new { CustomerID = Invoice.SupplierID, CustomerName = Customer.CustomerName, PriceReview = InvoiceLine.PriceReview }
+                         into grpInner
                          select new GetPendigDeliveryNotesSummaryModel()
                          {
+
                              WarehouseID = warehouseID,
-                             CustomerID = grp.Key.CustomerID,
-                             Customer = grp.Key.CustomerName,
-                             SumNetAmount = grp.Sum(s => s.LineNetAmount)
+                             CustomerID = grpInner.Key.CustomerID,
+                             Customer = grpInner.Key.CustomerName,
+                             PriceReview = grpInner.Key.PriceReview.HasValue,
+                             SumNetAmount = grpInner.Sum(s => s.LineNetAmount)
                          };
 
-                lstEntities = await q1.ToListAsync();
-            }
+             }
             else
             {
-                var q1 = from InvoiceLine in _dbContext.InvoiceLine
+                 q1 = from InvoiceLine in _dbContext.InvoiceLine
                          join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
                          join Customer in _dbContext.Customer on Invoice.CustomerID equals Customer.ID
                          where InvoiceLine.PendingDNQuantity > 0
@@ -232,19 +239,36 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             && Invoice.InvoiceType == enInvoiceType.DNO.ToString()
                             && Invoice.CurrencyCode == currencyCode
                          group InvoiceLine by
-                         new { CustomerID = Invoice.CustomerID, CustomerName = Customer.CustomerName } into grp
-                         orderby grp.Key.CustomerName
+                         new { CustomerID = Invoice.CustomerID, CustomerName = Customer.CustomerName, PriceReview = InvoiceLine.PriceReview }
+                         into grpInner
+                      select new GetPendigDeliveryNotesSummaryModel()
+                      {
 
-                         select new GetPendigDeliveryNotesSummaryModel()
-                         {
-                             WarehouseID = warehouseID,
-                             CustomerID = grp.Key.CustomerID,
-                             Customer = grp.Key.CustomerName,
-                             SumNetAmount = grp.Sum(s => s.LineNetAmount)
-                         };
-
-                lstEntities = await q1.ToListAsync();
+                          WarehouseID = warehouseID,
+                          CustomerID = grpInner.Key.CustomerID,
+                          Customer = grpInner.Key.CustomerName,
+                          PriceReview = grpInner.Key.PriceReview.HasValue,
+                          SumNetAmount = grpInner.Sum(s => s.LineNetAmount)
+                      };
             }
+
+            var q2 = from res in q1
+                     group res by
+                     new { CustomerID = res.CustomerID, Customer = res.Customer }
+                     into grpOuter
+                     select new GetPendigDeliveryNotesSummaryModel()
+                     {
+                         WarehouseID = warehouseID,
+                         CustomerID = grpOuter.Key.CustomerID,
+                         Customer = grpOuter.Key.Customer,
+                         PriceReview = grpOuter.Any(a => a.PriceReview),
+                         SumNetAmount = grpOuter.Sum(s => s.SumNetAmount)
+                     };
+
+            q2 = q2.OrderBy(o => o.Customer);;
+
+            lstEntities = await q2.ToListAsync();
+
 
             var shapeData = _dataShaperGetPendigDeliveryNotesSummaryModel.ShapeData(lstEntities, "");
 

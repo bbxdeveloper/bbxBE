@@ -35,6 +35,9 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("A kiszámlázatan összérték a szállítólevél pénznemében")]
 		public decimal SumNetAmount { get; set; }
 
+        [ColumnLabel("Ár felülvizsgálat?")]
+        [Description("Ár felülvizsgálat?")]
+        public bool PriceReview { get; set; } = false;
 
-	}
+    }
 }
