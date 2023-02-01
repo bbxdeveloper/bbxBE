@@ -265,7 +265,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          SumNetAmount = grpOuter.Sum(s => s.SumNetAmount)
                      };
 
-            q2 = q2.OrderBy(o => o.Customer);;
+            q2 = q2.OrderBy(o => o.Customer);
 
             lstEntities = await q2.ToListAsync();
 
