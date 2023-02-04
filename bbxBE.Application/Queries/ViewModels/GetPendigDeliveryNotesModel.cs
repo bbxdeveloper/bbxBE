@@ -49,6 +49,14 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Sor száma")]
         public short LineNumber { get; set; }
 
+        [ColumnLabel("")]
+        [Description("Szállítólevél ID")]
+        public short OrigDeliveryNoteInvoiceID { get; set; }
+
+        [ColumnLabel("")]
+        [Description("Szállítólevél sor ID")]
+        public short OrigDeliveryNoteInvoiceLineID { get; set; }
+
         [ColumnLabel("Termékkód")]
         [Description("Termékkód")]
         public string ProductCode { get; set; }
