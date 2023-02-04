@@ -199,74 +199,92 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var lstEntities = new List<GetPendigDeliveryNotesSummaryModel>();
 
             IQueryable< GetPendigDeliveryNotesSummaryModel> q1;
-            
+
             //a tételsorokben lévő PriceReview miatt nested groupra van szükség
 
-
+            //1. groupolunk ügyfélre és PriceReview típusra
+            //
             if (incoming)
             {
                 //először grouo-olunk ccustomerre és PriceReview
                 q1 = from InvoiceLine in _dbContext.InvoiceLine
-                         join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
-                         join Customer in _dbContext.Customer on Invoice.SupplierID equals Customer.ID
-                         where InvoiceLine.PendingDNQuantity > 0
-                            && Invoice.Incoming == incoming
-                            && Invoice.WarehouseID == warehouseID
-                            && Invoice.InvoiceType == enInvoiceType.DNI.ToString()
-                            && Invoice.CurrencyCode == currencyCode
-                         group InvoiceLine by
-                         new { CustomerID = Invoice.SupplierID, CustomerName = Customer.CustomerName, PriceReview = InvoiceLine.PriceReview }
+                     join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
+                     join Customer in _dbContext.Customer on Invoice.SupplierID equals Customer.ID
+                     where InvoiceLine.PendingDNQuantity > 0
+                        && Invoice.Incoming == incoming
+                        && Invoice.WarehouseID == warehouseID
+                        && Invoice.InvoiceType == enInvoiceType.DNI.ToString()
+                        && Invoice.CurrencyCode == currencyCode
+                     group InvoiceLine by
+                     new
+                     {
+                         CustomerID = Customer.ID,
+                         CustomerName = Customer.CustomerName,
+                         FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
+                         PriceReview = InvoiceLine.PriceReview
+                     }
                          into grpInner
-                         select new GetPendigDeliveryNotesSummaryModel()
-                         {
+                     select new GetPendigDeliveryNotesSummaryModel()
+                     {
 
-                             WarehouseID = warehouseID,
-                             CustomerID = grpInner.Key.CustomerID,
-                             Customer = grpInner.Key.CustomerName,
-                             PriceReview = grpInner.Key.PriceReview.HasValue,
-                             SumNetAmount = grpInner.Sum(s => s.LineNetAmount)
-                         };
+                         WarehouseID = warehouseID,
+                         CustomerID = grpInner.Key.CustomerID,
+                         Customer = grpInner.Key.CustomerName,
+                         FullAddress = grpInner.Key.FullAddress,
+                         PriceReview = grpInner.Key.PriceReview.HasValue,
+                         SumNetAmount = grpInner.Sum(s => s.LineNetAmount)
+                     };
 
-             }
+            }
             else
             {
-                 q1 = from InvoiceLine in _dbContext.InvoiceLine
-                         join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
-                         join Customer in _dbContext.Customer on Invoice.CustomerID equals Customer.ID
-                         where InvoiceLine.PendingDNQuantity > 0
-                            && Invoice.Incoming == incoming
-                            && Invoice.WarehouseID == warehouseID
-                            && Invoice.InvoiceType == enInvoiceType.DNO.ToString()
-                            && Invoice.CurrencyCode == currencyCode
-                         group InvoiceLine by
-                         new { CustomerID = Invoice.CustomerID, CustomerName = Customer.CustomerName, PriceReview = InvoiceLine.PriceReview }
-                         into grpInner
-                      select new GetPendigDeliveryNotesSummaryModel()
-                      {
+                q1 = from InvoiceLine in _dbContext.InvoiceLine
+                     join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
+                     join Customer in _dbContext.Customer on Invoice.CustomerID equals Customer.ID
+                     where InvoiceLine.PendingDNQuantity > 0
+                        && Invoice.Incoming == incoming
+                        && Invoice.WarehouseID == warehouseID
+                        && Invoice.InvoiceType == enInvoiceType.DNO.ToString()
+                        && Invoice.CurrencyCode == currencyCode
+                     group InvoiceLine by
+                     new
+                     {
+                         CustomerID = Customer.ID,
+                         CustomerName = Customer.CustomerName,
+                         FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
+                         PriceReview = InvoiceLine.PriceReview
+                     }
+                        into grpInner
+                     select new GetPendigDeliveryNotesSummaryModel()
+                     {
 
-                          WarehouseID = warehouseID,
-                          CustomerID = grpInner.Key.CustomerID,
-                          Customer = grpInner.Key.CustomerName,
-                          PriceReview = grpInner.Key.PriceReview.HasValue,
-                          SumNetAmount = grpInner.Sum(s => s.LineNetAmount)
-                      };
+                         WarehouseID = warehouseID,
+                         CustomerID = grpInner.Key.CustomerID,
+                         Customer = grpInner.Key.CustomerName,
+                         FullAddress = grpInner.Key.FullAddress,
+                         PriceReview = grpInner.Key.PriceReview.HasValue,
+                         SumNetAmount = grpInner.Sum(s => s.LineNetAmount)
+                     };
             }
 
+            //q1-et még egyszer meggroupoljuk, hogy a PriceReview==true előfordulást ki tudjuk kérdezni
+            //
             var q2 = from res in q1
                      group res by
-                     new { CustomerID = res.CustomerID, Customer = res.Customer }
+                     new { CustomerID = res.CustomerID, Customer = res.Customer, FullAddress = res.FullAddress }
                      into grpOuter
                      select new GetPendigDeliveryNotesSummaryModel()
                      {
                          WarehouseID = warehouseID,
                          CustomerID = grpOuter.Key.CustomerID,
                          Customer = grpOuter.Key.Customer,
-                         PriceReview = grpOuter.Any(a => a.PriceReview),
+                         FullAddress = grpOuter.Key.FullAddress,
+                         PriceReview = grpOuter.Count(c => c.PriceReview) > 0,
                          SumNetAmount = grpOuter.Sum(s => s.SumNetAmount)
                      };
-
+            
             q2 = q2.OrderBy(o => o.Customer);
-
+            
             lstEntities = await q2.ToListAsync();
 
 
