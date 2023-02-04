@@ -58,6 +58,26 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                         ('Kormos Krisztián', 'vevoszolgalat@relaxvill.hu','kk', '{0}', 'Automatikusan létrehozva',1)
                end",
                 pwdHash));
+
+            pwdHash = BllAuth.GetPwdHash("mp", salt);
+            Execute.Sql(string.Format(@"
+                if not exists (select 1 from Users where upper(LoginName) = 'MP'  )
+                begin
+                    INSERT INTO [dbo].[Users]  ([Name],[Email],[LoginName],[PasswordHash],[Comment],[Active])
+                     VALUES
+                        ('Máté Péter', 'ajanlat@relaxvill.hu','mp', '{0}', 'Automatikusan létrehozva',1)
+               end",
+                pwdHash));
+
+            pwdHash = BllAuth.GetPwdHash("ti", salt);
+            Execute.Sql(string.Format(@"
+                if not exists (select 1 from Users where upper(LoginName) = 'TI'  )
+                begin
+                    INSERT INTO [dbo].[Users]  ([Name],[Email],[LoginName],[PasswordHash],[Comment],[Active])
+                     VALUES
+                        ('Török István', 'kecskemet@relaxvill.hu','ti', '{0}', 'Automatikusan létrehozva',1)
+               end",
+                pwdHash));
         }
     }
 }
