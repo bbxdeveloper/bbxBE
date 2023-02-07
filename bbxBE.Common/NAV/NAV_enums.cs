@@ -142,7 +142,7 @@ namespace bbxBE.Common.NAV
             ERRATIC_INVOICE_ISSUE_DATE
         }
 
-        public enum enCustinvoiceCategory
+        public enum enInvoiceCategory
         {
             [Description("Normál")]
             NORMAL,

@@ -123,7 +123,7 @@ namespace bbxBE.Domain.Entities
 		[Description("Gyűjtőszámla esetén az adott tétel teljesítési dátuma")]
 		public DateTime LineDeliveryDate { get; set; }
 
-        //Gyűjtőszámla - szállítólvék kapcsolat
+        //Gyűjtőszámla - szállítólvél kapcsolat
         [ColumnLabel("Szállítólevél")]
 		[Description("Kapcsolt szállítólevél száma")]
 		public string OrigDeliveryNoteNumber { get; set; }

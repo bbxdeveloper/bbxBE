@@ -40,18 +40,14 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Szállítólevél szám")]
         public string InvoiceNumber { get; set; }
 
-        [ColumnLabel("Kelt")]
-        [Description("Kiállítás dátuma")]
-        public DateTime InvoiceIssueDate { get; set; }
+        [ColumnLabel("Teljesítés")]
+        [Description("Teljesítés dátuma")]
+        public DateTime InvoiceDeliveryDate { get; set; }
 
 
         [ColumnLabel("#")]
         [Description("Sor száma")]
         public short LineNumber { get; set; }
-
-        [ColumnLabel("")]
-        [Description("Szállítólevél ID")]
-        public short OrigDeliveryNoteInvoiceID { get; set; }
 
         [ColumnLabel("")]
         [Description("Szállítólevél sor ID")]

@@ -164,7 +164,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true)
         {
 
-
             Invoice item;
 
             if (FullData)
@@ -191,6 +190,26 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return item;
         }
+        public async Task<Invoice> GetInvoiceRecordByInvoiceLineIDAsync(long InvoiceLineID)
+        {
+            Invoice item;
+            item = await _dbContext.InvoiceLine.AsNoTracking()
+                .Include(i => i.Invoice)
+                .Where(x => x.ID == InvoiceLineID)
+                .Select(s => s.Invoice).FirstOrDefaultAsync();
+            return item;
+        }
+
+        public async Task<List<Invoice>> GetInvoiceRecordByInvoiceLinesAsync(List<long> LstInvoiceLineID)
+        {
+            List<Invoice> items;
+            items = await _dbContext.InvoiceLine.AsNoTracking()
+                .Include(i => i.Invoice)
+                .Where(x => LstInvoiceLineID.Any( a=>a == x.ID))
+                .GroupBy( g=>g.InvoiceID)
+                .Select(grp => grp.First().Invoice).ToListAsync();
+            return items;
+        }
 
         public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID, string currencyCode)
         {
@@ -198,7 +217,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var lstEntities = new List<GetPendigDeliveryNotesSummaryModel>();
 
-            IQueryable< GetPendigDeliveryNotesSummaryModel> q1;
+            IQueryable<GetPendigDeliveryNotesSummaryModel> q1;
 
             //a tételsorokben lévő PriceReview miatt nested groupra van szükség
 
@@ -282,9 +301,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          PriceReview = grpOuter.Count(c => c.PriceReview) > 0,
                          SumNetAmount = grpOuter.Sum(s => s.SumNetAmount)
                      };
-            
+
             q2 = q2.OrderBy(o => o.Customer);
-            
+
             lstEntities = await q2.ToListAsync();
 
 
