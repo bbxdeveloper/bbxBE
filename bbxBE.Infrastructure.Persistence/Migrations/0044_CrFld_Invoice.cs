@@ -21,6 +21,27 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                         from InvoiceLine il
                         inner join Invoice i on il.InvoiceId = i.ID"));
 
+            Delete.Index("INX_OrigDeliveryNoteInvoiceID").OnTable("InvoiceLine");
+
+            Delete.Column("OrigDeliveryNoteNumber").FromTable("InvoiceLine");
+            Delete.Column("OrigDeliveryNoteInvoiceID").FromTable("InvoiceLine");
+            Delete.Column("OrigDeliveryNoteInvoiceLineID").FromTable("InvoiceLine");
+
+
+            Alter.Table("InvoiceLine")
+                .AddColumn("RelDeliveryNoteNumber").AsString().Nullable();
+            Alter.Table("InvoiceLine")
+                .AddColumn("RelDeliveryNoteInvoiceID").AsInt64().Nullable().ForeignKey();
+            Alter.Table("InvoiceLine")
+                .AddColumn("RelDeliveryNoteInvoiceLineID").AsInt64().Nullable().ForeignKey();
+
+
+            Create.Index("INX_RelDeliveryNoteInvoiceID")
+                           .OnTable("InvoiceLine")
+                           .OnColumn("RelDeliveryNoteInvoiceID").Ascending()
+                           .WithOptions().NonClustered();
+
+
         }
     }
 }

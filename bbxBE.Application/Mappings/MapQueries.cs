@@ -145,9 +145,11 @@ namespace bbxBE.Queries.Mappings
             CreateMap<InvoiceLine, GetPendigDeliveryNotesModel>()
             .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Invoice.Incoming ? src.Invoice.Supplier.CustomerName : src.Invoice.Customer.CustomerName))
             .ForMember(dst => dst.InvoiceNumber, opt => opt.MapFrom(src => src.Invoice.InvoiceNumber))
-            .ForMember(dst => dst.OrigDeliveryNoteInvoiceID, opt => opt.MapFrom(src => src.InvoiceID))
-            .ForMember(dst => dst.OrigDeliveryNoteInvoiceLineID, opt => opt.MapFrom(src => src.ID))
-            .ForMember(dst => dst.InvoiceIssueDate, opt => opt.MapFrom(src => src.Invoice.InvoiceIssueDate));
+            .ForMember(dst => dst.RelDeliveryNoteInvoiceLineID, opt => opt.MapFrom(src => src.ID))
+            .ForMember(dst => dst.RelDeliveryDate, opt => opt.MapFrom(src => src.Invoice.InvoiceDeliveryDate))
+            .ForMember(dst => dst.WorkNumber, opt => opt.MapFrom(src => src.Invoice.WorkNumber))
+            .ForMember(dst => dst.CurrencyCode, opt => opt.MapFrom(src => src.Invoice.CurrencyCode))
+            .ForMember(dst => dst.ExchangeRate, opt => opt.MapFrom(src => src.Invoice.ExchangeRate));
 
             CreateMap<List<Zip>, List<GetZipViewModel>>();
             CreateMap<Zip, GetZipViewModel>();

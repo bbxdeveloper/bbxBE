@@ -62,7 +62,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 			[ColumnLabel("Szállítólevél sor")]
 			[Description("Kapcsolt szállítólevél sor")]
-			public short? OrigDeliveryNoteInvoiceLineID { get; set; }
+			public long? RelDeliveryNoteInvoiceLineID { get; set; }
 
 
 		}
@@ -219,6 +219,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			var invoice = _mapper.Map<Invoice>(request);
 			var deliveryNotes = new Dictionary<int, Invoice>();
 			var counterCode = "";
+
 			try
 			{
 
@@ -257,6 +258,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 					invoice.CustomerID = request.CustomerID;
 				}
 
+				var RelDeliveryNotes = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
+						.Select(s => s.Key).ToList();
 				//Megjegyzés
 				if (!string.IsNullOrWhiteSpace(request.Notice))
 				{
@@ -307,8 +310,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 					if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
 					{
 						//gyűjtőszámla esetén is egy árfolyam lesz!
-						if( )
-						 _InvoiceRepository.GetInvoiceRecordByInvoiceLineIDAsync( )
+//						if( )
+//						 _InvoiceRepository.GetInvoiceRecordByInvoiceLineIDAsync( )
 
 
 					}
