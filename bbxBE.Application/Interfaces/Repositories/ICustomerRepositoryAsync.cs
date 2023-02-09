@@ -13,6 +13,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         bool IsUniqueTaxpayerId(string Taxpaxpayer, long? ID = null);
         bool IsUniqueIsOwnData(long? ID = null);
         bool CheckBankAccount(string BankAccount);
+        bool CheckCountryCode(string countryCode);
+        bool CheckTaxPayerNumber(string p_CheckTaxPayerNumber);
         Task<Customer> AddCustomerAsync(Customer p_customer);
         Task<int> AddCustomerRangeAsync(List<Customer> p_customerList);
         Task<Customer> DeleteCustomerAsync(long ID);

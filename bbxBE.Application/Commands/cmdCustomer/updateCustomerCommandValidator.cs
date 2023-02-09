@@ -23,13 +23,33 @@ namespace bbxBE.Application.Commands.cmdCustomer
                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
+
             RuleFor(p => p.CustomerName)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
+            RuleFor(p => p.CountryCode)
+                       .Must(CheckCountryCode).WithMessage(bbxBEConsts.ERR_CST_WRONGCOUNTRY)
+               .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.TaxpayerNumber)
-                   .MaximumLength(13).WithMessage(bbxBEConsts.ERR_MAXLEN)
+                        .Must(
+                          (model, TaxpayerNumber) =>
+                          {
+                              if (model.CountryCode != bbxBEConsts.CNTRY_HU && !string.IsNullOrWhiteSpace(TaxpayerNumber.Replace("-", "")))
+                                  return false;
+                              return true;
+                          }
+                        ).WithMessage(bbxBEConsts.ERR_CST_TAXNUMBER_INV)
+                        .Must(
+                          (model, TaxpayerNumber) =>
+                          {
+                              if (model.CountryCode != bbxBEConsts.CNTRY_HU)
+                                  return true;
+                              return CheckTaxPayerNumber(TaxpayerNumber);
+                          }
+                        ).WithMessage(bbxBEConsts.ERR_CST_TAXNUMBER_INV2)
                    .Must(
                         (model, Name) =>
                         {
@@ -44,6 +64,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
+
             RuleFor(p => p.IsOwnData)
                      .Must(
                         (model, Name) =>
@@ -51,6 +72,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
                             return IsUniqueIsOwnData(model.IsOwnData, Convert.ToInt64(model.ID));
                         }
                     ).WithMessage(bbxBEConsts.ERR_CST_OWNEXISTS);
+
 
             RuleFor(p => p.City)
                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
@@ -64,7 +86,15 @@ namespace bbxBE.Application.Commands.cmdCustomer
                .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
                .MustAsync(Utils.IsValidEmailAsync).WithMessage(bbxBEConsts.ERR_INVALIDEMAIL);
 
+        }
 
+        private bool CheckCountryCode(string p_countryCode)
+        {
+            return _customerRepository.CheckCountryCode(p_countryCode);
+        }
+        private bool CheckTaxPayerNumber(string p_TaxPayerNumber)
+        {
+            return _customerRepository.CheckTaxPayerNumber(p_TaxPayerNumber);
         }
 
         private bool IsUniqueTaxpayerId(string TaxpayerNumber, long ID)

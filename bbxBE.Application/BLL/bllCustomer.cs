@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCustomer;
 using System;
@@ -53,8 +54,19 @@ namespace bbxBE.Application.BLL
                 return false;
 
             return (System.Text.RegularExpressions.Regex.IsMatch(bankAccount, "^[0-9]{8}-[0-9]{8}(-[0-9]{8})?$"));
-  
         }
+
+        public static bool ValidateTaxPayerNumber(string taxPayerNumber)
+        {
+            return (System.Text.RegularExpressions.Regex.IsMatch(taxPayerNumber, @"^(\d{7})(\d)\-([1-5])\-(0[2-9]|[13][0-9]|2[02-9]|4[0-4]|51)$"));
+        }
+
+        public static bool ValidateCountryCode(string countryCode)
+        {
+            var valid = Enum.TryParse(countryCode, out enCountries cou);
+            return valid;
+        }
+
 
         public static async Task<int> CreateRangeAsynch(List<CreateCustomerCommand> requestList,
              ICustomerRepositoryAsync _CustomerRepository, IMapper _mapper, CancellationToken cancellationToken)

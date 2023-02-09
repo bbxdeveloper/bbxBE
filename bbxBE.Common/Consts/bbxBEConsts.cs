@@ -49,7 +49,7 @@ namespace bbxBE.Common.Consts
         public static string FV_VATRATECODENOTFOUND = "Áfakód található, kód:{0} ";
         public static string FV_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
         public static string FV_OWNNOTFOUND = "Saját adat nem található!";
-        public static string FV_INVALIDFORMAT = "{PropertyName}:  érvénytelen formátum.";
+        public static string FV_INVALIDFORMAT = "{PropertyName}: érvénytelen formátum.";
         public static string FV_COUNTERNOTFOUND = "Bizonylati tömb nem található, ID:{0} ";
         public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb nem található, Kód:{0}, Raktár ID:{1} ";
         public static string FV_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
@@ -82,6 +82,10 @@ namespace bbxBE.Common.Consts
         public static string ERR_INV_VATSUMS = "{PropertyName}: A számlán nincs áfánkénti összesítő";
 
         public static string ERR_CST_OWNEXISTS = "{PropertyName}:  Saját adat már létezik.";
+        public static string ERR_CST_WRONGCOUNTRY = "{PropertyName}:  Helytelem országkód:{PropertyValue}";
+
+        public static string ERR_CST_TAXNUMBER_INV = "{PropertyName}: Az adószám csak magyarországi partnerek esetén értelmezett.";
+        public static string ERR_CST_TAXNUMBER_INV2 = "{PropertyName}: érvénytelen formátum/tartalom.";
 
 
         public static string ERR_OFFER_DATE1 = "{PropertyName}: A lejárati dátum nem lehet korábbi, mint a ajánlat kibocsátásának dátuma!";
