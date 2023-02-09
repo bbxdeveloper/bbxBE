@@ -308,7 +308,6 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("A számla végösszege forintban")]
         public decimal InvoiceGrossAmountHUF { get; set; }
 
-
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long UserID { get; set; }
