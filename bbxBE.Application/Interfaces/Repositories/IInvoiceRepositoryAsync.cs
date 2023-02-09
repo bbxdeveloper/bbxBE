@@ -25,7 +25,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<IEnumerable<Entity>> GetPendigDeliveryNotesAsync(bool incoming, long warehouseID, long customerID, string currencyCode);
         Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true);
         Task<Invoice> GetInvoiceRecordByInvoiceLineIDAsync(long InvoiceLineID);
-        Task<List<Invoice>> GetInvoiceRecordByInvoiceLinesAsync(List<long> LstInvoiceLineID);
+        Task<Dictionary<long,Invoice>> GetInvoiceRecordsByInvoiceLinesAsync(List<long> LstInvoiceLineID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameters);
 
     }

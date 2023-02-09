@@ -199,15 +199,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Select(s => s.Invoice).FirstOrDefaultAsync();
             return item;
         }
-
-        public async Task<List<Invoice>> GetInvoiceRecordByInvoiceLinesAsync(List<long> LstInvoiceLineID)
+        public async Task<Dictionary<long, Invoice>> GetInvoiceRecordsByInvoiceLinesAsync(List<long> LstInvoiceLineID)
         {
-            List<Invoice> items;
+            Dictionary<long, Invoice> items;
+
             items = await _dbContext.InvoiceLine.AsNoTracking()
                 .Include(i => i.Invoice)
-                .Where(x => LstInvoiceLineID.Any( a=>a == x.ID))
-                .GroupBy( g=>g.InvoiceID)
-                .Select(grp => grp.First().Invoice).ToListAsync();
+                .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted )
+                .GroupBy(g => g.InvoiceID)
+                .Select(grp => new { key = grp.Key, invoice = grp.First().Invoice }).ToDictionaryAsync(k => k.key, i => i.invoice);
             return items;
         }
 

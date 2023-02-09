@@ -258,8 +258,14 @@ namespace bxBE.Application.Commands.cmdInvoice
 					invoice.CustomerID = request.CustomerID;
 				}
 
-				var RelDeliveryNotes = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
-						.Select(s => s.Key).ToList();
+				var RelDeliveryNotes = new Dictionary<long, Invoice>();
+				if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
+                {
+					var RelDeliveryNoteIDs = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
+							.Select(s => s.Key).ToList();
+					RelDeliveryNotes = await _InvoiceRepository.GetInvoiceRecordsByInvoiceLinesAsync(RelDeliveryNoteIDs);
+				}
+				
 				//Megjegyzés
 				if (!string.IsNullOrWhiteSpace(request.Notice))
 				{
@@ -309,9 +315,21 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 					if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
 					{
+						if( !ln.RelDeliveryNoteInvoiceLineID.HasValue || ln.RelDeliveryNoteInvoiceLineID.Value > 0)
+                        {
+							throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVAGGR_RELATED_NOT_ASSIGNED, 
+									invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode));
+						}
+
 						//gyűjtőszámla esetén is egy árfolyam lesz!
-//						if( )
-//						 _InvoiceRepository.GetInvoiceRecordByInvoiceLineIDAsync( )
+
+						if (!RelDeliveryNotes.ContainsKey(ln.RelDeliveryNoteInvoiceLineID.Value))
+						{
+							throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVAGGR_RELATED_NOT_FOUND,
+									invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode, ln.RelDeliveryNoteInvoiceLineID));
+						}
+
+						//						 _InvoiceRepository.GetInvoiceRecordByInvoiceLineIDAsync( )
 
 
 					}
