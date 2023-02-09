@@ -18,6 +18,7 @@ namespace bbxBE.Common.Enums
         [Description("Szlovákia")] SK,
         [Description("Szlovénia")] SI,
         [Description("Ukrajna")] UA,
+        [Description("France")] FR,
 
         /*
         [Description("Afghanistan")] AF,
@@ -93,7 +94,6 @@ namespace bbxBE.Common.Enums
         [Description("Faroe Islands")] FO,
         [Description("Fiji")] FJ,
         [Description("Finland")] FI,
-        [Description("France")] FR,
         [Description("French Guiana")] GF,
         [Description("French Polynesia")] PF,
         [Description("French Southern Territories")] TF,

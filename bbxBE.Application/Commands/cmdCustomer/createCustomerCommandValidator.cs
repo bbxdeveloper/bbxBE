@@ -31,8 +31,28 @@ namespace bbxBE.Application.Commands.cmdCustomer
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
+            RuleFor(p => p.CountryCode)
+                       .Must(CheckCountryCode).WithMessage(bbxBEConsts.ERR_CST_WRONGCOUNTRY)
+               .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
+
             RuleFor(p => p.TaxpayerNumber)
-                      .MaximumLength(13).WithMessage(bbxBEConsts.ERR_MAXLEN)
+                        .Must(
+                          (model, TaxpayerNumber) =>
+                          {
+                              if (model.CountryCode != bbxBEConsts.CNTRY_HU && !string.IsNullOrWhiteSpace(TaxpayerNumber.Replace("-", "")))
+                                  return false;
+                              return true;
+                          }
+                        ).WithMessage(bbxBEConsts.ERR_CST_TAXNUMBER_INV)
+                        .Must(
+                          (model, TaxpayerNumber) =>
+                          {
+                              if (model.CountryCode != bbxBEConsts.CNTRY_HU)
+                                  return true;
+                              return CheckTaxPayerNumber(TaxpayerNumber);
+                          }
+                        ).WithMessage(bbxBEConsts.ERR_CST_TAXNUMBER_INV2)
                       .Must(IsUniqueTaxpayerId).WithMessage(bbxBEConsts.ERR_EXISTS);
 
             RuleFor(p => p.CustomerBankAccountNumber)
@@ -60,9 +80,17 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
         }
 
+        private bool CheckCountryCode(string p_countryCode)
+        {
+            return _customerRepository.CheckCountryCode(p_countryCode);
+        }
         private bool CheckBankAccount(string p_CustomerBankAccountNumber)
         {
             return _customerRepository.CheckBankAccount(p_CustomerBankAccountNumber);
+        }
+        private bool CheckTaxPayerNumber(string p_TaxPayerNumber)
+        {
+            return _customerRepository.CheckTaxPayerNumber(p_TaxPayerNumber);
         }
 
         private bool IsUniqueTaxpayerId(string TaxpayerNumber)
@@ -95,7 +123,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
         private bool CheckBankAccountAsync(string p_CustomerBankAccountNumber)
         {
-            return  _customerRepository.CheckBankAccount(p_CustomerBankAccountNumber);
+            return _customerRepository.CheckBankAccount(p_CustomerBankAccountNumber);
         }
 
     }

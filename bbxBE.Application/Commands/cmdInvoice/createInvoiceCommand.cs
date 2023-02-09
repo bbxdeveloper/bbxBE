@@ -58,6 +58,13 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[Description("Ár a számla pénznemében")]
 			public decimal LineNetAmount { get; set; }
 
+			//Gyűjtőszámla - szállítólvél kapcsolat
+
+			[ColumnLabel("Szállítólevél sor")]
+			[Description("Kapcsolt szállítólevél sor")]
+			public long? RelDeliveryNoteInvoiceLineID { get; set; }
+
+
 		}
 
 		[ColumnLabel("B/K")]
@@ -125,8 +132,11 @@ namespace bxBE.Application.Commands.cmdInvoice
         [Description("Ár felülvizsgálat?")]
         public bool? PriceReview { get; set; } = false;
 
+		[ColumnLabel("Típus")]
+		[Description("Típus")]
+		public string InvoiceCategory { get; set; } = enInvoiceCategory.NORMAL.ToString();
 
-        [ColumnLabel("Számlasorok")]
+		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
 		public List<InvoiceLine> InvoiceLines { get; set; } = new List<InvoiceLine>();
 
@@ -200,15 +210,16 @@ namespace bxBE.Application.Commands.cmdInvoice
   "invoiceDiscountPercent": 10,
   "workNumber": "workNumber #1",
   "priceReview": true
-}
+}st
 		 */
 
 
         public async Task<Response<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
 		{
 			var invoice = _mapper.Map<Invoice>(request);
-
+			var deliveryNotes = new Dictionary<int, Invoice>();
 			var counterCode = "";
+
 			try
 			{
 
@@ -247,6 +258,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 					invoice.CustomerID = request.CustomerID;
 				}
 
+				var RelDeliveryNotes = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
+						.Select(s => s.Key).ToList();
 				//Megjegyzés
 				if (!string.IsNullOrWhiteSpace(request.Notice))
 				{
@@ -294,7 +307,19 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 					ln.PriceReview = request.PriceReview;
 
-					ln.LineExchangeRate = invoice.ExchangeRate;             //gyűjtőszámla esetén is egy árfolyam lesz!
+					if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
+					{
+						//gyűjtőszámla esetén is egy árfolyam lesz!
+//						if( )
+//						 _InvoiceRepository.GetInvoiceRecordByInvoiceLineIDAsync( )
+
+
+					}
+					else
+                    {
+						ln.LineExchangeRate = invoice.ExchangeRate;
+						ln.LineDeliveryDate = invoice.InvoiceDeliveryDate;
+					}
 
 					//	ln.Product = prod;
 					ln.ProductID = prod.ID;

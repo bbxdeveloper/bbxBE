@@ -40,14 +40,22 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Szállítólevél szám")]
         public string InvoiceNumber { get; set; }
 
-        [ColumnLabel("Kelt")]
-        [Description("Kiállítás dátuma")]
-        public DateTime InvoiceIssueDate { get; set; }
+        [ColumnLabel("Teljesítés")]
+        [Description("Teljesítés dátuma")]
+        public DateTime InvoiceDeliveryDate { get; set; }
 
 
         [ColumnLabel("#")]
         [Description("Sor száma")]
         public short LineNumber { get; set; }
+
+        [ColumnLabel("")]
+        [Description("Szállítólevél sor ID")]
+        public long RelDeliveryNoteInvoiceLineID { get; set; }
+
+        [ColumnLabel("")]
+        [Description("Szállítólevél sor ID")]
+        public DateTime RelDeliveryDate { get; set; }
 
         [ColumnLabel("Termékkód")]
         [Description("Termékkód")]
@@ -93,6 +101,18 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Nettó érték")]
         [Description("Ár a számla pénznemében")]
         public decimal LineNetAmount { get; set; }
+
+        [ColumnLabel("Munkaszám")]
+        [Description("Munkaszám")]
+        public string WorkNumber { get; set; }
+
+        [ColumnLabel("Pénznem")]
+        [Description("Pénznem")]
+        public string CurrencyCode;
+
+        [ColumnLabel("Árfolyam")]
+        [Description("Árfolyam")]
+        public decimal ExchangeRate { get; set; }
 
     }
 }

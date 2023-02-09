@@ -8,7 +8,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00043, "v00.00.01-Invoice.UserID")]
+    [Migration(00043, "v00.01.100-Invoice.WorkNumber, PriceReview")]
     public class InitialTables_00043: Migration
     {
         public override void Down()

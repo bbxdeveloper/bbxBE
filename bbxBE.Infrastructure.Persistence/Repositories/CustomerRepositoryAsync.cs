@@ -68,6 +68,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return bllCustomer.ValidateBankAccount(bankAccountNumber) || bllCustomer.ValidateIBAN(bankAccountNumber);
         }
 
+        public bool CheckCountryCode(string countrycode)
+        {
+
+            return bllCustomer.ValidateCountryCode(countrycode);
+        }
+        public bool CheckTaxPayerNumber(string taxPayerNumber)
+        {
+            if (string.IsNullOrWhiteSpace(taxPayerNumber.Replace("-", "")))
+                return true;
+
+            return bllCustomer.ValidateTaxPayerNumber(taxPayerNumber);
+        }
+
         public async Task<Customer> AddCustomerAsync(Customer p_customer)
         {
 

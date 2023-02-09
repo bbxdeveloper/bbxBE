@@ -123,18 +123,18 @@ namespace bbxBE.Domain.Entities
 		[Description("Gyűjtőszámla esetén az adott tétel teljesítési dátuma")]
 		public DateTime LineDeliveryDate { get; set; }
 
-        //Gyűjtőszámla - szállítólvék kapcsolat
+        //Gyűjtőszámla - szállítólvél kapcsolat
         [ColumnLabel("Szállítólevél")]
 		[Description("Kapcsolt szállítólevél száma")]
-		public string OrigDeliveryNoteNumber { get; set; }
+		public string RelDeliveryNoteNumber { get; set; }
 
 		[ColumnLabel("Szállítólevél ID")]
 		[Description("Kapcsolt szállítólevél ID")]
-		public long? OrigDeliveryNoteInvoiceID { get; set; }
+		public long? RelDeliveryNoteInvoiceID { get; set; }
 
 		[ColumnLabel("Szállítólevél sor")]
 		[Description("Kapcsolt szállítólevél sor")]
-		public short? OrigDeliveryNoteInvoiceLineID { get; set; }
+		public long? RelDeliveryNoteInvoiceLineID { get; set; }
 
         //Csak szállítólevél esetén értelmezett mezők
         [ColumnLabel("Rendezetlen szállítólevél-mennyiség")]
