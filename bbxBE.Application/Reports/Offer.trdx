@@ -27,7 +27,7 @@
     </WebServiceDataSource>
   </DataSources>
   <Items>
-    <PageHeaderSection Height="7.2cm" Name="pageHeaderSection1">
+    <PageHeaderSection Height="7.5cm" Name="pageHeaderSection1">
       <Style>
         <BorderStyle Bottom="None" />
         <BorderColor Bottom="Black" />
@@ -92,7 +92,7 @@
             <Font Name="Calibri" Size="14pt" Bold="False" />
           </Style>
         </TextBox>
-        <TextBox Width="79.27mm" Height="6mm" Left="0.73mm" Top="36mm" Value="= &quot;5000 Szolnok Tószegi út 7.&quot;" Name="textBox36">
+        <TextBox Width="99.27mm" Height="6mm" Left="0.73mm" Top="36mm" Value="= &quot;6000 Kecskemét, Felsőszéktó tanya 43.&quot;" Name="textBox36">
           <Style>
             <Font Name="Calibri" Size="14pt" Bold="True" />
           </Style>
@@ -112,9 +112,9 @@
         </TextBox>
       </Items>
     </PageHeaderSection>
-    <DetailSection Height="1.102in" Name="detailSection1">
+    <DetailSection Height="1.378in" Name="detailSection1">
       <Items>
-        <Table DataSourceName="webServiceDataSource1" Width="189.63mm" Height="15mm" Left="0.02cm" Top="0.2mm" RowHeadersPrintOnEveryPage="True" Anchoring="Left, Right" Name="table1" StyleName="Normal.TableNormal">
+        <Table DataSourceName="webServiceDataSource1" Width="189.24mm" Height="15mm" Left="0.02cm" Top="0.2mm" RowHeadersPrintOnEveryPage="True" Anchoring="Left, Right" Name="table1" StyleName="Normal.TableNormal">
           <Body>
             <Cells>
               <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
@@ -137,7 +137,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="2" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="50.37mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.lineDescription" Name="textBox19" StyleName="Normal.TableBody">
+                  <TextBox Width="52.49mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.lineDescription" Name="textBox19" StyleName="Normal.TableBody">
                     <Style VerticalAlign="Middle">
                       <Font Size="7pt" />
                     </Style>
@@ -146,7 +146,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="4" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="8.38mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.unitOfMeasureX" Name="textBox21" StyleName="Normal.TableBody">
+                  <TextBox Width="11.91mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.unitOfMeasureX" Name="textBox21" StyleName="Normal.TableBody">
                     <Style VerticalAlign="Middle">
                       <Font Size="7pt" />
                     </Style>
@@ -162,32 +162,14 @@
                   </TextBox>
                 </ReportItem>
               </TableCell>
-              <TableCell RowIndex="0" ColumnIndex="6" RowSpan="1" ColumnSpan="1">
-                <ReportItem>
-                  <TextBox Width="11.03mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.vatRateCode" Name="textBox25" StyleName="Normal.TableBody">
-                    <Style TextAlign="Right" VerticalAlign="Middle">
-                      <Font Size="7pt" />
-                    </Style>
-                  </TextBox>
-                </ReportItem>
-              </TableCell>
               <TableCell RowIndex="0" ColumnIndex="7" RowSpan="1" ColumnSpan="1">
-                <ReportItem>
-                  <TextBox Width="20mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.unitVat" Format="{0:## ### ##0.00}" Name="textBox27" StyleName="Normal.TableBody">
-                    <Style TextAlign="Right" VerticalAlign="Middle">
-                      <Font Size="7pt" />
-                    </Style>
-                  </TextBox>
-                </ReportItem>
-              </TableCell>
-              <TableCell RowIndex="0" ColumnIndex="8" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
                   <TextBox Width="20mm" Height="5mm" Left="0in" Top="0in" Value="=Fields.netAmount" Format="{0:## ### ##0.00}" Name="textBox29" StyleName="Normal.TableBody">
                     <Style TextAlign="Right" VerticalAlign="Middle">
                       <Font Size="7pt" />
                       <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
                       <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
-                      <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                      <BorderWidth Top="1px" Bottom="1px" Left="1px" Right="1px" />
                     </Style>
                   </TextBox>
                 </ReportItem>
@@ -201,7 +183,7 @@
                   </TextBox>
                 </ReportItem>
               </TableCell>
-              <TableCell RowIndex="0" ColumnIndex="9" RowSpan="1" ColumnSpan="1">
+              <TableCell RowIndex="0" ColumnIndex="8" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
                   <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="= Fields.brtAmount" Format="{0:## ### ##0.00}" Name="textBox30" StyleName="Normal.TableBody">
                     <Style Visible="False" TextAlign="Right" VerticalAlign="Middle">
@@ -221,28 +203,19 @@
               </TableCell>
               <TableCell RowIndex="1" ColumnIndex="7" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="= Sum(Fields.unitVat)" Format="{0:## ### ##0.00}" Name="textBox48" StyleName="Normal.TableBody">
+                  <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="= Sum(Fields.netAmount)" Format="{0:## ### ##0.00}" Name="textBox49" StyleName="Normal.TableBody">
                     <Style TextAlign="Right" VerticalAlign="Middle">
-                      <Font Size="7pt" />
+                      <Font Size="7pt" Bold="True" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
                     </Style>
                   </TextBox>
                 </ReportItem>
               </TableCell>
               <TableCell RowIndex="1" ColumnIndex="8" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="= Sum(Fields.netAmount)" Format="{0:## ### ##0.00}" Name="textBox49" StyleName="Normal.TableBody">
-                    <Style TextAlign="Right" VerticalAlign="Middle">
-                      <Font Size="7pt" />
-                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
-                    </Style>
-                  </TextBox>
-                </ReportItem>
-              </TableCell>
-              <TableCell RowIndex="1" ColumnIndex="9" RowSpan="1" ColumnSpan="1">
-                <ReportItem>
                   <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="= Sum(Fields.brtAmount)" Format="{0:## ### ##0.00}" Name="textBox50" StyleName="Normal.TableBody">
                     <Style Visible="False" TextAlign="Right" VerticalAlign="Middle">
-                      <Font Size="7pt" />
+                      <Font Size="7pt" Bold="True" />
                       <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
                     </Style>
                     <ConditionalFormatting>
@@ -256,11 +229,29 @@
                   </TextBox>
                 </ReportItem>
               </TableCell>
-              <TableCell RowIndex="1" ColumnIndex="0" RowSpan="1" ColumnSpan="7">
+              <TableCell RowIndex="1" ColumnIndex="0" RowSpan="1" ColumnSpan="6">
                 <ReportItem>
-                  <TextBox Width="129.63mm" Height="5mm" Left="0cm" Top="0cm" Value="= &quot;Összesen:&quot; + Last(Fields.showBrtAmount)" Name="textBox31" StyleName="Normal.TableBody">
+                  <TextBox Width="124.24mm" Height="5mm" Left="0cm" Top="0cm" Value="= &quot;Összesen:&quot;" Name="textBox31" StyleName="Normal.TableBody">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Size="7pt" Bold="True" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="6" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="25mm" Height="5mm" Left="0cm" Top="0cm" Value="= Fields.unitPrice" Format="{0:## ### ##0.00}" Name="textBox24" StyleName="Normal.TableBody">
                     <Style TextAlign="Right" VerticalAlign="Middle">
                       <Font Size="7pt" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="1" ColumnIndex="6" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="25mm" Height="5mm" Left="0cm" Top="0cm" Value="= Sum(Fields.unitPrice)" Format="{0:## ### ##0.00}" Name="textBox25" StyleName="Normal.TableBody">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Size="7pt" Bold="True" />
                     </Style>
                   </TextBox>
                 </ReportItem>
@@ -269,12 +260,11 @@
             <Columns>
               <Column Width="6.96mm" />
               <Column Width="30.49mm" />
-              <Column Width="50.37mm" />
+              <Column Width="52.49mm" />
               <Column Width="13.08mm" />
-              <Column Width="8.38mm" />
+              <Column Width="11.91mm" />
               <Column Width="9.32mm" />
-              <Column Width="11.03mm" />
-              <Column Width="20mm" />
+              <Column Width="25mm" />
               <Column Width="20mm" />
               <Column Width="20mm" />
             </Columns>
@@ -309,7 +299,7 @@
               <ReportItem>
                 <TextBox Width="6.96mm" Height="5mm" Left="0in" Top="0in" Value="Ssz" Name="textBox14" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="9pt" Bold="True" />
+                    <Font Size="8pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
@@ -318,16 +308,16 @@
               <ReportItem>
                 <TextBox Width="30.49mm" Height="5mm" Left="0in" Top="0in" Value="Termék kód" Name="textBox16" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="9pt" Bold="True" />
+                    <Font Size="8pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
             </TableGroup>
             <TableGroup Name="group2">
               <ReportItem>
-                <TextBox Width="50.37mm" Height="5mm" Left="0in" Top="0in" Value="Leírás" Name="textBox18" StyleName="Normal.TableHeader">
+                <TextBox Width="52.49mm" Height="5mm" Left="0in" Top="0in" Value="Leírás" Name="textBox18" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="9pt" Bold="True" />
+                    <Font Size="8pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
@@ -336,16 +326,16 @@
               <ReportItem>
                 <TextBox Width="13.08mm" Height="5mm" Left="0cm" Top="0cm" Value="Menny" Name="textBox2" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="9pt" Bold="True" />
+                    <Font Size="8pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
             </TableGroup>
             <TableGroup Name="group3">
               <ReportItem>
-                <TextBox Width="8.38mm" Height="5mm" Left="0in" Top="0in" Value="M.e." Name="textBox20" StyleName="Normal.TableHeader">
+                <TextBox Width="11.91mm" Height="5mm" Left="0in" Top="0in" Value="M.e." Name="textBox20" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="9pt" Bold="True" />
+                    <Font Size="8pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
@@ -354,46 +344,37 @@
               <ReportItem>
                 <TextBox Width="9.32mm" Height="5mm" Left="0in" Top="0in" Value="K%" Name="textBox22" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="9pt" Bold="True" />
+                    <Font Size="8pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
             </TableGroup>
             <TableGroup Name="group5">
               <ReportItem>
-                <TextBox Width="11.03mm" Height="5mm" Left="0in" Top="0in" Value="Áfa%" Name="textBox24" StyleName="Normal.TableHeader">
+                <TextBox Width="25mm" Height="5mm" Left="0cm" Top="0cm" Value="Nettó ár" Name="textBox13" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="9pt" Bold="True" />
-                  </Style>
-                </TextBox>
-              </ReportItem>
-            </TableGroup>
-            <TableGroup Name="group6">
-              <ReportItem>
-                <TextBox Width="20mm" Height="5mm" Left="0in" Top="0in" Value="Áfa" Name="textBox26" StyleName="Normal.TableHeader">
-                  <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="9pt" Bold="True" />
+                    <Font Size="8pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
             </TableGroup>
             <TableGroup Name="group7">
               <ReportItem>
-                <TextBox Width="20mm" Height="5mm" Left="0in" Top="0in" Value="Nettó" Name="textBox28" StyleName="Normal.TableHeader">
+                <TextBox Width="20mm" Height="5mm" Left="0in" Top="0in" Value="Nettó érték" Name="textBox28" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="9pt" Bold="True" />
+                    <Font Size="8pt" Bold="True" />
                     <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
                     <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
-                    <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                    <BorderWidth Top="1px" Bottom="1px" Left="1px" Right="1px" />
                   </Style>
                 </TextBox>
               </ReportItem>
             </TableGroup>
             <TableGroup Name="group8">
               <ReportItem>
-                <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="Bruttó" Name="textBox8" StyleName="Normal.TableHeader">
+                <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="Bruttó érték" Name="textBox8" StyleName="Normal.TableHeader">
                   <Style Visible="False" BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="9pt" Bold="True" />
+                    <Font Size="8pt" Bold="True" />
                     <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
                   </Style>
                   <ConditionalFormatting>
@@ -412,10 +393,23 @@
             <Binding Path="DataSource" Expression="= Fields.offerLines" />
           </Bindings>
         </Table>
-        <HtmlTextBox Width="189.41mm" Height="10mm" Left="0.2mm" Top="16.92mm" Value="= Iif(Len(Fields.notice) &gt; 0, Fields.notice, &quot;&quot;)" CanShrink="True" Name="htmlTextBox1">
+        <HtmlTextBox Width="189.41mm" Height="10mm" Left="0mm" Top="23mm" Value="= Iif(Len(Fields.notice) &gt; 0, Fields.notice, &quot;&quot;)" CanShrink="True" Name="htmlTextBox1">
           <Style>
             <Font Italic="True" />
           </Style>
+        </HtmlTextBox>
+        <HtmlTextBox Width="70mm" Height="5mm" Left="0mm" Top="17mm" Value="= Fields.currencyCodeX" CanShrink="True" Name="htmlTextBox2">
+          <Style Visible="True">
+            <Font Italic="True" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.currencyCode" Operator="Equal" Value="= &quot;HUF&quot;" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
         </HtmlTextBox>
       </Items>
     </DetailSection>
