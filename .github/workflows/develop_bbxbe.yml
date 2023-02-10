@@ -7,7 +7,7 @@ name: Build ASP.Net Core app - bbxBE
 on:
   push:
     branches:
-      - develop
+      - ci_cd_testing_brach
   workflow_dispatch:
 
 jobs:
