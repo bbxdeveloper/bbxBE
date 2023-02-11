@@ -5,9 +5,7 @@ name: Build ASP.Net Core app - bbxBE
 #and deploy, to Azure Web App
 
 on:
-  push:
-    branches:
-      - ci_cd_testing_branch
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout from repository
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v3
