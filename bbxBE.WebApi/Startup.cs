@@ -51,7 +51,7 @@ namespace bbxBE.WebApi
 
 
 
-            services.AddAuthorizationPolicies_ÁTALAKÍTANI(_config);
+            services.AddAuthorizationPolicies_HAVETOCHANGE(_config);
             // API version
             services.AddApiVersioningExtension();
             // API explorer

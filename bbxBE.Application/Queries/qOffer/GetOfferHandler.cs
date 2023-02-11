@@ -49,7 +49,7 @@ namespace bbxBE.Application.Queries.qOffer
 
             FillOfferLinesData(data);
 
-            var x = 100 + 200;
+            var x = 100 + 400;
 
             // response wrapper
             return data;
