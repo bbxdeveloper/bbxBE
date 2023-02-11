@@ -21,11 +21,11 @@ jobs:
       - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v3
 
-      # - name: Install dependencies
-        # uses: dotnet restore
+      - name: Install dependencies
+        uses: dotnet restore
 
-      # - name: Build with dotnet
-        # run: dotnet build --configuration Release --no-restore
+      - name: Build with dotnet
+        run: dotnet build --configuration Release --no-restore
         # # --no-restore nem kell majd?
       
       # - name: Run tests
