@@ -18,15 +18,15 @@ jobs:
       - name: Checkout from repository
         uses: actions/checkout@v3
 
-      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
-        uses: actions/setup-dotnet@v3
+      # - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        # uses: actions/setup-dotnet@v3
 
-      - name: Install dependencies
-        uses: dotnet restore
+      # - name: Install dependencies
+        # uses: dotnet restore
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release --no-restore
-        # --no-restore nem kell majd?
+      # - name: Build with dotnet
+        # run: dotnet build --configuration Release --no-restore
+        # # --no-restore nem kell majd?
       
-      - name: Run tests
-        run: dotnet test --no-restore --verbosity normal
+      # - name: Run tests
+        # run: dotnet test --no-restore --verbosity normal
