@@ -49,6 +49,8 @@ namespace bbxBE.Application.Queries.qOffer
 
             FillOfferLinesData(data);
 
+            var x = 100 + 300;
+
             // response wrapper
             return data;
         }
