@@ -22,8 +22,7 @@ jobs:
         uses: actions/setup-dotnet@v3
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release --no-restore
-        # # --no-restore nem kell majd?
+        run: dotnet build --configuration Release
       
       # - name: Run tests
         # run: dotnet test --no-restore --verbosity normal
