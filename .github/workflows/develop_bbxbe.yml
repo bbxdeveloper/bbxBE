@@ -5,9 +5,6 @@ name: Build ASP.Net Core app - bbxBE
 #and deploy, to Azure Web App
 
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
 
 jobs:
@@ -19,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout from repository
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v3
@@ -29,38 +26,7 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build --configuration Release --no-restore
-        # --no-restore nem kell majd?
+        # # --no-restore nem kell majd?
       
-      - name: Run tests
-        run: dotnet test --no-restore --verbosity normal
-
-  #     - name: dotnet publish
-  #       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
-
-  #     - name: Upload artifact for deployment job
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: .net-app
-  #         path: ${{env.DOTNET_ROOT}}/myapp
-
-  # deploy:
-  #   runs-on: windows-latest
-  #   needs: build
-  #   environment:
-  #     name: 'Production'
-  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-  #   steps:
-  #     - name: Download artifact from build job
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: .net-app
-
-  #     - name: Deploy to Azure Web App
-  #       id: deploy-to-webapp
-  #       uses: azure/webapps-deploy@v2
-  #       with:
-  #         app-name: 'bbxBE'
-  #         slot-name: 'Production'
-  #         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C4A908E42B924F28B9E3CBF898A86E64 }}
-  #         package: .
+      # - name: Run tests
+        # run: dotnet test --no-restore --verbosity normal
