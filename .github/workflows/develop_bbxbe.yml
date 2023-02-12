@@ -5,9 +5,6 @@ name: Build ASP.Net Core app - bbxBE
 #and deploy, to Azure Web App
 
 on:
-  push:
-    branches:
-      - ci_cd_testing_branch
   workflow_dispatch:
 
 jobs:
@@ -15,21 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: ['3.0', '3.1.x', '5.0.x' ]
+        dotnet-version: ['3.1.x' ]
 
     steps:
       - name: Checkout from repository
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v3
 
-      - name: Install dependencies
-        uses: dotnet restore
-
       - name: Build with dotnet
-        run: dotnet build --configuration Release --no-restore
-        # --no-restore nem kell majd?
+        run: dotnet build --configuration Release
       
       - name: Run tests
         run: dotnet test --no-restore --verbosity normal
