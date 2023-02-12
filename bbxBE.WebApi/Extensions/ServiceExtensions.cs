@@ -157,7 +157,7 @@ namespace bbxBE.WebApi.Extensions
         }
 
 
-        public static void AddAuthorizationPolicies_ÁTALAKÍTANI(this IServiceCollection services, IConfiguration configuration)
+        public static void AddAuthorizationPolicies_HAVETOCHANGE(this IServiceCollection services, IConfiguration configuration)
         {
             string hradmin = configuration["ApiRoles:HRAdminRole"],
                     manager = configuration["ApiRoles:ManagerRole"], employee = configuration["ApiRoles:EmployeeRole"];
