@@ -205,9 +205,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             items = await _dbContext.InvoiceLine.AsNoTracking()
                 .Include(i => i.Invoice)
-                .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted )
+                .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted && !x.Deleted)
                 .GroupBy(g => g.InvoiceID)
                 .Select(grp => new { key = grp.Key, invoice = grp.First().Invoice }).ToDictionaryAsync(k => k.key, i => i.invoice);
+            return items;
+        }
+
+        public async Task<Dictionary<long, InvoiceLine>> GetInvoiceLineRecordsAsync(List<long> LstInvoiceLineID)
+        {
+            Dictionary<long, InvoiceLine> items;
+
+            items = await _dbContext.InvoiceLine.AsNoTracking()
+                .Include(i => i.Invoice)
+                .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted && !x.Deleted)
+                .ToDictionaryAsync(k => k.ID, i => i);
             return items;
         }
 

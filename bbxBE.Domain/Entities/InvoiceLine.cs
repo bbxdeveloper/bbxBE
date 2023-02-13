@@ -112,7 +112,7 @@ namespace bbxBE.Domain.Entities
 		[Description("Az eredeti számla módosítással érintett tételének sorszáma,(lineNumber).Új tétel létrehozása esetén az új tétel sorszáma, az eredeti számla folytatásaként")]
 		public short LineNumberReference { get; set; }
 		[ColumnLabel("Modosítás jellege")]
-		[Description("A számlatétel módosításának jellege")]
+		[Description("A számlatétel módosításának jellege (javtószámla)")]
 		public string LineOperation { get; set; }
 
 		//Gyűjtőszámla

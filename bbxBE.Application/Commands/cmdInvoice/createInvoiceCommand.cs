@@ -262,7 +262,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 				if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
                 {
 					var RelDeliveryNoteIDs = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
-							.Select(s => s.Key).ToList();
+							.Select(s => s.Key.Value).ToList();
 					RelDeliveryNotes = await _InvoiceRepository.GetInvoiceRecordsByInvoiceLinesAsync(RelDeliveryNoteIDs);
 				}
 				
@@ -329,8 +329,12 @@ namespace bxBE.Application.Commands.cmdInvoice
 									invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode, ln.RelDeliveryNoteInvoiceLineID));
 						}
 
-						//						 _InvoiceRepository.GetInvoiceRecordByInvoiceLineIDAsync( )
+						ln.RelDeliveryNoteNumber = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceNumber;
+						ln.RelDeliveryNoteInvoiceID = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].ID;
+						ln.RelDeliveryNoteInvoiceLineID = ln.RelDeliveryNoteInvoiceLineID.Value;
 
+						ln.LineExchangeRate = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].ExchangeRate;
+						ln.LineDeliveryDate = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceDeliveryDate;
 
 					}
 					else
@@ -461,6 +465,20 @@ namespace bxBE.Application.Commands.cmdInvoice
 				await _InvoiceRepository.AddInvoiceAsync(invoice);
 				await _CounterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
 
+				//Gyűjtőszámlán kiadott mennyiségek lerendezése a szállítóleveleken
+				if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
+				{
+					var RelDNInvoiceLines = await _InvoiceRepository.GetInvoiceLineRecordsAsync( 
+						request.InvoiceLines.Select(s=>s.RelDeliveryNoteInvoiceLineID.Value).ToList());
+
+					foreach (var ln in invoice.InvoiceLines)
+					{
+						var DNLine = RelDNInvoiceLines[ln.RelDeliveryNoteInvoiceLineID.Value];
+						DNLine.PendingDNQuantity -= ln.Quantity;
+					}
+
+					//itt tartok
+				}
 
 				invoice.InvoiceLines.Clear();
 				invoice.SummaryByVatRates.Clear();

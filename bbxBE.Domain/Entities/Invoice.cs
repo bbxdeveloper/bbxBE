@@ -124,7 +124,7 @@ namespace bbxBE.Domain.Entities
 		public decimal ExchangeRate { get; set; }
 
 		[ColumnLabel("Közmű elszámolószámla")]
-		[Description("Közmű elszámolószámla  ? (értéke false)")]
+		[Description("Közmű elszámolószámla  ?(értéke false)")]
 		public bool UtilitySettlementIndicator { get; set; } = false;
 
 		private InvoiceAppearanceType invoiceAppearance;
