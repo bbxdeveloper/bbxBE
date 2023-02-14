@@ -424,6 +424,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 						ln.LineGrossDiscountedAmountNormalHUF = Math.Round(ln.LineGrossAmountNormalHUF * (1 - lineDiscountPercentage / 100), 2);
                     }
 					else
+
+
 					{
 						ln.LineNetDiscountedAmount = ln.LineNetAmount;
 						ln.LineNetDiscountedAmountHUF = ln.LineNetAmountHUF;
