@@ -174,6 +174,10 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Ár felülvizsgálat?")]
         [Description("Ár felülvizsgálat?")]
         public bool? PriceReview { get; set; } = false;
+ 
+		[ColumnLabel("Eng.tilt")]
+        [Description("Engedmény adás tiltása")]
+        public bool NoDiscount { get; set; }
 
 
         //Relációk

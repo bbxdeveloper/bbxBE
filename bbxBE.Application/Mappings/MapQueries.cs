@@ -143,13 +143,18 @@ namespace bbxBE.Queries.Mappings
             CreateMap<Invoice, GetPendigDeliveryNotesSummaryModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
 
             CreateMap<InvoiceLine, GetPendigDeliveryNotesModel>()
+            .ForMember(dst => dst.WarehouseID, opt => opt.MapFrom(src => src.Invoice.WarehouseID))
+            .ForMember(dst => dst.CustomerID, opt => opt.MapFrom(src => src.Invoice.Incoming ? src.Invoice.Supplier.ID : src.Invoice.Customer.ID))
             .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Invoice.Incoming ? src.Invoice.Supplier.CustomerName : src.Invoice.Customer.CustomerName))
             .ForMember(dst => dst.InvoiceNumber, opt => opt.MapFrom(src => src.Invoice.InvoiceNumber))
             .ForMember(dst => dst.RelDeliveryNoteInvoiceLineID, opt => opt.MapFrom(src => src.ID))
             .ForMember(dst => dst.RelDeliveryDate, opt => opt.MapFrom(src => src.Invoice.InvoiceDeliveryDate))
             .ForMember(dst => dst.WorkNumber, opt => opt.MapFrom(src => src.Invoice.WorkNumber))
             .ForMember(dst => dst.CurrencyCode, opt => opt.MapFrom(src => src.Invoice.CurrencyCode))
-            .ForMember(dst => dst.ExchangeRate, opt => opt.MapFrom(src => src.Invoice.ExchangeRate));
+            .ForMember(dst => dst.ExchangeRate, opt => opt.MapFrom(src => src.Invoice.ExchangeRate))
+            .ForMember(dst => dst.InvoiceDiscountPercent, opt => opt.MapFrom(src => src.Invoice.InvoiceDiscountPercent))
+            .ForMember(dst => dst.UnitPriceDiscounted, opt => opt.MapFrom(src => Math.Round(src.UnitPrice * (1 - src.Invoice.InvoiceDiscountPercent / 100), 1)))
+            .ForMember(dst => dst.LineNetAmountDiscounted, opt => opt.MapFrom(src => Math.Round(src.LineNetAmount * (1 - src.Invoice.InvoiceDiscountPercent / 100), 1)));
 
             CreateMap<List<Zip>, List<GetZipViewModel>>();
             CreateMap<Zip, GetZipViewModel>();

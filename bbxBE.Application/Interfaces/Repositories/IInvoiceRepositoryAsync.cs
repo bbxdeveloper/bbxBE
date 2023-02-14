@@ -17,8 +17,8 @@ namespace bbxBE.Application.Interfaces.Repositories
     {
         Task<bool> IsUniqueInvoiceNumberAsync(string InvoiceNumber, long? ID = null);
         Task<bool> SeedDataAsync(int rowCount);
-        Task<Invoice> AddInvoiceAsync(Invoice p_invoice);
-        Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice);
+        Task<Invoice> AddInvoiceAsync(Invoice p_invoice, Dictionary<long, InvoiceLine> p_RelDNInvoiceLines);
+         Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice);
 
         Task<Entity> GetInvoiceAsync(long ID, bool FullData);
         Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID, string currencyCode);

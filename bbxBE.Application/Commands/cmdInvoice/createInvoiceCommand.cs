@@ -223,9 +223,13 @@ namespace bxBE.Application.Commands.cmdInvoice
 			try
 			{
 
+                /*****************************************/
+                /* Mentés előtt Invoice mezők feltöltése */
+                /*****************************************/
 
-				//ID-k feloldása
-				if (string.IsNullOrWhiteSpace(request.WarehouseCode))
+
+                //ID-k feloldása
+                if (string.IsNullOrWhiteSpace(request.WarehouseCode))
 				{
 					request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;      //Átmenetileg
 				}
@@ -258,16 +262,24 @@ namespace bxBE.Application.Commands.cmdInvoice
 					invoice.CustomerID = request.CustomerID;
 				}
 
-				var RelDeliveryNotes = new Dictionary<long, Invoice>();
-				if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
+                var RelDeliveryNotes = new Dictionary<long, Invoice>();
+                var RelDeliveryNoteLines = new Dictionary<long, InvoiceLine>();
+
+				//gyűjtőszámla esetén kigyűjtjük a kapcsolt szállítólevél adatokat
+				//
+                if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
                 {
 					var RelDeliveryNoteIDs = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
 							.Select(s => s.Key.Value).ToList();
 					RelDeliveryNotes = await _InvoiceRepository.GetInvoiceRecordsByInvoiceLinesAsync(RelDeliveryNoteIDs);
-				}
-				
-				//Megjegyzés
-				if (!string.IsNullOrWhiteSpace(request.Notice))
+
+                    RelDeliveryNoteLines = await _InvoiceRepository.GetInvoiceLineRecordsAsync(
+                        request.InvoiceLines.Select(s => s.RelDeliveryNoteInvoiceLineID.Value).ToList());
+
+                }
+
+                //Megjegyzés
+                if (!string.IsNullOrWhiteSpace(request.Notice))
 				{
 					invoice.AdditionalInvoiceData = new List<AdditionalInvoiceData>() {  new AdditionalInvoiceData()
 							{ DataName = bbxBEConsts.DEF_NOTICE, DataDescription = bbxBEConsts.DEF_NOTICEDESC, DataValue = request.Notice }};
@@ -293,7 +305,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 				decimal InvoiceDiscountHUF = 0;
 
 
-                //Tételsorok
+                //Tételsorok előfeldolgozása
                 foreach (var ln in invoice.InvoiceLines)
 				{
 					var rln = request.InvoiceLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
@@ -313,37 +325,9 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 					ln.PriceReview = request.PriceReview;
 
-					if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
-					{
-						if( !ln.RelDeliveryNoteInvoiceLineID.HasValue || ln.RelDeliveryNoteInvoiceLineID.Value > 0)
-                        {
-							throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVAGGR_RELATED_NOT_ASSIGNED, 
-									invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode));
-						}
-
-						//gyűjtőszámla esetén is egy árfolyam lesz!
-
-						if (!RelDeliveryNotes.ContainsKey(ln.RelDeliveryNoteInvoiceLineID.Value))
-						{
-							throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVAGGR_RELATED_NOT_FOUND,
-									invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode, ln.RelDeliveryNoteInvoiceLineID));
-						}
-
-						ln.RelDeliveryNoteNumber = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceNumber;
-						ln.RelDeliveryNoteInvoiceID = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].ID;
-						ln.RelDeliveryNoteInvoiceLineID = ln.RelDeliveryNoteInvoiceLineID.Value;
-
-						ln.LineExchangeRate = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].ExchangeRate;
-						ln.LineDeliveryDate = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceDeliveryDate;
-
-					}
-					else
-                    {
-						ln.LineExchangeRate = invoice.ExchangeRate;
-						ln.LineDeliveryDate = invoice.InvoiceDeliveryDate;
-					}
-
-					//	ln.Product = prod;
+		
+					//	Product
+					//
 					ln.ProductID = prod.ID;
 					ln.ProductCode = rln.ProductCode;
 					ln.Product = prod;
@@ -359,9 +343,58 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 					ln.LineNatureIndicator = prod.NatureIndicator;
 
-					ln.UnitPriceHUF = ln.UnitPrice * ln.LineExchangeRate;
 
-					// A LineNetAmount a modelből jön !!! ln.LineNetAmount = Math.Round( ln.Quantity * ln.UnitPrice ,1);
+                    decimal lineDiscountPercentage = 0;
+
+                    if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
+                    {
+						//gyűjtőszámla
+                        if (!ln.RelDeliveryNoteInvoiceLineID.HasValue || ln.RelDeliveryNoteInvoiceLineID.Value > 0)
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVAGGR_RELATED_NOT_ASSIGNED,
+                                    invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode));
+                        }
+
+                        //gyűjtőszámla esetén is egy árfolyam lesz!
+
+                        if (!RelDeliveryNotes.ContainsKey(ln.RelDeliveryNoteInvoiceLineID.Value))
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVAGGR_RELATED_NOT_FOUND,
+                                    invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode, ln.RelDeliveryNoteInvoiceLineID));
+                        }
+
+                        ln.RelDeliveryNoteNumber = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceNumber;
+                        ln.RelDeliveryNoteInvoiceID = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].ID;
+                        ln.RelDeliveryNoteInvoiceLineID = ln.RelDeliveryNoteInvoiceLineID.Value;
+
+                        ln.LineExchangeRate = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].ExchangeRate;
+                        ln.LineDeliveryDate = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceDeliveryDate;
+
+						//NoDiscount a szállítólevél alapján van meghatáriza
+						ln.NoDiscount = RelDeliveryNoteLines[ln.RelDeliveryNoteInvoiceLineID.Value].NoDiscount;
+
+                        //Bizonylatkedvezmény a kapcsolt szállítólevél alapján
+                        if (!prod.NoDiscount)
+						{
+							lineDiscountPercentage = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceDiscountPercent;
+						}
+                    }
+                    else
+                    {
+                        ln.LineExchangeRate = invoice.ExchangeRate;
+                        ln.LineDeliveryDate = invoice.InvoiceDeliveryDate;
+						//NoDiscount a cikktörzs alapján van meghatáriza
+						ln.NoDiscount = prod.NoDiscount;
+
+						//Bizonylatkedvezmény a request alapján
+						if (!prod.NoDiscount)
+						{
+							lineDiscountPercentage = request.InvoiceDiscountPercent;
+						}
+                    }
+
+                    ln.UnitPriceHUF = ln.UnitPrice * ln.LineExchangeRate;
+
 					ln.LineNetAmountHUF = Math.Round(ln.LineNetAmount * ln.LineExchangeRate, 1);
 
 					ln.LineVatAmount = Math.Round(ln.LineNetAmount * vatRate.VatPercentage, 1);
@@ -377,18 +410,18 @@ namespace bxBE.Application.Commands.cmdInvoice
 						ln.PendingDNQuantity = ln.Quantity;
 					}
 
-					//Bizonylatkedvezmény
-					if (!prod.NoDiscount && request.InvoiceDiscountPercent != 0)
+	
+					if (lineDiscountPercentage != 0)
 					{
-						InvoiceDiscount += Math.Round(ln.LineNetAmount * request.InvoiceDiscountPercent / 100, 2);
-						InvoiceDiscountHUF += Math.Round(ln.LineNetAmountHUF * request.InvoiceDiscountPercent / 100, 2);
+						InvoiceDiscount += Math.Round(ln.LineNetAmount * lineDiscountPercentage / 100, 2);
+						InvoiceDiscountHUF += Math.Round(ln.LineNetAmountHUF * lineDiscountPercentage / 100, 2);
 
-						ln.LineNetDiscountedAmount = Math.Round(ln.LineNetAmount * (1-request.InvoiceDiscountPercent / 100), 2);
-						ln.LineNetDiscountedAmountHUF = Math.Round(ln.LineNetAmountHUF * (1 - request.InvoiceDiscountPercent / 100), 2);
-						ln.LineVatDiscountedAmount = Math.Round(ln.LineVatAmount * (1 - request.InvoiceDiscountPercent / 100), 2);
-						ln.LineVatDiscountedAmountHUF = Math.Round(ln.LineVatAmountHUF * (1 - request.InvoiceDiscountPercent / 100), 2);
-                        ln.LineGrossDiscountedAmountNormal = Math.Round(ln.LineGrossAmountNormal * (1 - request.InvoiceDiscountPercent / 100), 2);
-						ln.LineGrossDiscountedAmountNormalHUF = Math.Round(ln.LineGrossAmountNormalHUF * (1 - request.InvoiceDiscountPercent / 100), 2);
+						ln.LineNetDiscountedAmount = Math.Round(ln.LineNetAmount * (1- lineDiscountPercentage / 100), 2);
+						ln.LineNetDiscountedAmountHUF = Math.Round(ln.LineNetAmountHUF * (1 - lineDiscountPercentage / 100), 2);
+						ln.LineVatDiscountedAmount = Math.Round(ln.LineVatAmount * (1 - lineDiscountPercentage / 100), 2);
+						ln.LineVatDiscountedAmountHUF = Math.Round(ln.LineVatAmountHUF * (1 - lineDiscountPercentage / 100), 2);
+                        ln.LineGrossDiscountedAmountNormal = Math.Round(ln.LineGrossAmountNormal * (1 - lineDiscountPercentage / 100), 2);
+						ln.LineGrossDiscountedAmountNormalHUF = Math.Round(ln.LineGrossAmountNormalHUF * (1 - lineDiscountPercentage / 100), 2);
                     }
 					else
 					{
@@ -401,7 +434,7 @@ namespace bxBE.Application.Commands.cmdInvoice
                     }
                 }
 
-				//SummaryByVatrate (Megj: A Bizonylatkedvezménnyel csökkentett árral kell )
+				//SummaryByVatrate (Megj: A Bizonylatkedvezménnyel csökkentett árral kell számolni)
 
 				invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
 						.Select(g =>
@@ -462,23 +495,10 @@ namespace bxBE.Application.Commands.cmdInvoice
 				}
 
 
-				await _InvoiceRepository.AddInvoiceAsync(invoice);
+				await _InvoiceRepository.AddInvoiceAsync(invoice, RelDeliveryNoteLines);
 				await _CounterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
 
-				//Gyűjtőszámlán kiadott mennyiségek lerendezése a szállítóleveleken
-				if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
-				{
-					var RelDNInvoiceLines = await _InvoiceRepository.GetInvoiceLineRecordsAsync( 
-						request.InvoiceLines.Select(s=>s.RelDeliveryNoteInvoiceLineID.Value).ToList());
 
-					foreach (var ln in invoice.InvoiceLines)
-					{
-						var DNLine = RelDNInvoiceLines[ln.RelDeliveryNoteInvoiceLineID.Value];
-						DNLine.PendingDNQuantity -= ln.Quantity;
-					}
-
-					//itt tartok
-				}
 
 				invoice.InvoiceLines.Clear();
 				invoice.SummaryByVatRates.Clear();

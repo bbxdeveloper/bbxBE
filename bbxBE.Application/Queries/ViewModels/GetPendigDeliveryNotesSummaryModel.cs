@@ -36,8 +36,12 @@ namespace bbxBE.Application.Queries.ViewModels
         public string FullAddress { get; set; }
 
         [ColumnLabel("Nettó")]
-		[Description("A kiszámlázatan összérték a szállítólevél pénznemében")]
-		public decimal SumNetAmount { get; set; }
+        [Description("A kiszámlázatan összérték a szállítólevél pénznemében")]
+        public decimal SumNetAmount { get; set; }
+
+        [ColumnLabel("Kedvezménnyel csökkentett nettó")]
+        [Description("A kiszámlázatan összérték a szállítólevél pénznemében")]
+        public decimal SumNetAmountDiscounted { get; set; }
 
         [ColumnLabel("Ár felülvizsgálat?")]
         [Description("Ár felülvizsgálat?")]

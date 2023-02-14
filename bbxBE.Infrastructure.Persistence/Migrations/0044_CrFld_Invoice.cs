@@ -8,7 +8,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00044, "v00.01.101-Invoice.")]
+    [Migration(00044, "v00.01.101-Invoice DeliveryNote fields renaming")]
     public class InitialTables_00044: Migration
     {
         public override void Down()
