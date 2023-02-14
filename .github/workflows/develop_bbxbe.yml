@@ -34,11 +34,11 @@ jobs:
       - name: dotnet publish
         run: dotnet publish -c Release
 
-      #- name: Upload artifact for deployment job
-      #  uses: actions/upload-artifact@v2
-      #  with:
-      #    name: .net-app
-      #    path: ${{env.DOTNET_ROOT}}/myapp
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: .net-app
+          path: /home/runner/work/bbxBE/bbxBE/bbxBE.WebApi/bin/Release/netcoreapp3.1/publish
           
   #deploy:
    # runs-on: windows-latest
