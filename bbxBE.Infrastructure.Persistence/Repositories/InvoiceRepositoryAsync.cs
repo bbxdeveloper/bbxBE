@@ -24,6 +24,8 @@ using bbxBE.Common.Enums;
 using bbxBE.Application.Interfaces.Queries;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static bbxBE.Common.NAV.NAV_enums;
+using SendGrid.Helpers.Mail;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -37,6 +39,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly IInvoiceLineRepositoryAsync _invoiceLineRepository;
         private readonly IStockRepositoryAsync _stockRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
         public InvoiceRepositoryAsync(ApplicationDbContext dbContext,
@@ -47,6 +50,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> dataShaperGetPendigDeliveryNotesSummaryModel,
             IDataShapeHelper<GetPendigDeliveryNotesModel> dataShaperGetPendigDeliveryNotesModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            IInvoiceLineRepositoryAsync invoiceLineRepository,
             IStockRepositoryAsync stockRepository,
             ICustomerRepositoryAsync customerRepository
             ) : base(dbContext)
@@ -60,6 +64,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _invoiceLineRepository = invoiceLineRepository;
             _stockRepository = stockRepository;
             _customerRepository = customerRepository;
         }
@@ -71,15 +76,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice)
+        public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, Dictionary<long, InvoiceLine> p_RelDNInvoiceLines)
         {
 
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var stockList = await _stockRepository.MaintainStockByInvoiceAsync(p_invoice);
-
+                    if (p_invoice.InvoiceCategory != enInvoiceCategory.AGGREGATE.ToString())
+                    {
+                        //gyűjtőszámla esetén már nem mozog a készlet...
+                        var stockList = await _stockRepository.MaintainStockByInvoiceAsync(p_invoice);
+                    }
                     //c# how to disable save related entity in EF ???
                     //TODO: ideiglenes megoldás, relációban álló objektumok Detach-olása hogy ne akarja menteni azokat az EF 
                     if (p_invoice.Customer != null)
@@ -93,10 +101,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         il.Product = null;
                         il.VatRate = null;
 
-
+                        //Gyűjtőszámlán kiadott mennyiségek lerendezése a szállítóleveleken
+                        //
+                        if (il.RelDeliveryNoteInvoiceLineID.HasValue &&
+                            p_RelDNInvoiceLines.ContainsKey(il.RelDeliveryNoteInvoiceLineID.Value))
+                        {
+                            var DNLine = p_RelDNInvoiceLines[il.RelDeliveryNoteInvoiceLineID.Value];
+                            DNLine.PendingDNQuantity -= il.Quantity;
+                        }
                     }
 
                     await AddAsync(p_invoice);
+
+                    //gyűjtőszámláknál a PendingDNQuantity-k beaktualizálása
+                    //
+                    if (p_invoice.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
+                    {
+                        await _invoiceLineRepository.UpdateRangeAsync(p_RelDNInvoiceLines.Select(s => s.Value).ToList());
+                    }
+
                     await dbContextTransaction.CommitAsync();
 
                 }
@@ -199,17 +222,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Select(s => s.Invoice).FirstOrDefaultAsync();
             return item;
         }
-
-        public async Task<List<Invoice>> GetInvoiceRecordByInvoiceLinesAsync(List<long> LstInvoiceLineID)
+        public async Task<Dictionary<long, Invoice>> GetInvoiceRecordsByInvoiceLinesAsync(List<long> LstInvoiceLineID)
         {
-            List<Invoice> items;
+           
+            var q = _dbContext.InvoiceLine.AsNoTracking()
+                .Include(i => i.Invoice)
+                .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted && !x.Deleted)
+                .Select(s => s.Invoice).Distinct();
+            var invoices = await q.ToListAsync();
+
+
+            return invoices.ToDictionary(k => k.ID, i => i);
+        }
+
+        public async Task<Dictionary<long, InvoiceLine>> GetInvoiceLineRecordsAsync(List<long> LstInvoiceLineID)
+        {
+            Dictionary<long, InvoiceLine> items;
+
             items = await _dbContext.InvoiceLine.AsNoTracking()
                 .Include(i => i.Invoice)
-                .Where(x => LstInvoiceLineID.Any( a=>a == x.ID))
-                .GroupBy( g=>g.InvoiceID)
-                .Select(grp => grp.First().Invoice).ToListAsync();
+                .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted && !x.Deleted)
+                .ToDictionaryAsync(k => k.ID, i => i);
             return items;
         }
+
+
 
         public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID, string currencyCode)
         {
@@ -240,7 +277,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = Customer.ID,
                          CustomerName = Customer.CustomerName,
                          FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
-                         PriceReview = InvoiceLine.PriceReview
+                         PriceReview = InvoiceLine.PriceReview,
+                         InvoiceNumber = Invoice.InvoiceNumber,
+                         InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
                      }
                          into grpInner
                      select new GetPendigDeliveryNotesSummaryModel()
@@ -251,7 +290,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          Customer = grpInner.Key.CustomerName,
                          FullAddress = grpInner.Key.FullAddress,
                          PriceReview = grpInner.Key.PriceReview.HasValue,
-                         SumNetAmount = grpInner.Sum(s => s.LineNetAmount)
+                         SumNetAmount = grpInner.Sum(s => s.LineNetAmount),
+                         SumNetAmountDiscounted = Math.Round(grpInner.Sum(s => s.LineNetAmount) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
                      };
 
             }
@@ -271,7 +311,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = Customer.ID,
                          CustomerName = Customer.CustomerName,
                          FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
-                         PriceReview = InvoiceLine.PriceReview
+                         PriceReview = InvoiceLine.PriceReview,
+                         InvoiceNumber = Invoice.InvoiceNumber,
+                         InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
                      }
                         into grpInner
                      select new GetPendigDeliveryNotesSummaryModel()
@@ -282,11 +324,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          Customer = grpInner.Key.CustomerName,
                          FullAddress = grpInner.Key.FullAddress,
                          PriceReview = grpInner.Key.PriceReview.HasValue,
-                         SumNetAmount = grpInner.Sum(s => s.LineNetAmount)
+                         SumNetAmount = grpInner.Sum(s => s.LineNetAmount),
+                         SumNetAmountDiscounted = Math.Round(grpInner.Sum(s => s.LineNetAmount) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
                      };
             }
 
-            //q1-et még egyszer meggroupoljuk, hogy a PriceReview==true előfordulást ki tudjuk kérdezni
+            //q1-et még egyszer meggroupoljuk, hogy a PriceReview==true előfordulást ki tudjuk kérdezni, ill öszesítjük 
             //
             var q2 = from res in q1
                      group res by
@@ -299,13 +342,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          Customer = grpOuter.Key.Customer,
                          FullAddress = grpOuter.Key.FullAddress,
                          PriceReview = grpOuter.Count(c => c.PriceReview) > 0,
-                         SumNetAmount = grpOuter.Sum(s => s.SumNetAmount)
+                         SumNetAmount = Math.Round(grpOuter.Sum(s => s.SumNetAmount)),
+                         SumNetAmountDiscounted = Math.Round(grpOuter.Sum(s => s.SumNetAmountDiscounted))
                      };
 
             q2 = q2.OrderBy(o => o.Customer);
 
             lstEntities = await q2.ToListAsync();
-
+            lstEntities.ForEach(i => i.SumNetAmount = Math.Round(i.SumNetAmount, 1));
 
             var shapeData = _dataShaperGetPendigDeliveryNotesSummaryModel.ShapeData(lstEntities, "");
 

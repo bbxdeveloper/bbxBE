@@ -20,10 +20,6 @@ namespace bbxBE.Application.Queries.ViewModels
 	public class GetPendigDeliveryNotesModel
     {
 
-        [ColumnLabel("Szállítólevél sor ID")]
-        [Description("Szállítólevél sor ID")]
-        public string InvoiceLineID { get; set; }
-
         [ColumnLabel("Raktár ID")]
 		[Description("Raktár ID")]
 		public long WarehouseID { get; set; }
@@ -98,9 +94,22 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Ár")]
         public decimal UnitPrice { get; set; }
 
-        [ColumnLabel("Nettó érték")]
-        [Description("Ár a számla pénznemében")]
+        [ColumnLabel("Ár")]
+        [Description("Ár")]
+        public decimal UnitPriceDiscounted { get; set; }
+
+
+        [ColumnLabel("Nettó érték tétel érték")]
+        [Description("Nettó érték  a számla pénznemében")]
         public decimal LineNetAmount { get; set; }
+
+        [ColumnLabel("Kedvezmény%")]
+        [Description("A számlára adott teljes kedvezmény %")]
+        public decimal InvoiceDiscountPercent { get; set; }
+
+        [ColumnLabel("Engedménnyel korrigált nettó tétel érték")]
+        [Description("Engedménnyel korrigált nettó tétel érték a számla pénznemében")]
+        public decimal LineNetAmountDiscounted { get; set; }
 
         [ColumnLabel("Munkaszám")]
         [Description("Munkaszám")]

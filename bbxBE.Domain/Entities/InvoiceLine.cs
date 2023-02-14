@@ -112,7 +112,7 @@ namespace bbxBE.Domain.Entities
 		[Description("Az eredeti számla módosítással érintett tételének sorszáma,(lineNumber).Új tétel létrehozása esetén az új tétel sorszáma, az eredeti számla folytatásaként")]
 		public short LineNumberReference { get; set; }
 		[ColumnLabel("Modosítás jellege")]
-		[Description("A számlatétel módosításának jellege")]
+		[Description("A számlatétel módosításának jellege (javtószámla)")]
 		public string LineOperation { get; set; }
 
 		//Gyűjtőszámla
@@ -174,6 +174,10 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Ár felülvizsgálat?")]
         [Description("Ár felülvizsgálat?")]
         public bool? PriceReview { get; set; } = false;
+ 
+		[ColumnLabel("Eng.tilt")]
+        [Description("Engedmény adás tiltása")]
+        public bool NoDiscount { get; set; }
 
 
         //Relációk

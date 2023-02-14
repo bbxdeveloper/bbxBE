@@ -31,10 +31,10 @@ namespace bbxBE.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationLayer();
+            services.AddPersistenceInfrastructure(_config);
             services.AddCommandInfrastructure(_config);
             services.AddQueryInfrastructure(_config);
             services.AddSharedInfrastructure(_config);
-            services.AddPersistenceInfrastructure(_config);
 
             services.AddSwaggerExtension();
             services.AddControllersExtension();
