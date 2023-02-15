@@ -324,10 +324,7 @@ namespace bbxBE.Application.BLL
 				}
 
 
-				if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
-				{
-					await invoiceRepository.AddInvoiceAsync(invoice, RelDeliveryNoteLines);
-				}					
+				await invoiceRepository.AddInvoiceAsync(invoice, RelDeliveryNoteLines);
 				await counterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
 
 				invoice.InvoiceLines.Clear();

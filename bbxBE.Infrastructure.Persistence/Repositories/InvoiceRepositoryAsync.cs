@@ -91,6 +91,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         //gyűjtőszámla esetén már nem mozog a készlet...
                         var stockList = await _stockRepository.MaintainStockByInvoiceAsync(p_invoice);
                     }
+                    else
+                    {
+                        //gyűjtőszámláknál a PendingDNQuantity-k beaktualizálása
+                        //
+                        await _invoiceLineRepository.UpdateRangeAsync(p_RelDNInvoiceLines.Select(s => s.Value).ToList());
+                    }
+
                     //c# how to disable save related entity in EF ???
                     //TODO: ideiglenes megoldás, relációban álló objektumok Detach-olása hogy ne akarja menteni azokat az EF 
                     if (p_invoice.Customer != null)
@@ -104,26 +111,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         il.Product = null;
                         il.VatRate = null;
 
-                        //Gyűjtőszámlán kiadott mennyiségek lerendezése a szállítóleveleken
-                        //
-                        if (il.RelDeliveryNoteInvoiceLineID.HasValue &&
-                            p_RelDNInvoiceLines.ContainsKey(il.RelDeliveryNoteInvoiceLineID.Value))
-                        {
-                            var DNLine = p_RelDNInvoiceLines[il.RelDeliveryNoteInvoiceLineID.Value];
-                            DNLine.PendingDNQuantity -= il.Quantity;
-                        }
                     }
 
                     await AddAsync(p_invoice);
 
-                    //gyűjtőszámláknál a PendingDNQuantity-k beaktualizálása
-                    //
-                    if (p_invoice.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
-                    {
-                        await _invoiceLineRepository.UpdateRangeAsync(p_RelDNInvoiceLines.Select(s => s.Value).ToList());
-                    }
-
-                    await dbContextTransaction.CommitAsync();
+               await dbContextTransaction.CommitAsync();
 
                 }
                 catch (Exception ex)
@@ -196,7 +188,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, ID));
             }
             var itemModel = _mapper.Map<Invoice, GetAggregateInvoiceViewModel>(item);
-/*
+
+/* itt tartok... a DeliveryNote-t kell kibontani
+ * 
             var aggrItem = new
             {
                     invoice = item,
