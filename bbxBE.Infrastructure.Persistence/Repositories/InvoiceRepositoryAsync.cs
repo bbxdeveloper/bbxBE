@@ -34,6 +34,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ApplicationDbContext _dbContext;
         private IDataShapeHelper<Invoice> _dataShaperInvoice;
         private IDataShapeHelper<GetInvoiceViewModel> _dataShaperGetInvoiceViewModel;
+        private IDataShapeHelper<GetAggregateInvoiceViewModel> _dataShaperGetAggregateInvoiceViewModel;
         private IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> _dataShaperGetPendigDeliveryNotesSummaryModel;
         private IDataShapeHelper<GetPendigDeliveryNotesModel> _dataShaperGetPendigDeliveryNotesModel;
         private readonly IMockService _mockData;
@@ -47,6 +48,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         IDataShapeHelper<Invoice> dataShaperInvoice,
             IDataShapeHelper<GetInvoiceViewModel> dataShaperGetInvoiceViewModel,
+            IDataShapeHelper<GetAggregateInvoiceViewModel> dataShaperGetAggregateInvoiceViewModel,
             IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> dataShaperGetPendigDeliveryNotesSummaryModel,
             IDataShapeHelper<GetPendigDeliveryNotesModel> dataShaperGetPendigDeliveryNotesModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
@@ -59,6 +61,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             _dataShaperInvoice = dataShaperInvoice;
             _dataShaperGetInvoiceViewModel = dataShaperGetInvoiceViewModel;
+            _dataShaperGetAggregateInvoiceViewModel = dataShaperGetAggregateInvoiceViewModel;
             _dataShaperGetPendigDeliveryNotesSummaryModel = dataShaperGetPendigDeliveryNotesSummaryModel;
             _dataShaperGetPendigDeliveryNotesModel = dataShaperGetPendigDeliveryNotesModel;
             _modelHelper = modelHelper;
@@ -192,15 +195,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, ID));
             }
+            var itemModel = _mapper.Map<Invoice, GetAggregateInvoiceViewModel>(item);
+/*
+            var aggrItem = new
+            {
+                    invoice = item,
+                    deliveryNotes = 
+                            item.InvoiceLines.GroupBy( g=> g.RelDeliveryNoteNumber, )
+            }
 
-            var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);
+            */
 
 
 
-            var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
+            var listFieldsModel = _modelHelper.GetModelFields<GetAggregateInvoiceViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetAggregateInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
             return shapeData;
         }

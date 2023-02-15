@@ -15,7 +15,7 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
     {
         public void Configure(EntityTypeBuilder<InvoiceLine> builder)
         {
-
+            /* EZT ÁTNÉZNI
             builder
             .HasOne<Invoice>(i => i.Invoice)
             .WithMany(c => c.InvoiceLines)
@@ -23,10 +23,11 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .IsRequired(true);
 
             builder
-            .HasOne<Invoice>(i => i.Invoice)
+            .HasOne<Invoice>(i => i.DeliveryNote)
             .WithMany(c => c.InvoiceLines)
             .HasForeignKey(s => s.RelDeliveryNoteInvoiceID)
             .IsRequired(false);
+            */
 
 
         }

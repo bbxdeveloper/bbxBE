@@ -192,7 +192,7 @@ namespace bbxBE.Domain.Entities
 		[ForeignKey("RelDeliveryNoteInvoiceID")]
 		[ColumnLabel("Kapcsolt szállítólevél")]
 		[Description("Kapcsolt szállítólevél")]
-		public virtual Invoice DeliveryNote { get; set; } = null;
+		public virtual Invoice? DeliveryNote { get; set; } = null;
 
 		[ForeignKey("ProductID")]
 		[ColumnLabel("Termék")]
