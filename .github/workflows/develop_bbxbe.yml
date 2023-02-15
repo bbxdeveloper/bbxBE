@@ -1,14 +1,16 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build ASP.Net Core app - bbxBE
-#and deploy, to Azure Web App
+name: Build and deploy bbxBE to DEV environment
 
 env:
   AZURE_WEBAPP_NAME: bbxBE   # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
 
 on:
+  push:
+    branches:
+      - develop
   workflow_dispatch:
 
 jobs:
