@@ -4,9 +4,9 @@ using System.Text;
 
 namespace bbxBE.Common.Exceptions
 {
-    public class ResourceNotFoundException : Exception
+    public class DataContextException : Exception
     {
-        public ResourceNotFoundException(string message) : base(message) { }
+        public DataContextException(string message) : base(message) { }
   
     }
 }

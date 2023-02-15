@@ -21,6 +21,7 @@ namespace bbxBE.Application.Interfaces.Repositories
          Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice);
 
         Task<Entity> GetInvoiceAsync(long ID, bool FullData);
+        Task<Entity> GetAggregateInvoiceAsync(long ID);
         Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID, string currencyCode);
         Task<IEnumerable<Entity>> GetPendigDeliveryNotesAsync(bool incoming, long warehouseID, long customerID, string currencyCode);
         Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true);

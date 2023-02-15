@@ -99,8 +99,9 @@ namespace bbxBE.Common.Consts
         public static string ERR_INVCTRLPERIOD_CANTBECLOSED = "A leltáridőszak nem zárható le!";
         public static string ERR_INVCTRLPERIOD_NOTCLOSED = "A leltáridőszak nincs lezárva!";
         public static string ERR_INVCTRLPERIOD_ALREADYCLOSED = "A leltáridőszak már lezárt!";
-        public static string ERR_INVAGGR_RELATED_NOT_ASSIGNED = "A gyűjtőszámlán lévő tételhez nincs szállítólevél rendelve! Bizonylatszám:{0}, sor száma:{1}, temékkód:{2} ";
-        public static string ERR_INVAGGR_RELATED_NOT_FOUND = "A gyűjtőszámlán lévő tételhez nem található szállítólevél! Bizonylatszám:{0}, sor száma:{1}, temékkód:{2}, kapcsolt szállító-sor ID:{3} ";
+        public static string ERR_INVAGGR_RELATED_NOT_ASSIGNED = "A gyűjtőszámlán lévő tételhez nincs szállítólevél rendelve! Szállítólevél:{0}, sor száma:{1}, temékkód:{2} ";
+        public static string ERR_INVAGGR_RELATED_NOT_FOUND = "A gyűjtőszámlán lévő tételhez nem található szállítólevél! Szállítólevél:{0}, sor száma:{1}, temékkód:{2}, kapcsolt szállító-sor ID:{3} ";
+        public static string ERR_INVAGGR_WRONG_AGGR_QTY = "A gyűjtőszámlán lévő mennyiség több, mint a szállítólevélen lévő! Szállítólevél:{0}, sor száma:{1}, temékkód:{2}, gyűjtőszámla menny.:{3}, szállítólevél menny.:{4}, kapcsolt szállító-sor ID:{5} ";
 
         public static string ERR_INVCTRLNOTFOUND = "Leltári tétel nem található, ID:{0} ";
         public static string ERR_INVCTRL_DATE = "{PropertyName}:Helytelen leltárdátum!";
