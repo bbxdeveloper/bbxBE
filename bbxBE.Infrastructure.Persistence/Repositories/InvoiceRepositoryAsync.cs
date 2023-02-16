@@ -188,19 +188,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, ID));
             }
             var itemModel = _mapper.Map<Invoice, GetAggregateInvoiceViewModel>(item);
+            var DeliveryNotes = item.InvoiceLines
+                .GroupBy(g => new
+                {
+                    RelDeliveryNoteInvoiceID = g.RelDeliveryNoteInvoiceID,
+                    RelDeliveryNoteNumber = g.RelDeliveryNoteNumber,
+                    LineDeliveryDate = g.LineDeliveryDate
+                }, (k, g) =>
+                new GetAggregateInvoiceViewModel.DeliveryNote
+                {
+                    DeliveryNoteNumber = k.RelDeliveryNoteNumber,
+                    DeliveryNoteDate = k.LineDeliveryDate,
+                    DeliveryNoteNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
+                    DeliveryNoteNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF), 1),
+                    DeliveryNoteDiscountAmount = Math.Round(g.Sum(s => s.LineNetAmount - s.LineNetDiscountedAmount), 1),
+                    DeliveryNoteDiscountAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF - s.LineNetDiscountedAmountHUF), 1),
 
-/* itt tartok... a DeliveryNote-t kell kibontani
- * 
-            var aggrItem = new
-            {
-                    invoice = item,
-                    deliveryNotes = 
-                            item.InvoiceLines.GroupBy( g=> g.RelDeliveryNoteNumber, )
-            }
-
-            */
-
-
+                    DeliveryNoteDiscountedNetAmount = Math.Round(g.Sum(s => s.LineNetDiscountedAmount), 1),
+                    DeliveryNoteDiscountedNetAmountHUF = Math.Round(g.Sum(s => s.LineNetDiscountedAmountHUF), 1),
+                    InvoiceLines = _mapper.Map<List<InvoiceLine>, List<GetAggregateInvoiceViewModel.InvoiceLine>>(g.ToList())
+                }).ToList();
+            itemModel.DeliveryNotes = DeliveryNotes;
 
             var listFieldsModel = _modelHelper.GetModelFields<GetAggregateInvoiceViewModel>();
 

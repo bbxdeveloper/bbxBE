@@ -33,11 +33,6 @@ namespace bbxBE.Application.Queries.ViewModels
 			public DateTime DeliveryNoteDate { get; set; }
 
 
-			[ColumnLabel("Kedvezmény HUF")]
-			[Description("A szállítólevéről bekerült tétel % értéke fortintban")]
-			public decimal DeliveryNoteDiscountHUF { get; set; }
-
-
 			[ColumnLabel("Nettó")]
 			[Description("A szállítólevéről bekerült tétel nettó összege a számla pénznemében")]
 			public decimal DeliveryNoteNetAmount { get; set; }
@@ -379,10 +374,10 @@ namespace bbxBE.Application.Queries.ViewModels
 		[MapToEntity("summaryByVatRates")]
 		public List<GetAggregateInvoiceViewModel.SummaryByVatRate> SummaryByVatRates { get; set; } = new List<GetAggregateInvoiceViewModel.SummaryByVatRate>();
 
-		[ColumnLabel("Áfaösszesítők")]
-		[Description("Áfaösszesítők")]
-		[MapToEntity("summaryByVatRates")]
-		public List<GetAggregateInvoiceViewModel.SummaryByVatRate> DeliveryNotes { get; set; } = new List<GetAggregateInvoiceViewModel.SummaryByVatRate>();
+		[ColumnLabel("Szállítólvelek")]
+		[Description("Szállítólvelek")]
+		[MapToEntity("deliveryNotes")]
+		public List<GetAggregateInvoiceViewModel.DeliveryNote> DeliveryNotes { get; set; } = new List<GetAggregateInvoiceViewModel.DeliveryNote>();
 
 
 	}

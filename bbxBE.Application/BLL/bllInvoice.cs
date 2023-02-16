@@ -84,9 +84,9 @@ namespace bbxBE.Application.BLL
 				//
 				if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
 				{
-					var RelDeliveryNoteIDs = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
+					var RelDeliveryNoteLineIDs = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
 							.Select(s => s.Key.Value).ToList();
-					RelDeliveryNotesByLineID = await invoiceRepository.GetInvoiceRecordsByInvoiceLinesAsync(RelDeliveryNoteIDs);
+					RelDeliveryNotesByLineID = await invoiceRepository.GetInvoiceRecordsByInvoiceLinesAsync(RelDeliveryNoteLineIDs);
 
 					RelDeliveryNoteLines = await invoiceRepository.GetInvoiceLineRecordsAsync(
 						request.InvoiceLines.Select(s => s.RelDeliveryNoteInvoiceLineID.Value).ToList());

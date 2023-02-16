@@ -57,7 +57,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        [HttpGet("getaggregateinvoice")]
+        [HttpGet("aggregateinvoice")]
         public async Task<IActionResult> GetAggregateInvoice([FromQuery] GetAggregateInvoice filter)
         {
             return Ok(await Mediator.Send(filter));
