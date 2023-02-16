@@ -228,11 +228,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var q = _dbContext.InvoiceLine.AsNoTracking()
                 .Include(i => i.Invoice)
                 .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted && !x.Deleted)
-                .Select(s => s.Invoice).Distinct();
+                .Select(s => new { inv = s.Invoice, lineID = s.ID }).Distinct();
             var invoices = await q.ToListAsync();
 
 
-            return invoices.ToDictionary(k => k.ID, i => i);
+            return invoices.ToDictionary(k => k.lineID, i => i.inv);
         }
 
         public async Task<Dictionary<long, InvoiceLine>> GetInvoiceLineRecordsAsync(List<long> LstInvoiceLineID)

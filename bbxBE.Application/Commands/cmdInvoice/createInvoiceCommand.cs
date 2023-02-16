@@ -262,7 +262,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 					invoice.CustomerID = request.CustomerID;
 				}
 
-                var RelDeliveryNotes = new Dictionary<long, Invoice>();
+                var RelDeliveryNotesByLineID = new Dictionary<long, Invoice>();
                 var RelDeliveryNoteLines = new Dictionary<long, InvoiceLine>();
 
 				//gyűjtőszámla esetén kigyűjtjük a kapcsolt szállítólevél adatokat
@@ -271,7 +271,7 @@ namespace bxBE.Application.Commands.cmdInvoice
                 {
 					var RelDeliveryNoteIDs = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
 							.Select(s => s.Key.Value).ToList();
-					RelDeliveryNotes = await _InvoiceRepository.GetInvoiceRecordsByInvoiceLinesAsync(RelDeliveryNoteIDs);
+					RelDeliveryNotesByLineID = await _InvoiceRepository.GetInvoiceRecordsByInvoiceLinesAsync(RelDeliveryNoteIDs);
 
                     RelDeliveryNoteLines = await _InvoiceRepository.GetInvoiceLineRecordsAsync(
                         request.InvoiceLines.Select(s => s.RelDeliveryNoteInvoiceLineID.Value).ToList());
@@ -349,7 +349,7 @@ namespace bxBE.Application.Commands.cmdInvoice
                     if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
                     {
 						//gyűjtőszámla
-                        if (!ln.RelDeliveryNoteInvoiceLineID.HasValue || ln.RelDeliveryNoteInvoiceLineID.Value > 0)
+                        if (!ln.RelDeliveryNoteInvoiceLineID.HasValue || ln.RelDeliveryNoteInvoiceLineID.Value == 0)
                         {
                             throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVAGGR_RELATED_NOT_ASSIGNED,
                                     invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode));
@@ -357,18 +357,18 @@ namespace bxBE.Application.Commands.cmdInvoice
 
                         //gyűjtőszámla esetén is egy árfolyam lesz!
 
-                        if (!RelDeliveryNotes.ContainsKey(ln.RelDeliveryNoteInvoiceLineID.Value))
+                        if (!RelDeliveryNotesByLineID.ContainsKey(ln.RelDeliveryNoteInvoiceLineID.Value))
                         {
                             throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVAGGR_RELATED_NOT_FOUND,
                                     invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode, ln.RelDeliveryNoteInvoiceLineID));
                         }
 
-                        ln.RelDeliveryNoteNumber = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceNumber;
-                        ln.RelDeliveryNoteInvoiceID = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].ID;
+                        ln.RelDeliveryNoteNumber = RelDeliveryNotesByLineID[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceNumber;
+                        ln.RelDeliveryNoteInvoiceID = RelDeliveryNotesByLineID[ln.RelDeliveryNoteInvoiceLineID.Value].ID;
                         ln.RelDeliveryNoteInvoiceLineID = ln.RelDeliveryNoteInvoiceLineID.Value;
 
-                        ln.LineExchangeRate = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].ExchangeRate;
-                        ln.LineDeliveryDate = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceDeliveryDate;
+                        ln.LineExchangeRate = RelDeliveryNotesByLineID[ln.RelDeliveryNoteInvoiceLineID.Value].ExchangeRate;
+                        ln.LineDeliveryDate = RelDeliveryNotesByLineID[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceDeliveryDate;
 
 						//NoDiscount a szállítólevél alapján van meghatáriza
 						ln.NoDiscount = RelDeliveryNoteLines[ln.RelDeliveryNoteInvoiceLineID.Value].NoDiscount;
@@ -376,7 +376,7 @@ namespace bxBE.Application.Commands.cmdInvoice
                         //Bizonylatkedvezmény a kapcsolt szállítólevél alapján
                         if (!prod.NoDiscount)
 						{
-							lineDiscountPercentage = RelDeliveryNotes[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceDiscountPercent;
+							lineDiscountPercentage = RelDeliveryNotesByLineID[ln.RelDeliveryNoteInvoiceLineID.Value].InvoiceDiscountPercent;
 						}
                     }
                     else
