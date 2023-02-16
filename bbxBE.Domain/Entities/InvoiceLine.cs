@@ -187,6 +187,13 @@ namespace bbxBE.Domain.Entities
 		[Description("Számla")]
 		public virtual Invoice Invoice { get; set; }
 
+		//Relációk
+		[JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez
+		[ForeignKey("RelDeliveryNoteInvoiceID")]
+		[ColumnLabel("Kapcsolt szállítólevél")]
+		[Description("Kapcsolt szállítólevél")]
+		public virtual Invoice? DeliveryNote { get; set; } = null;
+
 		[ForeignKey("ProductID")]
 		[ColumnLabel("Termék")]
 		[Description("Termék")]

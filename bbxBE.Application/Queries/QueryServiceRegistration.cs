@@ -42,8 +42,11 @@ namespace bbxBE.Application.Queries
 
             services.AddScoped<IDataShapeHelper<Invoice>, DataShapeHelper<Invoice>>();
             services.AddScoped<IDataShapeHelper<GetInvoiceViewModel>, DataShapeHelper<GetInvoiceViewModel>>();
+            services.AddScoped<IDataShapeHelper<GetAggregateInvoiceViewModel>, DataShapeHelper<GetAggregateInvoiceViewModel>>();
             services.AddScoped<IDataShapeHelper<GetPendigDeliveryNotesSummaryModel>, DataShapeHelper<GetPendigDeliveryNotesSummaryModel>>();
             services.AddScoped<IDataShapeHelper<GetPendigDeliveryNotesModel>, DataShapeHelper<GetPendigDeliveryNotesModel>>();
+
+
 
 
             services.AddScoped<IDataShapeHelper<VatRate>, DataShapeHelper<VatRate>>();

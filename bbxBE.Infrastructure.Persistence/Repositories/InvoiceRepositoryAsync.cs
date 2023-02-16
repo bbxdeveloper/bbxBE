@@ -34,6 +34,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ApplicationDbContext _dbContext;
         private IDataShapeHelper<Invoice> _dataShaperInvoice;
         private IDataShapeHelper<GetInvoiceViewModel> _dataShaperGetInvoiceViewModel;
+        private IDataShapeHelper<GetAggregateInvoiceViewModel> _dataShaperGetAggregateInvoiceViewModel;
         private IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> _dataShaperGetPendigDeliveryNotesSummaryModel;
         private IDataShapeHelper<GetPendigDeliveryNotesModel> _dataShaperGetPendigDeliveryNotesModel;
         private readonly IMockService _mockData;
@@ -47,6 +48,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         IDataShapeHelper<Invoice> dataShaperInvoice,
             IDataShapeHelper<GetInvoiceViewModel> dataShaperGetInvoiceViewModel,
+            IDataShapeHelper<GetAggregateInvoiceViewModel> dataShaperGetAggregateInvoiceViewModel,
             IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> dataShaperGetPendigDeliveryNotesSummaryModel,
             IDataShapeHelper<GetPendigDeliveryNotesModel> dataShaperGetPendigDeliveryNotesModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
@@ -59,6 +61,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             _dataShaperInvoice = dataShaperInvoice;
             _dataShaperGetInvoiceViewModel = dataShaperGetInvoiceViewModel;
+            _dataShaperGetAggregateInvoiceViewModel = dataShaperGetAggregateInvoiceViewModel;
             _dataShaperGetPendigDeliveryNotesSummaryModel = dataShaperGetPendigDeliveryNotesSummaryModel;
             _dataShaperGetPendigDeliveryNotesModel = dataShaperGetPendigDeliveryNotesModel;
             _modelHelper = modelHelper;
@@ -88,6 +91,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         //gyűjtőszámla esetén már nem mozog a készlet...
                         var stockList = await _stockRepository.MaintainStockByInvoiceAsync(p_invoice);
                     }
+                    else
+                    {
+                        //gyűjtőszámláknál a PendingDNQuantity-k beaktualizálása
+                        //
+                        await _invoiceLineRepository.UpdateRangeAsync(p_RelDNInvoiceLines.Select(s => s.Value).ToList());
+                    }
+
                     //c# how to disable save related entity in EF ???
                     //TODO: ideiglenes megoldás, relációban álló objektumok Detach-olása hogy ne akarja menteni azokat az EF 
                     if (p_invoice.Customer != null)
@@ -101,26 +111,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         il.Product = null;
                         il.VatRate = null;
 
-                        //Gyűjtőszámlán kiadott mennyiségek lerendezése a szállítóleveleken
-                        //
-                        if (il.RelDeliveryNoteInvoiceLineID.HasValue &&
-                            p_RelDNInvoiceLines.ContainsKey(il.RelDeliveryNoteInvoiceLineID.Value))
-                        {
-                            var DNLine = p_RelDNInvoiceLines[il.RelDeliveryNoteInvoiceLineID.Value];
-                            DNLine.PendingDNQuantity -= il.Quantity;
-                        }
                     }
 
                     await AddAsync(p_invoice);
 
-                    //gyűjtőszámláknál a PendingDNQuantity-k beaktualizálása
-                    //
-                    if (p_invoice.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
-                    {
-                        await _invoiceLineRepository.UpdateRangeAsync(p_RelDNInvoiceLines.Select(s => s.Value).ToList());
-                    }
-
-                    await dbContextTransaction.CommitAsync();
+               await dbContextTransaction.CommitAsync();
 
                 }
                 catch (Exception ex)
@@ -180,6 +175,45 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // shape data
             var shapeData = _dataShaperGetInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+
+            return shapeData;
+        }
+        public async Task<Entity> GetAggregateInvoiceAsync(long ID)
+        {
+
+            Invoice item = await GetInvoiceRecordAsync(ID, true);
+
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, ID));
+            }
+            var itemModel = _mapper.Map<Invoice, GetAggregateInvoiceViewModel>(item);
+            var DeliveryNotes = item.InvoiceLines
+                .GroupBy(g => new
+                {
+                    RelDeliveryNoteInvoiceID = g.RelDeliveryNoteInvoiceID,
+                    RelDeliveryNoteNumber = g.RelDeliveryNoteNumber,
+                    LineDeliveryDate = g.LineDeliveryDate
+                }, (k, g) =>
+                new GetAggregateInvoiceViewModel.DeliveryNote
+                {
+                    DeliveryNoteNumber = k.RelDeliveryNoteNumber,
+                    DeliveryNoteDate = k.LineDeliveryDate,
+                    DeliveryNoteNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
+                    DeliveryNoteNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF), 1),
+                    DeliveryNoteDiscountAmount = Math.Round(g.Sum(s => s.LineNetAmount - s.LineNetDiscountedAmount), 1),
+                    DeliveryNoteDiscountAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF - s.LineNetDiscountedAmountHUF), 1),
+
+                    DeliveryNoteDiscountedNetAmount = Math.Round(g.Sum(s => s.LineNetDiscountedAmount), 1),
+                    DeliveryNoteDiscountedNetAmountHUF = Math.Round(g.Sum(s => s.LineNetDiscountedAmountHUF), 1),
+                    InvoiceLines = _mapper.Map<List<InvoiceLine>, List<GetAggregateInvoiceViewModel.InvoiceLine>>(g.ToList())
+                }).ToList();
+            itemModel.DeliveryNotes = DeliveryNotes;
+
+            var listFieldsModel = _modelHelper.GetModelFields<GetAggregateInvoiceViewModel>();
+
+            // shape data
+            var shapeData = _dataShaperGetAggregateInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
             return shapeData;
         }

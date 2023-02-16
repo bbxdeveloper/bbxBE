@@ -11,16 +11,25 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
     //https://stackoverflow.com/questions/51568253/one-to-many-relationship-getting-error-in-entity-framework-core-when-trying-to-i
     //https://learn.microsoft.com/en-us/ef/core/modeling/relationships?tabs=fluent-api%2Cfluent-api-simple-key%2Csimple-key
 
-    public class InvoiceEntityTypeConfiguration : IEntityTypeConfiguration<Invoice>
+    public class InvoiceLineEntityTypeConfiguration : IEntityTypeConfiguration<InvoiceLine>
     {
-        public void Configure(EntityTypeBuilder<Invoice> builder)
+        public void Configure(EntityTypeBuilder<InvoiceLine> builder)
         {
-            
+            /* EZT ÁTNÉZNI
             builder
-            .HasMany<InvoiceLine>(i => i.InvoiceLines)
-            .WithOne(c => c.Invoice)
+            .HasOne<Invoice>(i => i.Invoice)
+            .WithMany(c => c.InvoiceLines)
             .HasForeignKey(s => s.InvoiceID)
             .IsRequired(true);
+
+            builder
+            .HasOne<Invoice>(i => i.DeliveryNote)
+            .WithMany(c => c.InvoiceLines)
+            .HasForeignKey(s => s.RelDeliveryNoteInvoiceID)
+            .IsRequired(false);
+            */
+
+
         }
     }
 }
