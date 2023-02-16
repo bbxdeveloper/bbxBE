@@ -1,14 +1,16 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build ASP.Net Core app - bbxBE
-#and deploy, to Azure Web App
+name: Build and deploy bbxBE to DEV environment
 
 env:
   AZURE_WEBAPP_NAME: bbxBE   # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
 
 on:
+  push:
+    branches:
+      - develop
   workflow_dispatch:
 
 jobs:
@@ -40,23 +42,23 @@ jobs:
           name: .net-app
           path: /home/runner/work/bbxBE/bbxBE/bbxBE.WebApi/bin/Release/netcoreapp3.1/publish
           
-  #deploy:
-   # runs-on: windows-latest
-   # needs: build
-   # environment:
-   #   name: 'development'
-   #   url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    environment:
+      name: 'development'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-   # steps:
-    #  - name: Download artifact from build job
-    #    uses: actions/download-artifact@v2
-    #    with:
-    #      name: .net-app
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: .net-app
 
-    #  - name: Deploy to Azure Web App
-    #    id: deploy-to-webapp
-    #    uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
-    #    with:
-    #      app-name: ${{ env.AZURE_WEBAPP_NAME }}
-    #      publish-profile: ${{ secrets.BBXBE_DEV_PUBLISH_PROFILE }}
-    #      package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.BBXBE_DEV_PUBLISH_PROFILE }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
