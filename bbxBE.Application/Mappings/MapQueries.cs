@@ -82,7 +82,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.PaymentMethodX, opt => opt.MapFrom(src => PaymentMethodNameResolver(src.PaymentMethod)))
 
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null && src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
-                                    src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataDescription : "")))
+                                    src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataValue : "")))
               .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any( il=> il.PriceReview.HasValue && il.PriceReview.Value)))
              ;
 
@@ -119,7 +119,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.PaymentMethodX, opt => opt.MapFrom(src => PaymentMethodNameResolver(src.PaymentMethod)))
 
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null && src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
-                                    src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataDescription : "")))
+                                    src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataValue : "")))
               .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any(il => il.PriceReview.HasValue && il.PriceReview.Value)))
              ;
             /*
@@ -199,7 +199,9 @@ namespace bbxBE.Queries.Mappings
             .ForMember(dst => dst.ExchangeRate, opt => opt.MapFrom(src => src.Invoice.ExchangeRate))
             .ForMember(dst => dst.InvoiceDiscountPercent, opt => opt.MapFrom(src => src.Invoice.InvoiceDiscountPercent))
             .ForMember(dst => dst.UnitPriceDiscounted, opt => opt.MapFrom(src => Math.Round(src.UnitPrice * (1 - src.Invoice.InvoiceDiscountPercent / 100), 1)))
-            .ForMember(dst => dst.LineNetAmountDiscounted, opt => opt.MapFrom(src => Math.Round(src.LineNetAmount * (1 - src.Invoice.InvoiceDiscountPercent / 100), 1)));
+            .ForMember(dst => dst.LineNetAmountDiscounted, opt => opt.MapFrom(src => Math.Round(src.LineNetAmount * (1 - src.Invoice.InvoiceDiscountPercent / 100), 1)))
+            .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)))
+            .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
 
             CreateMap<List<Zip>, List<GetZipViewModel>>();
             CreateMap<Zip, GetZipViewModel>();
