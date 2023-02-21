@@ -68,6 +68,11 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Email")]
         public string Email { get; set; }
 
+        [MapToEntity("comment")]
+        [ColumnLabel("Megjegyzés")]
+        [Description("Megjegyzés")]
+        public string Comment { get; set; }
+
         [MapToEntity("isOwnData")]
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
