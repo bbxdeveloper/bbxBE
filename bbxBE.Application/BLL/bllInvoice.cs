@@ -201,7 +201,7 @@ namespace bbxBE.Application.BLL
 						if( relDeliveryNoteLine.PendingDNQuantity < ln.Quantity)
                         {
 							throw new DataContextException(string.Format(bbxBEConsts.ERR_INVAGGR_WRONG_AGGR_QTY,
-									invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode,
+									relDeliveryNoteLine.Invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode,
 									ln.Quantity, relDeliveryNoteLine.PendingDNQuantity,
 									ln.RelDeliveryNoteInvoiceLineID));
 						}
