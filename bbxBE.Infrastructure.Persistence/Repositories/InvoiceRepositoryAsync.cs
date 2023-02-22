@@ -195,8 +195,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     RelDeliveryNoteNumber = g.RelDeliveryNoteNumber,
                     LineDeliveryDate = g.LineDeliveryDate
                 }, (k, g) =>
-                new GetAggregateInvoiceViewModel.DeliveryNote
+                new GetAggregateInvoiceDeliveryNoteViewModel
                 {
+                    DeliveryNoteInvoiceID = k.RelDeliveryNoteInvoiceID.Value,
                     DeliveryNoteNumber = k.RelDeliveryNoteNumber,
                     DeliveryNoteDate = k.LineDeliveryDate,
                     DeliveryNoteNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
@@ -206,7 +207,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     DeliveryNoteDiscountedNetAmount = Math.Round(g.Sum(s => s.LineNetDiscountedAmount), 1),
                     DeliveryNoteDiscountedNetAmountHUF = Math.Round(g.Sum(s => s.LineNetDiscountedAmountHUF), 1),
-                    InvoiceLines = _mapper.Map<List<InvoiceLine>, List<GetAggregateInvoiceViewModel.InvoiceLine>>(g.ToList())
+                    InvoiceLines = _mapper.Map<List<InvoiceLine>, List<GetAggregateInvoiceDeliveryNoteViewModel.InvoiceLine>>(g.ToList())
                 }).ToList();
             itemModel.DeliveryNotes = DeliveryNotes;
 
@@ -217,7 +218,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-
         public async Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true)
         {
 
@@ -247,15 +247,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return item;
         }
-        public async Task<Invoice> GetInvoiceRecordByInvoiceLineIDAsync(long InvoiceLineID)
-        {
-            Invoice item;
-            item = await _dbContext.InvoiceLine.AsNoTracking()
-                .Include(i => i.Invoice)
-                .Where(x => x.ID == InvoiceLineID)
-                .Select(s => s.Invoice).FirstOrDefaultAsync();
-            return item;
-        }
         public async Task<Dictionary<long, Invoice>> GetInvoiceRecordsByInvoiceLinesAsync(List<long> LstInvoiceLineID)
         {
            
@@ -269,16 +260,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return invoices.ToDictionary(k => k.lineID, i => i.inv);
         }
 
-        public async Task<Dictionary<long, InvoiceLine>> GetInvoiceLineRecordsAsync(List<long> LstInvoiceLineID)
-        {
-            Dictionary<long, InvoiceLine> items;
 
-            items = await _dbContext.InvoiceLine.AsNoTracking()
-                .Include(i => i.Invoice)
-                .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted && !x.Deleted)
-                .ToDictionaryAsync(k => k.ID, i => i);
-            return items;
-        }
 
 
 
@@ -551,7 +533,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
-
-
     }
 }

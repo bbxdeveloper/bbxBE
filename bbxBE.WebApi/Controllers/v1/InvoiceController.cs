@@ -64,6 +64,17 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
         /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet("aggregateinvoicedeliverynote")]
+        public async Task<IActionResult> GetAggregateInvoiceDeliveryNote([FromQuery] GetAggregateInvoiceDeliveryNote filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
+
+        /// <summary>
         /// POST api/controller
         /// </summary>
         /// <param name="command"></param>

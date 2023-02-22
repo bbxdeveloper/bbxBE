@@ -145,6 +145,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 	public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, Response<Invoice>>
 	{
 		private readonly IInvoiceRepositoryAsync _InvoiceRepository;
+		private readonly IInvoiceLineRepositoryAsync _InvoiceLineRepository;
 		private readonly ICounterRepositoryAsync _CounterRepository;
 		private readonly IWarehouseRepositoryAsync _WarehouseRepository;
 		private readonly ICustomerRepositoryAsync _CustomerRepository;
@@ -153,7 +154,9 @@ namespace bxBE.Application.Commands.cmdInvoice
 		private readonly IMapper _mapper;
 		private readonly IConfiguration _configuration;
 
-		public CreateInvoiceCommandHandler(IInvoiceRepositoryAsync InvoiceRepository,
+		public CreateInvoiceCommandHandler(
+			IInvoiceRepositoryAsync InvoiceRepository,
+			IInvoiceLineRepositoryAsync InvoiceLineRepository,
 			ICounterRepositoryAsync CounterRepository,
 			IWarehouseRepositoryAsync WarehouseRepository,
 			ICustomerRepositoryAsync CustomerRepository,
@@ -162,6 +165,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 			IMapper mapper, IConfiguration configuration)
 		{
 			_InvoiceRepository = InvoiceRepository;
+			_InvoiceLineRepository = InvoiceLineRepository;
 			_CounterRepository = CounterRepository;
 			_WarehouseRepository = WarehouseRepository;
 			_CustomerRepository = CustomerRepository;
@@ -219,6 +223,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 			var inv = await bllInvoice.CreateInvoiceAsynch(request, _mapper,
 									_InvoiceRepository,
+									_InvoiceLineRepository,
 									_CounterRepository,
 									_WarehouseRepository,
 									_CustomerRepository,
