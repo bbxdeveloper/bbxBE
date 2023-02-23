@@ -25,6 +25,7 @@ namespace bbxBE.Common.Consts
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
         public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
+        public static string TOKEN_PROPERTYNAME = "{PropertyName}";
 
         public static string ERR_MAXLEN = "{PropertyName}:  mező mérete nem lehet több, mint {MaxLength}.";
         public static string ERR_RANGE = "{PropertyName}:  mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
@@ -46,10 +47,11 @@ namespace bbxBE.Common.Consts
         public static string ERR_INVCURRENCY = "{PropertyName}:  érvénytelen pénznem:{PropertyValue}";
         public static string ERR_PRODNOTFOUND = "Termék nem található, ID:{0} ";
         public static string ERR_PRODCODENOTFOUND = "Termék nem található, kód:{0} ";
-        public static string FV_VATRATECODENOTFOUND = "Áfakód található, kód:{0} ";
-        public static string FV_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
-        public static string FV_OWNNOTFOUND = "Saját adat nem található!";
-        public static string FV_INVALIDFORMAT = "{PropertyName}: érvénytelen formátum.";
+        public static string ERR_VATRATECODENOTFOUND = "Áfakód található, kód:{0} ";
+        public static string ERR_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
+        public static string ERR_OWNNOTFOUND = "Saját adat nem található!";
+        public static string ERR_INVALIDFORMAT = "{PropertyName}: érvénytelen formátum!";
+        public static string ERR_INVALIDCONTENT = "{PropertyName}: érvénytelen tartalom!";
         public static string FV_COUNTERNOTFOUND = "Bizonylati tömb nem található, ID:{0} ";
         public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb nem található, Kód:{0}, Raktár ID:{1} ";
         public static string FV_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";

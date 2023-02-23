@@ -7,6 +7,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using bbxBE.Common;
+using bbxBE.Common.Enums;
 
 namespace bbxBE.Application.Commands.cmdCustomer
 {
@@ -51,15 +52,27 @@ namespace bbxBE.Application.Commands.cmdCustomer
                           }
                         ).WithMessage(bbxBEConsts.ERR_CST_TAXNUMBER_INV2)
                    .Must(
-                        (model, Name) =>
+                        (model, TaxpayerNumber) =>
                         {
-                            return IsUniqueTaxpayerId(Name, Convert.ToInt64(model.ID));
+                            return IsUniqueTaxpayerId(TaxpayerNumber, Convert.ToInt64(model.ID));
                         }
                     ).WithMessage(bbxBEConsts.ERR_EXISTS);
 
             RuleFor(p => p.CustomerBankAccountNumber)
                        .MaximumLength(30).WithMessage(bbxBEConsts.ERR_MAXLEN)
-                       .Must(CheckBankAccount).WithMessage(bbxBEConsts.FV_INVALIDFORMAT);
+                       .Custom((customerBankAccountNumber, context) =>
+                       {
+                           var res = CheckBankAccount(customerBankAccountNumber);
+                           if (res == enValidateBankAccountResult.ERR_FORMAT)
+                           {
+                               context.AddFailure(bbxBEConsts.ERR_INVALIDFORMAT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.PropertyName));
+
+                           }
+                           if (res == enValidateBankAccountResult.ERR_CHECKSUM)
+                           {
+                               context.AddFailure(bbxBEConsts.ERR_INVALIDCONTENT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.PropertyName));
+                           }
+                       });
 
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.ERR_MAXLEN);
@@ -122,10 +135,9 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
             return _customerRepository.IsUniqueIsOwnData(ID);
         }
-
-        private bool CheckBankAccount(string p_CustomerBankAccountNumber)
+        private enValidateBankAccountResult CheckBankAccount(string p_CustomerBankAccountNumber)
         {
-            return _customerRepository.CheckBankAccount(p_CustomerBankAccountNumber);
+            return _customerRepository.CheckCustomerBankAccount(p_CustomerBankAccountNumber);
         }
 
     }

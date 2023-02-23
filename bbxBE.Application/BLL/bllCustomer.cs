@@ -13,12 +13,13 @@ namespace bbxBE.Application.BLL
 {
     public static class bllCustomer
     {
-        public static bool ValidateIBAN(string IBAN)
+        public static enValidateBankAccountResult ValidateIBAN(string IBAN)
         {
             IBAN = IBAN.ToUpper(); //IN ORDER TO COPE WITH THE REGEX BELOW
             if (String.IsNullOrEmpty(IBAN))
-                return false;
-            else if (System.Text.RegularExpressions.Regex.IsMatch(IBAN, "^[A-Z0-9]"))
+                return enValidateBankAccountResult.ERR_EMPTY;
+
+            else if (System.Text.RegularExpressions.Regex.IsMatch(IBAN, @"^(?:(?:IT|SM)\d{2}[A-Z]\d{22}|CY\d{2}[A-Z]\d{23}|NL\d{2}[A-Z]{4}\d{10}|LV\d{2}[A-Z]{4}\d{13}|(?:BG|BH|GB|IE)\d{2}[A-Z]{4}\d{14}|GI\d{2}[A-Z]{4}\d{15}|RO\d{2}[A-Z]{4}\d{16}|KW\d{2}[A-Z]{4}\d{22}|MT\d{2}[A-Z]{4}\d{23}|NO\d{13}|(?:DK|FI|GL|FO)\d{16}|MK\d{17}|(?:AT|EE|KZ|LU|XK)\d{18}|(?:BA|HR|LI|CH|CR)\d{19}|(?:GE|DE|LT|ME|RS)\d{20}|IL\d{21}|(?:AD|CZ|ES|MD|SA)\d{22}|PT\d{23}|(?:BE|IS)\d{24}|(?:FR|MR|MC)\d{25}|(?:AL|DO|LB|PL)\d{26}|(?:AZ|HU)\d{26}|(?:GR|MU)\d{28})$"))
             {
                 IBAN = IBAN.Replace(" ", String.Empty);
                 string bank =
@@ -41,19 +42,22 @@ namespace bbxBE.Application.BLL
                     checksum += v;
                     checksum %= 97;
                 }
-                return checksum == 1;
+                if (checksum == 1)
+                    return enValidateBankAccountResult.OK;
+                else
+                    return enValidateBankAccountResult.ERR_CHECKSUM;
             }
             else
-                return false;
+                return enValidateBankAccountResult.ERR_FORMAT;
         }
 
-        public static bool ValidateBankAccount(string bankAccount)
+        public static enValidateBankAccountResult ValidateBankAccount(string bankAccount)
         {
             bankAccount = bankAccount.ToUpper(); //IN ORDER TO COPE WITH THE REGEX BELOW
             if (String.IsNullOrEmpty(bankAccount))
-                return false;
+                return enValidateBankAccountResult.ERR_EMPTY;
 
-            return (System.Text.RegularExpressions.Regex.IsMatch(bankAccount, "^[0-9]{8}-[0-9]{8}(-[0-9]{8})?$"));
+            return (System.Text.RegularExpressions.Regex.IsMatch(bankAccount, "^[0-9]{8}-[0-9]{8}(-[0-9]{8})?$") ? enValidateBankAccountResult.OK : enValidateBankAccountResult.ERR_FORMAT);
         }
 
         public static bool ValidateTaxPayerNumber(string taxPayerNumber)

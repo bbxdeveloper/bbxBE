@@ -53,7 +53,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 Customer cust = null;
                 if (!_customerCacheService.TryGetValue(customerID, out cust))
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, customerID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTNOTFOUND, customerID));
 
                 var errPg = new List<string>();
                 p_CustDiscountList.ForEach(

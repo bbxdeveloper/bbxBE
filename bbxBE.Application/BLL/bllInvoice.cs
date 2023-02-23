@@ -64,7 +64,7 @@ namespace bbxBE.Application.BLL
 				var ownData = customerRepository.GetOwnData();
 				if (ownData == null)
 				{
-					throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OWNNOTFOUND));
+					throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OWNNOTFOUND));
 				}
 
 				if (request.Incoming)
@@ -136,7 +136,7 @@ namespace bbxBE.Application.BLL
 					var vatRate = vatRateRepository.GetVatRateByCode(rln.VatRateCode);
 					if (vatRate == null)
 					{
-						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATECODENOTFOUND, rln.VatRateCode));
+						throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
 					}
 
 					ln.PriceReview = request.PriceReview;

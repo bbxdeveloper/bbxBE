@@ -1,6 +1,7 @@
 ﻿using bbxBE.Application.Interfaces;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qCustomer;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace bbxBE.Application.Interfaces.Repositories
     
         bool IsUniqueTaxpayerId(string Taxpaxpayer, long? ID = null);
         bool IsUniqueIsOwnData(long? ID = null);
-        bool CheckBankAccount(string BankAccount);
+        enValidateBankAccountResult CheckCustomerBankAccount(string BankAccount);
         bool CheckCountryCode(string countryCode);
         bool CheckTaxPayerNumber(string p_CheckTaxPayerNumber);
         Task<Customer> AddCustomerAsync(Customer p_customer);

@@ -145,7 +145,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var ownData = _customerRepository.GetOwnData();
             if (ownData == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_OWNNOTFOUND));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OWNNOTFOUND));
             }
             foreach (var invCtrl in invCtrlList)
             {
