@@ -23,6 +23,7 @@ namespace bbxBE.Application.BLL
 		public static async Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand request,
 				IMapper mapper,
 				IInvoiceRepositoryAsync invoiceRepository,
+				IInvoiceLineRepositoryAsync invoiceLineRepository,
 				ICounterRepositoryAsync counterRepository,
 				IWarehouseRepositoryAsync warehouseRepository,
 				ICustomerRepositoryAsync customerRepository,
@@ -88,7 +89,7 @@ namespace bbxBE.Application.BLL
 							.Select(s => s.Key.Value).ToList();
 					RelDeliveryNotesByLineID = await invoiceRepository.GetInvoiceRecordsByInvoiceLinesAsync(RelDeliveryNoteLineIDs);
 
-					RelDeliveryNoteLines = await invoiceRepository.GetInvoiceLineRecordsAsync(
+					RelDeliveryNoteLines = await invoiceLineRepository.GetInvoiceLineRecordsAsync(
 						request.InvoiceLines.Select(s => s.RelDeliveryNoteInvoiceLineID.Value).ToList());
 
 				}

@@ -122,13 +122,14 @@ namespace bbxBE.Queries.Mappings
                                     src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataValue : "")))
               .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any(il => il.PriceReview.HasValue && il.PriceReview.Value)))
              ;
+
             /*
             CreateMap<InvoiceLine, GetAggregateInvoiceViewModel.DeliveryNote>()
              .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)))
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
             */
 
-            CreateMap<InvoiceLine, GetAggregateInvoiceViewModel.InvoiceLine>()
+            CreateMap<InvoiceLine, GetAggregateInvoiceDeliveryNoteViewModel.InvoiceLine>()
              .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)))
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
 

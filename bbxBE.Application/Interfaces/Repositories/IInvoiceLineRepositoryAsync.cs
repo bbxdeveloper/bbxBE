@@ -14,6 +14,8 @@ namespace bbxBE.Application.Interfaces.Repositories
 {
     public interface IInvoiceLineRepositoryAsync : IGenericRepositoryAsync<InvoiceLine>
     {
- 
+        Task<Dictionary<long, InvoiceLine>> GetInvoiceLineRecordsAsync(List<long> LstInvoiceLineID);
+        Task<List<InvoiceLine>> GetInvoiceLineRecordsByRelDeliveryNoteIDAsync(long InvoiceID, long RelDeliveryNoteInvoiceID);
+        Task<Entity> GetInvoiceLinesByRelDeliveryNoteIDAsync(long InvoiceID, long RelDeliveryNoteInvoiceID);
     }
 }
