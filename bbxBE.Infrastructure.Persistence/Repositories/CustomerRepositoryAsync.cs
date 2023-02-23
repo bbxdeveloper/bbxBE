@@ -19,6 +19,7 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using EFCore.BulkExtensions;
+using bbxBE.Common.Enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -60,13 +61,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !query.ToList().Any(p => p.IsOwnData && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
-        public bool CheckBankAccount(string bankAccountNumber)
+        public enValidateBankAccountResult CheckCustomerBankAccount(string bankAccountNumber)
         {
-            if (string.IsNullOrWhiteSpace(bankAccountNumber))
-                return true;
-
-            return bllCustomer.ValidateBankAccount(bankAccountNumber) || bllCustomer.ValidateIBAN(bankAccountNumber);
-        }
+            //Először megnézzük a rendes bankszámlaszám formátumot
+            var res = bllCustomer.ValidateBankAccount(bankAccountNumber);
+            if (res == enValidateBankAccountResult.OK || res == enValidateBankAccountResult.ERR_EMPTY)
+                return res;
+            //Ha az hibás, akkor talán IBAN?
+            return bllCustomer.ValidateIBAN(bankAccountNumber);
+      }
 
         public bool CheckCountryCode(string countrycode)
         {
@@ -133,7 +136,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, ID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTNOTFOUND, ID));
                 }
             }
             return cust;
@@ -148,7 +151,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             Customer cust = null;
             if (!_cacheService.TryGetValue(customerID, out cust))
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_CUSTNOTFOUND, customerID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTNOTFOUND, customerID));
             return cust;
         }
 

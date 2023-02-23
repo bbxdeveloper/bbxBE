@@ -253,7 +253,7 @@ namespace bxBE.Application.Commands.cmdOffer
 					var vatRate = _VatRateRepository.GetVatRateByCode(rln.VatRateCode);
 					if (vatRate == null)
 					{
-						throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_VATRATECODENOTFOUND, rln.VatRateCode));
+						throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
 					}
 
 					//	ln.Product = prod;
