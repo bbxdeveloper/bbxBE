@@ -16,14 +16,14 @@ using System.ComponentModel;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
-    public class GetAggregateInvoiceDeliveryNote :  IRequest<List<Entity>>
+    public class GetAggregateInvoiceDeliveryNote :  IRequest<Entity>
     {
         public long InvoiceID { get; set; }
         public long DeliveryNoteInvoiceID { get; set; }
 
     }
 
-    public class GetAggregateInvoiceDeliveryNoteHandler : IRequestHandler<GetAggregateInvoiceDeliveryNote, List<Entity>>
+    public class GetAggregateInvoiceDeliveryNoteHandler : IRequestHandler<GetAggregateInvoiceDeliveryNote, Entity>
     {
         private readonly IInvoiceLineRepositoryAsync _invoiceLineRepository;
         private readonly IMapper _mapper;
@@ -36,7 +36,7 @@ namespace bbxBE.Application.Queries.qInvoice
             _modelHelper = modelHelper;
         }
 
-        public async Task<List<Entity>> Handle(GetAggregateInvoiceDeliveryNote request, CancellationToken cancellationToken)
+        public async Task<Entity> Handle(GetAggregateInvoiceDeliveryNote request, CancellationToken cancellationToken)
         {
             var result = await _invoiceLineRepository.GetInvoiceLinesByRelDeliveryNoteIDAsync(request.InvoiceID, request.DeliveryNoteInvoiceID);
             return result;

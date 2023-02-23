@@ -32,10 +32,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private IDataShapeHelper<InvoiceLine> _dataShaperGetAggregateInvoiceDeliveryNoteModel;
+        private IDataShapeHelper<GetAggregateInvoiceDeliveryNoteViewModel> _dataShaperGetAggregateInvoiceDeliveryNoteModel;
         public InvoiceLineRepositoryAsync(ApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IDataShapeHelper<InvoiceLine> dataShaperGetAggregateInvoiceDeliveryNoteModel
+            IDataShapeHelper<GetAggregateInvoiceDeliveryNoteViewModel> dataShaperGetAggregateInvoiceDeliveryNoteModel
             ) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -54,20 +54,39 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return invoiceLines;
         }
 
-        public async Task<List<Entity>> GetInvoiceLinesByRelDeliveryNoteIDAsync(long InvoiceID, long RelDeliveryNoteInvoiceID)
+        public async Task<Entity> GetInvoiceLinesByRelDeliveryNoteIDAsync(long InvoiceID, long RelDeliveryNoteInvoiceID)
         {
             var listFieldsModel = _modelHelper.GetModelFields<GetAggregateInvoiceDeliveryNoteViewModel>();
-            var res = new List<Entity>();
             var invoiceLines = await GetInvoiceLineRecordsByRelDeliveryNoteIDAsync(InvoiceID, RelDeliveryNoteInvoiceID);
-            invoiceLines.ForEach(
-                i =>
-                {
-                res.Add(
-                    _dataShaperGetAggregateInvoiceDeliveryNoteModel.ShapeData(i, String.Join(",", listFieldsModel))
-                    );
-            });
 
-            return res;
+
+
+            var deliveryNote = invoiceLines
+                .GroupBy(g => new
+                {
+                    RelDeliveryNoteInvoiceID = g.RelDeliveryNoteInvoiceID,
+                    RelDeliveryNoteNumber = g.RelDeliveryNoteNumber,
+                    LineDeliveryDate = g.LineDeliveryDate
+                }, (k, g) =>
+                new GetAggregateInvoiceDeliveryNoteViewModel
+                {
+                    DeliveryNoteInvoiceID = k.RelDeliveryNoteInvoiceID.Value,
+                    DeliveryNoteNumber = k.RelDeliveryNoteNumber,
+                    DeliveryNoteDate = k.LineDeliveryDate,
+                    DeliveryNoteNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
+                    DeliveryNoteNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF), 1),
+                    DeliveryNoteDiscountAmount = Math.Round(g.Sum(s => s.LineNetAmount - s.LineNetDiscountedAmount), 1),
+                    DeliveryNoteDiscountAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF - s.LineNetDiscountedAmountHUF), 1),
+
+                    DeliveryNoteDiscountedNetAmount = Math.Round(g.Sum(s => s.LineNetDiscountedAmount), 1),
+                    DeliveryNoteDiscountedNetAmountHUF = Math.Round(g.Sum(s => s.LineNetDiscountedAmountHUF), 1),
+                    InvoiceLines = _mapper.Map<List<InvoiceLine>, List<GetAggregateInvoiceDeliveryNoteViewModel.InvoiceLine>>(g.ToList())
+                }).FirstOrDefault();        //a RelDeliveryNoteInvoiceID-vel csak egy deliveryNote-t kérdezünk ki
+
+            // shape data
+            var shapeData = _dataShaperGetAggregateInvoiceDeliveryNoteModel.ShapeData(deliveryNote, String.Join(",", listFieldsModel));
+
+            return shapeData;
         }
 
 
