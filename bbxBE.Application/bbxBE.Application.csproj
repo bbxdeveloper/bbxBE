@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Reports\AggergateINV.trdx" />
+    <None Remove="Reports\AggergateSubINV.trdx" />
     <None Remove="Reports\InvCtrlICP.trdx" />
     <None Remove="Reports\InvCtrlICPReport.trdx" />
     <None Remove="Reports\Invoice.trdx" />
@@ -23,6 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Reports\AggergateINV.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\AggergateSubINV.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Reports\InvCtrlICP.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
