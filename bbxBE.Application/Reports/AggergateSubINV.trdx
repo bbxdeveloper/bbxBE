@@ -446,24 +446,24 @@
   <Groups>
     <Group GroupKeepTogether="All" Name="group17">
       <GroupHeader>
-        <GroupHeaderSection PrintOnEveryPage="True" Height="0.6cm" Name="groupHeaderSection">
+        <GroupHeaderSection PrintOnEveryPage="True" Height="1.2cm" Name="groupHeaderSection">
           <Items>
-            <TextBox Width="5.1cm" Height="0.6cm" Left="3.3cm" Top="0cm" Value="= Fields.deliveryNoteNumber" Name="textBox1">
+            <TextBox Width="5.1cm" Height="0.6cm" Left="3.3cm" Top="0.6cm" Value="= Fields.deliveryNoteNumber" Name="textBox1">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="8pt" />
               </Style>
             </TextBox>
-            <TextBox Width="5.096cm" Height="0.6cm" Left="12.976cm" Top="0cm" Value="= Fields.deliveryNoteDate" Format="{0:d}" Name="textBox2">
+            <TextBox Width="5.096cm" Height="0.6cm" Left="12.976cm" Top="0.6cm" Value="= Fields.deliveryNoteDate" Format="{0:yyyy.MM.dd}" Name="textBox2">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="8pt" />
               </Style>
             </TextBox>
-            <TextBox Width="3.245cm" Height="0.6cm" Left="0.055cm" Top="0cm" Value="Szállítólevélszám:" Name="textBox3">
+            <TextBox Width="3.245cm" Height="0.6cm" Left="0.055cm" Top="0.6cm" Value="Szállítólevélszám:" Name="textBox3">
               <Style TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="8pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2.181cm" Height="0.6cm" Left="10.795cm" Top="0cm" Value="Teljesítés:" Name="textBox4">
+            <TextBox Width="2.181cm" Height="0.6cm" Left="10.795cm" Top="0.6cm" Value="Teljesítés:" Name="textBox4">
               <Style TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="8pt" />
               </Style>
@@ -472,7 +472,7 @@
         </GroupHeaderSection>
       </GroupHeader>
       <GroupFooter>
-        <GroupFooterSection Height="1.9cm" Name="groupFooterSection">
+        <GroupFooterSection Height="1.2cm" Name="groupFooterSection">
           <Style Visible="True" />
           <Items>
             <Panel Width="8.263cm" Height="1.1cm" Left="5.575cm" Top="0.1cm" Name="panel7">

@@ -584,7 +584,7 @@
         </GroupHeaderSection>
       </GroupHeader>
       <GroupFooter>
-        <GroupFooterSection Height="0.132cm" Name="groupFooterSection">
+        <GroupFooterSection Height="0.1cm" Name="groupFooterSection">
           <Style Visible="False" />
         </GroupFooterSection>
       </GroupFooter>
