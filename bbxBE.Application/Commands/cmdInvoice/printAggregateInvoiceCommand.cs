@@ -62,7 +62,23 @@ namespace bbxBE.Application.Commands.cmdInvoice
             settings.IgnoreWhitespace = true;
             string reportTRDX = String.Empty;
 
-            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.AggergateINV.trdx", Assembly.GetExecutingAssembly());
+            Enum.TryParse(invoice.InvoiceType, out enInvoiceType invoiceType);
+
+            switch (invoiceType)
+            {
+                case enInvoiceType.INC:
+                {
+                    reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.AggregateINC.trdx", Assembly.GetExecutingAssembly());
+                        break;
+                }
+                case enInvoiceType.INV:
+                default:
+                {
+                    reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.AggregateINV.trdx", Assembly.GetExecutingAssembly());
+                        break;
+                }
+            }
+            
 
             var resultPdf = new PdfDocument();
             for (int cp = 0; cp < request.Copies; cp++)
