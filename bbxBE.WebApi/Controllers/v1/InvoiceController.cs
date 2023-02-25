@@ -154,6 +154,24 @@ namespace bbxBE.WebApi.Controllers.v1
 
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
+
+        /// <summary>
+        /// POST api/controller
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("printaggregate")]
+        public async Task<IActionResult> PrintAggregate(PrintAggregateInvoiceCommand command)
+        {
+
+            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var result = await Mediator.Send(command);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
+        }
         /*
 
                 /// <summary>
