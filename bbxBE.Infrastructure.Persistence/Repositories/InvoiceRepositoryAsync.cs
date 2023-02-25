@@ -340,8 +340,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          Customer = grpInner.Key.CustomerName,
                          FullAddress = grpInner.Key.FullAddress,
                          PriceReview = grpInner.Key.PriceReview.HasValue,
-                         SumNetAmount = grpInner.Sum(s => s.LineNetAmount),
-                         SumNetAmountDiscounted = Math.Round(grpInner.Sum(s => s.LineNetAmount) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
+                         SumNetAmount = grpInner.Sum(s => Math.Round(s.PendingDNQuantity * s.UnitPrice, 1)),
+                         SumNetAmountDiscounted = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPrice) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
                      };
             }
 
