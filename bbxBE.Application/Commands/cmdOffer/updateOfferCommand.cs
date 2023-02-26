@@ -183,7 +183,7 @@ namespace bxBE.Application.Commands.cmdOffer
 
 		[ColumnLabel("Új verzió?")]
 		[Description("Új verzió?")]
-		public bool NewOffer { get; set; } = false;
+		public bool NewOfferVersion { get; set; } = false;
 
 		[ColumnLabel("Ajánlatsorok")]
 		[Description("Ajánlatsorok")]
@@ -197,26 +197,26 @@ namespace bxBE.Application.Commands.cmdOffer
 
     public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand, Response<Offer>>
 	{
-		private readonly IOfferRepositoryAsync _OfferRepository;
-		private readonly ICounterRepositoryAsync _CounterRepository;
-		private readonly ICustomerRepositoryAsync _CustomerRepository;
-		private readonly IProductRepositoryAsync _ProductRepository;
-		private readonly IVatRateRepositoryAsync _VatRateRepository;
+		private readonly IOfferRepositoryAsync _offerRepository;
+		private readonly ICounterRepositoryAsync _counterRepository;
+		private readonly ICustomerRepositoryAsync _customerRepository;
+		private readonly IProductRepositoryAsync _productRepository;
+		private readonly IVatRateRepositoryAsync _vatRateRepository;
 		private readonly IMapper _mapper;
 		private readonly IConfiguration _configuration;
 
-		public UpdateOfferCommandHandler(IOfferRepositoryAsync OfferRepository,
-						ICounterRepositoryAsync CounterRepository,
-						ICustomerRepositoryAsync CustomerRepository,
-						IProductRepositoryAsync ProductRepository,
-						IVatRateRepositoryAsync VatRateRepository,
+		public UpdateOfferCommandHandler(IOfferRepositoryAsync offerRepository,
+						ICounterRepositoryAsync counterRepository,
+						ICustomerRepositoryAsync customerRepository,
+						IProductRepositoryAsync productRepository,
+						IVatRateRepositoryAsync vatRateRepository,
 						IMapper mapper, IConfiguration configuration)
 		{
-			_OfferRepository = OfferRepository;
-			_CounterRepository = CounterRepository;
-			_CustomerRepository = CustomerRepository;
-			_ProductRepository = ProductRepository;
-			_VatRateRepository = VatRateRepository;
+			_offerRepository = offerRepository;
+			_counterRepository = counterRepository;
+			_customerRepository = customerRepository;
+			_productRepository = productRepository;
+			_vatRateRepository = vatRateRepository;
 
 
 			_mapper = mapper;
@@ -225,71 +225,15 @@ namespace bxBE.Application.Commands.cmdOffer
 
 		public async Task<Response<Offer>> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
 		{
-			var offer = _mapper.Map<Offer>(request);
-			offer.Notice = Utils.TidyHtml(offer.Notice);
-
-
-			//Egyelőre csak forintos ajántatokról van szó
-			offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
-			offer.ExchangeRate = 1;
-
-			var counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
-			var newOfferNumber = "";
-
-			try
-			{
-
-
-				//Tételsorok
-				foreach (var ln in offer.OfferLines)
-				{
-					var rln = request.OfferLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
-
-					var prod = _ProductRepository.GetProductByProductCode(rln.ProductCode);
-					if (prod == null)
-					{
-						throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
-					}
-					var vatRate = _VatRateRepository.GetVatRateByCode(rln.VatRateCode);
-					if (vatRate == null)
-					{
-						throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
-					}
-
-					//	ln.Product = prod;
-					ln.ProductID = prod.ID;
-					ln.ProductCode = rln.ProductCode;
-					//Ez modelből jön: ln.LineDescription = prod.Description;
-
-					//	ln.VatRate = vatRate;
-					ln.VatRateID = vatRate.ID;
-					ln.VatPercentage = vatRate.VatPercentage;
-				}
-
-				if (request.NewOffer)
-				{
-
-					newOfferNumber = await _CounterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);
-					offer.OfferNumber = newOfferNumber;
-
-					await _OfferRepository.AddOfferAsync(offer);
-					await _CounterRepository.FinalizeValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, offer.OfferNumber);
-				}
-				else
-				{
-					await _OfferRepository.UpdateOfferAsync(offer);
-				}
-
-				return new Response<Offer>(offer);
-			}
-			catch (Exception ex)
-			{
-				if (request.NewOffer && !string.IsNullOrWhiteSpace(newOfferNumber) && !string.IsNullOrWhiteSpace(counterCode))
-				{
-					await _CounterRepository.RollbackValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, newOfferNumber);
-				}
-				throw;
-			}
+			var offer = await bllOffer.UpdateOffer(request,
+									_mapper,
+									_offerRepository,
+									_counterRepository,
+									_customerRepository,
+									_productRepository,
+									_vatRateRepository,
+									cancellationToken);
+			return new Response<Offer>(offer);
 		}
 	}
 }
