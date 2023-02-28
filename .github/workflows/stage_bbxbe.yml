@@ -1,1 +1,66 @@
-- name: Upload to blob storage
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy bbxBE to CUSTOMER environment
+
+env:
+  AZURE_WEBAPP_NAME: bbxBETestCustomer # set this to your application's name
+  AZURE_WEBAPP_PACKAGE_PATH: "." # set this to the path to your web app project, defaults to the repository root
+
+on:
+  push:
+    branches:
+      - stage
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build the BackEnd
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ["3.1.x"]
+
+    steps:
+      - name: Checkout from repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+
+      #- name: Run tests
+      #  run: dotnet test --no-restore --verbosity normal
+
+      - name: dotnet publish
+        run: dotnet publish -c Release
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: .net-app
+          path: /home/runner/work/bbxBE/bbxBE/bbxBE.WebApi/bin/Release/netcoreapp3.1/publish
+
+  deploy:
+    name: Deploy BackEnd to Azure WebApp
+    runs-on: windows-latest
+    needs: build
+    environment:
+      name: "development"
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: .net-app
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.BBXBE_CUSTOMER_PUBLISH_PROFILE }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
