@@ -166,11 +166,11 @@ namespace bxBE.Application.Commands.cmdOffer
 
     public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Response<Offer>>
 	{
-		private readonly IOfferRepositoryAsync _OfferRepository;
-		private readonly ICounterRepositoryAsync _CounterRepository;
-		private readonly ICustomerRepositoryAsync _CustomerRepository;
-		private readonly IProductRepositoryAsync _ProductRepository;
-		private readonly IVatRateRepositoryAsync _VatRateRepository;
+		private readonly IOfferRepositoryAsync _offerRepository;
+		private readonly ICounterRepositoryAsync _counterRepository;
+		private readonly ICustomerRepositoryAsync _customerRepository;
+		private readonly IProductRepositoryAsync _productRepository;
+		private readonly IVatRateRepositoryAsync _vatRateRepository;
 		private readonly IMapper _mapper;
 		private readonly IConfiguration _configuration;
 
@@ -181,11 +181,11 @@ namespace bxBE.Application.Commands.cmdOffer
 						IVatRateRepositoryAsync VatRateRepository,
 						IMapper mapper, IConfiguration configuration)
 		{
-			_OfferRepository = OfferRepository;
-			_CounterRepository = CounterRepository;
-			_CustomerRepository = CustomerRepository;
-			_ProductRepository = ProductRepository;
-			_VatRateRepository = VatRateRepository;
+			_offerRepository = OfferRepository;
+			_counterRepository = CounterRepository;
+			_customerRepository = CustomerRepository;
+			_productRepository = ProductRepository;
+			_vatRateRepository = VatRateRepository;
 
 
 			_mapper = mapper;
@@ -194,71 +194,15 @@ namespace bxBE.Application.Commands.cmdOffer
 
 		public async Task<Response<Offer>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
 		{
-			var offer = _mapper.Map<Offer>(request);
-
-			offer.Notice = Utils.TidyHtml(offer.Notice);
-
-			//Egyelőre csak forintos ajántatokról van szó
-			if (string.IsNullOrWhiteSpace(offer.CurrencyCode))
-			{
-				offer.CurrencyCode = enCurrencyCodes.HUF.ToString();
-				offer.ExchangeRate = 1;
-			}
-
-			var counterCode = "";
-			try
-			{
-
-				offer.LatestVersion = true;
-				//Árajánlatszám megállapítása
-				counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
-				offer.OfferNumber = await _CounterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);
-				offer.Copies = 1;
-
-				//Tételsorok
-				foreach (var ln in offer.OfferLines)
-				{
-					var rln = request.OfferLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
-
-
-					var prod = _ProductRepository.GetProductByProductCode(rln.ProductCode);
-					if (prod == null)
-					{
-						throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
-					}
-					var vatRate = _VatRateRepository.GetVatRateByCode(rln.VatRateCode);
-					if (vatRate == null)
-					{
-						throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
-					}
-
-					//	ln.Product = prod;
-					ln.ProductID = prod.ID;
-					ln.ProductCode = rln.ProductCode;
-					//Ez modelből jön: ln.LineDescription = prod.Description;
-
-					//	ln.VatRate = vatRate;
-					ln.VatRateID = vatRate.ID;
-					ln.VatPercentage = vatRate.VatPercentage;
-
-				}
-
-
-
-				await _OfferRepository.AddOfferAsync(offer);
-
-				await _CounterRepository.FinalizeValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, offer.OfferNumber);
-
-				return new Response<Offer>(offer);
-			}
-			catch (Exception ex)
-			{
-				if (!string.IsNullOrWhiteSpace(offer.OfferNumber) && !string.IsNullOrWhiteSpace(counterCode))
-				{
-					await _CounterRepository.RollbackValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, offer.OfferNumber);
-				}
-				throw;
-			}
+			var offer = await bllOffer.CreateOffer(request,
+									_mapper,
+									_offerRepository,
+									_counterRepository,
+									_customerRepository,
+									_productRepository,
+									_vatRateRepository,
+									cancellationToken);
+			return new Response<Offer>(offer);
 		}
 	}
 }

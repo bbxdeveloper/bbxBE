@@ -86,6 +86,8 @@ namespace bxBE.Application.Commands.cmdCustomer
         public async Task<Response<Customer>> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
         {
             var cust = _mapper.Map<Customer>(request);
+            cust.CustomerBankAccountNumber = cust.CustomerBankAccountNumber.ToUpper();
+            cust.ThirdStateTaxId = cust.ThirdStateTaxId.ToUpper();
 
             /*
             if (request.TaxpayerNumber != null && !string.IsNullOrWhiteSpace(request.TaxpayerNumber.Replace("-", "")))

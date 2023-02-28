@@ -84,13 +84,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 try
                 {
-
+                    //Az előző verziók érvénytelenítése (ha van)
+                    //
+                    var prevVerisons = await _dbContext.Offer
+                      .Where(x => x.OfferNumber == p_Offer.OfferNumber && x.OfferVersion < p_Offer.OfferVersion && x.ID != p_Offer.ID).ToListAsync();
+                    prevVerisons.ForEach(i =>
+                    {
+                        i.LatestVersion = false;
+                        _dbContext.Entry(i).State = EntityState.Modified;
+                    });
 
                     //Az aktuális minden esetben Latest!
                     p_Offer.LatestVersion = true;
-                    p_Offer.OfferVersion = 0;
-                    p_Offer.Copies = 1;
 
+                    p_Offer.Copies = 1;
 
                     //Ha másolatot insert-elünk, a biztonság kedvéért kiürítjük az ID-ket
                     p_Offer.OfferLines.ToList().ForEach(e =>
