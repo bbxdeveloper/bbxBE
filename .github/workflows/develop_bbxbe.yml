@@ -31,9 +31,9 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      #- name: Run tests
-        #run: dotnet test --framework netcoreapp3.1 --verbosity normal
-        #--no-build
+      - name: Run tests
+        run: dotnet test --verbosity normal
+        #--framework netcoreapp3.1 --no-build
 
       - name: dotnet publish
         run: dotnet publish -c Release
