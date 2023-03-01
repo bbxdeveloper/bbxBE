@@ -210,6 +210,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     InvoiceLines = _mapper.Map<List<InvoiceLine>, List<GetAggregateInvoiceDeliveryNoteViewModel.InvoiceLine>>(g.ToList())
                 }).ToList();
             itemModel.DeliveryNotes = DeliveryNotes;
+            itemModel.DeliveryNoteCount = DeliveryNotes.GroupBy(g => g.DeliveryNoteInvoiceID).Count();
 
             var listFieldsModel = _modelHelper.GetModelFields<GetAggregateInvoiceViewModel>();
 

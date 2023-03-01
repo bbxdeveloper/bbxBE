@@ -263,6 +263,9 @@ namespace bbxBE.Application.Queries.ViewModels
 		[MapToEntity("deliveryNotes")]
 		public List<GetAggregateInvoiceDeliveryNoteViewModel> DeliveryNotes { get; set; } = new List<GetAggregateInvoiceDeliveryNoteViewModel>();
 
-
+		[ColumnLabel("Szállítólvelek száma")]
+		[Description("Szállítólvelek száma")]
+		[MapToEntity("deliveryNotesCount")]
+		public int DeliveryNoteCount { get; set; }
 	}
 }
