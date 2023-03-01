@@ -1,0 +1,1 @@
+[![Build and deploy bbxBE to DEV environment](https://github.com/bbxdeveloper/bbxBE/actions/workflows/develop_bbxbe.yml/badge.svg?branch=develop)](https://github.com/bbxdeveloper/bbxBE/actions/workflows/develop_bbxbe.yml)
