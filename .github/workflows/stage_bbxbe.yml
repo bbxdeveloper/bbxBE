@@ -27,12 +27,16 @@ jobs:
 
       - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: | 
+            3.1.x
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      #- name: Run tests
-      #  run: dotnet test --no-restore --verbosity normal
+      - name: Run tests
+        run: dotnet test --framework netcoreapp3.1 --verbosity normal
+        # --no-build
 
       - name: dotnet publish
         run: dotnet publish -c Release
