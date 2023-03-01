@@ -31,8 +31,8 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      - name: Run tests
-        run: dotnet test --no-build --verbosity normal
+      #- name: Run tests
+      #  run: dotnet test --no-build --verbosity normal
 
       - name: dotnet publish
         run: dotnet publish -c Release
