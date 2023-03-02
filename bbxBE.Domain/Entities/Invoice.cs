@@ -209,6 +209,10 @@ namespace bbxBE.Domain.Entities
 		[Description("A számla végösszege forintban")]
 		public decimal InvoiceGrossAmountHUF { get; set; }
 
+		[ColumnLabel("Módosító bizonylat?")]
+		[Description("Módosító bizonylat jelölése (értéke false)")]
+		public bool Correction { get; set; }
+
 		[ColumnLabel("Felhasználó ID")]
 		[Description("Felhasználó ID")]
 		public long? UserID { get; set; } = 0;

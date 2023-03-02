@@ -91,10 +91,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         //gyűjtőszámla esetén már nem mozog a készlet...
                         var stockList = await _stockRepository.MaintainStockByInvoiceAsync(p_invoice);
                     }
-                    else
+
+                    //Kapcsolt szállítólevelek PendingDNQuantity-k beaktualizálása
+                    // Gyűjtőszámla, mínuszos szállítók esetében
+                    //
+                    if (p_RelDNInvoiceLines.Count > 0)
                     {
-                        //gyűjtőszámláknál a PendingDNQuantity-k beaktualizálása
-                        //
                         await _invoiceLineRepository.UpdateRangeAsync(p_RelDNInvoiceLines.Select(s => s.Value).ToList());
                     }
 

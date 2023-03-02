@@ -81,9 +81,18 @@ namespace bbxBE.Application.BLL
 				var RelDeliveryNotesByLineID = new Dictionary<long, Invoice>();
 				var RelDeliveryNoteLines = new Dictionary<long, InvoiceLine>();
 
-				//gyűjtőszámla esetén kigyűjtjük a kapcsolt szállítólevél adatokat
+
+				//Kezelni kell-e kapcsolt szállítóleveleket?
+				//	- gyűjtőszámla esetén
+				//	- Korrekciós be- ill. kimenő számla esetén
 				//
-				if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
+				var haveToRelDeliveryNotesHandling = (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString() ||
+									  (request.Correction.HasValue && request.Correction.Value &&
+										(request.InvoiceType == enInvoiceType.DNI.ToString() || request.InvoiceType == enInvoiceType.DNO.ToString())
+										));
+
+
+				if (haveToRelDeliveryNotesHandling)
 				{
 					var RelDeliveryNoteLineIDs = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
 							.Select(s => s.Key.Value).ToList();
@@ -108,7 +117,7 @@ namespace bbxBE.Application.BLL
 				invoice.InvoiceNumber = await counterRepository.GetNextValueAsync(counterCode, wh.ID);
 				invoice.Copies = 1;
 
-				//Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
+				//Szállítólevél esetén a PaymentMethod OTHER
 				if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
 				{
 					invoice.PaymentMethod = PaymentMethodType.OTHER.ToString();
@@ -141,7 +150,6 @@ namespace bbxBE.Application.BLL
 
 					ln.PriceReview = request.PriceReview;
 
-
 					//	Product
 					//
 					ln.ProductID = prod.ID;
@@ -162,7 +170,7 @@ namespace bbxBE.Application.BLL
 
 					decimal lineDiscountPercentage = 0;
 
-					if (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString())
+					if (haveToRelDeliveryNotesHandling)
 					{
 						//gyűjtőszámla
 						if (!ln.RelDeliveryNoteInvoiceLineID.HasValue || ln.RelDeliveryNoteInvoiceLineID.Value == 0)
@@ -199,20 +207,20 @@ namespace bbxBE.Application.BLL
 						}
 
 						//Szállítólevélen lévő függő mennyiség aktualizálása
-						if( relDeliveryNoteLine.PendingDNQuantity < ln.Quantity)
-                        {
+						if (relDeliveryNoteLine.PendingDNQuantity < Math.Abs(ln.Quantity))
+						{
 							throw new DataContextException(string.Format(bbxBEConsts.ERR_INVAGGR_WRONG_AGGR_QTY,
 									relDeliveryNoteLine.Invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode,
-									ln.Quantity, relDeliveryNoteLine.PendingDNQuantity,
+									 Math.Abs(ln.Quantity), relDeliveryNoteLine.PendingDNQuantity,
 									ln.RelDeliveryNoteInvoiceLineID));
 						}
-						relDeliveryNoteLine.PendingDNQuantity -= ln.Quantity;
+						relDeliveryNoteLine.PendingDNQuantity -= Math.Abs(ln.Quantity); // mínuszos szállítólevelek miatt kell az abszolút érték
 					}
 					else
 					{
 						ln.LineExchangeRate = invoice.ExchangeRate;
 						ln.LineDeliveryDate = invoice.InvoiceDeliveryDate;
-						
+
 						//NoDiscount a cikktörzs alapján van meghatározva
 						ln.NoDiscount = prod.NoDiscount;
 
@@ -234,8 +242,9 @@ namespace bbxBE.Application.BLL
 					ln.LineGrossAmountNormalHUF = ln.LineNetAmountHUF + ln.LineVatAmountHUF;
 
 
-					//Szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
-					if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
+					//Normál szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
+					if ((invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO) &&
+						(!request.Correction.HasValue || !request.Correction.Value ))        // Szállítólevél korrekció esetén nincs PendingDNQuantity
 					{
 						ln.PendingDNQuantity = ln.Quantity;
 					}
