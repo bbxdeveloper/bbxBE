@@ -129,12 +129,17 @@ namespace bxBE.Application.Commands.cmdInvoice
         public string WorkNumber { get; set; }
 
         [ColumnLabel("Ár felülvizsgálat?")]
-        [Description("Ár felülvizsgálat?")]
+        [Description("Ár felülvizsgálat jelölése")]
         public bool? PriceReview { get; set; } = false;
+
+		[ColumnLabel("Módosító bizonylat?")]
+		[Description("Módosító bizonylat jelölése")]
+		public bool? Correction { get; set; } = false;
 
 		[ColumnLabel("Típus")]
 		[Description("Típus")]
 		public string InvoiceCategory { get; set; } = enInvoiceCategory.NORMAL.ToString();
+
 
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
