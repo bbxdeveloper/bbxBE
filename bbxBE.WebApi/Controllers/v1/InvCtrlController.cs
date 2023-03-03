@@ -18,13 +18,13 @@ namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
  //   [Authorize]
-    public class InvCtrlICPController : BaseApiController
+    public class InvCtrlController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
         private readonly IHttpContextAccessor _context;
 
-        public InvCtrlICPController( IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
+        public InvCtrlController( IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
@@ -71,7 +71,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("creicp")]
         public async Task<IActionResult> Create(createInvCtrlICPCommand command)
         {
             return Ok(await Mediator.Send(command));
@@ -91,28 +91,5 @@ namespace bbxBE.WebApi.Controllers.v1
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
-        /*      
-              [HttpPut]
-       //       [ValidateAntiForgeryToken]
-              public async Task<IActionResult> Update(UpdateInvCtrlCommand command)
-              {
-                  return Ok(await Mediator.Send(command));
-              }
-
-              // GET: USRController/Delete/5
-              [HttpDelete]
-              public async Task<IActionResult> Delete([FromQuery] DeleteInvCtrlCommand command)
-              {
-                  return Ok(await Mediator.Send(command));
-              }
-
-              [HttpPatch]
-              //       [ValidateAntiForgeryToken]
-              [HttpGet("close")]
-              public async Task<IActionResult> Close([FromQuery] CloseInvCtrlCommand command)
-              {
-                  return Ok(await Mediator.Send(command));
-              }
-        */
     }
 }
