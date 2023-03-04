@@ -62,6 +62,11 @@ jobs:
         with:
           name: .net-app
           
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.BBXBE_DEV_AZURE_CREDENTIAL }}
+          
       - name: Azure WebApp configuration settings
         uses: azure/appservice-settings@v1
         with:
@@ -71,6 +76,10 @@ jobs:
           connection-strings-json: '${{ secrets.BBX_DEV_DB_CONNECTIONSTRING }}'
           general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "false"}' #'General configuration settings as Key Value pairs'
         id: settings
+        
+      - name: Azure Logout
+        run: |
+          az logout
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
