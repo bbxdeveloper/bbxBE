@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout from repository
         uses: actions/checkout@v3
+        with:
+          ref: develop
 
       - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v3
