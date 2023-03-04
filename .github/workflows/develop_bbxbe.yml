@@ -62,15 +62,15 @@ jobs:
         with:
           name: .net-app
           
-      - name: Azure webb configuration settings
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          #slot-name: 'staging'  # Optional and needed only if the settings have to be configured on the specific deployment slot
-          #app-settings-json: '${{ secrets.APP_SETTINGS }}' 
-          connection-strings-json: '${{ secrets.BBX_DEV_DB_CONNECTIONSTRING }}'
-          #general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "true"}' #'General configuration settings as Key Value pairs'
-        id: settings
+      #- name: Azure WebApp configuration settings
+      #  uses: azure/appservice-settings@v1
+      #  with:
+      #    app-name: ${{ env.AZURE_WEBAPP_NAME }}
+      #    #slot-name: 'staging'  # Optional and needed only if the settings have to be configured on the specific deployment slot
+      #    #app-settings-json: '${{ secrets.APP_SETTINGS }}' 
+      #    connection-strings-json: '${{ secrets.BBX_DEV_DB_CONNECTIONSTRING }}'
+      #    general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "false"}' #'General configuration settings as Key Value pairs'
+      #  id: settings
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
