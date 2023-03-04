@@ -123,5 +123,8 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Árfolyam")]
         public decimal ExchangeRate { get; set; }
 
+        [ColumnLabel("Ár felülvizsgálat?")]
+        [Description("Ár felülvizsgálat?")]
+        public bool? PriceReview { get; set; } = false;
     }
 }

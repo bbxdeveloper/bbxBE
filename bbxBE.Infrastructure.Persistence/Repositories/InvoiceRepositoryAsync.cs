@@ -281,7 +281,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //
             if (incoming)
             {
-                //először grouo-olunk ccustomerre és PriceReview
+                //először grouo-olunk ccustomerre és számlákra, hogy a különböző kedvezményekkel 
+                //kiszámoljuk a summákat
+                //
                 q1 = from InvoiceLine in _dbContext.InvoiceLine
                      join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
                      join Customer in _dbContext.Customer on Invoice.SupplierID equals Customer.ID
@@ -296,7 +298,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = Customer.ID,
                          CustomerName = Customer.CustomerName,
                          FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
-                         PriceReview = InvoiceLine.PriceReview,
                          InvoiceNumber = Invoice.InvoiceNumber,
                          InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
                      }
@@ -308,7 +309,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = grpInner.Key.CustomerID,
                          Customer = grpInner.Key.CustomerName,
                          FullAddress = grpInner.Key.FullAddress,
-                         PriceReview = grpInner.Key.PriceReview.HasValue,
+                         PriceReview = grpInner.Where(w => w.PriceReview.HasValue && w.PriceReview.Value).Count() > 0,
                          SumNetAmount = grpInner.Sum(s => Math.Round( s.PendingDNQuantity * s.UnitPrice,1)),
                          SumNetAmountDiscounted = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPrice) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
                      };
@@ -330,7 +331,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = Customer.ID,
                          CustomerName = Customer.CustomerName,
                          FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
-                         PriceReview = InvoiceLine.PriceReview,
                          InvoiceNumber = Invoice.InvoiceNumber,
                          InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
                      }
@@ -342,13 +342,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = grpInner.Key.CustomerID,
                          Customer = grpInner.Key.CustomerName,
                          FullAddress = grpInner.Key.FullAddress,
-                         PriceReview = grpInner.Key.PriceReview.HasValue,
+                         PriceReview = grpInner.Where(w=>w.PriceReview.HasValue && w.PriceReview.Value).Count() > 0,
                          SumNetAmount = grpInner.Sum(s => Math.Round(s.PendingDNQuantity * s.UnitPrice, 1)),
                          SumNetAmountDiscounted = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPrice) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
                      };
             }
-
-            //q1-et még egyszer meggroupoljuk, hogy a PriceReview==true előfordulást ki tudjuk kérdezni, ill öszesítjük 
+            
+            //q1-et még egyszer meggroupoljuk, a számlák alapján számított összegeket summáuuzk
             //
             var q2 = from res in q1
                      group res by
@@ -360,11 +360,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = grpOuter.Key.CustomerID,
                          Customer = grpOuter.Key.Customer,
                          FullAddress = grpOuter.Key.FullAddress,
-                         PriceReview = grpOuter.Count(c => c.PriceReview) > 0,
+                         PriceReview = grpOuter.Count(c => c.PriceReview) > 0,          //van-e ProcePreview-es tétel  a groupban?
                          SumNetAmount = Math.Round(grpOuter.Sum(s => s.SumNetAmount)),
                          SumNetAmountDiscounted = Math.Round(grpOuter.Sum(s => s.SumNetAmountDiscounted))
                      };
-
             q2 = q2.OrderBy(o => o.Customer);
 
             lstEntities = await q2.ToListAsync();

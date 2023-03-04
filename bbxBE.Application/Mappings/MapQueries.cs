@@ -199,6 +199,7 @@ namespace bbxBE.Queries.Mappings
             .ForMember(dst => dst.WorkNumber, opt => opt.MapFrom(src => src.Invoice.WorkNumber))
             .ForMember(dst => dst.CurrencyCode, opt => opt.MapFrom(src => src.Invoice.CurrencyCode))
             .ForMember(dst => dst.ExchangeRate, opt => opt.MapFrom(src => src.Invoice.ExchangeRate))
+            .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.PriceReview))
             .ForMember(dst => dst.InvoiceDiscountPercent, opt => opt.MapFrom(src => src.Invoice.InvoiceDiscountPercent))
             .ForMember(dst => dst.UnitPriceDiscounted, opt => opt.MapFrom(src => Math.Round(src.UnitPrice * (1 - src.Invoice.InvoiceDiscountPercent / 100), 1)))
             .ForMember(dst => dst.LineNetAmount, opt => opt.MapFrom(src => Math.Round(src.PendingDNQuantity * src.UnitPrice, 1)))
