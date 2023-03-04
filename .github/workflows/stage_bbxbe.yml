@@ -61,6 +61,25 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: .net-app
+          
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.BBXBE_STAGE_AZURE_CREDENTIALS }}
+          
+      - name: Azure WebApp configuration settings
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          #slot-name: 'staging'  # Optional and needed only if the settings have to be configured on the specific deployment slot
+          app-settings-json: ${{ secrets.BBXBE_STAGE_APPSETTINGS }}
+          connection-strings-json: '${{ secrets.BBX_STAGE_DB_CONNECTIONSTRING }}'
+          general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "false"}' #'General configuration settings as Key Value pairs'
+        id: settings
+        
+      - name: Azure Logout
+        run: |
+          az logout
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
