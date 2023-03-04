@@ -67,7 +67,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           #slot-name: 'staging'  # Optional and needed only if the settings have to be configured on the specific deployment slot
-          #app-settings-json: '${{ secrets.APP_SETTINGS }}' 
+          #app-settings-json: ${{ secrets.APP_SETTINGS }}
           connection-strings-json: '${{ secrets.BBX_DEV_DB_CONNECTIONSTRING }}'
           general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "false"}' #'General configuration settings as Key Value pairs'
         id: settings
