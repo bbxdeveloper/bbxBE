@@ -285,6 +285,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = Customer.ID,
                          CustomerName = Customer.CustomerName,
                          FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
+                         InvoiceID = Invoice.ID,
                          InvoiceNumber = Invoice.InvoiceNumber,
                          InvoiceDeliveryDate = Invoice.InvoiceDeliveryDate,
                          InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
@@ -294,6 +295,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                      {
 
                          WarehouseID = warehouseID,
+                         InvoiceID = grpInner.Key.InvoiceID,
                          InvoiceNumber = grpInner.Key.InvoiceNumber,
                          InvoiceDeliveryDate = grpInner.Key.InvoiceDeliveryDate,
                          CustomerID = grpInner.Key.CustomerID,
@@ -321,6 +323,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = Customer.ID,
                          CustomerName = Customer.CustomerName,
                          FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
+                         InvoiceID = Invoice.ID,
                          InvoiceNumber = Invoice.InvoiceNumber,
                          InvoiceDeliveryDate = Invoice.InvoiceDeliveryDate,
                          InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
@@ -330,6 +333,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                      {
 
                          WarehouseID = warehouseID,
+                         InvoiceID = grpInner.Key.InvoiceID,
                          InvoiceNumber = grpInner.Key.InvoiceNumber,
                          InvoiceDeliveryDate = grpInner.Key.InvoiceDeliveryDate,
                          CustomerID = grpInner.Key.CustomerID,

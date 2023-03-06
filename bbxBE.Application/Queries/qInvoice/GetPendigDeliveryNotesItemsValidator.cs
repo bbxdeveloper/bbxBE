@@ -19,11 +19,12 @@ using Microsoft.AspNetCore.Http;
 namespace bbxBE.Application.Queries.qInvoice
 {
 
-    public class GetPendigDeliveryNotesPriceReviewValidator : AbstractValidator<GetPendigDeliveryNotesSummary>
+    public class GetPendigDeliveryNotesItemsValidator : AbstractValidator<GetPendigDeliveryNotesItems>
     {
 
-        public GetPendigDeliveryNotesPriceReviewValidator()
+        public GetPendigDeliveryNotesItemsValidator()
         {
+            RuleFor(f => f.CustomerID).NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(f => f.WarehouseCode).NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(f => f.CurrencyCode).NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
         }

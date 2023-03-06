@@ -23,6 +23,10 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Raktár ID")]
 		public long WarehouseID { get; set; }
 
+		[ColumnLabel("ID")]
+		[Description("BizonylatID")]
+		public long InvoiceID { get; set; }
+
 		[ColumnLabel("Számlaszám")]
 		[Description("Számla/szállítólevél sorszáma")]
 		public string InvoiceNumber { get; set; }
