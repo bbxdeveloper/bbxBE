@@ -179,15 +179,18 @@ namespace bbxBE.Domain.Entities
         [Description("Engedmény adás tiltása")]
         public bool NoDiscount { get; set; }
 
+		[ColumnLabel("Kedvezmény%")]
+		[Description("A számlára v. gyűjtőszámlán, a kapcsolt szállítólevélre adott teljes kedvezmény %")]
+		public decimal LineDiscountPercent { get; set; }		//NoDiscount esetén értéke 0!
 
-        //Relációk
-        [JsonIgnore]					//ignorálni kell, mert körkörös hivatkozást eredményez
+
+		//Relációk
+		[JsonIgnore]					//ignorálni kell, mert körkörös hivatkozást eredményez
 		[ForeignKey("InvoiceID")]
 		[ColumnLabel("Számla")]
 		[Description("Számla")]
 		public virtual Invoice Invoice { get; set; }
 
-		//Relációk
 		[JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez
 		[ForeignKey("RelDeliveryNoteInvoiceID")]
 		[ColumnLabel("Kapcsolt szállítólevél")]

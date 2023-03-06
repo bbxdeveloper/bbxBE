@@ -37,6 +37,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private IDataShapeHelper<GetAggregateInvoiceViewModel> _dataShaperGetAggregateInvoiceViewModel;
         private IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> _dataShaperGetPendigDeliveryNotesSummaryModel;
         private IDataShapeHelper<GetPendigDeliveryNotesModel> _dataShaperGetPendigDeliveryNotesModel;
+        private IDataShapeHelper<GetPendigDeliveryNotesItemModel> _dataShaperGetPendigDeliveryNotesItemModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
@@ -51,6 +52,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IDataShapeHelper<GetAggregateInvoiceViewModel> dataShaperGetAggregateInvoiceViewModel,
             IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> dataShaperGetPendigDeliveryNotesSummaryModel,
             IDataShapeHelper<GetPendigDeliveryNotesModel> dataShaperGetPendigDeliveryNotesModel,
+            IDataShapeHelper<GetPendigDeliveryNotesItemModel> dataShaperGetPendigDeliveryNotesItemModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             IInvoiceLineRepositoryAsync invoiceLineRepository,
             IStockRepositoryAsync stockRepository,
@@ -64,6 +66,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _dataShaperGetAggregateInvoiceViewModel = dataShaperGetAggregateInvoiceViewModel;
             _dataShaperGetPendigDeliveryNotesSummaryModel = dataShaperGetPendigDeliveryNotesSummaryModel;
             _dataShaperGetPendigDeliveryNotesModel = dataShaperGetPendigDeliveryNotesModel;
+            _dataShaperGetPendigDeliveryNotesItemModel = dataShaperGetPendigDeliveryNotesItemModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
@@ -129,12 +132,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return p_invoice;
         }
-
-        public async Task<Invoice> InitInvoiceAsync(Invoice p_invoice)
-        {
-            throw new NotImplementedException("InitInvoiceAsync");
-        }
-
 
         public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice)
         {
@@ -263,19 +260,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return invoices.ToDictionary(k => k.lineID, i => i.inv);
         }
 
-
-
-
-
-        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID, string currencyCode)
+        private IQueryable<GetPendigDeliveryNotesModel> getPendigDeliveryNotesQuery(bool incoming, long warehouseID, string currencyCode)
         {
-
-
-            var lstEntities = new List<GetPendigDeliveryNotesSummaryModel>();
-
-            IQueryable<GetPendigDeliveryNotesSummaryModel> q1;
-
-            //a tételsorokben lévő PriceReview miatt nested groupra van szükség
+            IQueryable<GetPendigDeliveryNotesModel> q1;
 
             //1. groupolunk ügyfélre és PriceReview típusra
             //
@@ -298,19 +285,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = Customer.ID,
                          CustomerName = Customer.CustomerName,
                          FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
+                         InvoiceID = Invoice.ID,
                          InvoiceNumber = Invoice.InvoiceNumber,
+                         InvoiceDeliveryDate = Invoice.InvoiceDeliveryDate,
                          InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
                      }
                          into grpInner
-                     select new GetPendigDeliveryNotesSummaryModel()
+                     select new GetPendigDeliveryNotesModel()
                      {
 
                          WarehouseID = warehouseID,
+                         InvoiceID = grpInner.Key.InvoiceID,
+                         InvoiceNumber = grpInner.Key.InvoiceNumber,
+                         InvoiceDeliveryDate = grpInner.Key.InvoiceDeliveryDate,
                          CustomerID = grpInner.Key.CustomerID,
                          Customer = grpInner.Key.CustomerName,
                          FullAddress = grpInner.Key.FullAddress,
                          PriceReview = grpInner.Where(w => w.PriceReview.HasValue && w.PriceReview.Value).Count() > 0,
-                         SumNetAmount = grpInner.Sum(s => Math.Round( s.PendingDNQuantity * s.UnitPrice,1)),
+                         SumNetAmount = grpInner.Sum(s => Math.Round(s.PendingDNQuantity * s.UnitPrice, 1)),
                          SumNetAmountDiscounted = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPrice) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
                      };
 
@@ -331,24 +323,42 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = Customer.ID,
                          CustomerName = Customer.CustomerName,
                          FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
+                         InvoiceID = Invoice.ID,
                          InvoiceNumber = Invoice.InvoiceNumber,
+                         InvoiceDeliveryDate = Invoice.InvoiceDeliveryDate,
                          InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
                      }
                         into grpInner
-                     select new GetPendigDeliveryNotesSummaryModel()
+                     select new GetPendigDeliveryNotesModel()
                      {
 
                          WarehouseID = warehouseID,
+                         InvoiceID = grpInner.Key.InvoiceID,
+                         InvoiceNumber = grpInner.Key.InvoiceNumber,
+                         InvoiceDeliveryDate = grpInner.Key.InvoiceDeliveryDate,
                          CustomerID = grpInner.Key.CustomerID,
                          Customer = grpInner.Key.CustomerName,
                          FullAddress = grpInner.Key.FullAddress,
-                         PriceReview = grpInner.Where(w=>w.PriceReview.HasValue && w.PriceReview.Value).Count() > 0,
+                         PriceReview = grpInner.Where(w => w.PriceReview.HasValue && w.PriceReview.Value).Count() > 0,
                          SumNetAmount = grpInner.Sum(s => Math.Round(s.PendingDNQuantity * s.UnitPrice, 1)),
                          SumNetAmountDiscounted = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPrice) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
                      };
             }
-            
+            return q1;
+        }
+
+        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID, string currencyCode)
+        {
+
+            var lstEntities = new List<GetPendigDeliveryNotesSummaryModel>();
+
+            //1. groupolunk ügyfélre,  és PriceReview típusra és szállítóra
+            //
+            var q1 = getPendigDeliveryNotesQuery(incoming, warehouseID, currencyCode);
+
+
             //q1-et még egyszer meggroupoljuk, a számlák alapján számított összegeket summáuuzk
+            //a tételsorokben lévő PriceReview miatt nested groupra van szükség
             //
             var q2 = from res in q1
                      group res by
@@ -373,7 +383,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesAsync(bool incoming, long warehouseID, long customerID, string currencyCode)
+
+        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesAsync(bool incoming, long warehouseID, string currencyCode)
+        {
+
+            var lstEntities = new List<GetPendigDeliveryNotesModel>();
+
+            var q1 = getPendigDeliveryNotesQuery(incoming, warehouseID, currencyCode);
+            q1 = q1.OrderBy(o => o.InvoiceNumber );
+
+            lstEntities = await q1.ToListAsync();
+            lstEntities.ForEach(i => i.SumNetAmount = Math.Round(i.SumNetAmount, 1));
+
+            var shapeData = _dataShaperGetPendigDeliveryNotesModel.ShapeData(lstEntities, "");
+
+            return shapeData;
+        }
+        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesItemsAsync(bool incoming, long warehouseID, long customerID, string currencyCode)
         {
             var own = _customerRepository.GetOwnData();
 
@@ -393,15 +419,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultData = await query.ToListAsync();
 
             //TODO: szebben megoldani
-            var resultDataModel = new List<GetPendigDeliveryNotesModel>();
+            var resultDataModel = new List<GetPendigDeliveryNotesItemModel>();
             resultData.ForEach(i => resultDataModel.Add(
-               _mapper.Map<InvoiceLine, GetPendigDeliveryNotesModel>(i))
+               _mapper.Map<InvoiceLine, GetPendigDeliveryNotesItemModel>(i))
             );
 
 
-            var listFieldsModel = _modelHelper.GetModelFields<GetPendigDeliveryNotesModel>();
+            var listFieldsModel = _modelHelper.GetModelFields<GetPendigDeliveryNotesItemModel>();
 
-            var shapeData = _dataShaperGetPendigDeliveryNotesModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetPendigDeliveryNotesItemModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
             return shapeData;
         }

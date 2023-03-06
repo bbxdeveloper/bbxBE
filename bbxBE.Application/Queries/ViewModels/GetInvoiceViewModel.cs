@@ -90,9 +90,16 @@ namespace bbxBE.Application.Queries.ViewModels
             [Description("Ár felülvizsgálat?")]
             public bool? PriceReview { get; set; } = false;
 
-        }
+			[ColumnLabel("Eng.tilt")]
+			[Description("Engedmény adás tiltása")]
+			public bool NoDiscount { get; set; }
 
-        [Description("Áfaösszesítő")]
+			[ColumnLabel("Kedvezmény%")]
+			[Description("A számlára v. gyűjtőszámlán, a kapcsolt szállítólevélre adott teljes kedvezmény %")]
+			public decimal LineDiscountPercent { get; set; }        //NoDiscount esetén értéke 0!
+		}
+
+		[Description("Áfaösszesítő")]
 		public class SummaryByVatRate 
 		{
 			[ColumnLabel("Áfa ID")]
