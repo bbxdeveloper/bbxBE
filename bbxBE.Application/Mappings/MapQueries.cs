@@ -186,9 +186,10 @@ namespace bbxBE.Queries.Mappings
             .ForMember(dst => dst.ProductGroupCode, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode))
             .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupDescription));
 
-            CreateMap<Invoice, GetPendigDeliveryNotesSummaryModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
+            CreateMap<InvoiceLine, GetPendigDeliveryNotesSummaryModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
+            CreateMap<InvoiceLine, GetPendigDeliveryNotesModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
 
-            CreateMap<InvoiceLine, GetPendigDeliveryNotesModel>()
+            CreateMap<InvoiceLine, GetPendigDeliveryNotesItemModel>()
             .ForMember(dst => dst.WarehouseID, opt => opt.MapFrom(src => src.Invoice.WarehouseID))
             .ForMember(dst => dst.CustomerID, opt => opt.MapFrom(src => src.Invoice.Incoming ? src.Invoice.Supplier.ID : src.Invoice.Customer.ID))
             .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Invoice.Incoming ? src.Invoice.Supplier.CustomerName : src.Invoice.Customer.CustomerName))

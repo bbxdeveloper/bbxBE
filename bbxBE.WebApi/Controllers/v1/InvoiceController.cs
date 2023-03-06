@@ -107,6 +107,13 @@ namespace bbxBE.WebApi.Controllers.v1
 
         }
 
+        [HttpGet("pendigdeliverynotesitems")]
+        public async Task<IActionResult> Get([FromQuery] GetPendigDeliveryNotesItems pars)
+        {
+            return Ok(await Mediator.Send(pars));
+
+        }
+
         [HttpGet("pendigdeliverynotes")]
         public async Task<IActionResult> Get([FromQuery] GetPendigDeliveryNotes pars)
         {
