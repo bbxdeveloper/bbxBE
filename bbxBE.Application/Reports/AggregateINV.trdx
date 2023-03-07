@@ -292,6 +292,14 @@
               </ConditionalFormatting>
             </TextBox>
           </Items>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.deliveryNotesCount" Operator="LessThan" Value="2" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
         </Panel>
       </Items>
     </ReportFooterSection>

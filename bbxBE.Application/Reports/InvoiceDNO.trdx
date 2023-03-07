@@ -83,7 +83,7 @@
             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
           </Style>
           <Items>
-            <Table Width="18.923cm" Height="2.03cm" Left="0.055cm" Top="0cm" ColumnHeadersPrintOnEveryPage="True" FreezeRowHeaders="True" FreezeColumnHeaders="True" KeepTogether="True" Name="tableLines">
+            <Table Width="18.924cm" Height="2.03cm" Left="0.055cm" Top="0cm" ColumnHeadersPrintOnEveryPage="True" FreezeRowHeaders="True" FreezeColumnHeaders="True" KeepTogether="True" Name="tableLines">
               <Body>
                 <Cells>
                   <TableCell RowIndex="0" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
@@ -173,13 +173,13 @@
                 <Columns>
                   <Column Width="2.545cm" />
                   <Column Width="112.47px" />
-                  <Column Width="1.516cm" />
+                  <Column Width="1.693cm" />
                   <Column Width="1.234cm" />
                   <Column Width="2.397cm" />
                   <Column Width="2.4cm" />
                   <Column Width="0.924cm" />
                   <Column Width="2.243cm" />
-                  <Column Width="2.688cm" />
+                  <Column Width="2.512cm" />
                 </Columns>
                 <Rows>
                   <Row Height="1.068cm" />
@@ -250,7 +250,7 @@
                 </TableGroup>
                 <TableGroup Name="group3">
                   <ReportItem>
-                    <TextBox Width="1.516cm" Height="0.5cm" Left="0cm" Top="0cm" Value="Terméknév" Name="textBox55" StyleName="">
+                    <TextBox Width="1.693cm" Height="0.5cm" Left="0cm" Top="0cm" Value="Terméknév" Name="textBox55" StyleName="">
                       <Style TextAlign="Left" VerticalAlign="Middle">
                         <Font Name="Courier New" Size="8pt" Bold="True" />
                         <BorderStyle Top="Solid" Bottom="None" />
@@ -260,7 +260,7 @@
                   <ChildGroups>
                     <TableGroup Name="group10">
                       <ReportItem>
-                        <TextBox Width="1.516cm" Height="0.462cm" Left="0cm" Top="0cm" KeepTogether="True" Value="Menny." CanShrink="True" Name="textBox18">
+                        <TextBox Width="1.693cm" Height="0.462cm" Left="0cm" Top="0cm" KeepTogether="True" Value="Menny." CanShrink="True" Name="textBox18">
                           <Style TextAlign="Center" VerticalAlign="Middle">
                             <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
@@ -394,7 +394,7 @@
                 </TableGroup>
                 <TableGroup Name="group23">
                   <ReportItem>
-                    <TextBox Width="2.688cm" Height="0.5cm" Left="0cm" Top="0cm" Name="textBox95" StyleName="">
+                    <TextBox Width="2.512cm" Height="0.5cm" Left="0cm" Top="0cm" Name="textBox95" StyleName="">
                       <Style VerticalAlign="Middle">
                         <Font Name="Courier New" Size="8pt" Bold="True" />
                         <BorderStyle Top="Solid" />
@@ -404,7 +404,7 @@
                   <ChildGroups>
                     <TableGroup Name="group16">
                       <ReportItem>
-                        <TextBox Width="2.688cm" Height="0.462cm" Left="0cm" Top="0cm" Value="Bruttó érték" Name="textBox24" StyleName="">
+                        <TextBox Width="2.512cm" Height="0.462cm" Left="0cm" Top="0cm" Value="Bruttó érték" Name="textBox24" StyleName="">
                           <Style TextAlign="Center" VerticalAlign="Middle">
                             <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
