@@ -67,7 +67,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     );
                 if (errPg.Count > 0)
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODUCTGROUPNOTFOUND, String.Join(',', errPg)));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODUCTGROUPNOTFOUND, String.Join(',', errPg)));
                 }
 
                 await RemoveRangeAsync(_dbContext.CustDiscount.Where(x => x.CustomerID == customerID), false);

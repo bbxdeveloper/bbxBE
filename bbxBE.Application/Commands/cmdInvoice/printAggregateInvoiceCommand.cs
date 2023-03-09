@@ -110,7 +110,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 //Példányszám beállítása
                 //
                 invoice.Copies++;
-                await _invoiceRepository.UpdateInvoiceAsync(invoice);
+                await _invoiceRepository.UpdateInvoiceAsync(invoice, null);
 
                 //TODO : Az eredeti példány folderbe el kell rakni ay első a PDF-et
                 Stream stream = new MemoryStream(result.DocumentBytes);

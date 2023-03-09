@@ -114,7 +114,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODUCTGROUPNOTFOUND, ID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODUCTGROUPNOTFOUND, ID));
                 }
             }
             return pg;
@@ -124,7 +124,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             ProductGroup productGroup = null;
             if (!_cacheService.TryGetValue(ID, out productGroup))
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODUCTGROUPNOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODUCTGROUPNOTFOUND, ID));
 
             //            var fields = requestParameter.Fields;
 

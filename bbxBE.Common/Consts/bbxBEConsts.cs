@@ -48,14 +48,15 @@ namespace bbxBE.Common.Consts
         public static string ERR_PRODNOTFOUND = "Termék nem található, ID:{0} ";
         public static string ERR_PRODCODENOTFOUND = "Termék nem található, kód:{0} ";
         public static string ERR_VATRATECODENOTFOUND = "Áfakód található, kód:{0} ";
+        public static string ERR_VATRATECODENOTFOUND2 = "Áfakód található, ID:{0} ";
         public static string ERR_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
         public static string ERR_OWNNOTFOUND = "Saját adat nem található!";
         public static string ERR_INVALIDFORMAT = "{PropertyName}: érvénytelen formátum!";
         public static string ERR_INVALIDCONTENT = "{PropertyName}: érvénytelen tartalom!";
-        public static string FV_COUNTERNOTFOUND = "Bizonylati tömb nem található, ID:{0} ";
-        public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb nem található, Kód:{0}, Raktár ID:{1} ";
-        public static string FV_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
-        public static string FV_ORIGINNOTFOUND = "Származási hely nem található, ID:{0} ";
+        public static string ERR_COUNTERNOTFOUND = "Bizonylati tömb nem található, ID:{0} ";
+        public static string ERR_COUNTERNOTFOUND2 = "Bizonylati tömb nem található, Kód:{0}, Raktár ID:{1} ";
+        public static string ERR_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
+        public static string ERR_ORIGINNOTFOUND = "Származási hely nem található, ID:{0} ";
         public static string ERR_OFFERNOTFOUND = "Árajánlat nem található, ID:{0} ";
         public static string ERR_INVOICENOTFOUND = "Számla/szállítólevél nem található, ID:{0} ";
         public static string ERR_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
@@ -66,6 +67,7 @@ namespace bbxBE.Common.Consts
         public static string ERR_STOCKNOTFOUND = "Raktárkészlet nem található, ID:{0} ";
         public static string ERR_STOCKCARDNOTFOUND = "Készletkarton nem található, ID:{0} ";
         public static string ERR_LOCATIONOTFOUND = "Helyiség nem található, ID:{0} ";
+        public static string ERR_INVOICELINENOTFOUND = "Bizonylatsor nem található, ID:{0}, bizonylat:{1}, sor ID:{2}";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 
