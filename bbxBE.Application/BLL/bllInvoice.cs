@@ -307,7 +307,6 @@ namespace bbxBE.Application.BLL
 						ln.LineExchangeRate = relDeliveryNote.ExchangeRate;
 						ln.LineDeliveryDate = relDeliveryNote.InvoiceDeliveryDate;
 
-
 						//Bizonylatkedvezmény a kapcsolt szállítólevél alapján
 						if (!prod.NoDiscount)
 						{
@@ -402,6 +401,7 @@ namespace bbxBE.Application.BLL
 					}
 
 				invoice.CustomerID = request.CustomerID;
+				
 
 				//A SummaryByVatRates-t újrageneráljuk. Eltároljuk az eredei állapotot, mert az update során kitöröljük
 				//
@@ -427,6 +427,7 @@ namespace bbxBE.Application.BLL
 						}
 						ln.NoDiscount = prod.NoDiscount;
 					}
+					ln.PriceReview = false;			//megtörtént az ár felülvizsgálat
 				}
 
 				invoice = await CalcInvoiceAmountsAsynch(invoice, cancellationToken);
