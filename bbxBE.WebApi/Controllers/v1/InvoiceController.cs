@@ -90,6 +90,16 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
+        [HttpPatch("pricepreview")]
+        public async Task<IActionResult> UpdatePriceReview(UpdatePricePreviewCommand command)
+        {
+            if (command.UserID == null || command.UserID == 0)
+            {
+                var identity = HttpContext.User.Identity as ClaimsIdentity;
+                command.UserID = Utils.GetUserIDFromClaimsIdentity(identity);
+            }
+            return Ok(await Mediator.Send(command));
+        }
 
 
         [HttpGet("paymentmethod")]

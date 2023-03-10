@@ -15,6 +15,7 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
     {
         public void Configure(EntityTypeBuilder<Users> builder)
         {
+            /*  egyelőre nem lesz ilyen referencia
             builder
             .HasMany<Offer>(p => p.OfferList)
             .WithOne(b => b.User)
@@ -26,6 +27,7 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .WithOne(b => b.User)
             .HasForeignKey(k => k.UserID)
             .IsRequired(false);
+            */
         }
     }
 }

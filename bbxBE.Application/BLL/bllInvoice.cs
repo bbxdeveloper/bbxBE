@@ -19,15 +19,14 @@ namespace bbxBE.Application.BLL
 
 	public static class bllInvoice
 	{
-	
+
 		/// <summary>
 		/// Összegek és összesítők átszámolása
 		/// </summary>
 		/// <param name="invoice"></param>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
-		public static async Task<Invoice> CalcInvoiceAmountsAsynch(Invoice invoice,
-		CancellationToken cancellationToken)
+		public static async Task<Invoice> CalcInvoiceAmountsAsynch(Invoice invoice, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -42,7 +41,7 @@ namespace bbxBE.Application.BLL
 
 					ln.UnitPriceHUF = ln.UnitPrice * ln.LineExchangeRate;
 
-					ln.LineNetAmount = Math.Round(ln.UnitPrice * ln.Quantity,1);
+					ln.LineNetAmount = Math.Round(ln.UnitPrice * ln.Quantity, 1);
 					ln.LineNetAmountHUF = Math.Round(ln.LineNetAmount * ln.LineExchangeRate, 1);
 
 					ln.LineVatAmount = Math.Round(ln.LineNetAmount * ln.VatPercentage, 1);
@@ -51,7 +50,7 @@ namespace bbxBE.Application.BLL
 					ln.LineGrossAmountNormal = ln.LineNetAmount + ln.LineVatAmount;
 					ln.LineGrossAmountNormalHUF = ln.LineNetAmountHUF + ln.LineVatAmountHUF;
 
-					if (ln.LineDiscountPercent != 0)	
+					if (ln.LineDiscountPercent != 0)
 					{
 						//kerekítési veszteségek elkerüléséért 2 tizedesre kerekítjük a discounted mezőket
 						//
@@ -142,20 +141,19 @@ namespace bbxBE.Application.BLL
 				throw;
 			}
 		}
-		
 
 
-public static async Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand request,
-				IMapper mapper,
-				IInvoiceRepositoryAsync invoiceRepository,
-				IInvoiceLineRepositoryAsync invoiceLineRepository,
-				ICounterRepositoryAsync counterRepository,
-				IWarehouseRepositoryAsync warehouseRepository,
-				ICustomerRepositoryAsync customerRepository,
-				IProductRepositoryAsync productRepository,
-				IVatRateRepositoryAsync vatRateRepository,
 
-				CancellationToken cancellationToken)
+		public static async Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand request,
+						IMapper mapper,
+						IInvoiceRepositoryAsync invoiceRepository,
+						IInvoiceLineRepositoryAsync invoiceLineRepository,
+						ICounterRepositoryAsync counterRepository,
+						IWarehouseRepositoryAsync warehouseRepository,
+						ICustomerRepositoryAsync customerRepository,
+						IProductRepositoryAsync productRepository,
+						IVatRateRepositoryAsync vatRateRepository,
+						CancellationToken cancellationToken)
 		{
 			var invoice = mapper.Map<Invoice>(request);
 			var deliveryNotes = new Dictionary<int, Invoice>();
@@ -216,7 +214,7 @@ public static async Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand reque
 				//
 				var hasRelDeliveryNotes = (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString() ||
 									  (request.Correction.HasValue && request.Correction.Value &&
-										(invoiceType == enInvoiceType.DNI|| invoiceType == enInvoiceType.DNO)
+										(invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
 										));
 
 
@@ -281,7 +279,7 @@ public static async Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand reque
 					ln.VatPercentage = vatRate.VatPercentage;
 
 					ln.LineNatureIndicator = prod.NatureIndicator;
-					
+
 					if (hasRelDeliveryNotes)
 					{
 						//gyűjtőszámla
@@ -318,7 +316,7 @@ public static async Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand reque
 							ln.LineDiscountPercent = relDeliveryNoteLine.LineDiscountPercent;
 						}
 						else
-                        {
+						{
 							//elég extrém helyzet, a szállítólevél adásakor még igen, de a gyűjtőszámla készítésekor
 							//már nem adható kedvezmény.
 							//
@@ -354,7 +352,7 @@ public static async Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand reque
 
 					//Normál szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
 					if ((invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO) &&
-						(!request.Correction.HasValue || !request.Correction.Value ))        // Szállítólevél korrekció esetén nincs PendingDNQuantity
+						(!request.Correction.HasValue || !request.Correction.Value))        // Szállítólevél korrekció esetén nincs PendingDNQuantity
 					{
 						ln.PendingDNQuantity = ln.Quantity;
 					}
@@ -388,6 +386,67 @@ public static async Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand reque
 			return null;
 		}
 
+		public static async Task<Invoice> UpdatePricePreviewAsynch(UpdatePricePreviewCommand request,
+				IMapper mapper,
+				IInvoiceRepositoryAsync invoiceRepository,
+				IProductRepositoryAsync productRepository,
+				CancellationToken cancellationToken)
+		{
+
+			try
+			{
+				var invoice = await invoiceRepository.GetInvoiceRecordAsync(request.ID, true);
+				if (invoice == null)
+				{
+					throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
+					}
+
+				invoice.CustomerID = request.CustomerID;
+
+				//A SummaryByVatRates-t újrageneráljuk. Eltároljuk az eredei állapotot, mert az update során kitöröljük
+				//
+				var oriSummaryByVatRates = invoice.SummaryByVatRates; 
+
+				//Tételsorok előfeldolgozása
+				foreach (var rln in request.InvoiceLines)
+				{
+					var ln = invoice.InvoiceLines.Where( w=>w.ID == rln.ID).FirstOrDefault();
+					if( ln == null)
+                    {
+						throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICELINENOTFOUND, invoice.ID, 
+								invoice.InvoiceNumber, rln.ID));
+					}
+					ln.UnitPrice = rln.UnitPrice;
+
+					if (ln.ProductID.HasValue)
+					{
+						var prod = productRepository.GetProduct(ln.ProductID.Value);
+						if (prod == null)
+						{
+							throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, ln.ProductID.Value));
+						}
+						ln.NoDiscount = prod.NoDiscount;
+					}
+				}
+
+				invoice = await CalcInvoiceAmountsAsynch(invoice, cancellationToken);
+				invoice.SummaryByVatRates.ToList().ForEach(i => i.InvoiceID = invoice.ID);
+
+
+				await invoiceRepository.UpdateInvoiceAsync(invoice, oriSummaryByVatRates);
+
+				invoice.InvoiceLines.Clear();
+				invoice.SummaryByVatRates.Clear();
+				if (invoice.AdditionalInvoiceData != null)
+					invoice.AdditionalInvoiceData.Clear();
+				return invoice;
+			}
+			catch (Exception ex)
+			{
+				throw;
+			}
+			return null;
+		}
 		public static decimal CASHRound(decimal p_num)
 		{
 			if (p_num == 0)

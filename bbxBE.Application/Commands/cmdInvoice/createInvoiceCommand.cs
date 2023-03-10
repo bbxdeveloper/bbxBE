@@ -54,10 +54,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[Description("Ár")]
 			public decimal UnitPrice { get; set; }
 
-			[ColumnLabel("Nettó érték")]
-			[Description("Ár a számla pénznemében")]
-			public decimal LineNetAmount { get; set; }
-
 			//Gyűjtőszámla - szállítólvél kapcsolat
 
 			[ColumnLabel("Szállítólevél sor")]

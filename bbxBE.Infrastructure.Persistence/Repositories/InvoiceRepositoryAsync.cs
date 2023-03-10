@@ -81,7 +81,41 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !await _dbContext.Invoice.AnyAsync(p => p.InvoiceNumber == InvoiceNumber && !p.Deleted && (ID == null || p.ID != ID.Value));
         }
 
+        private void prepareInvoiceBeforePersistance(Invoice p_invoice)
+        {
+            //TODO: ideiglenes megoldás, relációban álló objektumok Detach-olása hogy ne akarja menteni azokat az EF 
+            if (p_invoice.Customer != null)
+                p_invoice.Customer = null;
 
+            if (p_invoice.Supplier != null)
+                p_invoice.Supplier = null;
+
+            foreach (var il in p_invoice.InvoiceLines)
+            {
+                if (il.ID == 0)
+                {
+                    _dbContext.Entry(il).State = EntityState.Added;
+                }
+                else
+                {
+                    _dbContext.Entry(il).State = EntityState.Modified;
+                }
+                il.Product = null;
+                il.VatRate = null;
+            }
+            foreach (var svr in p_invoice.SummaryByVatRates)
+            {
+                if( svr.ID == 0)
+                {
+                    _dbContext.Entry(svr).State = EntityState.Added;
+                }
+                else
+                {
+                    _dbContext.Entry(svr).State = EntityState.Modified;
+                }
+                svr.VatRate = null;
+            }
+        }
         public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, Dictionary<long, InvoiceLine> p_RelDNInvoiceLines)
         {
 
@@ -102,22 +136,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         await _invoiceLineRepository.UpdateRangeAsync(p_RelDNInvoiceLines.Select(s => s.Value).ToList());
                     }
-
-                    //c# how to disable save related entity in EF ???
-                    //TODO: ideiglenes megoldás, relációban álló objektumok Detach-olása hogy ne akarja menteni azokat az EF 
-                    if (p_invoice.Customer != null)
-                        p_invoice.Customer = null;
-
-                    if (p_invoice.Supplier != null)
-                        p_invoice.Supplier = null;
-
-                    foreach (var il in p_invoice.InvoiceLines)
-                    {
-                        il.Product = null;
-                        il.VatRate = null;
-
-                    }
-
+                    prepareInvoiceBeforePersistance(p_invoice);
                     await AddAsync(p_invoice);
 
                await dbContextTransaction.CommitAsync();
@@ -133,14 +152,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return p_invoice;
         }
 
-        public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice)
+        public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, ICollection<SummaryByVatRate> delSummaryByVatrates)
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
+                    prepareInvoiceBeforePersistance(p_invoice);
+                    _dbContext.Entry(p_invoice).State = EntityState.Modified;
 
-                    await UpdateAsync(p_invoice);
+                    await UpdateAsync(p_invoice, true);
+
+                    if (delSummaryByVatrates != null)
+                    {
+                        foreach (var entity in delSummaryByVatrates)
+                        {
+                            entity.VatRate = null;
+                            _dbContext.Entry(entity).State = EntityState.Deleted;
+                            _dbContext.Set<SummaryByVatRate>().Remove(entity);
+                        }
+                        await _dbContext.SaveChangesAsync();
+                    }
                     await dbContextTransaction.CommitAsync();
 
                 }
@@ -225,25 +257,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (FullData)
             {
-                item = await _dbContext.Invoice.AsNoTracking()
-                  .Include(w => w.Warehouse).AsNoTracking()
-                  .Include(s => s.Supplier).AsNoTracking()
-                  .Include(c => c.Customer).AsNoTracking()
-                  .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
-                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
-                  .Include(u => u.User).AsNoTracking()
-                  .Where(x => x.ID == ID).FirstOrDefaultAsync();
+                item = await _dbContext.Invoice
+                  .Include(w => w.Warehouse)
+                  .Include(s => s.Supplier)
+                  .Include(c => c.Customer)
+                  .Include(a => a.AdditionalInvoiceData)
+                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
+                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate)
+                  .Include(u => u.User)
+                  .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
             }
             else
             {
-                item = await _dbContext.Invoice.AsNoTracking()
-                  .Include(w => w.Warehouse).AsNoTracking()
-                  .Include(s => s.Supplier).AsNoTracking()
-                  .Include(c => c.Customer).AsNoTracking()
-                  .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-                  .Include(i => i.InvoiceLines).AsNoTracking()                   //nem full data esetén is szüség van az invoiceLines-re
-                  .Where(x => x.ID == ID).FirstOrDefaultAsync();
+                item = await _dbContext.Invoice
+                  .Include(w => w.Warehouse)
+                  .Include(s => s.Supplier)
+                  .Include(c => c.Customer)
+                  .Include(a => a.AdditionalInvoiceData)
+                  .Include(i => i.InvoiceLines)                   //nem full data esetén is szüség van az invoiceLines-re
+                  .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
             }
             return item;
         }
