@@ -23,9 +23,15 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Megnevezés")]
         [Description("Megnevezés, leírás")]
         public string Description { get; set; }
+
+        [ColumnLabel("Termékcsoport kód")]
+        [Description("Termékcsoport kód")]
+        public string ProductGroupCode { get; set; }
+
         [ColumnLabel("Termékcsoport")]
         [Description("Termékcsoport")]
         public string ProductGroup { get; set; }
+
         [ColumnLabel("Származási hely")]
         [Description("Származási hely")]
         public string Origin { get; set; }
