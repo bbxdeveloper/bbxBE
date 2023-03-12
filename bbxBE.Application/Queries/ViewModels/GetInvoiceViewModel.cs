@@ -31,6 +31,10 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Sor száma")]
 			public short LineNumber { get; set; }
 
+			[ColumnLabel("Termék ID")]
+			[Description("Termék ID")]
+			public string ProductID { get; set; }
+
 			[ColumnLabel("Termékkód")]
 			[Description("Termékkód")]
 			public string ProductCode { get; set; }
