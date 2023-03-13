@@ -571,6 +571,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     query = query.Reverse();
                 }
             }
+            else
+            {
+                if (requestParameter.FilterByCode.HasValue && requestParameter.FilterByCode.Value)
+                {
+                    query = query.OrderBy(o => o.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                } else if (requestParameter.FilterByName.HasValue && requestParameter.FilterByName.Value)
+                {
+                    query = query.OrderBy(o => o.Description);
+                }
+
+            }
+
 
             // retrieve data to list
             var resultData = await GetPagedData(query, requestParameter, false);
@@ -600,25 +613,37 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<Product>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-            if (p_filterByName.HasValue && p_filterByCode.HasValue)
+
+
+
+
+            //Ha kódban és névben egyszerre kerseünk akkor kód/név részletre keresünk
+            if (p_filterByName.HasValue && p_filterByCode.HasValue &&
+                p_filterByName.Value && p_filterByCode.Value)
             {
                 predicate = predicate.And(p => (!p_filterByName.Value || p.Description.ToUpper().Contains(srcFor))
-                    &&
+                    ||
                     (!p_filterByCode.Value || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
                     a.ProductCodeValue.ToUpper().Contains(srcFor)))
                     );
             }
-            else
-            {
-                //Ha nem adjuk át a filterByCode ill. filterByName paramétert, akkor a kód VAGY név tartalomra keressen.
-                predicate = predicate.And(p => (p.Description.ToUpper().Contains(srcFor))
-                                        ||  // ITT A KÜLÖNBSÉG
-                                        (p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
-                                        a.ProductCodeValue.ToUpper().Contains(srcFor)))
-                                        );
 
+            //csak kódra keresés, kódkezdetre keresünk
+            else if (p_filterByCode.HasValue && p_filterByCode.Value)
+            {
+                predicate = predicate.And(p => (p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                                    a.ProductCodeValue.ToUpper().StartsWith(srcFor)))
+                    );
+            }
+
+            //csak névre keresés, névezdetre keresünk
+            else if (p_filterByName.HasValue && p_filterByName.Value)
+            {
+                predicate = predicate.And(p => (p.Description.ToUpper().StartsWith(srcFor))
+                    );
             }
             p_items = p_items.Where(predicate);
+
         }
 
         public Task<bool> SeedDataAsync(int rowCount)
