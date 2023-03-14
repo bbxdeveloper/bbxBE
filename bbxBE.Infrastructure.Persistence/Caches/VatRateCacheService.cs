@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Interfaces;
+﻿using AsyncKeyedLock;
+using bbxBE.Application.Interfaces;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using LinqKit;
@@ -12,8 +13,8 @@ namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class VatRateCacheService : BaseCacheService<VatRate>, ICacheService<VatRate>
     {
-        public VatRateCacheService(ILoggerFactory loggerFactory, IConfiguration p_Configuration, ApplicationDbContext dbContext) 
-            : base(loggerFactory, p_Configuration, dbContext)
+        public VatRateCacheService(ILoggerFactory loggerFactory, IConfiguration p_Configuration, ApplicationDbContext dbContext, AsyncKeyedLocker<string> asyncKeyedLocker) 
+            : base(loggerFactory, p_Configuration, dbContext, asyncKeyedLocker)
         {
 
             _cacheQuery = _dbContext.VatRate

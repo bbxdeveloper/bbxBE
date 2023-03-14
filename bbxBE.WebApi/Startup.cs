@@ -30,6 +30,7 @@ namespace bbxBE.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCommonInfrastructure(_config);
             services.AddApplicationLayer();
             services.AddPersistenceInfrastructure(_config);
             services.AddCommandInfrastructure(_config);

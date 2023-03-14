@@ -24,6 +24,9 @@ namespace bbxBE.Common.Consts
         public static string CONF_CacheSettings = "CacheSettings";
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
+        public static int WaitForExpiringDataSec = 3;
+
+
         public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
         public static string TOKEN_PROPERTYNAME = "{PropertyName}";
 
