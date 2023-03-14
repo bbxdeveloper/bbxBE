@@ -45,7 +45,7 @@ namespace bbxBE.Common.ExpiringData
             return ret;
         }
 
-        public async Task AddOrUpdateItemAsync(string Key, object Data, TimeSpan Lifetime)
+        public async Task AddOrUpdateItemAsync(string Key, object Data, string SessionID, TimeSpan Lifetime)
         {
 
             bool bOK = await _asyncKeyedLocker.TryLockAsync(Key, async () =>
@@ -56,12 +56,16 @@ namespace bbxBE.Common.ExpiringData
                if (dobj == null)
                {
                    dobj = Activator.CreateInstance<T>();
-                   dobj.Key = Key; dobj.Data = Data; dobj.LastModifiedTimestamp = DateTime.UtcNow;  dobj.Lifetime = Lifetime;
+                   dobj.Key = Key; 
+                   dobj.Data = Data;
+                   dobj.SessionID = SessionID;
+                   dobj.LastModifiedTimestamp = DateTime.UtcNow;  
+                   dobj.Lifetime = Lifetime;
                    ExpiringDataList.TryAdd(Key, dobj);
                }
                else
                {
-                   if (dobj.ExpiredTimeStamp > DateTime.UtcNow)
+                   if (dobj.ExpiredTimeStamp > DateTime.UtcNow && dobj.SessionID != SessionID)
                    {
                        throw new LockException(string.Format(bbxBEConsts.ERR_LOCK, Key));
                    }

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System.Text.Json;
+using System;
 
 namespace bbxBE.WebApi
 {
@@ -62,6 +63,14 @@ namespace bbxBE.WebApi
 
             services.AddMemoryCache();
 
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+            services.AddControllersWithViews();
+
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
@@ -104,6 +113,8 @@ namespace bbxBE.WebApi
             app.UseSerilogRequestLogging();
             loggerFactory.AddSerilog();
             app.UseRouting();
+
+            app.UseSession();
 
 
             var _logger = new LoggerConfiguration()

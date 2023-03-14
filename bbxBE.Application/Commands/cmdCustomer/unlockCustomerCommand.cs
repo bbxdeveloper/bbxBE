@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,6 +21,8 @@ namespace bbxBE.Application.Commands.cmdCustomer
     public class UnlockCustomerCommand : IRequest<Response<string>>
     {
         public long ID { get; set; }
+        [JsonIgnore]
+        public string SessionID { get; set; }
 
     }
 

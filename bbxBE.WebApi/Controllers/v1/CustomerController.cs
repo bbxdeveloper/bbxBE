@@ -108,12 +108,16 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPost("lock")]
         public async Task<IActionResult> Lock(LockCustomerCommand command)
         {
+
+            command.SessionID = HttpContext.Session.Id;
+
             return Ok(await Mediator.Send(command));
         }
 
         [HttpPost("unlock")]
         public async Task<IActionResult> Unlock(UnlockCustomerCommand command)
         {
+            command.SessionID = HttpContext.Session.Id;
             return Ok(await Mediator.Send(command));
         }
 

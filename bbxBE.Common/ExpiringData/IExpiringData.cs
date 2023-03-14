@@ -14,7 +14,7 @@ namespace bbxBE.Common.ExpiringData
     public interface  IExpiringData<T> where T : ExpiringDataObject
     {
         Task<T> GetItem(string Key);
-        Task AddOrUpdateItemAsync(string Key, object Data, TimeSpan Lifetime);
+        Task AddOrUpdateItemAsync(string Key, object Data, string SessionID, TimeSpan Lifetime);
         Task DeleteItemAsync(string Key);
     }
 }

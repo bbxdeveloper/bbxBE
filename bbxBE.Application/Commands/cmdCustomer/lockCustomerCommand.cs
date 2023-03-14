@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,6 +21,9 @@ namespace bbxBE.Application.Commands.cmdCustomer
     public class LockCustomerCommand : IRequest<Response<string>>
     {
         public long ID { get; set; }
+
+        [JsonIgnore]					
+        public string SessionID { get; set; }
 
     }
 
@@ -36,7 +40,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
         public async Task<Response<string>> Handle(LockCustomerCommand request, CancellationToken cancellationToken)
         {
             var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + request.ID.ToString();
-            await _expiringData.AddOrUpdateItemAsync(key, request.ID, TimeSpan.FromSeconds(bbxBEConsts.CustomerLockExpoirationSec));
+            await _expiringData.AddOrUpdateItemAsync(key, request.ID, request.SessionID, TimeSpan.FromSeconds(bbxBEConsts.CustomerLockExpoirationSec));
             var resp = new Response<string>(key);
             resp.Succeeded = true;
             return resp;
