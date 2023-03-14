@@ -50,8 +50,6 @@ namespace bbxBE.WebApi
             
             services.AddJWTAuthentication(_config);
 
-
-
             services.AddAuthorizationPolicies_HAVETOCHANGE(_config);
             // API version
             services.AddApiVersioningExtension();
