@@ -103,5 +103,19 @@ namespace bbxBE.WebApi.Controllers.v1
             var customerRequest = new ImportCustomerCommand() { CustomerFiles = customerFiles, FieldSeparator = fieldSeparator };
             return Ok(await Mediator.Send(customerRequest));
         }
+
+
+        [HttpPost("lock")]
+        public async Task<IActionResult> Lock(LockCustomerCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpPost("unlock")]
+        public async Task<IActionResult> Unlock(UnlockCustomerCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
     }
 }

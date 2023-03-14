@@ -20,11 +20,14 @@ namespace bbxBE.Common.Consts
 
         public const string DEF_DATEFORMAT = "yyyy-MM-dd";
 
+        public static string DEF_CUSTOMERLOCK_KEY = "CUST_";
 
         public static string CONF_CacheSettings = "CacheSettings";
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
         public static int WaitForExpiringDataSec = 3;
+        public static int ExpiringDataMaxCount= 5000;
+        public static int CustomerLockExpoirationSec = 900; //15 perc
 
 
         public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
@@ -82,6 +85,10 @@ namespace bbxBE.Common.Consts
 
         public static string ERR_NOCACHEQUERY = "Nincs lekérdezés a gyorstótárhoz!";
         public static string ERR_LOCKEDCACHE = "Gyorsítótár feltöltés alatt ! A műveletet később végrehajtható.";
+        public static string ERR_LOCK = "Zárolás nem sikerült. Kulcs foglalt:{0}";
+        public static string ERR_UNLOCK = "Zárolás felszabadítása nem sikerült. Kulcs nem létezik:{0}";
+
+        public static string ERR_EXPIRINGDATA_FULL = "Az ExpiringData tároló megtelt! Max. elemszám:{0}";
 
         public static string ERR_INV_DATE1 = "{PropertyName}: A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
         public static string ERR_INV_DATE2 = "{PropertyName}: A számla dátuma nem lehet későbbi, mint a fizetési határidő";

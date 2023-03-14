@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Globals\" />
+    <Folder Include="Locking\" />
   </ItemGroup>
 
 </Project>
