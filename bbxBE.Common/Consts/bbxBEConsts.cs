@@ -47,6 +47,8 @@ namespace bbxBE.Common.Consts
         public static string ERR_INVUNITOFMEASURE2 = "Sor: {0}, termék:{1} : érvénytelen mennyiségi egység:{2} ";
         public static string ERR_DETAIL_PREF = "Sor: {0}, termék:{1}";
         public static string ERR_DISCOUNT = "Sor: {0}, termék:{1}";
+        public static string ERR_NOINPUTDATA = "Nincs input adat!";
+
 
         public static string ERR_INVPAYMENTMETHOD = "{PropertyName}:  érvénytelen fizetési mód:{PropertyValue} ";
         public static string ERR_EXCHANGERATE = "{PropertyName}:  Érvénytelen árfolyam::{PropertyValue} ";

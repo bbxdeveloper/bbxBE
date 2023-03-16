@@ -24,6 +24,9 @@ using static bxBE.Application.Commands.cmdInvCtrl.createInvCtrlICPCommand;
 using bbxBE.Infrastructure.Persistence.Caches;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using bbxBE.Application.Queries.qStock;
+using static bxBE.Application.Commands.cmdInvCtrl.createInvCtrlICCCommand;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -69,14 +72,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly IProductRepositoryAsync _productRepository;
+        private readonly IStockRepositoryAsync _stockRepository;
+        private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly ICacheService<Product> _productcacheService;
+        private IDataShapeHelper<GetStockViewModel> _dataShaperGetStockViewModel;
 
         public InvCtrlRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<InvCtrl> dataShaperInvCtrl,
             IDataShapeHelper<GetInvCtrlViewModel> dataShaperGetInvCtrlViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             IProductRepositoryAsync productRepository,
-            ICacheService<Product> productCacheService) : base(dbContext)
+            IStockRepositoryAsync stockRepository,
+            IWarehouseRepositoryAsync warehouseRepository,
+            ICacheService<Product> productCacheService,
+            ICustomerRepositoryAsync customerRepository) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperInvCtrl = dataShaperInvCtrl;
@@ -85,8 +94,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _productRepository = productRepository;
+            _stockRepository = stockRepository;
+            _customerRepository = customerRepository;   
             _productcacheService = productCacheService;
         }
+
         public async Task<InvCtrl> AddInvCtrlAsync(InvCtrl p_InvCtrl)
         {
             await AddAsync(p_InvCtrl);
@@ -177,6 +189,80 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return true;
         }
 
+        public async Task<bool> AddRangeInvCtrlICCAsync(List<InvCtrl> p_InvCtrl, string p_XRel)
+        {
+            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var ownData = _customerRepository.GetOwnData();
+                    if (ownData == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OWNNOTFOUND));
+                    }
+
+
+                    var AddInvCtrlItems = new List<InvCtrl>();
+
+
+
+                    foreach (var invCtrlItem in p_InvCtrl)
+                    {
+                        var InvCtrl = _mapper.Map<InvCtrl>(invCtrlItem);
+
+                        //*************************************
+                        //* leltári tétel rekord kiegészítése *
+                        //************************************
+
+                        //nyilvántartási egységár meghatározása
+                        // 1. Raktárkészlet alapján?
+                        var stock = await _dbContext.Stock
+                        .Where(x => x.WarehouseID == invCtrlItem.WarehouseID && x.ProductID == invCtrlItem.ProductID && !x.Deleted)
+                        .FirstOrDefaultAsync();
+                        if (stock != null)
+                        {
+                            invCtrlItem.AvgCost = stock.AvgCost;
+                        }
+
+                        // 2. raktárkészlet alapján nem sikerült, cikktörzs alapján
+                        //
+                        if (invCtrlItem.AvgCost == 0)
+                        {
+                            var prod = _productRepository.GetProduct(invCtrlItem.ProductID);
+                            if (prod != null)
+                            {
+                                invCtrlItem.AvgCost = (prod.LatestSupplyPrice != 0 ? prod.LatestSupplyPrice : prod.UnitPrice2);
+                            }
+                        }
+                        AddInvCtrlItems.Add(InvCtrl);
+                    }
+
+                    if (AddInvCtrlItems.Count > 0)
+                    {
+                        await AddRangeAsync(AddInvCtrlItems);
+                        await _dbContext.SaveChangesAsync();            //ID-k legyenek
+
+                        var stockList = await _stockRepository.MaintainStockByInvCtrlAsync(AddInvCtrlItems, ownData, p_XRel);
+                        await UpdateRangeAsync(AddInvCtrlItems);
+
+                        await _dbContext.SaveChangesAsync();
+                    }
+
+
+
+
+
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
+            }
+            return true;
+        }
 
         public async Task<InvCtrl> DeleteInvCtrlAsync(long ID)
         {
@@ -210,10 +296,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Entity> GetInvCtrl(GetInvCtrl requestParameter)
         {
             var ID = requestParameter.ID;
-            var item =  await _dbContext.InvCtrl.AsNoTracking()
+            var item = await _dbContext.InvCtrl.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
                 .Where(w => w.ID == ID && !w.Deleted).SingleOrDefaultAsync();
-            
+
 
             if (item == null)
             {
@@ -225,6 +311,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
 
             // shape data
+            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+
+            return shapeData;
+        }
+        public async Task<Entity> GetLastestInvCtrlICC(GetLastestInvCtrlICC requestParameter)
+        {
+            var item = await _dbContext.InvCtrl.AsNoTracking()
+                .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
+                .Where(w => w.InvCtrlType == enInvCtrlType.ICC.ToString() &&
+                    w.WarehouseID == requestParameter.WarehouseID && w.ProductID == requestParameter.ProductID && 
+                    w.InvCtrlDate >= DateTime.UtcNow.AddDays(requestParameter.RetroDays).Date && !w.Deleted)
+                .FirstOrDefaultAsync();
+
+            if (item == null)
+            {
+                return null;
+            }
+
+            item.Product = _productcacheService.QueryCache().Where(w => w.ID == item.ProductID).SingleOrDefault();
+            var itemModel = _mapper.Map<InvCtrl, GetInvCtrlViewModel>(item);
+
+            // shape data
+            var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
             var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
             return shapeData;
@@ -247,6 +356,126 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         !x.Deleted).ToListAsync();
             return items;
         }
+
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryInvCtrlStockAbsentAsync(QueryInvCtrlStockAbsent requestParameter)
+        {
+
+
+            var pageNumber = requestParameter.PageNumber;
+            var pageSize = requestParameter.PageSize;
+            var orderBy = requestParameter.OrderBy;
+            //      var fields = requestParameter.Fields;
+            var fields = _modelHelper.GetQueryableFields<GetStockViewModel, Stock>();
+
+
+            int recordsTotal, recordsFiltered;
+
+            var invCtrlPeriod = await _dbContext.InvCtrlPeriod.AsNoTracking()
+                                        .Include(w => w.Warehouse).AsNoTracking()
+                                        .Where(i => i.ID == requestParameter.InvCtrlPeriodID).SingleOrDefaultAsync();
+            if (invCtrlPeriod == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, requestParameter.InvCtrlPeriodID));
+            }
+            var invCtrlItems = await GetInvCtrlICPRecordsByPeriodAsync(requestParameter.InvCtrlPeriodID);
+            var prodItems = _productcacheService.ListCache();
+            var stockItems = await _dbContext.Stock.AsNoTracking()
+                             .Include(w => w.Warehouse).AsNoTracking()
+                             .Include(l => l.Location).AsNoTracking()
+                             .Where(w => w.WarehouseID == invCtrlPeriod.WarehouseID && !w.Deleted).ToListAsync();
+
+            stockItems.ForEach(i =>
+                i.Product = prodItems.FirstOrDefault(f => f.ID == i.ProductID)
+                );
+
+
+            var absenedItems = stockItems.Where(s =>
+                        !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
+                        (!requestParameter.IsInStock || s.RealQty != 0)).ToList();
+
+            if (!requestParameter.IsInStock)
+            {
+                //Hozzácsapjuk a nonStockedProducts-ből azokat a termékeket, amelyeknek nincs készletrekordja
+                //és nincs leltárban
+                var nonStockedProducts = prodItems.Where(p => !stockItems.Any(s => s.ProductID == p.ID) &&
+                                                              !absenedItems.Any(s => s.ProductID == p.ID)).ToList();
+                nonStockedProducts.ForEach(p =>
+                {
+                    absenedItems.Add(new Stock()
+                    {
+                        WarehouseID = invCtrlPeriod.WarehouseID,
+                        ProductID = p.ID,
+                        RealQty = 0,
+                        AvgCost = 0,
+                        LatestIn = null,
+                        LatestOut = null,
+                        Warehouse = invCtrlPeriod.Warehouse,
+                        Product = p
+                    });
+
+                });
+            }
+
+            // Count records total
+            recordsTotal = absenedItems.Count();
+
+            // filter data
+            if (!string.IsNullOrEmpty(requestParameter.SearchString))
+            {
+                absenedItems = absenedItems.Where(p => p.Product.Description.ToUpper().Contains(requestParameter.SearchString) ||
+                        p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                        a.ProductCodeValue.ToUpper().Contains(requestParameter.SearchString))).ToList();
+            }
+
+            // Count records after filter
+            recordsFiltered = absenedItems.Count();
+
+            //set Record counts
+            var recordsCount = new RecordsCount
+            {
+                RecordsFiltered = recordsFiltered,
+                RecordsTotal = recordsTotal
+            };
+
+            // set order by
+            var absenedItemsOrdered = absenedItems.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(orderBy))
+            {
+                //Kis heka...
+                if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
+                {
+                    absenedItemsOrdered = absenedItemsOrdered.OrderBy(o => o.Product.ProductCodes.Single(s =>
+                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                }
+                else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCT)
+                {
+                    absenedItemsOrdered = absenedItemsOrdered.OrderBy(o => o.Product.Description);
+                }
+                else
+                {
+                    absenedItemsOrdered = absenedItemsOrdered.OrderBy(p => p.GetType()
+                               .GetProperty(orderBy)
+                               .GetValue(p, null));
+                }
+            }
+
+
+            var absenedItemsPaged = absenedItemsOrdered.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+            // retrieve data to list
+
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetStockViewModel>();
+            absenedItemsPaged.ForEach(i => resultDataModel.Add(
+               _mapper.Map<Stock, GetStockViewModel>(i))
+            );
+            var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
+
+            var shapeData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+
+            return (shapeData, recordsCount);
+        }
+
 
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameter)
         {

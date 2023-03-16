@@ -77,6 +77,16 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
+        /// <summary>
+        /// POST api/controller
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("creicc")]
+        public async Task<IActionResult> Create(createInvCtrlICCCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
 
         [HttpPost("report")]
         public async Task<IActionResult> Print(PrintInvCtrlCommand command)

@@ -29,13 +29,17 @@ namespace bbxBE.Application.Queries.qStock
 
     public class QueryInvCtrlStockAbsentHandler : IRequestHandler<QueryInvCtrlStockAbsent, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly IStockRepositoryAsync _StockRepository;
+        private readonly IStockRepositoryAsync _stockRepository;
+        private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public QueryInvCtrlStockAbsentHandler(IStockRepositoryAsync StockRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryInvCtrlStockAbsentHandler(IStockRepositoryAsync stockRepository,
+                IInvCtrlRepositoryAsync invCtrlRepository,
+                IMapper mapper, IModelHelper modelHelper)
         {
-            _StockRepository = StockRepository;
+            _stockRepository = stockRepository;
+            _invCtrlRepository = invCtrlRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -47,7 +51,7 @@ namespace bbxBE.Application.Queries.qStock
 
 
             // query based on filter
-            var entities = await _StockRepository.QueryInvCtrlStockAbsentAsync(validFilter);
+            var entities = await _invCtrlRepository.QueryInvCtrlStockAbsentAsync(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetStockViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 
