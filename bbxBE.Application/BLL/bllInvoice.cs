@@ -3,6 +3,7 @@ using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdInvoice;
@@ -153,7 +154,8 @@ namespace bbxBE.Application.BLL
 						ICustomerRepositoryAsync customerRepository,
 						IProductRepositoryAsync productRepository,
 						IVatRateRepositoryAsync vatRateRepository,
-						CancellationToken cancellationToken)
+                        IExpiringData<ExpiringDataObject> expiringData,
+                        CancellationToken cancellationToken)
 		{
 			var invoice = mapper.Map<Invoice>(request);
 			var deliveryNotes = new Dictionary<int, Invoice>();
@@ -368,7 +370,15 @@ namespace bbxBE.Application.BLL
 				await invoiceRepository.AddInvoiceAsync(invoice, RelDeliveryNoteLines);
 				await counterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
 
-				invoice.InvoiceLines.Clear();
+				//szemafr kiütések
+                var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + invoice.CustomerID.ToString();
+                await expiringData.DeleteItemAsync(key);
+                key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + invoice.SupplierID.ToString();
+                await expiringData.DeleteItemAsync(key);
+
+
+
+                invoice.InvoiceLines.Clear();
 				invoice.SummaryByVatRates.Clear();
 				if (invoice.AdditionalInvoiceData != null)
 					invoice.AdditionalInvoiceData.Clear();
