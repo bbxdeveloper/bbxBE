@@ -78,6 +78,11 @@ namespace bbxBE.WebApi.Middlewares
                         responseModel.Errors.Clear();
                         break;
 
+                    case LockException e:
+                        response.StatusCode = (int)HttpStatusCode.Locked;
+                        responseModel.Message = e.Message;
+                        break;
+
                     case InvalidOperationException e:
                         if (e.InnerException != null && e.InnerException.GetType() == typeof(AggregateException))
                         {

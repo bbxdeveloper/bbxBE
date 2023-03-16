@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -103,5 +104,38 @@ namespace bbxBE.WebApi.Controllers.v1
             var customerRequest = new ImportCustomerCommand() { CustomerFiles = customerFiles, FieldSeparator = fieldSeparator };
             return Ok(await Mediator.Send(customerRequest));
         }
+
+
+        [HttpPost("lock")]
+        public async Task<IActionResult> Lock(LockCustomerCommand command)
+        {
+
+            command.SessionID = HttpContext.Session.Id;
+
+            var resp = await Mediator.Send(command);
+            if (resp.Succeeded)
+            {
+                var custlock = Encoding.ASCII.GetBytes(resp.Data);
+                HttpContext.Session.Set("custlock", custlock);
+            }
+
+            return Ok(resp);
+
+        }
+
+        [HttpPost("unlock")]
+        public async Task<IActionResult> Unlock(UnlockCustomerCommand command)
+        {
+            command.SessionID = HttpContext.Session.Id;
+            var resp = await Mediator.Send(command);
+            if (resp.Succeeded)
+            {
+                HttpContext.Session.Set("custlock", null);
+            }
+            return Ok(resp);
+
+
+        }
+
     }
 }

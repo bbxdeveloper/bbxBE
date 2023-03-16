@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Interfaces;
+﻿using AsyncKeyedLock;
+using bbxBE.Application.Interfaces;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +12,8 @@ namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class ProductCacheService : BaseCacheService<Product>, ICacheService<Product>
     {
-        public ProductCacheService(ILoggerFactory loggerFactory, IConfiguration p_Configuration, ApplicationDbContext dbContext) 
-            : base(loggerFactory, p_Configuration, dbContext)
+        public ProductCacheService(ILoggerFactory loggerFactory, IConfiguration p_Configuration, ApplicationDbContext dbContext, AsyncKeyedLocker<string> asyncKeyedLocker) 
+            : base(loggerFactory, p_Configuration, dbContext, asyncKeyedLocker)
         {
 #if !DEBUG
            _cacheQuery = _dbContext.Product.AsNoTracking()

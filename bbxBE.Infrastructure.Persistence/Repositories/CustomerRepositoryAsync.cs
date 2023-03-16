@@ -20,6 +20,7 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using EFCore.BulkExtensions;
 using bbxBE.Common.Enums;
+using bbxBE.Common.ExpiringData;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -109,10 +110,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         }
 
-        public async Task<Customer> UpdateCustomerAsync(Customer p_customer)
+        public async Task<Customer> UpdateCustomerAsync(Customer p_customer, IExpiringData<ExpiringDataObject> expiringData)
         {
             _cacheService.AddOrUpdate(p_customer);
             await UpdateAsync(p_customer);
+
+            //szemafr kiütések
+            var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + p_customer.ID.ToString();
+            await expiringData.DeleteItemAsync(key);
+
             return p_customer;
         }
 

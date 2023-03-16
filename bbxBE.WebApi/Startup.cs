@@ -16,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System.Text.Json;
+using System;
 
 namespace bbxBE.WebApi
 {
@@ -30,6 +31,7 @@ namespace bbxBE.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCommonInfrastructure(_config);
             services.AddApplicationLayer();
             services.AddPersistenceInfrastructure(_config);
             services.AddCommandInfrastructure(_config);
@@ -49,8 +51,6 @@ namespace bbxBE.WebApi
             
             services.AddJWTAuthentication(_config);
 
-
-
             services.AddAuthorizationPolicies_HAVETOCHANGE(_config);
             // API version
             services.AddApiVersioningExtension();
@@ -62,6 +62,16 @@ namespace bbxBE.WebApi
             services.AddVersionedApiExplorerExtension();
 
             services.AddMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+                //options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                
+            });
+            services.AddControllersWithViews();
 
             services.AddMvc().AddJsonOptions(options =>
             {
@@ -105,6 +115,8 @@ namespace bbxBE.WebApi
             app.UseSerilogRequestLogging();
             loggerFactory.AddSerilog();
             app.UseRouting();
+
+            app.UseSession();
 
 
             var _logger = new LoggerConfiguration()

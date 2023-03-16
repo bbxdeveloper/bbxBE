@@ -37,6 +37,7 @@ namespace bbxBE.Application
             services.AddMediatR(Assembly.GetExecutingAssembly());                       //Controller  Mediator DI -hez
 
             services.AddScoped<IModelHelper, ModelHelper>();
+
             //services.AddScoped<IMockData, MockData>();
         }
     }

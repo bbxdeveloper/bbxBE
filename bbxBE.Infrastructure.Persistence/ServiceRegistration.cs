@@ -16,6 +16,7 @@ using Hangfire;
 using Microsoft.Extensions.Logging;
 using FluentMigrator.Runner.Initialization;
 using System;
+using AsyncKeyedLock;
 
 namespace bbxBE.Infrastructure.Persistence
 {
@@ -79,8 +80,6 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<ICustDiscountRepositoryAsync, CustDiscountRepositoryAsync>();
             services.AddTransient<IZipRepositoryAsync, ZipRepositoryAsync>();
             services.AddTransient<ILocationRepositoryAsync, LocationRepositoryAsync>();
-
-
 
             services.AddSingleton<ICacheService<Product>, ProductCacheService>();
             services.AddSingleton<ICacheService<Customer>, CustomerCacheService>();

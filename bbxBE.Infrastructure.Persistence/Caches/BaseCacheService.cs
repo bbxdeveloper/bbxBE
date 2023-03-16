@@ -9,11 +9,9 @@ using System.Text;
 using System.Linq;
 using bbxBE.Domain.Common;
 using System.Threading.Tasks;
-using bbxBE.Common.Globals;
 using Microsoft.EntityFrameworkCore;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
-using bbxBE.Common.Locking;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Linq.Dynamic.Core;
@@ -25,16 +23,17 @@ namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class BaseCacheService<T> : ICacheService<T> where T : BaseEntity
     {
-        //        public System.Collections.Concurrent.ConcurrentDictionary<long, T> Cache { get; private set; } = new System.Collections.Concurrent.ConcurrentDictionary<long, T>();
         public System.Collections.Concurrent.ConcurrentDictionary<long, T> Cache { get; private set; } = null;
         internal IQueryable<T> _cacheQuery = null;
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
         private readonly ILoggerFactory _loggerFactory;
         internal readonly ApplicationDbContext _dbContext;
+        private readonly AsyncKeyedLocker<string> _asyncKeyedLocker;
 
         private readonly string _cacheID;
-        public BaseCacheService(ILoggerFactory loggerFactory, IConfiguration p_Configuration, ApplicationDbContext dbContext)
+        public BaseCacheService(ILoggerFactory loggerFactory, IConfiguration p_Configuration, ApplicationDbContext dbContext,
+            AsyncKeyedLocker<string> asyncKeyedLocker)
         {
             //            _logger = p_Logger;
             _configuration = p_Configuration;
@@ -42,6 +41,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             _logger = loggerFactory.CreateLogger("CacheService");
             _cacheID = System.Guid.NewGuid().ToString();
             _dbContext = dbContext;
+            _asyncKeyedLocker = asyncKeyedLocker;
         }
 
         public bool TryGetValue(long ID, out T value)
@@ -113,12 +113,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             }
         }
 
-        private static AsyncKeyedLocker<string> CacheLockProvider = new AsyncKeyedLocker<string>(o =>
-        {
-            o.PoolSize = 20;
-            o.PoolInitialFill = 1;
-        });
-
+        
         public async Task RefreshCache(IQueryable<T> query = null)
         {
             var className = this.GetType().Name;
@@ -127,7 +122,7 @@ namespace bbxBE.Infrastructure.Persistence.Caches
             var waitForCacheInSeconds = _configuration
                 .GetRequiredSection(bbxBEConsts.CONF_CacheSettings).GetValue<int>(bbxBEConsts.CONF_WaitForCacheInSeconds);
 
-            bool bOK = await CacheLockProvider.TryLockAsync(_cacheID, async () =>
+            bool bOK = await _asyncKeyedLocker.TryLockAsync(_cacheID, async () =>
             {
                 try
                 {

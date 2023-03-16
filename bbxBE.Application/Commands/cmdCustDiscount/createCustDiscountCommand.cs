@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using bbxBE.Common.ExpiringData;
 
 namespace bxBE.Application.Commands.cmdCustDiscount
 {
@@ -44,12 +45,17 @@ namespace bxBE.Application.Commands.cmdCustDiscount
         private readonly ICustDiscountRepositoryAsync _custDiscountRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly IExpiringData<ExpiringDataObject> _expiringData;
 
-        public CreateCustDiscountCommandHandler(ICustDiscountRepositoryAsync custDiscountRepository, IMapper mapper, IConfiguration configuration)
+        public CreateCustDiscountCommandHandler(ICustDiscountRepositoryAsync custDiscountRepository, 
+                IMapper mapper, 
+                IConfiguration configuration,
+                IExpiringData<ExpiringDataObject> expiringData)
         {
             _custDiscountRepository = custDiscountRepository;
             _mapper = mapper;
             _configuration = configuration;
+            _expiringData = expiringData;
         }
 
         public async Task<Response<List<CustDiscount>>> Handle(CreateCustDiscountCommand request, CancellationToken cancellationToken)
@@ -68,7 +74,7 @@ namespace bxBE.Application.Commands.cmdCustDiscount
                 }
                 );
             }
-            var res = await _custDiscountRepository.MaintanenceCustDiscountRangeAsync(CustDiscountItems, request.CustomerID);
+            var res = await _custDiscountRepository.MaintanenceCustDiscountRangeAsync(CustDiscountItems, request.CustomerID, _expiringData);
             return new Response<List<CustDiscount>>(CustDiscountItems);
         }
 
