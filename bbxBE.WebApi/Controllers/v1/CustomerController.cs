@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -111,14 +112,29 @@ namespace bbxBE.WebApi.Controllers.v1
 
             command.SessionID = HttpContext.Session.Id;
 
-            return Ok(await Mediator.Send(command));
+            var resp = await Mediator.Send(command);
+            if (resp.Succeeded)
+            {
+                var custlock = Encoding.ASCII.GetBytes(resp.Data);
+                HttpContext.Session.Set("custlock", custlock);
+            }
+
+            return Ok(resp);
+
         }
 
         [HttpPost("unlock")]
         public async Task<IActionResult> Unlock(UnlockCustomerCommand command)
         {
             command.SessionID = HttpContext.Session.Id;
-            return Ok(await Mediator.Send(command));
+            var resp = await Mediator.Send(command);
+            if (resp.Succeeded)
+            {
+                HttpContext.Session.Set("custlock", null);
+            }
+            return Ok(resp);
+
+
         }
 
     }

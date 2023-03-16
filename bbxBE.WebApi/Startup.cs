@@ -66,8 +66,10 @@ namespace bbxBE.WebApi
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(60);
-                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+                //options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
+                
             });
             services.AddControllersWithViews();
 
