@@ -54,6 +54,11 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(req));
         }
 
+        [HttpGet("getlatesticc")]
+        public async Task<IActionResult> GetLastestInvCtrlICC([FromQuery] GetLastestInvCtrlICC req)
+        {
+            return Ok(await Mediator.Send(req));
+        }
 
         /// <summary>
         /// GET: api/controller

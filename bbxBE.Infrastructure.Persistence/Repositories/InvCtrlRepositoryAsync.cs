@@ -123,9 +123,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var AddInvCtrlItems = new List<InvCtrl>();
                     var UpdInvCtrlItems = new List<InvCtrl>();
 
-                    foreach( var invCtrlItem in p_InvCtrl)
+                    foreach( var InvCtrl in p_InvCtrl)
                     {
-                        var InvCtrl = _mapper.Map<InvCtrl>(invCtrlItem);
                         var existing = await GetInvCtrlICPRecordAsync(InvCtrl.InvCtlPeriodID.Value, InvCtrl.ProductID);
 
                         //*************************************
@@ -135,21 +134,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         //nyilvántartási egységár meghatározása
                         // 1. Raktárkészlet alapján?
                         var stock = await _dbContext.Stock
-                        .Where(x => x.WarehouseID == invCtrlItem.WarehouseID && x.ProductID == invCtrlItem.ProductID && !x.Deleted)
+                        .Where(x => x.WarehouseID == InvCtrl.WarehouseID && x.ProductID == InvCtrl.ProductID && !x.Deleted)
                         .FirstOrDefaultAsync();
                         if (stock != null) 
                         {
-                            invCtrlItem.AvgCost = stock.AvgCost;
+                            InvCtrl.AvgCost = stock.AvgCost;
                         }
 
                         // 2. raktárkészlet alapján nem sikerült, cikktörzs alapján
                         //
-                        if (invCtrlItem.AvgCost == 0)
+                        if (InvCtrl.AvgCost == 0)
                         {
-                            var prod = _productRepository.GetProduct(invCtrlItem.ProductID);
+                            var prod = _productRepository.GetProduct(InvCtrl.ProductID);
                             if( prod != null)
                             {
-                                invCtrlItem.AvgCost = (prod.LatestSupplyPrice != 0 ? prod.LatestSupplyPrice : prod.UnitPrice2);
+                                InvCtrl.AvgCost = (prod.LatestSupplyPrice != 0 ? prod.LatestSupplyPrice : prod.UnitPrice2);
                             }
 
                         }
@@ -201,15 +200,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OWNNOTFOUND));
                     }
 
-
-                    var AddInvCtrlItems = new List<InvCtrl>();
-
-
-
-                    foreach (var invCtrlItem in p_InvCtrl)
+                    foreach (var InvCtrl in p_InvCtrl)
                     {
-                        var InvCtrl = _mapper.Map<InvCtrl>(invCtrlItem);
-
                         //*************************************
                         //* leltári tétel rekord kiegészítése *
                         //************************************
@@ -217,40 +209,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         //nyilvántartási egységár meghatározása
                         // 1. Raktárkészlet alapján?
                         var stock = await _dbContext.Stock
-                        .Where(x => x.WarehouseID == invCtrlItem.WarehouseID && x.ProductID == invCtrlItem.ProductID && !x.Deleted)
+                        .Where(x => x.WarehouseID == InvCtrl.WarehouseID && x.ProductID == InvCtrl.ProductID && !x.Deleted)
                         .FirstOrDefaultAsync();
                         if (stock != null)
                         {
-                            invCtrlItem.AvgCost = stock.AvgCost;
+                            InvCtrl.AvgCost = stock.AvgCost;
                         }
 
                         // 2. raktárkészlet alapján nem sikerült, cikktörzs alapján
                         //
-                        if (invCtrlItem.AvgCost == 0)
+                        if (InvCtrl.AvgCost == 0)
                         {
-                            var prod = _productRepository.GetProduct(invCtrlItem.ProductID);
+                            var prod = _productRepository.GetProduct(InvCtrl.ProductID);
                             if (prod != null)
                             {
-                                invCtrlItem.AvgCost = (prod.LatestSupplyPrice != 0 ? prod.LatestSupplyPrice : prod.UnitPrice2);
+                                InvCtrl.AvgCost = (prod.LatestSupplyPrice != 0 ? prod.LatestSupplyPrice : prod.UnitPrice2);
                             }
                         }
-                        AddInvCtrlItems.Add(InvCtrl);
                     }
 
-                    if (AddInvCtrlItems.Count > 0)
-                    {
-                        await AddRangeAsync(AddInvCtrlItems);
-                        await _dbContext.SaveChangesAsync();            //ID-k legyenek
+                    await AddRangeAsync(p_InvCtrl);
+                    await _dbContext.SaveChangesAsync();            //ID-k legyenek
 
-                        var stockList = await _stockRepository.MaintainStockByInvCtrlAsync(AddInvCtrlItems, ownData, p_XRel);
-                        await UpdateRangeAsync(AddInvCtrlItems);
+                    var stockList = await _stockRepository.MaintainStockByInvCtrlAsync(p_InvCtrl, ownData, p_XRel);
+                    await UpdateRangeAsync(p_InvCtrl);
 
-                        await _dbContext.SaveChangesAsync();
-                    }
-
-
-
-
+                    await _dbContext.SaveChangesAsync();
 
                     await dbContextTransaction.CommitAsync();
 
@@ -320,7 +304,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var item = await _dbContext.InvCtrl.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
                 .Where(w => w.InvCtrlType == enInvCtrlType.ICC.ToString() &&
-                    w.WarehouseID == requestParameter.WarehouseID && w.ProductID == requestParameter.ProductID && 
+                    w.Warehouse.WarehouseCode == requestParameter.WarehouseCode && w.ProductID == requestParameter.ProductID && 
                     w.InvCtrlDate >= DateTime.UtcNow.AddDays(requestParameter.RetroDays).Date && !w.Deleted)
                 .FirstOrDefaultAsync();
 

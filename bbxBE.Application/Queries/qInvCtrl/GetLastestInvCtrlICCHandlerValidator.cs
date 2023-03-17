@@ -27,7 +27,7 @@ namespace bbxBE.Application.Queries.qStock
    
         public GetLastestInvCtrlICCHandlerValidator()
         {
-            RuleFor(p => p.WarehouseID)
+            RuleFor(p => p.WarehouseCode)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(p => p.ProductID)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);

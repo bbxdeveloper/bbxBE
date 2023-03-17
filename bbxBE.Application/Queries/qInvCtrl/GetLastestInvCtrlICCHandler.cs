@@ -18,9 +18,9 @@ namespace bbxBE.Application.Queries.qInvCtrl
 {
     public class GetLastestInvCtrlICC:  IRequest<Entity>
     {
-        [ColumnLabel("Raktár ID")]
-        [Description("Raktár ID")]
-        public long WarehouseID { get; set; }
+        [ColumnLabel("Raktárkód")]
+        [Description("Raktár kódja")]
+        public string WarehouseCode { get; set; }
 
         [ColumnLabel("Termék ID")]
         [Description("Termék ID")]
@@ -48,6 +48,8 @@ namespace bbxBE.Application.Queries.qInvCtrl
         {
             // query based on filter
             var item = await _InvCtrlRepository.GetLastestInvCtrlICC(request);
+            if (item == null)
+                return null;
 
             var data = item.MapItemFieldsByMapToAnnotation<GetCustDiscountViewModel>();
             return data;

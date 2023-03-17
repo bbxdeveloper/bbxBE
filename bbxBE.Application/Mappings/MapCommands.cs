@@ -141,6 +141,9 @@ namespace bbxBE.Command.Mappings
 
             CreateMap<createInvCtrlICPCommand.InvCtrlItem, InvCtrl>()
                .ForMember(dst => dst.InvCtrlDate, opt => opt.MapFrom(src => src.InvCtrlDate.Date));
+
+            CreateMap<createInvCtrlICCCommand.InvCtrlItem, InvCtrl>()
+               .ForMember(dst => dst.InvCtrlDate, opt => opt.MapFrom(src => src.InvCtrlDate.Date));
             //    CreateMap<UpdateInvCtrlCommand, InvCtrl>();
 
             CreateMap<CreateCustDiscountCommand.CustDiscountItem, CustDiscount>();
