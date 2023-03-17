@@ -28,6 +28,7 @@ namespace bbxBE.Common.Consts
         public static int WaitForExpiringDataSec = 3;
         public static int ExpiringDataMaxCount= 5000;
         public static int CustomerLockExpoirationSec = 900; //15 perc
+        public static string DEF_CUSTLOCK = "custlock";
 
 
         public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
@@ -87,6 +88,7 @@ namespace bbxBE.Common.Consts
         public static string ERR_LOCKEDCACHE = "Gyorsítótár feltöltés alatt ! A műveletet később végrehajtható.";
         public static string ERR_LOCK = "Zárolás nem sikerült. Kulcs foglalt:{0}";
         public static string ERR_UNLOCK = "Zárolás felszabadítása nem sikerült. Kulcs nem létezik:{0}";
+
 
         public static string ERR_EXPIRINGDATA_FULL = "Az ExpiringData tároló megtelt! Max. elemszám:{0}";
 

@@ -15,6 +15,6 @@ namespace bbxBE.Common.ExpiringData
     {
         Task<T> GetItem(string Key);
         Task AddOrUpdateItemAsync(string Key, object Data, string SessionID, TimeSpan Lifetime);
-        Task DeleteItemAsync(string Key);
+        Task DeleteItemAsync(string Key, bool silent = true);
     }
 }

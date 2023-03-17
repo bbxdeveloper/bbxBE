@@ -5,6 +5,7 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCustomer;
@@ -115,8 +116,7 @@ namespace bbxBE.WebApi.Controllers.v1
             var resp = await Mediator.Send(command);
             if (resp.Succeeded)
             {
-                var custlock = Encoding.ASCII.GetBytes(resp.Data);
-                HttpContext.Session.Set("custlock", custlock);
+                HttpContext.Session.SetString(bbxBEConsts.DEF_CUSTLOCK, resp.Data);
             }
 
             return Ok(resp);
@@ -130,7 +130,11 @@ namespace bbxBE.WebApi.Controllers.v1
             var resp = await Mediator.Send(command);
             if (resp.Succeeded)
             {
-                HttpContext.Session.Set("custlock", null);
+                var custlock = HttpContext.Session.GetString(bbxBEConsts.DEF_CUSTLOCK);
+                if (custlock != null)
+                {
+                    HttpContext.Session.SetString(bbxBEConsts.DEF_CUSTLOCK, null);
+                }
             }
             return Ok(resp);
 

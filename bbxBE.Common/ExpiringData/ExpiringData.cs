@@ -87,7 +87,7 @@ namespace bbxBE.Common.ExpiringData
             }
 
         }
-        public async Task DeleteItemAsync(string Key)
+        public async Task DeleteItemAsync(string Key, bool silent = true)
         {
 
             bool bOK = await _asyncKeyedLocker.TryLockAsync(Key, async () =>
@@ -95,13 +95,14 @@ namespace bbxBE.Common.ExpiringData
                 T dobj;
 
                 ExpiringDataList.TryGetValue(Key, out dobj);
-                if (dobj == null)
+                if (dobj == null && !silent)
                 {
                     throw new LockException(string.Format(bbxBEConsts.ERR_UNLOCK, Key));
                 }
-
-                ExpiringDataList.TryRemove(Key, out dobj);
-
+                if (dobj != null)
+                {
+                    ExpiringDataList.TryRemove(Key, out dobj);
+                }
             }, bbxBEConsts.WaitForExpiringDataSec * 1000).ConfigureAwait(false);
             if (!bOK)
             {
