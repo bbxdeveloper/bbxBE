@@ -31,23 +31,33 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ApplicationDbContext _dbContext;
         private IDataShapeHelper<InvCtrlPeriod> _dataShaperInvCtrlPeriod;
         private IDataShapeHelper<GetInvCtrlPeriodViewModel> _dataShaperGetInvCtrlPeriodViewModel;
+        private IDataShapeHelper<GetStockViewModel> _dataShaperGetStockViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly IStockRepositoryAsync _StockRepository;
+        private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
+        private readonly ICustomerRepositoryAsync _customerRepository;
 
         public InvCtrlPeriodRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<InvCtrlPeriod> dataShaperInvCtrlPeriod,
             IDataShapeHelper<GetInvCtrlPeriodViewModel> dataShaperGetInvCtrlPeriodViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData, IStockRepositoryAsync stockRepository) : base(dbContext)
+            IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
+            IStockRepositoryAsync stockRepository,
+            IInvCtrlRepositoryAsync invCtrlRepository,
+            ICustomerRepositoryAsync customerRepository) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperInvCtrlPeriod = dataShaperInvCtrlPeriod;
             _dataShaperGetInvCtrlPeriodViewModel = dataShaperGetInvCtrlPeriodViewModel;
+            _dataShaperGetStockViewModel = dataShaperGetStockViewModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
             _StockRepository = stockRepository;
+            _invCtrlRepository = invCtrlRepository;
+            _customerRepository = customerRepository;
         }
         public async Task<InvCtrlPeriod> AddInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
         {
@@ -236,18 +246,26 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, ID));
             }
+            var ownData = _customerRepository.GetOwnData();
+            if (ownData == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OWNNOTFOUND));
+            }
+
 
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
                 try
                 {
                     var invCtrlItems = await _dbContext.InvCtrl.AsNoTracking().Where(x => x.InvCtlPeriodID == ID).ToListAsync();
-                    var stockList = await _StockRepository.MaintainStockByInvCtrlAsync(invCtrlItems, 
+                    var stockList = await _StockRepository.MaintainStockByInvCtrlAsync(invCtrlItems, ownData,
                                 invCtrlPeriod.Warehouse.WarehouseCode + "-" + invCtrlPeriod.Warehouse.WarehouseDescription + " " + invCtrlPeriod.DateFrom.ToString(bbxBEConsts.DEF_DATEFORMAT) + "-" + invCtrlPeriod.DateTo.ToString(bbxBEConsts.DEF_DATEFORMAT));
 
 
                     invCtrlPeriod.Closed = true;
                     await UpdateAsync(invCtrlPeriod);
+                    await _invCtrlRepository.UpdateRangeAsync(invCtrlItems);
+
                     await dbContextTransaction.CommitAsync();
 
 

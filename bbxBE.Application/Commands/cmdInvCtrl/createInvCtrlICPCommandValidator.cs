@@ -54,7 +54,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
                         async (model, Name, cancellation) =>
                         {
                             //egyelőre csak leltáridőszaki leltárt kezelünk
-                            return await CheckInvCtrlDateAsync(enInvCtrlType.ICP.ToString(), model.InvCtlPeriodID.Value, model.InvCtrlDate, cancellation);
+                            return await CheckInvCtrlDateAsync(enInvCtrlType.ICP.ToString(), model.InvCtlPeriodID, model.InvCtrlDate, cancellation);
                         }
                     ).WithMessage(bbxBEConsts.ERR_INVCTRL_DATE);
 

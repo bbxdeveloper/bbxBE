@@ -133,12 +133,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (cust != null)
                 {
 
-
                     _cacheService.TryRemove(cust);
-
                     await RemoveAsync(cust);
                     await dbContextTransaction.CommitAsync();
-
                 }
                 else
                 {

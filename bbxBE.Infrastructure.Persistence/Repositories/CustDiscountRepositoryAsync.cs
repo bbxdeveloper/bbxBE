@@ -97,6 +97,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                      .SingleOrDefaultAsync(s => s.ID == ID);
 
             var itemModel = _mapper.Map<CustDiscount, GetCustDiscountViewModel>(CustDiscount);
+
             var listFieldsModel = _modelHelper.GetModelFields<GetCustDiscountViewModel>();
 
             // shape data

@@ -54,6 +54,11 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(req));
         }
 
+        [HttpGet("getlatesticc")]
+        public async Task<IActionResult> GetLastestInvCtrlICC([FromQuery] GetLastestInvCtrlICC req)
+        {
+            return Ok(await Mediator.Send(req));
+        }
 
         /// <summary>
         /// GET: api/controller
@@ -77,6 +82,16 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
+        /// <summary>
+        /// POST api/controller
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("creicc")]
+        public async Task<IActionResult> Create(createInvCtrlICCCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
 
         [HttpPost("report")]
         public async Task<IActionResult> Print(PrintInvCtrlCommand command)
