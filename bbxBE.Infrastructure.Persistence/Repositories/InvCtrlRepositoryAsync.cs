@@ -305,7 +305,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
                 .Where(w => w.InvCtrlType == enInvCtrlType.ICC.ToString() &&
                     w.Warehouse.WarehouseCode == requestParameter.WarehouseCode && w.ProductID == requestParameter.ProductID && 
-                    w.InvCtrlDate >= DateTime.UtcNow.AddDays(requestParameter.RetroDays).Date && !w.Deleted)
+                    w.InvCtrlDate >= DateTime.UtcNow.AddDays(requestParameter.RetroDays*-1).Date && !w.Deleted)
                 .FirstOrDefaultAsync();
 
             if (item == null)
