@@ -105,7 +105,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             foreach (var svr in p_invoice.SummaryByVatRates)
             {
-                if( svr.ID == 0)
+                if (svr.ID == 0)
                 {
                     _dbContext.Entry(svr).State = EntityState.Added;
                 }
@@ -116,6 +116,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 svr.VatRate = null;
             }
         }
+        
         public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, Dictionary<long, InvoiceLine> p_RelDNInvoiceLines)
         {
 
