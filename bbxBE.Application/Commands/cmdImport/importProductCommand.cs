@@ -34,6 +34,10 @@ namespace bbxBE.Application.Commands.cmdImport
     {
         public List<IFormFile> ProductFiles { get; set; }
         public string FieldSeparator { get; set; } = ";";
+
+        [JsonIgnore]
+        public string SessionID { get; set; }
+
     }
 
     public class ImportProductCommandHandler : ProductMappingParser, IRequestHandler<ImportProductCommand, Response<ImportedItemsStatistics>>

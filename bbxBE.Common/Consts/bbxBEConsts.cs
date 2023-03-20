@@ -86,7 +86,7 @@ namespace bbxBE.Common.Consts
         public static string ERR_FILESIZE = "Üres file lett feltöltve!";
 
 
-        public static string ERR_NOCACHEQUERY = "Nincs lekérdezés a gyorstótárhoz!";
+        public static string ERR_NOCACHEQUERY = "Nincs lekérdezés a gyorsítótárhoz!";
         public static string ERR_LOCKEDCACHE = "Gyorsítótár feltöltés alatt ! A műveletet később végrehajtható.";
         public static string ERR_LOCK = "Zárolás nem sikerült. Kulcs foglalt:{0}";
         public static string ERR_UNLOCK = "Zárolás felszabadítása nem sikerült. Kulcs nem létezik:{0}";
