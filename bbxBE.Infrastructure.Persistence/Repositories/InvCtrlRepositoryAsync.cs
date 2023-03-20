@@ -68,6 +68,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ApplicationDbContext _dbContext;
         private IDataShapeHelper<InvCtrl> _dataShaperInvCtrl;
         private IDataShapeHelper<GetInvCtrlViewModel> _dataShaperGetInvCtrlViewModel;
+        private IDataShapeHelper<GetStockViewModel> _dataShaperGetStockViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
@@ -75,11 +76,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IStockRepositoryAsync _stockRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly ICacheService<Product> _productcacheService;
-        private IDataShapeHelper<GetStockViewModel> _dataShaperGetStockViewModel;
 
         public InvCtrlRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<InvCtrl> dataShaperInvCtrl,
             IDataShapeHelper<GetInvCtrlViewModel> dataShaperGetInvCtrlViewModel,
+            IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             IProductRepositoryAsync productRepository,
             IStockRepositoryAsync stockRepository,
@@ -90,6 +91,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _dbContext = dbContext;
             _dataShaperInvCtrl = dataShaperInvCtrl;
             _dataShaperGetInvCtrlViewModel = dataShaperGetInvCtrlViewModel;
+            _dataShaperGetStockViewModel = dataShaperGetStockViewModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
