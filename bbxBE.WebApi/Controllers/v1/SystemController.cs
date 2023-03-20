@@ -7,6 +7,7 @@ using bbxBE.Application.Queries.qStock;
 using bbxBE.Application.Queries.qZip;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Enums;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +23,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Telerik.Reporting;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
@@ -32,11 +34,15 @@ namespace bbxBE.WebApi.Controllers.v1
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
         private readonly IProductRepositoryAsync _productRepositoryAsync;
-        public SystemController(IWebHostEnvironment env, IConfiguration conf, IProductRepositoryAsync productRepositoryAsync)
+        private readonly IExpiringData<ExpiringDataObject> _expiringData;
+        public SystemController(IWebHostEnvironment env, IConfiguration conf, 
+            IProductRepositoryAsync productRepositoryAsync,
+             IExpiringData<ExpiringDataObject> expiringData)
         {
             _env = env;
             _conf = conf;
             _productRepositoryAsync = productRepositoryAsync;
+            _expiringData = expiringData;
         }
 
 
@@ -45,7 +51,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        [HttpPost("RefreshCaches")]
+        [HttpPost("refreshcaches")]
         public async Task<IActionResult> RefreshCaches()
         {
             // https://docs.microsoft.com/en-us/answers/questions/481854/load-controller-at-startup-web-api-core.html
@@ -141,5 +147,35 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(req));
         }
 
+        [HttpDelete("purgeexpiringdata")]
+        public async Task<IActionResult> PurgeExpiringData()
+        {
+            _expiringData.Purge();
+            return Ok(true);
+        }
+
+        [HttpPost("addorupdateexpiringdata")]
+        public async Task<IActionResult>AddExpiringData([FromQuery] string Key, [FromQuery] string Data, [FromQuery] int LifetimeSec)
+        {
+            var SessionID = HttpContext.Session.Id;
+            var Lifetime = TimeSpan.FromSeconds(LifetimeSec);
+            var ret = await _expiringData.AddOrUpdateItemAsync(Key, Data, SessionID, Lifetime);
+            return Ok(ret);
+        }
+
+        [HttpGet("getexpiringdata")]
+        public async Task<IActionResult> GetExpiringData([FromQuery] string key)
+        {
+            var item = _expiringData.GetItem(key, false);
+            return Ok(item);
+        }
+
+
+        [HttpGet("listexpiringdata")]
+        public async Task<IActionResult> ListExpiringData()
+        {
+            var item = _expiringData.List();
+            return Ok(item);
+        }
     }
 }
