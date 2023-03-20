@@ -239,32 +239,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!p_item.Any())
                 return;
 
-            if (string.IsNullOrWhiteSpace(p_searchString) && IsOwnData == null)
-                return;
 
             var predicate = PredicateBuilder.New<Customer>();
-
-
             var srcFor = "";
-            if (p_searchString != null)
-            {
-                srcFor = p_searchString.ToUpper().Trim();
-            }
 
-            if (IsOwnData == null)
+            if (IsOwnData.HasValue)
             {
-                predicate = predicate.And(p => p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor)));
-            }
-            else if (IsOwnData.Value)
-            {
-                predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))) && p.IsOwnData);
+                if (string.IsNullOrWhiteSpace(p_searchString))
+                {
+                    predicate = predicate.And(p => p.IsOwnData == IsOwnData.Value);
+                }
+                else
+                {
+                    srcFor = p_searchString.ToUpper().Trim();
+                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))) && p.IsOwnData == IsOwnData.Value);
+                }
 
             }
             else
             {
-                predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))) && !p.IsOwnData);
+                if (string.IsNullOrWhiteSpace(p_searchString))
+                {
+                    predicate = predicate.And(p => false);
+                }
+                else
+                {
+                    srcFor = p_searchString.ToUpper().Trim();
+                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))) );
+                }
             }
-
             p_item = p_item.Where(predicate);
         }
 
