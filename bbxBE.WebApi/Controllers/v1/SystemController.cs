@@ -71,6 +71,14 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(req));
         }
 
+        [HttpGet("invoicetypes")]
+        public async Task<IActionResult> GetInvoiceTypes()
+        {
+
+            var req = new GetEnum() { type = typeof(enInvoiceType) };
+            return Ok(await Mediator.Send(req));
+        }
+
         //   [Authorize]
         [HttpGet("exchangerate")]
         public async Task<IActionResult> GetExchangeRate([FromQuery] DateTime ExchengeRateDate, string Currency)

@@ -52,7 +52,7 @@ namespace bbxBE.Application.Commands.cmdOffer
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OFFERNOTFOUND, request.ID));
             }
 
-            string csv = String.Join(Environment.NewLine, offer.OfferLines.Select(x => x.ProductCode + ";" + x.UnitPrice.ToString().Replace(",", ".")).ToArray());
+            string csv = String.Join(Environment.NewLine, offer.OfferLines.Select(x => x.ProductCode + bbxBEConsts.DEF_CSVSEP + x.UnitPrice.ToString().Replace(",", ".")).ToArray());
             Stream stream = Utils.StringToStream(csv);
             string fileName = $"Offer{offer.OfferNumber.Replace("/", "-")}.csv";
 
