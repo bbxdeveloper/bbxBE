@@ -617,24 +617,19 @@
                 <Font Name="Courier New" Size="10pt" />
               </Style>
             </TextBox>
-            <TextBox Width="4.288cm" Height="0.5cm" Left="3.165cm" Top="0.5cm" Value="= Fields.supplierCity" Name="textBox13">
+            <TextBox Width="4.288cm" Height="0.5cm" Left="2cm" Top="0.5cm" Value="= Fields.supplierCity" Name="textBox13">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2cm" Height="0.5cm" Left="1.145cm" Top="0.5cm" Value="= Fields.supplierPostalCode" Name="textBox19">
-              <Style VerticalAlign="Middle">
-                <Font Name="Courier New" Size="10pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="1.145cm" Height="0.5cm" Left="0cm" Top="0.5cm" Value="= Fields.supplierCountryCode" Name="textBox29">
+            <TextBox Width="2cm" Height="0.5cm" Left="0cm" Top="0.5cm" Value="= Fields.supplierPostalCode" Name="textBox19">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
               </Style>
             </TextBox>
             <TextBox Width="3.897cm" Height="0.4cm" Left="3.555cm" Top="2cm" Value="= Fields.supplierThirdStateTaxId" Name="textBox31">
               <Style VerticalAlign="Middle">
-                <Font Name="Courier New" Size="8pt" />
+                <Font Name="Courier New" Size="10pt" />
               </Style>
             </TextBox>
             <TextBox Width="7.453cm" Height="0.5cm" Left="0cm" Top="1.5cm" Value="= Fields.supplierBankAccountNumber" Name="textBox44">
@@ -662,7 +657,7 @@
                 <Font Name="Courier New" Size="10pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2cm" Height="0.5cm" Left="1.145cm" Top="0.5cm" Value="= Fields.customerPostalCode" Name="lbAddressZipCity">
+            <TextBox Width="2cm" Height="0.5cm" Left="0cm" Top="0.5cm" Value="= Fields.customerPostalCode" Name="lbAddressZipCity">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
               </Style>
@@ -677,12 +672,7 @@
                 <Font Name="Courier New" Size="10pt" />
               </Style>
             </TextBox>
-            <TextBox Width="4.417cm" Height="0.5cm" Left="3.146cm" Top="0.5cm" Value="= Fields.customerCity" Name="textBox27">
-              <Style VerticalAlign="Middle">
-                <Font Name="Courier New" Size="10pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="1.145cm" Height="0.5cm" Left="0cm" Top="0.5cm" Value="= Fields.customerCountryCode" Name="textBox7">
+            <TextBox Width="4.417cm" Height="0.5cm" Left="2cm" Top="0.5cm" Value="= Fields.customerCity" Name="textBox27">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
               </Style>
