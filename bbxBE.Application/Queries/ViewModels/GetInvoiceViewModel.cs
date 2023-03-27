@@ -150,7 +150,7 @@ namespace bbxBE.Application.Queries.ViewModels
 		public string Warehouse { get; set; }
 
 
-		[ColumnLabel("Számlaszám")]
+		[ColumnLabel("Bizonylatszám")]
 		[Description("Számla/szállítólevél sorszáma")]
 		public string InvoiceNumber { get; set; }
 

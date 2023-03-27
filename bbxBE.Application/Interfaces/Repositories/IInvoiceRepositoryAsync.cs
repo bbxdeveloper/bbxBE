@@ -27,6 +27,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true);
         Task<Dictionary<long, Invoice>> GetInvoiceRecordsByInvoiceLinesAsync(List<long> LstInvoiceLineID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameters);
+        Task<List<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter);
 
     }
 }

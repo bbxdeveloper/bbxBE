@@ -76,7 +76,6 @@ namespace bbxBE.Application.Commands.cmdCustomer
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
-
             RuleFor(p => p.IsOwnData)
                        .Must(IsUniqueIsOwnData).WithMessage(bbxBEConsts.ERR_CST_OWNEXISTS);
 

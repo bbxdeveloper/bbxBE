@@ -189,28 +189,17 @@ namespace bbxBE.WebApi.Controllers.v1
 
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
-        /*
 
-                /// <summary>
-                /// GET: api/controller
-                /// </summary>
-                /// <param name="filter"></param>
-                /// <returns></returns>
-                [HttpGet]
-                public async Task<IActionResult> Get([FromQuery] GetInvoice filter)
-                {
-                    return Ok(await Mediator.Send(filter));
-                }
+        [HttpGet("csv")]
+        public async Task<IActionResult> Print([FromQuery] CSVInvoice command)
+        {
+            var result = await Mediator.Send(command);
 
- 
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
 
-                [HttpGet("currencycode")]
-                public async Task<IActionResult> GetCurrencyCode()
-                {
-                    var req = new GetEnum() {  type = typeof(enCurrencyCodes) };
-                    return Ok(await Mediator.Send(req));
-                }
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
+        }
 
-                */
     }
 }
