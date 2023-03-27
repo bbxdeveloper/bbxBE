@@ -18,8 +18,15 @@ namespace bbxBE.Common.Consts
         public static string CONF_JWTAudience = "Audience";
         public static string CONF_JWTDurationInMinutes = "DurationInMinutes";
 
-        public const string DEF_DATEFORMAT = "yyyy-MM-dd";
+        public const string DEF_ENCODING = "ISO-8859-2";
         public const string DEF_CSVSEP = ";";
+        public const string DEF_DATEFORMAT = "yyyy-MM-dd";
+        public const string DEF_NUMFORMAT = "#,#0.00";
+        public const string DEF_INTFORMAT = "#,#0";
+        public const string DEF_DATETIMEFORMAT = "yyyy.MM.dd HH:mm:ss";
+        public const string DEF_TRUE = "true";
+        public const string DEF_FALSE = "false";
+
 
         public static string DEF_CUSTOMERLOCK_KEY = "CUST_";
 
@@ -110,7 +117,7 @@ namespace bbxBE.Common.Consts
         public static string ERR_OFFER_DATE1 = "{PropertyName}: A lejárati dátum nem lehet korábbi, mint a ajánlat kibocsátásának dátuma!";
 
         public static string NAV_INVDIRECTION = "{PropertyName}: Érvénytelen bizonylatirány:{PropertyValue}";
-        public static string ERR_INVOICETYPE = "{PropertyName}: Érvénytelen bizonylattípus:{PropertyValue}";
+        public static string ERR_INVOICETYPE = "Érvénytelen bizonylattípus:{0}";
 
         public static string ERR_INVCTRLPERIOD_DATE1 = "{PropertyName}: Helytelen leltáridőszak!";
         public static string ERR_INVCTRLPERIOD_DATE2 = "{PropertyName}: A megadott leltáridőszak ütközik más időszakkal!";

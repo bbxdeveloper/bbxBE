@@ -27,13 +27,17 @@ namespace bbxBE.Application.Queries.qInvoice
         public CSVInvoiceValidatorValidator()
         {
             RuleFor(p => p.InvoiceType)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .Must(CheckInvoiceType)
-                .WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVOICETYPE));
+                .WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVOICETYPE, model.InvoiceType ));
 
         }
 
         public bool CheckInvoiceType(string invoiceType)
         {
+            if (string.IsNullOrEmpty(invoiceType))
+                return false;
+
             var valid = Enum.TryParse(invoiceType, out enInvoiceType it);
             return valid;
         }
