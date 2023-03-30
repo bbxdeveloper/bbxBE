@@ -617,16 +617,6 @@
                 <Font Name="Courier New" Size="10pt" />
               </Style>
             </TextBox>
-            <TextBox Width="4.288cm" Height="0.5cm" Left="2cm" Top="0.5cm" Value="= Fields.supplierCity" Name="textBox13">
-              <Style VerticalAlign="Middle">
-                <Font Name="Courier New" Size="10pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="2cm" Height="0.5cm" Left="0cm" Top="0.5cm" Value="= Fields.supplierPostalCode" Name="textBox19">
-              <Style VerticalAlign="Middle">
-                <Font Name="Courier New" Size="10pt" />
-              </Style>
-            </TextBox>
             <TextBox Width="3.897cm" Height="0.4cm" Left="3.555cm" Top="2cm" Value="= Fields.supplierThirdStateTaxId" Name="textBox31">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
@@ -647,17 +637,27 @@
                 <Font Name="Courier New" Size="10pt" />
               </Style>
             </TextBox>
-          </Items>
-        </Panel>
-        <Panel Width="7.563cm" Height="2.8cm" Left="11.344cm" Top="0.6cm" Name="panel3">
-          <Style Visible="True" VerticalAlign="Middle" />
-          <Items>
-            <TextBox Width="7.563cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.customerName" Name="lbBuyerName">
+            <TextBox Width="4.288cm" Height="0.5cm" Left="3.165cm" Top="0.5cm" Value="= Fields.supplierCity" Name="textBox13">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2cm" Height="0.5cm" Left="0cm" Top="0.5cm" Value="= Fields.customerPostalCode" Name="lbAddressZipCity">
+            <TextBox Width="2cm" Height="0.5cm" Left="1.145cm" Top="0.5cm" Value="= Fields.supplierPostalCode" Name="textBox19">
+              <Style VerticalAlign="Middle">
+                <Font Name="Courier New" Size="10pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="1.145cm" Height="0.5cm" Left="0cm" Top="0.5cm" Value="= Fields.supplierCountryCode" Name="textBox29">
+              <Style VerticalAlign="Middle">
+                <Font Name="Courier New" Size="10pt" />
+              </Style>
+            </TextBox>
+          </Items>
+        </Panel>
+        <Panel Width="7.568cm" Height="2.8cm" Left="11.344cm" Top="0.6cm" Name="panel3">
+          <Style Visible="True" VerticalAlign="Middle" />
+          <Items>
+            <TextBox Width="7.563cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.customerName" Name="lbBuyerName">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
               </Style>
@@ -668,11 +668,6 @@
               </Style>
             </TextBox>
             <TextBox Width="3.555cm" Height="0.4cm" Left="0cm" Top="2cm" Value="= Fields.customerTaxpayerNumber" Name="lbTaxNumber">
-              <Style VerticalAlign="Middle">
-                <Font Name="Courier New" Size="10pt" />
-              </Style>
-            </TextBox>
-            <TextBox Width="4.417cm" Height="0.5cm" Left="2cm" Top="0.5cm" Value="= Fields.customerCity" Name="textBox27">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
               </Style>
@@ -688,6 +683,21 @@
               </Style>
             </TextBox>
             <TextBox Width="7.563cm" Height="0.4cm" Left="0cm" Top="2.4cm" Value="= Fields.customerComment" Name="textBox48">
+              <Style VerticalAlign="Middle">
+                <Font Name="Courier New" Size="10pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="2cm" Height="0.5cm" Left="1.15cm" Top="0.5cm" Value="= Fields.customerPostalCode" Name="lbAddressZipCity">
+              <Style VerticalAlign="Middle">
+                <Font Name="Courier New" Size="10pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="4.417cm" Height="0.5cm" Left="3.151cm" Top="0.5cm" Value="= Fields.customerCity" Name="textBox27">
+              <Style VerticalAlign="Middle">
+                <Font Name="Courier New" Size="10pt" />
+              </Style>
+            </TextBox>
+            <TextBox Width="1.145cm" Height="0.5cm" Left="0.005cm" Top="0.5cm" Value="= Fields.customerCountryCode" Name="textBox7">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
               </Style>
