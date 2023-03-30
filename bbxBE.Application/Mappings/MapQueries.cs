@@ -63,7 +63,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.SupplierName, opt => opt.MapFrom(src => src.Supplier.CustomerName))
              .ForMember(dst => dst.SupplierBankAccountNumber, opt => opt.MapFrom(src => src.Supplier.CustomerBankAccountNumber))
              .ForMember(dst => dst.SupplierTaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.Supplier.TaxpayerId, src.Supplier.VatCode, src.Supplier.CountyCode)))
-             .ForMember(dst => dst.SupplierCountryCode, opt => opt.MapFrom(src => src.Supplier.CountyCode))
+             .ForMember(dst => dst.SupplierCountryCode, opt => opt.MapFrom(src => src.Supplier.CountryCode))
              .ForMember(dst => dst.SupplierPostalCode, opt => opt.MapFrom(src => src.Supplier.PostalCode))
              .ForMember(dst => dst.SupplierCity, opt => opt.MapFrom(src => src.Supplier.City))
              .ForMember(dst => dst.SupplierAdditionalAddressDetail, opt => opt.MapFrom(src => src.Supplier.AdditionalAddressDetail))
@@ -73,7 +73,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => src.Customer.CustomerName))
              .ForMember(dst => dst.CustomerBankAccountNumber, opt => opt.MapFrom(src => src.Customer.CustomerBankAccountNumber))
              .ForMember(dst => dst.CustomerTaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.Customer.TaxpayerId, src.Customer.VatCode, src.Customer.CountyCode)))
-             .ForMember(dst => dst.CustomerCountryCode, opt => opt.MapFrom(src => src.Customer.CountyCode))
+             .ForMember(dst => dst.CustomerCountryCode, opt => opt.MapFrom(src => src.Customer.CountryCode))
              .ForMember(dst => dst.CustomerPostalCode, opt => opt.MapFrom(src => src.Customer.PostalCode))
              .ForMember(dst => dst.CustomerCity, opt => opt.MapFrom(src => src.Customer.City))
              .ForMember(dst => dst.CustomerAdditionalAddressDetail, opt => opt.MapFrom(src => src.Customer.AdditionalAddressDetail))
@@ -100,7 +100,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.SupplierName, opt => opt.MapFrom(src => src.Supplier.CustomerName))
              .ForMember(dst => dst.SupplierBankAccountNumber, opt => opt.MapFrom(src => src.Supplier.CustomerBankAccountNumber))
              .ForMember(dst => dst.SupplierTaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.Supplier.TaxpayerId, src.Supplier.VatCode, src.Supplier.CountyCode)))
-             .ForMember(dst => dst.SupplierCountryCode, opt => opt.MapFrom(src => src.Supplier.CountyCode))
+             .ForMember(dst => dst.SupplierCountryCode, opt => opt.MapFrom(src => src.Supplier.CountryCode))
              .ForMember(dst => dst.SupplierPostalCode, opt => opt.MapFrom(src => src.Supplier.PostalCode))
              .ForMember(dst => dst.SupplierCity, opt => opt.MapFrom(src => src.Supplier.City))
              .ForMember(dst => dst.SupplierAdditionalAddressDetail, opt => opt.MapFrom(src => src.Supplier.AdditionalAddressDetail))
@@ -110,7 +110,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => src.Customer.CustomerName))
              .ForMember(dst => dst.CustomerBankAccountNumber, opt => opt.MapFrom(src => src.Customer.CustomerBankAccountNumber))
              .ForMember(dst => dst.CustomerTaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.Customer.TaxpayerId, src.Customer.VatCode, src.Customer.CountyCode)))
-             .ForMember(dst => dst.CustomerCountryCode, opt => opt.MapFrom(src => src.Customer.CountyCode))
+             .ForMember(dst => dst.CustomerCountryCode, opt => opt.MapFrom(src => src.Customer.CountryCode))
              .ForMember(dst => dst.CustomerPostalCode, opt => opt.MapFrom(src => src.Customer.PostalCode))
              .ForMember(dst => dst.CustomerCity, opt => opt.MapFrom(src => src.Customer.City))
              .ForMember(dst => dst.CustomerAdditionalAddressDetail, opt => opt.MapFrom(src => src.Customer.AdditionalAddressDetail))
@@ -149,7 +149,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => src.Customer.CustomerName))
              .ForMember(dst => dst.CustomerBankAccountNumber, opt => opt.MapFrom(src => src.Customer.CustomerBankAccountNumber))
              .ForMember(dst => dst.CustomerTaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.Customer.TaxpayerId, src.Customer.VatCode, src.Customer.CountyCode)))
-             .ForMember(dst => dst.CustomerCountryCode, opt => opt.MapFrom(src => src.Customer.CountyCode))
+             .ForMember(dst => dst.CustomerCountryCode, opt => opt.MapFrom(src => src.Customer.CountryCode))
              .ForMember(dst => dst.CustomerPostalCode, opt => opt.MapFrom(src => src.Customer.PostalCode))
              .ForMember(dst => dst.CustomerCity, opt => opt.MapFrom(src => src.Customer.City))
              .ForMember(dst => dst.CustomerAdditionalAddressDetail, opt => opt.MapFrom(src => src.Customer.AdditionalAddressDetail))
@@ -185,7 +185,7 @@ namespace bbxBE.Queries.Mappings
             CreateMap<CustDiscount, GetCustDiscountViewModel>()
             .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Customer.CustomerName))
             .ForMember(dst => dst.ProductGroupCode, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode))
-            .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupDescription));
+            .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode + "-" +src.ProductGroup.ProductGroupDescription));
 
             CreateMap<InvoiceLine, GetPendigDeliveryNotesSummaryModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
             CreateMap<InvoiceLine, GetPendigDeliveryNotesModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
