@@ -245,27 +245,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             if (IsOwnData.HasValue)
             {
-                if (string.IsNullOrWhiteSpace(p_searchString))
-                {
-                    predicate = predicate.And(p => p.IsOwnData == IsOwnData.Value);
-                }
-                else
+                if (!string.IsNullOrWhiteSpace(p_searchString))
                 {
                     srcFor = p_searchString.ToUpper().Trim();
-                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))) && p.IsOwnData == IsOwnData.Value);
+                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))));
                 }
+                predicate = predicate.And(p => p.IsOwnData == IsOwnData.Value);
 
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(p_searchString))
+                if (!string.IsNullOrWhiteSpace(p_searchString))
                 {
-                    predicate = predicate.And(p => false);
+                    srcFor = p_searchString.ToUpper().Trim();
+                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))));
                 }
                 else
                 {
-                    srcFor = p_searchString.ToUpper().Trim();
-                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))) );
+                    predicate = predicate.And(p => true);
                 }
             }
             p_item = p_item.Where(predicate);
