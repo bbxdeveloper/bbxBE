@@ -1,31 +1,23 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qInvoice;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qInvoice;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using bbxBE.Common.Attributes;
-using System.ComponentModel;
-using static Dapper.SqlMapper;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using bbxBE.Common.Enums;
-using bbxBE.Application.Interfaces.Queries;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static bbxBE.Common.NAV.NAV_enums;
-using SendGrid.Helpers.Mail;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -116,7 +108,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 svr.VatRate = null;
             }
         }
-        
+
         public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, Dictionary<long, InvoiceLine> p_RelDNInvoiceLines)
         {
 
@@ -140,10 +132,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     prepareInvoiceBeforePersistance(p_invoice);
                     await AddAsync(p_invoice);
 
-               await dbContextTransaction.CommitAsync();
+                    await dbContextTransaction.CommitAsync();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -177,7 +169,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await dbContextTransaction.CommitAsync();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -282,7 +274,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<Dictionary<long, Invoice>> GetInvoiceRecordsByInvoiceLinesAsync(List<long> LstInvoiceLineID)
         {
-           
+
             var q = _dbContext.InvoiceLine.AsNoTracking()
                 .Include(i => i.Invoice)
                 .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted && !x.Deleted)
@@ -423,7 +415,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var lstEntities = new List<GetPendigDeliveryNotesModel>();
 
             var q1 = getPendigDeliveryNotesQuery(incoming, warehouseID, currencyCode);
-            q1 = q1.OrderBy(o => o.InvoiceNumber );
+            q1 = q1.OrderBy(o => o.InvoiceNumber);
 
             lstEntities = await q1.ToListAsync();
             lstEntities.ForEach(i => i.SumNetAmount = Math.Round(i.SumNetAmount, 1));
@@ -508,7 +500,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // filter data
 
-            FilterBy(ref query, requestParameter.Incoming, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
+            FilterBy(ref query, requestParameter.InvoiceType, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
                     requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
                     requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo);
 
@@ -552,7 +544,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     im.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
                 }
                 resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
-
             }
             );
 
@@ -562,23 +553,60 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return (shapeData, recordsCount);
         }
+        public async Task<List<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter)
+        {
 
-        private void FilterBy(ref IQueryable<Invoice> p_items, bool Incoming, string WarehouseCode, string InvoiceNumber,
+            var orderBy = requestParameter.OrderBy;
+            //      var fields = requestParameter.Fields;
+            var fields = _modelHelper.GetQueryableFields<GetInvoiceViewModel, Invoice>();
+
+            //var query = _dbContext.Invoice//.AsNoTracking().AsExpandable()
+            //        .Include(i => i.Warehouse).AsQueryable();
+
+            IQueryable<Invoice> query;
+            query = _dbContext.Invoice.AsNoTracking()
+                .Include(w => w.Warehouse).AsNoTracking()
+                .Include(s => s.Supplier).AsNoTracking()
+                .Include(c => c.Customer).AsNoTracking()
+                .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+                .Include(u => u.User).AsNoTracking();
+
+            // filter data
+
+            FilterBy(ref query, requestParameter.InvoiceType, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
+                    requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
+                    requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo);
+
+            // set order by
+            if (!string.IsNullOrWhiteSpace(orderBy))
+            {
+                query = query.OrderBy(orderBy);
+            }
+
+            // retrieve data to list
+            List<Invoice> resultData = await query.ToListAsync();
+            var resultDataModel = new List<GetInvoiceViewModel>();
+            resultData.ForEach(i =>
+            {
+                var im = _mapper.Map<Invoice, GetInvoiceViewModel>(i);
+                resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
+            }
+            );
+
+            return resultDataModel;
+        }
+
+        private void FilterBy(ref IQueryable<Invoice> p_items, string invoiceType, string WarehouseCode, string InvoiceNumber,
                                 DateTime? InvoiceIssueDateFrom, DateTime? InvoiceIssueDateTo,
                                 DateTime? InvoiceDeliveryDateFrom, DateTime? InvoiceDeliveryDateTo)
         {
             if (!p_items.Any())
                 return;
 
-            /*
-            if (string.IsNullOrWhiteSpace(WarehouseCode) && string.IsNullOrWhiteSpace(InvoiceNumber) &&
-                        !InvoiceIssueDateFrom.HasValue && !InvoiceIssueDateTo.HasValue &&
-                        !InvoiceDeliveryDateFrom.HasValue && !InvoiceDeliveryDateTo.HasValue)
-                return;
-            */
+
             var predicate = PredicateBuilder.New<Invoice>();
 
-            predicate = predicate.And(p => p.Incoming == Incoming
+            predicate = predicate.And(p => p.InvoiceType == invoiceType
                             && (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
                             && (InvoiceNumber == null || p.InvoiceNumber.Contains(InvoiceNumber))
                             && (!InvoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= InvoiceIssueDateFrom.Value)
