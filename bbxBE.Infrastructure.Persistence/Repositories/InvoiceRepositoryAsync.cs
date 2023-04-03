@@ -1,31 +1,23 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qInvoice;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qInvoice;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using bbxBE.Common.Attributes;
-using System.ComponentModel;
-using static Dapper.SqlMapper;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using bbxBE.Common.Enums;
-using bbxBE.Application.Interfaces.Queries;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static bbxBE.Common.NAV.NAV_enums;
-using SendGrid.Helpers.Mail;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -116,7 +108,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 svr.VatRate = null;
             }
         }
-        
+
         public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, Dictionary<long, InvoiceLine> p_RelDNInvoiceLines)
         {
 
@@ -140,10 +132,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     prepareInvoiceBeforePersistance(p_invoice);
                     await AddAsync(p_invoice);
 
-               await dbContextTransaction.CommitAsync();
+                    await dbContextTransaction.CommitAsync();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -177,7 +169,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await dbContextTransaction.CommitAsync();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -242,7 +234,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     InvoiceLines = _mapper.Map<List<InvoiceLine>, List<GetAggregateInvoiceDeliveryNoteViewModel.InvoiceLine>>(g.ToList())
                 }).ToList();
             itemModel.DeliveryNotes = DeliveryNotes;
-            itemModel.DeliveryNoteCount = DeliveryNotes.GroupBy(g => g.DeliveryNoteInvoiceID).Count();
+            itemModel.DeliveryNotesCount = DeliveryNotes.GroupBy(g => g.DeliveryNoteInvoiceID).Count();
 
             var listFieldsModel = _modelHelper.GetModelFields<GetAggregateInvoiceViewModel>();
 
@@ -282,7 +274,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<Dictionary<long, Invoice>> GetInvoiceRecordsByInvoiceLinesAsync(List<long> LstInvoiceLineID)
         {
-           
+
             var q = _dbContext.InvoiceLine.AsNoTracking()
                 .Include(i => i.Invoice)
                 .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted && !x.Deleted)
@@ -423,7 +415,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var lstEntities = new List<GetPendigDeliveryNotesModel>();
 
             var q1 = getPendigDeliveryNotesQuery(incoming, warehouseID, currencyCode);
-            q1 = q1.OrderBy(o => o.InvoiceNumber );
+            q1 = q1.OrderBy(o => o.InvoiceNumber);
 
             lstEntities = await q1.ToListAsync();
             lstEntities.ForEach(i => i.SumNetAmount = Math.Round(i.SumNetAmount, 1));
@@ -611,7 +603,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!p_items.Any())
                 return;
 
-         
+
             var predicate = PredicateBuilder.New<Invoice>();
 
             predicate = predicate.And(p => p.InvoiceType == invoiceType

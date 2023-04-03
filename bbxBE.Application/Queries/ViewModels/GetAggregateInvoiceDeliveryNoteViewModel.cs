@@ -11,12 +11,10 @@ namespace bbxBE.Application.Queries.ViewModels
 {
 
 
-	/// <summary>
-	/// MapToEntity properties marks the names in the output Entity
-	/// Don't use with AutoMapper, but with <see cref="Domain.Extensions.EntityExtensions.MapFieldsByMapToAnnotation"/>
-	/// In this case, <see cref="GetAggregateInvoiceViewModel"/> will be the value for the TDestination parameter.
-	/// </summary>
-	public class GetAggregateInvoiceDeliveryNoteViewModel
+/// <summary>
+/// Egy szállítólevélről bekerült gyűjtőszámla tételek
+/// </summary>
+public class GetAggregateInvoiceDeliveryNoteViewModel
 	{
 
 		[Description("Gyűjtőszámla-sor")]
@@ -133,5 +131,10 @@ namespace bbxBE.Application.Queries.ViewModels
 		[Description("Számlasorok")]
 		[MapToEntity("invoiceLines")]
 		public List<GetAggregateInvoiceDeliveryNoteViewModel.InvoiceLine> InvoiceLines { get; set; } = new List<GetAggregateInvoiceDeliveryNoteViewModel.InvoiceLine>();
-	}
+
+        [ColumnLabel("Szállítólvelek száma")]
+        [Description("A gyűjtőszámlán lévő szállítólvelek száma")]
+        public int DeliveryNotesCount { get; set; }
+
+    }
 }
