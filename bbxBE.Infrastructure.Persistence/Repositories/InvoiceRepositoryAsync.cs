@@ -242,7 +242,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     InvoiceLines = _mapper.Map<List<InvoiceLine>, List<GetAggregateInvoiceDeliveryNoteViewModel.InvoiceLine>>(g.ToList())
                 }).ToList();
             itemModel.DeliveryNotes = DeliveryNotes;
-            itemModel.DeliveryNoteCount = DeliveryNotes.GroupBy(g => g.DeliveryNoteInvoiceID).Count();
+            itemModel.DeliveryNotesCount = DeliveryNotes.GroupBy(g => g.DeliveryNoteInvoiceID).Count();
 
             var listFieldsModel = _modelHelper.GetModelFields<GetAggregateInvoiceViewModel>();
 
@@ -508,7 +508,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // filter data
 
-            FilterBy(ref query, requestParameter.InvoiceType, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
+            FilterBy(ref query, requestParameter.Incoming, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
                     requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
                     requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo);
 
@@ -552,6 +552,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     im.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
                 }
                 resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
+
             }
             );
 
@@ -561,60 +562,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return (shapeData, recordsCount);
         }
-        public async Task<List<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter)
-        {
 
-            var orderBy = requestParameter.OrderBy;
-            //      var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetInvoiceViewModel, Invoice>();
-
-            //var query = _dbContext.Invoice//.AsNoTracking().AsExpandable()
-            //        .Include(i => i.Warehouse).AsQueryable();
-
-            IQueryable<Invoice> query;
-            query = _dbContext.Invoice.AsNoTracking()
-                .Include(w => w.Warehouse).AsNoTracking()
-                .Include(s => s.Supplier).AsNoTracking()
-                .Include(c => c.Customer).AsNoTracking()
-                .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-                .Include(u => u.User).AsNoTracking();
-
-            // filter data
-
-            FilterBy(ref query, requestParameter.InvoiceType, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
-                    requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
-                    requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo);
-
-            // set order by
-            if (!string.IsNullOrWhiteSpace(orderBy))
-            {
-                query = query.OrderBy(orderBy);
-            }
-
-            // retrieve data to list
-            List<Invoice> resultData = await query.ToListAsync();
-            var resultDataModel = new List<GetInvoiceViewModel>();
-            resultData.ForEach(i =>
-            {
-                var im = _mapper.Map<Invoice, GetInvoiceViewModel>(i);
-                resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
-            }
-            );
-
-            return resultDataModel;
-        }
-
-        private void FilterBy(ref IQueryable<Invoice> p_items, string invoiceType, string WarehouseCode, string InvoiceNumber,
+        private void FilterBy(ref IQueryable<Invoice> p_items, bool Incoming, string WarehouseCode, string InvoiceNumber,
                                 DateTime? InvoiceIssueDateFrom, DateTime? InvoiceIssueDateTo,
                                 DateTime? InvoiceDeliveryDateFrom, DateTime? InvoiceDeliveryDateTo)
         {
             if (!p_items.Any())
                 return;
 
-         
+            /*
+            if (string.IsNullOrWhiteSpace(WarehouseCode) && string.IsNullOrWhiteSpace(InvoiceNumber) &&
+                        !InvoiceIssueDateFrom.HasValue && !InvoiceIssueDateTo.HasValue &&
+                        !InvoiceDeliveryDateFrom.HasValue && !InvoiceDeliveryDateTo.HasValue)
+                return;
+            */
             var predicate = PredicateBuilder.New<Invoice>();
 
-            predicate = predicate.And(p => p.InvoiceType == invoiceType
+            predicate = predicate.And(p => p.Incoming == Incoming
                             && (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
                             && (InvoiceNumber == null || p.InvoiceNumber.Contains(InvoiceNumber))
                             && (!InvoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= InvoiceIssueDateFrom.Value)

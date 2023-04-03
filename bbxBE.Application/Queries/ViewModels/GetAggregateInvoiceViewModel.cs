@@ -266,6 +266,6 @@ namespace bbxBE.Application.Queries.ViewModels
 		[ColumnLabel("Szállítólvelek száma")]
 		[Description("Szállítólvelek száma")]
 		[MapToEntity("deliveryNotesCount")]
-		public int DeliveryNoteCount { get; set; }
+		public int DeliveryNotesCount { get; set; }
 	}
 }

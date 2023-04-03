@@ -57,11 +57,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Entity> GetInvoiceLinesByRelDeliveryNoteIDAsync(long InvoiceID, long RelDeliveryNoteInvoiceID)
         {
             var listFieldsModel = _modelHelper.GetModelFields<GetAggregateInvoiceDeliveryNoteViewModel>();
-            var invoiceLines = await GetInvoiceLineRecordsByRelDeliveryNoteIDAsync(InvoiceID, RelDeliveryNoteInvoiceID);
 
+      //      var invoiceLines = await GetInvoiceLineRecordsByRelDeliveryNoteIDAsync(InvoiceID, RelDeliveryNoteInvoiceID);
 
+            List<InvoiceLine> invoiceLines;
+            invoiceLines = await _dbContext.InvoiceLine.AsNoTracking()
+                .Where(x => x.InvoiceID == InvoiceID)
+                .ToListAsync();
 
-            var deliveryNote = invoiceLines
+            var deliveryNotesCount = invoiceLines.GroupBy( g=>g.RelDeliveryNoteInvoiceID).Count();
+
+            var deliveryNote = invoiceLines.Where(x=>x.RelDeliveryNoteInvoiceID == RelDeliveryNoteInvoiceID)
                 .GroupBy(g => new
                 {
                     RelDeliveryNoteInvoiceID = g.RelDeliveryNoteInvoiceID,
@@ -80,7 +86,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     DeliveryNoteDiscountedNetAmount = Math.Round(g.Sum(s => s.LineNetDiscountedAmount), 1),
                     DeliveryNoteDiscountedNetAmountHUF = Math.Round(g.Sum(s => s.LineNetDiscountedAmountHUF), 1),
-                    InvoiceLines = _mapper.Map<List<InvoiceLine>, List<GetAggregateInvoiceDeliveryNoteViewModel.InvoiceLine>>(g.ToList())
+                    InvoiceLines = _mapper.Map<List<InvoiceLine>, List<GetAggregateInvoiceDeliveryNoteViewModel.InvoiceLine>>(g.ToList()),
+                    DeliveryNotesCount = deliveryNotesCount
                 }).FirstOrDefault();        //a RelDeliveryNoteInvoiceID-vel csak egy deliveryNote-t kérdezünk ki
 
             // shape data
