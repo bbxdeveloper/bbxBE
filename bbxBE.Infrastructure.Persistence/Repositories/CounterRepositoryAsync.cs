@@ -89,7 +89,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND, p_Counter.ID));
+                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_COUNTERNOTFOUND, p_Counter.ID));
                 }
             }
             return p_Counter;
@@ -155,7 +155,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_COUNTERNOTFOUND2, CounterCode, WarehouseID));
                 }
             }
             return NextValue;
@@ -191,7 +191,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_COUNTERNOTFOUND2, CounterCode, WarehouseID));
                 }
             }
             return result;
@@ -229,7 +229,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     }
                     else
                     {
-                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_COUNTERNOTFOUND2, CounterCode, WarehouseID));
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_COUNTERNOTFOUND2, CounterCode, WarehouseID));
                     }
                 }
                 catch( Exception ex )

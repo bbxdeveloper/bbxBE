@@ -5,6 +5,7 @@ using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCustomer;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -103,5 +105,41 @@ namespace bbxBE.WebApi.Controllers.v1
             var customerRequest = new ImportCustomerCommand() { CustomerFiles = customerFiles, FieldSeparator = fieldSeparator };
             return Ok(await Mediator.Send(customerRequest));
         }
+
+
+        [HttpPost("lock")]
+        public async Task<IActionResult> Lock(LockCustomerCommand command)
+        {
+
+            command.SessionID = HttpContext.Session.Id;
+
+            var resp = await Mediator.Send(command);
+            if (resp.Succeeded)
+            {
+                HttpContext.Session.SetString(bbxBEConsts.DEF_CUSTLOCK, resp.Data);
+            }
+
+            return Ok(resp);
+
+        }
+
+        [HttpPost("unlock")]
+        public async Task<IActionResult> Unlock(UnlockCustomerCommand command)
+        {
+            command.SessionID = HttpContext.Session.Id;
+            var resp = await Mediator.Send(command);
+            if (resp.Succeeded)
+            {
+                var custlock = HttpContext.Session.GetString(bbxBEConsts.DEF_CUSTLOCK);
+                if (custlock != null)
+                {
+                    HttpContext.Session.SetString(bbxBEConsts.DEF_CUSTLOCK, null);
+                }
+            }
+            return Ok(resp);
+
+
+        }
+
     }
 }

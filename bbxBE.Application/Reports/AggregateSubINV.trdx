@@ -472,7 +472,7 @@
         </GroupHeaderSection>
       </GroupHeader>
       <GroupFooter>
-        <GroupFooterSection Height="1.2cm" Name="groupFooterSection">
+        <GroupFooterSection CanShrink="True" Height="1.2cm" Name="groupFooterSection">
           <Style Visible="True" />
           <Items>
             <Panel Width="8.263cm" Height="1.1cm" Left="5.575cm" Top="0.1cm" Name="panel7">
@@ -547,6 +547,14 @@
                   </ConditionalFormatting>
                 </TextBox>
               </Items>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Style Visible="False" />
+                  <Filters>
+                    <Filter Expression="= Fields.deliveryNotesCount" Operator="LessThan" Value="2" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
             </Panel>
           </Items>
         </GroupFooterSection>

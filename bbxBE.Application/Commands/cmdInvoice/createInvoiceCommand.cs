@@ -21,6 +21,7 @@ using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Common.NAV;
 using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json.Linq;
+using bbxBE.Common.ExpiringData;
 
 namespace bxBE.Application.Commands.cmdInvoice
 {
@@ -53,10 +54,6 @@ namespace bxBE.Application.Commands.cmdInvoice
 			[ColumnLabel("Ár")]
 			[Description("Ár")]
 			public decimal UnitPrice { get; set; }
-
-			[ColumnLabel("Nettó érték")]
-			[Description("Ár a számla pénznemében")]
-			public decimal LineNetAmount { get; set; }
 
 			//Gyűjtőszámla - szállítólvél kapcsolat
 
@@ -129,12 +126,17 @@ namespace bxBE.Application.Commands.cmdInvoice
         public string WorkNumber { get; set; }
 
         [ColumnLabel("Ár felülvizsgálat?")]
-        [Description("Ár felülvizsgálat?")]
+        [Description("Ár felülvizsgálat jelölése")]
         public bool? PriceReview { get; set; } = false;
+
+		[ColumnLabel("Módosító bizonylat?")]
+		[Description("Módosító bizonylat jelölése")]
+		public bool? Correction { get; set; } = false;
 
 		[ColumnLabel("Típus")]
 		[Description("Típus")]
 		public string InvoiceCategory { get; set; } = enInvoiceCategory.NORMAL.ToString();
+
 
 		[ColumnLabel("Számlasorok")]
 		[Description("Számlasorok")]
@@ -151,7 +153,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 		private readonly ICustomerRepositoryAsync _CustomerRepository;
 		private readonly IProductRepositoryAsync _ProductRepository;
 		private readonly IVatRateRepositoryAsync _VatRateRepository;
-		private readonly IMapper _mapper;
+        private readonly IExpiringData<ExpiringDataObject> _expiringData;
+        private readonly IMapper _mapper;
 		private readonly IConfiguration _configuration;
 
 		public CreateInvoiceCommandHandler(
@@ -162,7 +165,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 			ICustomerRepositoryAsync CustomerRepository,
 			IProductRepositoryAsync ProductRepository,
 			IVatRateRepositoryAsync VatRateRepository,
-			IMapper mapper, IConfiguration configuration)
+            IExpiringData<ExpiringDataObject> expiringData,
+            IMapper mapper, IConfiguration configuration)
 		{
 			_InvoiceRepository = InvoiceRepository;
 			_InvoiceLineRepository = InvoiceLineRepository;
@@ -171,7 +175,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 			_CustomerRepository = CustomerRepository;
 			_ProductRepository = ProductRepository;
 			_VatRateRepository = VatRateRepository;
-			_mapper = mapper;
+            _expiringData = expiringData;
+            _mapper = mapper;
 			_configuration = configuration;
 		}
         /*
@@ -229,7 +234,8 @@ namespace bxBE.Application.Commands.cmdInvoice
 									_CustomerRepository,
 									_ProductRepository,
 									_VatRateRepository,
-									cancellationToken);
+                                    _expiringData,
+                                    cancellationToken);
 			return new Response<Invoice>(inv);
 		}
 

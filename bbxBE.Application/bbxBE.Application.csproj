@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Commands\cmdSystem\**" />
     <Compile Remove="Common\**" />
+    <EmbeddedResource Remove="Commands\cmdSystem\**" />
     <EmbeddedResource Remove="Common\**" />
+    <None Remove="Commands\cmdSystem\**" />
     <None Remove="Common\**" />
   </ItemGroup>
 

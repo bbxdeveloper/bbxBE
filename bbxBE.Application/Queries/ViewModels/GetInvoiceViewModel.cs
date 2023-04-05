@@ -31,6 +31,10 @@ namespace bbxBE.Application.Queries.ViewModels
 			[Description("Sor száma")]
 			public short LineNumber { get; set; }
 
+			[ColumnLabel("Termék ID")]
+			[Description("Termék ID")]
+			public string ProductID { get; set; }
+
 			[ColumnLabel("Termékkód")]
 			[Description("Termékkód")]
 			public string ProductCode { get; set; }
@@ -90,9 +94,16 @@ namespace bbxBE.Application.Queries.ViewModels
             [Description("Ár felülvizsgálat?")]
             public bool? PriceReview { get; set; } = false;
 
-        }
+			[ColumnLabel("Eng.tilt")]
+			[Description("Engedmény adás tiltása")]
+			public bool NoDiscount { get; set; }
 
-        [Description("Áfaösszesítő")]
+			[ColumnLabel("Kedvezmény%")]
+			[Description("A számlára v. gyűjtőszámlán, a kapcsolt szállítólevélre adott teljes kedvezmény %")]
+			public decimal LineDiscountPercent { get; set; }        //NoDiscount esetén értéke 0!
+		}
+
+		[Description("Áfaösszesítő")]
 		public class SummaryByVatRate 
 		{
 			[ColumnLabel("Áfa ID")]
@@ -139,7 +150,7 @@ namespace bbxBE.Application.Queries.ViewModels
 		public string Warehouse { get; set; }
 
 
-		[ColumnLabel("Számlaszám")]
+		[ColumnLabel("Bizonylatszám")]
 		[Description("Számla/szállítólevél sorszáma")]
 		public string InvoiceNumber { get; set; }
 
@@ -308,7 +319,11 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("A számla végösszege forintban")]
         public decimal InvoiceGrossAmountHUF { get; set; }
 
-        [ColumnLabel("Felhasználó ID")]
+		[ColumnLabel("Módosító bizonylat?")]
+		[Description("Módosító bizonylat jelölése (értéke false)")]
+		public bool Correction { get; set; }
+
+		[ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long UserID { get; set; }
 

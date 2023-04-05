@@ -9,13 +9,12 @@ namespace bbxBE.Application.Interfaces.Repositories
     public interface IStockRepositoryAsync : IGenericRepositoryAsync<Stock>
     {
         Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice);
-        Task<List<Stock>> MaintainStockByInvCtrlAsync(List<InvCtrl> invCtrlList, string XRel);
+        Task<List<Stock>> MaintainStockByInvCtrlAsync(List<InvCtrl> invCtrlList, Customer p_ownData, string XRel);
 
         Task<Entity> GetStockAsync(long ID);
         Task<Stock> GetStockRecordAsync(long warehouseID, long productID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryInvCtrlStockAbsentAsync(QueryInvCtrlStockAbsent requestParameters);
-
+   
         Task<Stock> UpdateStockLocationAsync( long ID, long? LocationID);
 
     }

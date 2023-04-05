@@ -37,7 +37,7 @@ namespace bxBE.Application.Commands.cmdInvCtrl
 
 			[ColumnLabel("Leltáridőszak ID")]
 			[Description("Leltáridőszak ID")]
-			public long? InvCtlPeriodID { get; set; }       //Opcionális, hogy a folyamatos leltárat is kezelni lehessen
+			public long InvCtlPeriodID { get; set; }       //Opcionális, hogy a folyamatos leltárat is kezelni lehessen
 
 			[ColumnLabel("Termék ID")]
 			[Description("Termék ID")]
@@ -72,18 +72,24 @@ namespace bxBE.Application.Commands.cmdInvCtrl
 		{
 			_InvCtrlRepository = InvCtrlRepository;
 
-
 			_mapper = mapper;
 			_configuration = configuration;
 		}
 
 		public async Task<Response<List<InvCtrl>>> Handle(createInvCtrlICPCommand request, CancellationToken cancellationToken)
 		{
-			var InvCtrlItems = new List<InvCtrl>();
+            if (request == null || request.Items.Count == 0)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_NOINPUTDATA));
+
+            }
+
+            var InvCtrlItems = new List<InvCtrl>();
 			request.Items.ForEach(i =>
 				{
 					var InvCtrl = _mapper.Map<InvCtrl>(i);
-					InvCtrlItems.Add(InvCtrl);
+                    InvCtrl.InvCtrlType = enInvCtrlType.ICP.ToString();
+                    InvCtrlItems.Add(InvCtrl);
 				}
 			);
 

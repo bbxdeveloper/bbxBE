@@ -18,11 +18,26 @@ namespace bbxBE.Common.Consts
         public static string CONF_JWTAudience = "Audience";
         public static string CONF_JWTDurationInMinutes = "DurationInMinutes";
 
+        public const string DEF_ENCODING = "ISO-8859-2";
+        public const string DEF_CSVSEP = ";";
         public const string DEF_DATEFORMAT = "yyyy-MM-dd";
+        public const string DEF_NUMFORMAT = "#,#0.00";
+        public const string DEF_INTFORMAT = "#,#0";
+        public const string DEF_DATETIMEFORMAT = "yyyy.MM.dd HH:mm:ss";
+        public const string DEF_TRUE = "true";
+        public const string DEF_FALSE = "false";
 
+
+        public static string DEF_CUSTOMERLOCK_KEY = "CUST_";
 
         public static string CONF_CacheSettings = "CacheSettings";
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
+
+        public static int WaitForExpiringDataSec = 3;
+        public static int ExpiringDataMaxCount= 5000;
+        public static int CustomerLockExpoirationSec = 900; //15 perc
+        public static string DEF_CUSTLOCK = "custlock";
+
 
         public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
         public static string TOKEN_PROPERTYNAME = "{PropertyName}";
@@ -41,6 +56,8 @@ namespace bbxBE.Common.Consts
         public static string ERR_INVUNITOFMEASURE2 = "Sor: {0}, termék:{1} : érvénytelen mennyiségi egység:{2} ";
         public static string ERR_DETAIL_PREF = "Sor: {0}, termék:{1}";
         public static string ERR_DISCOUNT = "Sor: {0}, termék:{1}";
+        public static string ERR_NOINPUTDATA = "Nincs input adat!";
+
 
         public static string ERR_INVPAYMENTMETHOD = "{PropertyName}:  érvénytelen fizetési mód:{PropertyValue} ";
         public static string ERR_EXCHANGERATE = "{PropertyName}:  Érvénytelen árfolyam::{PropertyValue} ";
@@ -48,14 +65,15 @@ namespace bbxBE.Common.Consts
         public static string ERR_PRODNOTFOUND = "Termék nem található, ID:{0} ";
         public static string ERR_PRODCODENOTFOUND = "Termék nem található, kód:{0} ";
         public static string ERR_VATRATECODENOTFOUND = "Áfakód található, kód:{0} ";
+        public static string ERR_VATRATECODENOTFOUND2 = "Áfakód található, ID:{0} ";
         public static string ERR_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
         public static string ERR_OWNNOTFOUND = "Saját adat nem található!";
         public static string ERR_INVALIDFORMAT = "{PropertyName}: érvénytelen formátum!";
         public static string ERR_INVALIDCONTENT = "{PropertyName}: érvénytelen tartalom!";
-        public static string FV_COUNTERNOTFOUND = "Bizonylati tömb nem található, ID:{0} ";
-        public static string FV_COUNTERNOTFOUND2 = "Bizonylati tömb nem található, Kód:{0}, Raktár ID:{1} ";
-        public static string FV_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
-        public static string FV_ORIGINNOTFOUND = "Származási hely nem található, ID:{0} ";
+        public static string ERR_COUNTERNOTFOUND = "Bizonylati tömb nem található, ID:{0} ";
+        public static string ERR_COUNTERNOTFOUND2 = "Bizonylati tömb nem található, Kód:{0}, Raktár ID:{1} ";
+        public static string ERR_PRODUCTGROUPNOTFOUND = "Termékcsoport nem található, ID:{0} ";
+        public static string ERR_ORIGINNOTFOUND = "Származási hely nem található, ID:{0} ";
         public static string ERR_OFFERNOTFOUND = "Árajánlat nem található, ID:{0} ";
         public static string ERR_INVOICENOTFOUND = "Számla/szállítólevél nem található, ID:{0} ";
         public static string ERR_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
@@ -66,6 +84,7 @@ namespace bbxBE.Common.Consts
         public static string ERR_STOCKNOTFOUND = "Raktárkészlet nem található, ID:{0} ";
         public static string ERR_STOCKCARDNOTFOUND = "Készletkarton nem található, ID:{0} ";
         public static string ERR_LOCATIONOTFOUND = "Helyiség nem található, ID:{0} ";
+        public static string ERR_INVOICELINENOTFOUND = "Bizonylatsor nem található, ID:{0}, bizonylat:{1}, sor ID:{2}";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 
@@ -75,8 +94,13 @@ namespace bbxBE.Common.Consts
         public static string ERR_FILESIZE = "Üres file lett feltöltve!";
 
 
-        public static string ERR_NOCACHEQUERY = "Nincs lekérdezés a gyorstótárhoz!";
+        public static string ERR_NOCACHEQUERY = "Nincs lekérdezés a gyorsítótárhoz!";
         public static string ERR_LOCKEDCACHE = "Gyorsítótár feltöltés alatt ! A műveletet később végrehajtható.";
+        public static string ERR_LOCK = "Zárolás nem sikerült. Kulcs foglalt:{0}";
+        public static string ERR_UNLOCK = "Zárolás felszabadítása nem sikerült. Kulcs nem létezik:{0}";
+
+
+        public static string ERR_EXPIRINGDATA_FULL = "Az ExpiringData tároló megtelt! Max. elemszám:{0}";
 
         public static string ERR_INV_DATE1 = "{PropertyName}: A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
         public static string ERR_INV_DATE2 = "{PropertyName}: A számla dátuma nem lehet későbbi, mint a fizetési határidő";
@@ -92,7 +116,8 @@ namespace bbxBE.Common.Consts
 
         public static string ERR_OFFER_DATE1 = "{PropertyName}: A lejárati dátum nem lehet korábbi, mint a ajánlat kibocsátásának dátuma!";
 
-        public static string NAV_INVDIRECTION = "{PropertyName}:  érvénytelen bizonylatirány:{PropertyValue} ";
+        public static string NAV_INVDIRECTION = "{PropertyName}: Érvénytelen bizonylatirány:{PropertyValue}";
+        public static string ERR_INVOICETYPE = "Érvénytelen bizonylattípus:{0}";
 
         public static string ERR_INVCTRLPERIOD_DATE1 = "{PropertyName}: Helytelen leltáridőszak!";
         public static string ERR_INVCTRLPERIOD_DATE2 = "{PropertyName}: A megadott leltáridőszak ütközik más időszakkal!";
@@ -103,7 +128,7 @@ namespace bbxBE.Common.Consts
         public static string ERR_INVCTRLPERIOD_ALREADYCLOSED = "A leltáridőszak már lezárt!";
         public static string ERR_INVAGGR_RELATED_NOT_ASSIGNED = "A gyűjtőszámlán lévő tételhez nincs szállítólevél rendelve! Szállítólevél:{0}, sor száma:{1}, temékkód:{2} ";
         public static string ERR_INVAGGR_RELATED_NOT_FOUND = "A gyűjtőszámlán lévő tételhez nem található szállítólevél! Szállítólevél:{0}, sor száma:{1}, temékkód:{2}, kapcsolt szállító-sor ID:{3} ";
-        public static string ERR_INVAGGR_WRONG_AGGR_QTY = "A gyűjtőszámlán lévő mennyiség több, mint a szállítólevélen lévő! Szállítólevél:{0}, sor száma:{1}, temékkód:{2}, gyűjtőszámla menny.:{3}, szállítólevél menny.:{4}, kapcsolt szállító-sor ID:{5} ";
+        public static string ERR_INVAGGR_WRONG_AGGR_QTY = "A gyűjtőszámlán lévő mennyiség több, mint a szállítólevélen lévő! Szállítólevél:{0}, sor száma:{1}, temékkód:{2}, gyűjtőszámla menny.:{3:N2}, szállítólevél menny.:{4:N2}, kapcsolt szállító-sor ID:{5} ";
 
         public static string ERR_INVCTRLNOTFOUND = "Leltári tétel nem található, ID:{0} ";
         public static string ERR_INVCTRL_DATE = "{PropertyName}:Helytelen leltárdátum!";

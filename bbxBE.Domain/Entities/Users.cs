@@ -32,14 +32,14 @@ namespace bbxBE.Domain.Entities
         [DataMember]
         public bool Active { get; set; }
 
-
-        [ColumnLabel("Számlák/Szállítólevele")]
-        [Description("Számlák/Szállítólevele")]
+        /*
+        [ColumnLabel("Számlák/Szállítólevelek")]
+        [Description("Számlák/Szállítólevelek")]
         public virtual List<Invoice> InvoiceList { get; set; }
 
         [ColumnLabel("Árajánlat")]
         [Description("Árajánlat")]
         public virtual List<Offer> OfferList { get; set; }
-
+        */ 
     }
 }

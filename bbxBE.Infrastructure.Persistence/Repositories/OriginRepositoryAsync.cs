@@ -152,7 +152,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_ORIGINNOTFOUND, ID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINNOTFOUND, ID));
                 }
             }
             return origin;
@@ -162,7 +162,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             Origin origin = null;
             if (!_cacheService.TryGetValue(ID, out origin))
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_ORIGINNOTFOUND, ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINNOTFOUND, ID));
 
 
             var itemModel = _mapper.Map<Origin, GetOriginViewModel>(origin);

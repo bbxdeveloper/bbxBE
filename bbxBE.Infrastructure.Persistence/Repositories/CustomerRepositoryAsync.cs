@@ -20,6 +20,7 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using EFCore.BulkExtensions;
 using bbxBE.Common.Enums;
+using bbxBE.Common.ExpiringData;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -109,10 +110,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         }
 
-        public async Task<Customer> UpdateCustomerAsync(Customer p_customer)
+        public async Task<Customer> UpdateCustomerAsync(Customer p_customer, IExpiringData<ExpiringDataObject> expiringData)
         {
             _cacheService.AddOrUpdate(p_customer);
             await UpdateAsync(p_customer);
+
+            //szemafr kiütések
+            var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + p_customer.ID.ToString();
+            await expiringData.DeleteItemAsync(key);
+
             return p_customer;
         }
 
@@ -127,12 +133,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (cust != null)
                 {
 
-
                     _cacheService.TryRemove(cust);
-
                     await RemoveAsync(cust);
                     await dbContextTransaction.CommitAsync();
-
                 }
                 else
                 {
@@ -236,32 +239,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!p_item.Any())
                 return;
 
-            if (string.IsNullOrWhiteSpace(p_searchString) && IsOwnData == null)
-                return;
 
             var predicate = PredicateBuilder.New<Customer>();
-
-
             var srcFor = "";
-            if (p_searchString != null)
-            {
-                srcFor = p_searchString.ToUpper().Trim();
-            }
 
-            if (IsOwnData == null)
+            if (IsOwnData.HasValue)
             {
-                predicate = predicate.And(p => p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor)));
-            }
-            else if (IsOwnData.Value)
-            {
-                predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))) && p.IsOwnData);
+                if (!string.IsNullOrWhiteSpace(p_searchString))
+                {
+                    srcFor = p_searchString.ToUpper().Trim();
+                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))));
+                }
+                predicate = predicate.And(p => p.IsOwnData == IsOwnData.Value);
 
             }
             else
             {
-                predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))) && !p.IsOwnData);
+                if (!string.IsNullOrWhiteSpace(p_searchString))
+                {
+                    srcFor = p_searchString.ToUpper().Trim();
+                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))));
+                }
+                else
+                {
+                    predicate = predicate.And(p => true);
+                }
             }
-
             p_item = p_item.Where(predicate);
         }
 

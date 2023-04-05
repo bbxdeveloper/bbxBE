@@ -9,8 +9,9 @@ env:
 
 on:
   push:
-    branches:
-      - stage
+    branches: [ stage ]
+  pull_request: 
+    branches: [ stage ]
   workflow_dispatch:
 
 jobs:
@@ -24,15 +25,21 @@ jobs:
     steps:
       - name: Checkout from repository
         uses: actions/checkout@v3
+        with:
+          ref: stage
 
       - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: | 
+            3.1.x
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      #- name: Run tests
-      #  run: dotnet test --no-restore --verbosity normal
+      - name: Run tests
+        run: dotnet test --framework netcoreapp3.1 --verbosity normal
+        # --no-build
 
       - name: dotnet publish
         run: dotnet publish -c Release
@@ -56,6 +63,25 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: .net-app
+          
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.BBXBE_STAGE_AZURE_CREDENTIALS }}
+          
+      - name: Azure WebApp configuration settings
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          #slot-name: 'staging'  # Optional and needed only if the settings have to be configured on the specific deployment slot
+          app-settings-json: ${{ secrets.BBXBE_STAGE_APPSETTINGS }}
+          connection-strings-json: '${{ secrets.BBX_STAGE_DB_CONNECTIONSTRING }}'
+          general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "false"}' #'General configuration settings as Key Value pairs'
+        id: settings
+        
+      - name: Azure Logout
+        run: |
+          az logout
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp

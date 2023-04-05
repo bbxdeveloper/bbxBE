@@ -15,6 +15,7 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.Consts;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using bbxBE.Common.ExpiringData;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -27,13 +28,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private readonly ICacheService<Customer> _customerCacheService;
         private readonly ICacheService<ProductGroup> _productGroupCacheService;
+        private readonly IExpiringData<ExpiringDataObject> _expiringData;
 
         public CustDiscountRepositoryAsync(ApplicationDbContext dbContext,
             IDataShapeHelper<CustDiscount> dataShaperCustDiscount,
             IDataShapeHelper<GetCustDiscountViewModel> dataShaperGetCustDiscountViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<Customer> customerCacheService,
-            ICacheService<ProductGroup> productGroupCacheService) : base(dbContext)
+            ICacheService<ProductGroup> productGroupCacheService, IExpiringData<ExpiringDataObject> expiringData) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperGetCustDiscountViewModel = dataShaperGetCustDiscountViewModel;
@@ -43,10 +45,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             _customerCacheService = customerCacheService;
             _productGroupCacheService = productGroupCacheService;
-           
+            _expiringData = expiringData;
         }
 
-        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList, long customerID)
+        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList, 
+                    long customerID, 
+                    IExpiringData<ExpiringDataObject> expiringData)
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
@@ -67,11 +71,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     );
                 if (errPg.Count > 0)
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.FV_PRODUCTGROUPNOTFOUND, String.Join(',', errPg)));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODUCTGROUPNOTFOUND, String.Join(',', errPg)));
                 }
 
                 await RemoveRangeAsync(_dbContext.CustDiscount.Where(x => x.CustomerID == customerID), false);
                 await AddRangeAsync(p_CustDiscountList);
+
+                //szemafr kiütések
+                var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + cust.ID.ToString();
+                await expiringData.DeleteItemAsync(key);
+
 
                 await dbContextTransaction.CommitAsync();
             }
@@ -88,6 +97,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                      .SingleOrDefaultAsync(s => s.ID == ID);
 
             var itemModel = _mapper.Map<CustDiscount, GetCustDiscountViewModel>(CustDiscount);
+
             var listFieldsModel = _modelHelper.GetModelFields<GetCustDiscountViewModel>();
 
             // shape data

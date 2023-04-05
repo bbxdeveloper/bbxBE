@@ -17,6 +17,7 @@ using System.Configuration;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using bbxBE.Common.ExpiringData;
 
 namespace bxBE.Application.Commands.cmdCustomer
 {
@@ -75,19 +76,24 @@ namespace bxBE.Application.Commands.cmdCustomer
         private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly IExpiringData<ExpiringDataObject> _expiringData;
 
-        public UpdateCustomerCommandHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IConfiguration configuration)
+        public UpdateCustomerCommandHandler(ICustomerRepositoryAsync customerRepository, 
+                        IMapper mapper, 
+                        IConfiguration configuration,
+                        IExpiringData<ExpiringDataObject> expiringData)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;
             _configuration = configuration;
+            _expiringData = expiringData;
         }
 
         public async Task<Response<Customer>> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
         {
             var cust = _mapper.Map<Customer>(request);
-            cust.CustomerBankAccountNumber = cust.CustomerBankAccountNumber.ToUpper();
-            cust.ThirdStateTaxId = cust.ThirdStateTaxId.ToUpper();
+            cust.CustomerBankAccountNumber = cust.CustomerBankAccountNumber?.ToUpper();
+            cust.ThirdStateTaxId = cust.ThirdStateTaxId?.ToUpper();
 
             /*
             if (request.TaxpayerNumber != null && !string.IsNullOrWhiteSpace(request.TaxpayerNumber.Replace("-", "")))
@@ -106,7 +112,7 @@ namespace bxBE.Application.Commands.cmdCustomer
             */
 
 
-            await _customerRepository.UpdateCustomerAsync(cust);
+            await _customerRepository.UpdateCustomerAsync(cust, _expiringData);
             return new Response<Customer>(cust);
         }
 

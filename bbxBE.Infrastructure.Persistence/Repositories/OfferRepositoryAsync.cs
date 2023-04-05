@@ -407,7 +407,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<Offer>();
 
            predicate = predicate.And(p => !p.Deleted && (CustomerID == 0 || CustomerID == p.CustomerID)
-                           && (string.IsNullOrWhiteSpace(OfferNumber) || p.OfferNumber.ToUpper().Contains(OfferNumber.ToUpper()))
+                           && (string.IsNullOrWhiteSpace(OfferNumber) || (p.OfferNumber.ToUpper() + "/" + p.OfferVersion).Contains(OfferNumber.ToUpper()))
                            && (!OfferIssueDateFrom.HasValue || p.OfferIssueDate >= OfferIssueDateFrom.Value)
                            && (!OfferIssueDateTo.HasValue || p.OfferIssueDate <= OfferIssueDateTo.Value)
                            && (!OfferVaidityDateFrom.HasValue || p.OfferVaidityDate >= OfferVaidityDateFrom.Value)

@@ -69,6 +69,7 @@ namespace bbxBE.Infrastructure.Persistence.Repository
 
         public async Task RemoveAsync(T entity, bool savechenges = true)
         {
+            _dbContext.Entry(entity).State = EntityState.Deleted;
             _dbContext.Set<T>().Remove(entity);
             if( savechenges)
                 await _dbContext.SaveChangesAsync();
