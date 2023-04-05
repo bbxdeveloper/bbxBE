@@ -133,7 +133,7 @@ namespace bbxBE.WebApi.Controllers.v1
                 var custlock = HttpContext.Session.GetString(bbxBEConsts.DEF_CUSTLOCK);
                 if (custlock != null)
                 {
-                    HttpContext.Session.SetString(bbxBEConsts.DEF_CUSTLOCK, null);
+                    HttpContext.Session.Remove(bbxBEConsts.DEF_CUSTLOCK);
                 }
             }
             return Ok(resp);
