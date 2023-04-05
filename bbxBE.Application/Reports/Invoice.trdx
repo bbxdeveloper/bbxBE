@@ -425,21 +425,26 @@
         </Panel>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="2.8cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="2.968cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
         <BorderWidth Top="1pt" />
       </Style>
       <Items>
-        <Panel Width="9.1cm" Height="1.9cm" Left="4.994cm" Top="0.2cm" Name="panel7">
+        <TextBox Width="18.839cm" Height="0.5cm" Left="0.042cm" Top="2.436cm" Value="Köszönjük a vásárlást!" Name="textBox59">
+          <Style VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+        </TextBox>
+        <Panel Width="10.684cm" Height="2.268cm" Left="4.215cm" Top="0.168cm" Name="panel7">
           <Items>
-            <Table Width="8.117cm" Height="0.4cm" Left="0cm" Top="0.7cm" Name="tableSummaryByVatRates">
+            <Table Width="9.663cm" Height="0.4cm" Left="0.013cm" Top="1.068cm" Name="tableSummaryByVatRates">
               <Body>
                 <Cells>
                   <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
                     <ReportItem>
-                      <TextBox Width="4.587cm" Height="0.4cm" Left="0cm" Top="0cm" Value="Áfa {Fields.vatRateCode}" Name="textBox68">
+                      <TextBox Width="6.134cm" Height="0.4cm" Left="0cm" Top="0cm" Value="Áfa {Fields.vatRateCode}" Name="textBox68">
                         <Style>
                           <Font Name="Courier New" Size="9pt" />
                         </Style>
@@ -448,7 +453,7 @@
                   </TableCell>
                   <TableCell RowIndex="0" ColumnIndex="2" RowSpan="1" ColumnSpan="1">
                     <ReportItem>
-                      <TextBox Width="2.974cm" Height="0.4cm" Left="0cm" Top="0cm" Value="= Fields.vatRateVatAmount" Format="{0:N2}" Name="textBox72">
+                      <TextBox Width="2.976cm" Height="0.4cm" Left="0cm" Top="0cm" Value="= Fields.vatRateVatAmount" Format="{0:N2}" Name="textBox72">
                         <Style TextAlign="Right" VerticalAlign="Middle">
                           <Font Name="Courier New" Size="9pt" />
                         </Style>
@@ -457,7 +462,7 @@
                   </TableCell>
                   <TableCell RowIndex="0" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
                     <ReportItem>
-                      <TextBox Width="0.556cm" Height="0.4cm" Left="4.573cm" Top="0cm" Value=":" Name="textBox53">
+                      <TextBox Width="0.553cm" Height="0.4cm" Left="4.573cm" Top="0cm" Value=":" Name="textBox53">
                         <Style TextAlign="Center" VerticalAlign="Middle">
                           <Font Name="Courier New" Size="9pt" />
                         </Style>
@@ -466,9 +471,9 @@
                   </TableCell>
                 </Cells>
                 <Columns>
-                  <Column Width="4.587cm" />
-                  <Column Width="0.556cm" />
-                  <Column Width="2.974cm" />
+                  <Column Width="6.134cm" />
+                  <Column Width="0.553cm" />
+                  <Column Width="2.976cm" />
                 </Columns>
                 <Rows>
                   <Row Height="0.4cm" />
@@ -491,57 +496,57 @@
                 <Binding Path="DataSource" Expression="= Fields.summaryByVatRates" />
               </Bindings>
             </Table>
-            <TextBox Width="4.573cm" Height="0.35cm" Left="0.013cm" Top="0.002cm" Value="Tételek összesen" Name="textBox75">
+            <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="0.002cm" Value="Tételek összesen" Name="textBox75">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="0.554cm" Height="0.35cm" Left="4.586cm" Top="0cm" Value=":" Name="textBox51">
+            <TextBox Width="0.554cm" Height="0.35cm" Left="6.144cm" Top="0.002cm" Value=":" Name="textBox51">
               <Style TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="4.586cm" Height="0.35cm" Left="0cm" Top="1.101cm" Value="Végösszeg kerekítése" Name="textBox57">
+            <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="1.468cm" Value="Végösszeg kerekítése" Name="textBox57">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="0.553cm" Height="0.35cm" Left="4.587cm" Top="1.101cm" Value=":" Name="textBox58">
+            <TextBox Width="0.553cm" Height="0.35cm" Left="6.147cm" Top="1.468cm" Value=":" Name="textBox58">
               <Style TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" Bold="False" />
               </Style>
             </TextBox>
-            <TextBox Width="2.985cm" Height="0.35cm" Left="5.143cm" Top="1.101cm" Value="= Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount&#xD;&#xA;&#xD;&#xA;" Format="{0:N2}" Name="textBox56">
+            <TextBox Width="2.976cm" Height="0.35cm" Left="6.7cm" Top="1.468cm" Value="= Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount&#xD;&#xA;&#xD;&#xA;" Format="{0:N2}" Name="textBox56">
               <Style TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="4.586cm" Height="0.35cm" Left="0cm" Top="1.451cm" Value="Végösszeg" Name="textBox71">
+            <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="1.818cm" Value="Végösszeg" Name="textBox71">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" Bold="True" />
               </Style>
             </TextBox>
-            <TextBox Width="0.553cm" Height="0.35cm" Left="4.587cm" Top="1.451cm" Value=":" Name="textBox69">
+            <TextBox Width="0.553cm" Height="0.35cm" Left="6.144cm" Top="1.818cm" Value=":" Name="textBox69">
               <Style TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2.985cm" Height="0.35cm" Left="5.143cm" Top="1.451cm" Value="= Fields.invoiceGrossAmount" Format="{0:N2}" Name="textBox73">
+            <TextBox Width="2.973cm" Height="0.35cm" Left="6.7cm" Top="1.818cm" Value="= Fields.invoiceGrossAmount" Format="{0:N2}" Name="textBox73">
               <Style TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" Bold="True" />
               </Style>
             </TextBox>
-            <TextBox Width="0.847cm" Height="0.35cm" Left="8.128cm" Top="1.451cm" Value="Ft" Name="textBox74">
+            <TextBox Width="0.847cm" Height="0.35cm" Left="9.676cm" Top="1.818cm" Value="Ft" Name="textBox74">
               <Style TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="2.976cm" Height="0.35cm" Left="5.14cm" Top="0.002cm" Value="= Fields.invoiceNetAmount + Fields.invoiceDiscount" Format="{0:N2}" Name="textBox50">
+            <TextBox Width="2.976cm" Height="0.35cm" Left="6.697cm" Top="0.002cm" Value="= Fields.invoiceNetAmount + Fields.invoiceDiscount" Format="{0:N2}" Name="textBox50">
               <Style TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="4.573cm" Height="0.35cm" Left="0.013cm" Top="0.352cm" Value="Kedvezmény" Name="textBox82">
+            <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="0.352cm" Value="Kedvezmény" Name="textBox82">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
@@ -554,7 +559,7 @@
                 </FormattingRule>
               </ConditionalFormatting>
             </TextBox>
-            <TextBox Width="0.553cm" Height="0.35cm" Left="4.587cm" Top="0.35cm" Value=":" Name="textBox81">
+            <TextBox Width="0.553cm" Height="0.35cm" Left="6.144cm" Top="0.352cm" Value=":" Name="textBox81">
               <Style TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
@@ -567,7 +572,46 @@
                 </FormattingRule>
               </ConditionalFormatting>
             </TextBox>
-            <TextBox Width="2.976cm" Height="0.35cm" Left="5.14cm" Top="0.352cm" Value="= Fields.invoiceDiscount" Format="{0:N2}" Name="textBox80">
+            <TextBox Width="2.976cm" Height="0.35cm" Left="6.697cm" Top="0.352cm" Value="= Fields.invoiceDiscount" Format="{0:N2}" Name="textBox80">
+              <Style TextAlign="Right" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Style Visible="False" />
+                  <Filters>
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
+            </TextBox>
+            <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="0.702cm" Value="Kedvezménnyel csökkentett nettó" Name="textBox65">
+              <Style VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Style Visible="False" />
+                  <Filters>
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
+            </TextBox>
+            <TextBox Width="0.553cm" Height="0.35cm" Left="6.144cm" Top="0.702cm" Value=":" Name="textBox62">
+              <Style TextAlign="Center" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Style Visible="False" />
+                  <Filters>
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
+            </TextBox>
+            <TextBox Width="2.976cm" Height="0.35cm" Left="6.697cm" Top="0.702cm" Value="= Fields.invoiceNetAmount" Format="{0:N2}" Name="textBox61">
               <Style TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
@@ -582,11 +626,6 @@
             </TextBox>
           </Items>
         </Panel>
-        <TextBox Width="18.839cm" Height="0.5cm" Left="0.055cm" Top="2.192cm" Value="Köszönjük a vásárlást!" Name="textBox59">
-          <Style VerticalAlign="Middle">
-            <Font Name="Courier New" Size="9pt" />
-          </Style>
-        </TextBox>
       </Items>
     </ReportFooterSection>
     <ReportHeaderSection Height="3.9cm" Name="reportHeaderSection1">
