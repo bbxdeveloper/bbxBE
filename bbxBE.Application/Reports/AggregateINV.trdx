@@ -78,7 +78,7 @@
                 <ReportItem>
                   <SubReport Width="18.839cm" Height="1.7cm" Left="9.445cm" Top="0.8cm" Name="subReport1" StyleName="">
                     <ReportSource>
-                      <UriReportSource Uri="AggregateSubINV.trdx">
+                      <UriReportSource Uri="Reports/AggregateSubINV.trdx">
                         <Parameters>
                           <Parameter Name="InvoiceID">
                             <Value>
