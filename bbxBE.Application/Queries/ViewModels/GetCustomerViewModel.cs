@@ -73,6 +73,11 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Megjegyzés")]
         public string Comment { get; set; }
 
+        [ColumnLabel("Eladási ártípus")]
+        [Description("Eladási ártípus")]
+        private string UnitPrice;
+
+
         [MapToEntity("isOwnData")]
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
