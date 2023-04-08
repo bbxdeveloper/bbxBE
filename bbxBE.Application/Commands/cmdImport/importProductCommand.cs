@@ -27,6 +27,7 @@ using bbxBE.Application.Commands.ResultModels;
 using System.Globalization;
 using Telerik.Reporting.Drawing;
 using bbxBE.Application.Interfaces;
+using bbxBE.Common.ExpiringData;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
@@ -58,6 +59,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string EANFieldName = "EAN";
         private const string VTSZFieldName = "VTSZ";
         private const string NODISCOUNTFieldName = "NODISCOUNT";
+        private const string ImportLockKey = "PRODIMPORT";
 
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IProductGroupRepositoryAsync _productGroupRepository;
@@ -67,6 +69,8 @@ namespace bbxBE.Application.Commands.cmdImport
         private readonly ICacheService<ProductGroup> _productGroupCacheService;
         private readonly ICacheService<Origin> _originCacheService;
         private readonly ICacheService<VatRate> _vatRateCacheService;
+
+        private readonly IExpiringData<ExpiringDataObject> _expiringData;
 
 
         //private readonly IUnitOfMEasure
@@ -87,9 +91,9 @@ namespace bbxBE.Application.Commands.cmdImport
                                               ICacheService<Product> productCacheService,
                                             ICacheService<ProductGroup> productGroupCacheService,
                                             ICacheService<Origin> originCacheService,
-                                            ICacheService<VatRate> vatRateCacheService
-          )
-        { 
+                                            ICacheService<VatRate> vatRateCacheService,
+                                            IExpiringData<ExpiringDataObject> expiringData)
+        {
             _productRepository = productRepository;
             _productGroupRepository = productGroupCodeRepository;
             _originRepository = originRepository;
@@ -99,10 +103,13 @@ namespace bbxBE.Application.Commands.cmdImport
             _productGroupCacheService = productGroupCacheService;
             _originCacheService = originCacheService;
             _vatRateCacheService = vatRateCacheService;
+            _expiringData = expiringData;
         }
 
         public async Task<Response<ImportedItemsStatistics>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
         {
+            await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "0/0", request.SessionID, TimeSpan.FromHours(2));
+
             var mappedProductColumns = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
             var productItemsFromCSV = await GetProductItemsAsync(request, mappedProductColumns.productMap);
             var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };

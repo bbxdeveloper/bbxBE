@@ -8,7 +8,7 @@
     <RepositoryType>Public</RepositoryType>
     <PackageProjectUrl></PackageProjectUrl>
     <Version>0.1.71</Version>
-    <Configurations>Debug;Release;Test</Configurations>
+    <Configurations>Debug;Test;Release</Configurations>
 	  <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
 	  <UserSecretsId>82234b64-eacf-42af-b87c-5874a29c22ea</UserSecretsId>
   </PropertyGroup>
@@ -23,6 +23,7 @@
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'DapperMigrations' " />
   <ItemGroup>
     <Compile Remove="Services\**" />
     <Content Remove="Services\**" />
