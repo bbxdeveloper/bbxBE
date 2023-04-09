@@ -92,6 +92,13 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(req));
         }
 
+        [HttpGet("unitpricetype")]
+        public async Task<IActionResult> GetUnitPriceType()
+        {
+            var req = new GetEnum() { type = typeof(enUnitPriceType) };
+            return Ok(await Mediator.Send(req));
+        }
+
         [HttpGet("querytaxpayer")]
         public async Task<IActionResult> QueryTaxpayer([FromQuery] QueryTaxPayer filter)
         {
