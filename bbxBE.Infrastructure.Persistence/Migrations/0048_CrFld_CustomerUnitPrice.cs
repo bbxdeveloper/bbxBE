@@ -13,16 +13,16 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
     {
         public override void Down()
         {
-            Delete.Column("UnitPrice").FromTable("Customer");
+            Delete.Column("UnitPriceType").FromTable("Customer");
         }
         public override void Up()
         {
 
 
             Alter.Table("Customer")
-                .AddColumn("UnitPrice").AsString().Nullable();
+                .AddColumn("UnitPriceType").AsString().Nullable();
 
-            Execute.Sql(string.Format(@"update Customer set UnitPrice = '{0}'", enUnitPrice.LIST));
+            Execute.Sql(string.Format(@"update Customer set UnitPriceType = '{0}'", enUnitPriceType.LIST));
 
 
         }

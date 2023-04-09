@@ -23,7 +23,9 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<Customer, GetCustomerViewModel>()
                    .ForMember(dst => dst.TaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.TaxpayerId, src.VatCode, src.CountyCode)))
-                   .ForMember(dst => dst.FullAddress, opt => opt.MapFrom(src => String.Format("{0} {1} {2}", src.PostalCode, src.City, src.AdditionalAddressDetail).Trim()));
+                   .ForMember(dst => dst.FullAddress, opt => opt.MapFrom(src => String.Format("{0} {1} {2}", src.PostalCode, src.City, src.AdditionalAddressDetail).Trim()))
+                   .ForMember(dst => dst.CountryCodeX, opt => opt.MapFrom(src => CountryCodeResolver(src.CountryCode)))
+                   .ForMember(dst => dst.UnitPriceTypeX, opt => opt.MapFrom(src => UnitPriceTypeResolver(src.UnitPriceType)));
 
 
             CreateMap<List<ProductGroup>, List<GetProductGroupViewModel>>();
@@ -268,5 +270,26 @@ namespace bbxBE.Queries.Mappings
             }
             return "";
         }
+
+        private static string CountryCodeResolver(string countryCode)
+        {
+            if (!string.IsNullOrWhiteSpace(countryCode))
+            {
+                var _countryCode = (enCountries)Enum.Parse(typeof(enCountries), countryCode);
+                return Common.Utils.GetEnumDescription(_countryCode);
+            }
+            return "";
+        }
+        private static string UnitPriceTypeResolver(string unitPriceType)
+        {
+            if (!string.IsNullOrWhiteSpace(unitPriceType))
+            {
+                var _unitPriceType = (enUnitPriceType)Enum.Parse(typeof(enUnitPriceType), unitPriceType);
+                return Common.Utils.GetEnumDescription(_unitPriceType);
+            }
+            return "";
+        }
+
+
     }
 }

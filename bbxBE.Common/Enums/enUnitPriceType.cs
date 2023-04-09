@@ -5,7 +5,7 @@ using System.Text;
 
 namespace bbxBE.Common.Enums
 {
-    public enum enUnitPrice
+    public enum enUnitPriceType
     {
         [Description("Egységár")] 
         UNIT,

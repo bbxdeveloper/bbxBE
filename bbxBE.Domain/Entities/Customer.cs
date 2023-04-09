@@ -71,16 +71,16 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Eladási ártípus")]
         [Description("Eladási ártípus")]
-        private enUnitPrice unitPrice;
-        public string UnitPrice
+        private enUnitPriceType unitPriceType;
+        public string UnitPriceType
         {
-            get { return Enum.GetName(typeof(enUnitPrice), unitPrice); }
+            get { return Enum.GetName(typeof(enUnitPriceType), unitPriceType); }
             set
             {
                 if (value != null)
-                    unitPrice = (enUnitPrice)Enum.Parse(typeof(enUnitPrice), value);
+                    unitPriceType = (enUnitPriceType)Enum.Parse(typeof(enUnitPriceType), value);
                 else
-                    unitPrice = enUnitPrice.LIST;
+                    unitPriceType = enUnitPriceType.LIST;
             }
         }
 
