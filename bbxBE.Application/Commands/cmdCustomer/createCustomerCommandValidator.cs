@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using bbxBE.Common;
 using bbxBE.Common.Enums;
+using bbxBE.Application.BLL;
 
 namespace bbxBE.Application.Commands.cmdCustomer
 {
@@ -33,9 +34,14 @@ namespace bbxBE.Application.Commands.cmdCustomer
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.CountryCode)
-                       .Must(CheckCountryCode).WithMessage(bbxBEConsts.ERR_CST_WRONGCOUNTRY)
+                        .Must(
+                          (model, countryCode) =>
+                          {
+                              return bllCustomer.ValidateCountryCode(countryCode);
+                          }
+                        ).WithMessage(bbxBEConsts.ERR_CST_WRONGCOUNTRY)
                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-               .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
+               .MaximumLength(2).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.TaxpayerNumber)
                         .Must(
@@ -63,7 +69,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
                             var res = CheckBankAccount(customerBankAccountNumber);
                             if (res == enValidateBankAccountResult.ERR_FORMAT)
                             {
-                                context.AddFailure(bbxBEConsts.ERR_INVALIDFORMAT.Replace( bbxBEConsts.TOKEN_PROPERTYNAME, context.PropertyName));
+                                context.AddFailure(bbxBEConsts.ERR_INVALIDFORMAT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.PropertyName));
 
                             }
                             if (res == enValidateBankAccountResult.ERR_CHECKSUM)
@@ -72,6 +78,16 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
                             }
                         });
+
+            RuleFor(p => p.UnitPriceType)
+                      .Must(
+                          (model, unitPriceType) =>
+                          {
+                              return bllCustomer.ValidateUnitPriceType(unitPriceType);
+                          }
+                        ).WithMessage(bbxBEConsts.ERR_CST_WRONGUNITPRICETYPE)
+               .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .MaximumLength(4).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.ERR_MAXLEN);
@@ -93,10 +109,6 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
         }
 
-        private bool CheckCountryCode(string p_countryCode)
-        {
-            return _customerRepository.CheckCountryCode(p_countryCode);
-        }
         private enValidateBankAccountResult CheckBankAccount(string p_CustomerBankAccountNumber)
         {
             return _customerRepository.CheckCustomerBankAccount(p_CustomerBankAccountNumber);

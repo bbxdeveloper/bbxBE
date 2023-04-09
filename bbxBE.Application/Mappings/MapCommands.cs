@@ -67,7 +67,9 @@ namespace bbxBE.Command.Mappings
                                             CustomerVatStatusType.DOMESTIC.ToString()
                                             : CustomerVatStatusType.OTHER.ToString()))
                 .ForMember(dst => dst.CountryCode,
-                    opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.CountryCode) ? bbxBEConsts.CNTRY_HU : src.CountryCode.ToUpper()));
+                    opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.CountryCode) ? bbxBEConsts.CNTRY_HU : src.CountryCode.ToUpper()))
+                .ForMember(dst => dst.UnitPriceType,
+                    opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.UnitPriceType) ? enUnitPriceType.LIST.ToString() : src.UnitPriceType.ToUpper()));
 
 
             CreateMap<UpdateCustomerCommand, Customer>()
@@ -86,7 +88,9 @@ namespace bbxBE.Command.Mappings
                                             CustomerVatStatusType.DOMESTIC.ToString()
                                             : CustomerVatStatusType.OTHER.ToString()))
                 .ForMember(dst => dst.CountryCode,
-                    opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.CountryCode) ? bbxBEConsts.CNTRY_HU : src.CountryCode.ToUpper()));
+                    opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.CountryCode) ? bbxBEConsts.CNTRY_HU : src.CountryCode.ToUpper()))
+                .ForMember(dst => dst.UnitPriceType,
+                    opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.UnitPriceType) ? enUnitPriceType.LIST.ToString() : src.UnitPriceType.ToUpper()));
 
             CreateMap<DeleteCustomerCommand, Customer>();
 

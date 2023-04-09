@@ -48,8 +48,13 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [MapToEntity("thirdStateTaxId")]
         public string ThirdStateTaxId { get; set; }
+
         [MapToEntity("countryCode")]
         public string CountryCode { get; set; }
+
+        [MapToEntity("countryCodeX")]
+        public string CountryCodeX { get; set; }
+
         [MapToEntity("region")]
         public string Region { get; set; }
 
@@ -72,6 +77,15 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]
         public string Comment { get; set; }
+
+        [ColumnLabel("Eladási ártípus")]
+        [Description("Eladási ártípus")]
+        public string UnitPriceType { get; set; }
+
+        [ColumnLabel("Eladási ártípus megnevezés")]
+        [Description("Eladási ártípus megnevezés")]
+        public string UnitPriceTypeX { get; set; }
+
 
         [MapToEntity("isOwnData")]
         [ColumnLabel("Saját adat?")]

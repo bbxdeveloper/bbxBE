@@ -72,6 +72,11 @@ namespace bbxBE.Application.BLL
             var valid = Enum.TryParse(countryCode, out enCountries cou);
             return valid;
         }
+        public static bool ValidateUnitPriceType(string unitPriceType)
+        {
+            var valid = Enum.TryParse(unitPriceType, out enUnitPriceType upt);
+            return valid;
+        }
 
 
         public static async Task<int> CreateRangeAsynch(List<CreateCustomerCommand> requestList,

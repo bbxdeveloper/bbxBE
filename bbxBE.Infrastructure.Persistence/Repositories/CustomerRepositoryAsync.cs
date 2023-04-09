@@ -74,9 +74,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public bool CheckCountryCode(string countrycode)
         {
-
             return bllCustomer.ValidateCountryCode(countrycode);
         }
+        public bool CheckUnitPriceType(string unitPriceType)
+        {
+            return bllCustomer.ValidateUnitPriceType(unitPriceType);
+        }
+
         public bool CheckTaxPayerNumber(string taxPayerNumber)
         {
             if (string.IsNullOrWhiteSpace(taxPayerNumber.Replace("-", "")))

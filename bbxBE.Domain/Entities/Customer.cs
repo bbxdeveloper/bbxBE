@@ -1,4 +1,5 @@
 ﻿using bbxBE.Common.Attributes;
+using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Common;
 using System;
@@ -67,6 +68,21 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]
         public string Comment { get; set; }
+
+        [ColumnLabel("Eladási ártípus")]
+        [Description("Eladási ártípus")]
+        private enUnitPriceType unitPriceType;
+        public string UnitPriceType
+        {
+            get { return Enum.GetName(typeof(enUnitPriceType), unitPriceType); }
+            set
+            {
+                if (value != null)
+                    unitPriceType = (enUnitPriceType)Enum.Parse(typeof(enUnitPriceType), value);
+                else
+                    unitPriceType = enUnitPriceType.LIST;
+            }
+        }
 
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
