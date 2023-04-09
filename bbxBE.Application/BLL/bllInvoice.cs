@@ -195,15 +195,23 @@ namespace bbxBE.Application.BLL
 					throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OWNNOTFOUND));
 				}
 
-				if (request.Incoming)
+				if (invoiceType != enInvoiceType.BLK)
 				{
-					invoice.SupplierID = request.CustomerID;
-					invoice.CustomerID = ownData.ID;
+					if (request.Incoming)
+					{
+						invoice.SupplierID = request.CustomerID.Value;
+						invoice.CustomerID = ownData.ID;
+					}
+					else
+					{
+						invoice.SupplierID = ownData.ID;
+						invoice.CustomerID = request.CustomerID.Value;
+					}
 				}
 				else
-				{
+                {
 					invoice.SupplierID = ownData.ID;
-					invoice.CustomerID = request.CustomerID;
+					invoice.CustomerID = null;
 				}
 
 				var RelDeliveryNotesByLineID = new Dictionary<long, Invoice>();
@@ -363,7 +371,7 @@ namespace bbxBE.Application.BLL
 				invoice = await CalcInvoiceAmountsAsynch(invoice, cancellationToken);
 
 				//Számlaszám megállapítása
-				counterCode = bllCounter.GetCounterCode(invoiceType, invoice.Incoming, wh.ID);
+				counterCode = bllCounter.GetCounterCode(invoiceType, paymentMethod, invoice.Incoming, wh.ID);
 				invoice.InvoiceNumber = await counterRepository.GetNextValueAsync(counterCode, wh.ID);
 				invoice.Copies = 1;
 

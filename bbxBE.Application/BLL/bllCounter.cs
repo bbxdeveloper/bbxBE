@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common.Enums;
+using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCounter;
 using System;
@@ -31,12 +32,26 @@ namespace bbxBE.Application.BLL
             return res;
         }
 
-        public static string GetCounterCode(enInvoiceType p_nvoiceType, bool Incoming, long WarehouseID)
+        public static string GetCounterCode(enInvoiceType p_invoiceType, PaymentMethodType p_paymentMethod, bool Incoming, long WarehouseID)
         {
-            var first = (Incoming ? "B" : "K");
-            var second = p_nvoiceType.ToString();
-            var third = WarehouseID.ToString().PadLeft(3, '0');
-            return String.Format($"{first}{second}_{third}");
+            if (p_invoiceType == enInvoiceType.BLK)
+            {
+                //Blokk
+                //
+
+                var prefix = (p_paymentMethod == PaymentMethodType.CASH ? "BLK" : "BLC");
+                var whs = WarehouseID.ToString().PadLeft(3, '0');
+                return String.Format($"{prefix}_{whs}");
+            }
+            else
+            {
+                //Számla, szállítólevél
+                //
+                var first = (Incoming ? "B" : "K");
+                var second = p_invoiceType.ToString();
+                var third = WarehouseID.ToString().PadLeft(3, '0');
+                return String.Format($"{first}{second}_{third}");
+            }
         }
 
 
