@@ -14,6 +14,8 @@ namespace bbxBE.Common.Enums
         [Description("Bevételezés")]
         INC,
         [Description("Bejövő szállítólevél")]
-        DNI
+        DNI,
+        [Description("Blokk")]
+        BLK
     }
 }
