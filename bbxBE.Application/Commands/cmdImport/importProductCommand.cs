@@ -110,67 +110,76 @@ namespace bbxBE.Application.Commands.cmdImport
         {
             return await Task.Run(async () =>
             {
-                await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "0/0", request.SessionID, TimeSpan.FromHours(2));
-
-                var mappedProductColumns = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
-                var productItemsFromCSV = await GetProductItemsAsync(request, mappedProductColumns.productMap);
-                var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };
-                var productCodes = new Dictionary<string, long>();
-
-                // Get Products from Db/Cache and filter to OWN category.
-                var pCodes = await _productRepository.GetAllProductsFromDBAsync();
-                foreach (var item in pCodes)
+                try
                 {
-                    if (item.ProductCodes != null)
+                    await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "0/0", request.SessionID, TimeSpan.FromHours(2));
+
+                    var mappedProductColumns = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
+                    var productItemsFromCSV = await GetProductItemsAsync(request, mappedProductColumns.productMap);
+                    var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };
+                    var productCodes = new Dictionary<string, long>();
+
+                    // Get Products from Db/Cache and filter to OWN category.
+                    var pCodes = await _productRepository.GetAllProductsFromDBAsync();
+                    foreach (var item in pCodes)
                     {
-                        foreach (var item2 in item.ProductCodes)
+                        if (item.ProductCodes != null)
                         {
-                            if (item2.ProductCodeCategory == "OWN" && (!productCodes.ContainsKey(item2.ProductCodeValue)))
-                                productCodes.Add(item2.ProductCodeValue, item2.ProductID);
+                            foreach (var item2 in item.ProductCodes)
+                            {
+                                if (item2.ProductCodeCategory == "OWN" && (!productCodes.ContainsKey(item2.ProductCodeValue)))
+                                    productCodes.Add(item2.ProductCodeValue, item2.ProductID);
+                            }
                         }
                     }
-                }
 
-                // create a Product or Update only
-                int counter = 0;
-                foreach (var item in productItemsFromCSV)
+                    // create a Product or Update only
+                    int counter = 0;
+                    foreach (var item in productItemsFromCSV)
+                    {
+                        if (!productCodes.ContainsKey(item.Value.ProductCode))
+                        {
+                            createProductCommands.Add(item.Value);
+                        }
+                        else
+                        {
+                            var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
+                            productCodes.TryGetValue(updateProductCommand.ProductCode, out long ID);
+                            updateProductCommand.ID = ID;
+                            updateProductCommands.Add(updateProductCommand);
+                        }
+
+                        if (counter % 1000 == 0)
+                        {
+                            int remaining = productItemsFromCSV.Count - counter;
+                            await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"{counter}/{remaining}", request.SessionID, TimeSpan.FromHours(2));
+                        }
+
+                        counter++;
+                    }
+
+                    if (createProductCommands.Count > 0)
+                        await CreateProdcutItems(importProductResponse, cancellationToken);
+                    if (updateProductCommands.Count > 0)
+                        await UpdateProductItems(importProductResponse, cancellationToken);
+
+                    if (importProductResponse.HasErrorDuringImport)
+                    {
+                        throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
+                    }
+                    importProductResponse.CreatedItemsCount = createProductCommands.Count;
+                    importProductResponse.UpdatedItemsCount = updateProductCommands.Count;
+
+                    return new Response<ImportedItemsStatistics>(importProductResponse);
+                }
+                catch (Exception)
                 {
-                    if (!productCodes.ContainsKey(item.Value.ProductCode))
-                    {
-                        createProductCommands.Add(item.Value);
-                    }
-                    else
-                    {
-                        var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
-                        productCodes.TryGetValue(updateProductCommand.ProductCode, out long ID);
-                        updateProductCommand.ID = ID;
-                        updateProductCommands.Add(updateProductCommand);
-                    }
-
-                    if (counter % 1000 == 0)
-                    {
-                        int remaining = productItemsFromCSV.Count - counter;
-                        await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"{counter}/{remaining}", request.SessionID, TimeSpan.FromHours(2));
-                    }
-
-                    counter++;
+                    throw;
                 }
-
-                if (createProductCommands.Count > 0)
-                    await CreateProdcutItems(importProductResponse, cancellationToken);
-                if (updateProductCommands.Count > 0)
-                    await UpdateProductItems(importProductResponse, cancellationToken);
-
-                if (importProductResponse.HasErrorDuringImport)
+                finally
                 {
-                    throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
+                    await _expiringData.DeleteItemAsync(ImportLockKey);
                 }
-                importProductResponse.CreatedItemsCount = createProductCommands.Count;
-                importProductResponse.UpdatedItemsCount = updateProductCommands.Count;
-
-                await _expiringData.DeleteItemAsync(ImportLockKey);
-
-                return new Response<ImportedItemsStatistics>(importProductResponse);
             });
         }
 
