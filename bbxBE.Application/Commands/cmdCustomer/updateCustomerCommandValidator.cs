@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using bbxBE.Common;
 using bbxBE.Common.Enums;
+using bbxBE.Application.BLL;
 
 namespace bbxBE.Application.Commands.cmdCustomer
 {
@@ -30,9 +31,14 @@ namespace bbxBE.Application.Commands.cmdCustomer
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.CountryCode)
-                       .Must(CheckCountryCode).WithMessage(bbxBEConsts.ERR_CST_WRONGCOUNTRY)
-               .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-               .MaximumLength(255).WithMessage(bbxBEConsts.ERR_MAXLEN);
+                       .Must(
+                         (model, countryCode) =>
+                         {
+                             return bllCustomer.ValidateCountryCode(countryCode);
+                         }
+                       ).WithMessage(bbxBEConsts.ERR_CST_WRONGCOUNTRY)
+              .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+              .MaximumLength(2).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.TaxpayerNumber)
                         .Must(
@@ -74,6 +80,16 @@ namespace bbxBE.Application.Commands.cmdCustomer
                            }
                        });
 
+            RuleFor(p => p.UnitPriceType)
+                      .Must(
+                          (model, unitPriceType) =>
+                          {
+                              return bllCustomer.ValidateUnitPriceType(unitPriceType);
+                          }
+                        ).WithMessage(bbxBEConsts.ERR_CST_WRONGUNITPRICETYPE)
+               .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .MaximumLength(4).WithMessage(bbxBEConsts.ERR_MAXLEN);
+
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
@@ -101,11 +117,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
         }
 
-        private bool CheckCountryCode(string p_countryCode)
-        {
-            return _customerRepository.CheckCountryCode(p_countryCode);
-        }
-        private bool CheckTaxPayerNumber(string p_TaxPayerNumber)
+         private bool CheckTaxPayerNumber(string p_TaxPayerNumber)
         {
             return _customerRepository.CheckTaxPayerNumber(p_TaxPayerNumber);
         }

@@ -43,6 +43,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
             await _expiringData.AddOrUpdateItemAsync(key, request.ID, request.SessionID, TimeSpan.FromSeconds(bbxBEConsts.CustomerLockExpoirationSec));
             var resp = new Response<string>(key);
             resp.Succeeded = true;
+            resp.Data = key;
             return resp;
         }
 

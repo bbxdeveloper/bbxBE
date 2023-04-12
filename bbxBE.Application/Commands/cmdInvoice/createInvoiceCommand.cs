@@ -91,7 +91,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 
 		[ColumnLabel("Ügyfél ID")]
 		[Description("Ügyfél ID")]
-		public long CustomerID { get; set; }
+		public long? CustomerID { get; set; }
 
 		[ColumnLabel("Kapcsolódó számla")]
 		[Description("Bevételhez kapcsolódó számla")]

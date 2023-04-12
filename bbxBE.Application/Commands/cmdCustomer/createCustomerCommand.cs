@@ -61,6 +61,10 @@ namespace bxBE.Application.Commands.cmdCustomer
         [Description("Email")]
         public string Email { get; set; }
 
+        [ColumnLabel("Eladási ártípus")]
+        [Description("Eladási ártípus")]
+        public string UnitPriceType { get; set; }
+
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]
         public string Comment { get; set; }
@@ -90,22 +94,7 @@ namespace bxBE.Application.Commands.cmdCustomer
             cust.CustomerBankAccountNumber = cust.CustomerBankAccountNumber?.ToUpper();
             cust.ThirdStateTaxId = cust.ThirdStateTaxId?.ToUpper();
 
-            /*
-            if (request.TaxpayerNumber != null && !string.IsNullOrWhiteSpace(request.TaxpayerNumber.Replace("-", "")))
-            {
-                var TaxItems = request.TaxpayerNumber.Split('-');
-                cust.TaxpayerId = TaxItems[0];
-                cust.VatCode = TaxItems.Length > 1 ? TaxItems[1] : "";
-                cust.CountyCode = TaxItems.Length > 2 ? TaxItems[2] : "";
-            }
-            cust.CustomerVatStatus = request.PrivatePerson ? CustomerVatStatusType.PRIVATE_PERSON.ToString() :
-                                    string.IsNullOrWhiteSpace(request.CountryCode) || request.CountryCode == bbxBEConsts.CNTRY_HU ?
-                                            CustomerVatStatusType.DOMESTIC.ToString()
-                                            : CustomerVatStatusType.OTHER.ToString();
-            
-            cust.CountryCode = string.IsNullOrWhiteSpace(request.CountryCode) ? bbxBEConsts.CNTRY_HU : cust.CountryCode.ToUpper();
-            */
-            await _customerRepository.AddCustomerAsync(cust);
+             await _customerRepository.AddCustomerAsync(cust);
             return new Response<Customer>(cust);
         }
 

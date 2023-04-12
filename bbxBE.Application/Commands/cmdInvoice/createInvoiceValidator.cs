@@ -49,7 +49,9 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 .WithMessage(bbxBEConsts.ERR_INV_DATE2);
 
             RuleFor(r => r.CustomerID)
-                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
+                .NotEmpty()
+                .When(p => p.InvoiceType != enInvoiceType.BLK.ToString())
+                .WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(r => r.PaymentMethod)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)

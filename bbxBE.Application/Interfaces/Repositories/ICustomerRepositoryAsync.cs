@@ -16,6 +16,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         bool IsUniqueIsOwnData(long? ID = null);
         enValidateBankAccountResult CheckCustomerBankAccount(string BankAccount);
         bool CheckCountryCode(string countryCode);
+        bool CheckUnitPriceType(string unitPriceType);
         bool CheckTaxPayerNumber(string p_CheckTaxPayerNumber);
         Task<Customer> AddCustomerAsync(Customer p_customer);
         Task<int> AddCustomerRangeAsync(List<Customer> p_customerList);

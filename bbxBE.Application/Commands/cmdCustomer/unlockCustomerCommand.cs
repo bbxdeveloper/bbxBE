@@ -42,6 +42,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
             await _expiringData.DeleteItemAsync(key);
             var resp = new Response<string>(key);
             resp.Succeeded = true;
+            resp.Data = key;
             return resp;
         }
 

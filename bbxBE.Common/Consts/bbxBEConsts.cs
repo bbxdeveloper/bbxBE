@@ -108,7 +108,8 @@ namespace bbxBE.Common.Consts
         public static string ERR_INV_VATSUMS = "{PropertyName}: A számlán nincs áfánkénti összesítő";
 
         public static string ERR_CST_OWNEXISTS = "{PropertyName}:  Saját adat már létezik.";
-        public static string ERR_CST_WRONGCOUNTRY = "{PropertyName}:  Helytelem országkód:{PropertyValue}";
+        public static string ERR_CST_WRONGCOUNTRY = "{PropertyName}:  Helytelen országkód:{PropertyValue}";
+        public static string ERR_CST_WRONGUNITPRICETYPE = "{PropertyName}:  Helytelen eladási ártípus:{PropertyValue}";
 
         public static string ERR_CST_TAXNUMBER_INV = "{PropertyName}: Az adószám csak magyarországi partnerek esetén értelmezett.";
         public static string ERR_CST_TAXNUMBER_INV2 = "{PropertyName}: érvénytelen formátum/tartalom.";
