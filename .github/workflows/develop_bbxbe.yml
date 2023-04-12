@@ -8,14 +8,14 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: "." # set this to the path to your web app project, defaults to the repository root
 
 on:
-  push:
-    branches: [ develop ]
   pull_request: 
     branches: [ develop ]
+    types: [ closed ]
   workflow_dispatch:
 
 jobs:
   build:
+    if: ${{ github.event.pull_request.merged }}
     name: Build the BackEnd
     runs-on: ubuntu-latest
     strategy:
@@ -51,6 +51,7 @@ jobs:
           path: /home/runner/work/bbxBE/bbxBE/bbxBE.WebApi/bin/Release/netcoreapp3.1/publish
 
   deploy:
+    if: ${{ github.event.pull_request.merged }}
     name: Deploy BackEnd to Azure WebApp
     runs-on: windows-latest
     needs: build
