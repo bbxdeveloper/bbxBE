@@ -10,10 +10,7 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdProduct;
-using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,17 +21,7 @@ using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
-    public class ImportProductCommand : IRequest<Response<Object>>
-    {
-        public List<IFormFile> ProductFiles { get; set; }
-        public string FieldSeparator { get; set; } = ";";
-
-        [JsonIgnore]
-        public string SessionID { get; set; }
-
-    }
-
-    public class ImportProductCommandHandler : ProductMappingParser, IRequestHandler<ImportProductCommand, Response<Object>>
+    public class ImportProductProcess
     {
         private const string DescriptionFieldName = "Description";
         private const string ProductGroupCodeFieldName = "ProductGroupCode";
@@ -76,7 +63,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private List<ProductGroup> createableProductGroupCodes = new List<ProductGroup>();
 
 
-        public ImportProductCommandHandler(IProductRepositoryAsync productRepository,
+        public ImportProductProcess(IProductRepositoryAsync productRepository,
                                             IProductGroupRepositoryAsync productGroupCodeRepository,
                                             IOriginRepositoryAsync originRepository,
                                             IMapper mapper,
