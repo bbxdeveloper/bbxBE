@@ -1,36 +1,30 @@
 ﻿using bbxBE.Application.Commands.cmdImport;
 using bbxBE.Application.Commands.cmdProduct;
-using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qProduct;
-using bbxBE.Application.Wrappers;
 using bbxBE.Common.Enums;
-using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdProduct;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+    //   [Authorize]
     public class ProductController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        public ProductController( IWebHostEnvironment env, IConfiguration conf)
+        private readonly IImportProductProc _pproc;
+        public ProductController(IWebHostEnvironment env, IConfiguration conf, IImportProductProc pproc)
         {
             _env = env;
             _conf = conf;
+            _pproc = pproc;
         }
 
         /// <summary>
@@ -70,7 +64,7 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpGet("unitofmeasure")]
         public async Task<IActionResult> GetUnitOfMeasure()
         {
-            var req = new GetEnum() {  type = typeof(enUnitOfMeasure) };
+            var req = new GetEnum() { type = typeof(enUnitOfMeasure) };
             return Ok(await Mediator.Send(req));
         }
 
@@ -88,7 +82,7 @@ namespace bbxBE.WebApi.Controllers.v1
 
         // POST: USRController/Edit/5
         [HttpPut]
- //       [ValidateAntiForgeryToken]
+        //       [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UpdateProductCommand command)
         {
             return Ok(await Mediator.Send(command));

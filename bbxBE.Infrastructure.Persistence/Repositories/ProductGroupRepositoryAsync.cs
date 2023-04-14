@@ -1,24 +1,21 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qProductGroup;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qProductGroup;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using bbxBE.Infrastructure.Persistence.Caches;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -76,8 +73,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
 
-                await AddRangeAsync(p_productGroupList);
-                await RefreshProductGroupCache();
+            await AddRangeAsync(p_productGroupList);
+            await RefreshProductGroupCache();
             return p_productGroupList.Count;
         }
 
@@ -207,7 +204,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<ProductGroup>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.ProductGroupCode.ToUpper().Contains(srcFor)||
+            predicate = predicate.And(p => p.ProductGroupCode.ToUpper().Contains(srcFor) ||
                                             p.ProductGroupDescription.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
@@ -223,7 +220,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _cacheService.RefreshCache();
         }
 
- 
+
 
     }
 }
