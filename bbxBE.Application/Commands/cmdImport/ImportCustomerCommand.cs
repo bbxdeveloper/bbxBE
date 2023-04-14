@@ -38,6 +38,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string HouseNumberFieldName = "HouseNumber";
         private const string CustomerBankAccountNumberFieldName = "CustomerBankAccountNumber";
         private const string TaxpayerIdFieldName = "TaxpayerId";
+        private const string CustomerUnitPriceTypeFieldName = "V_FIZM";
 
         private readonly ICustomerRepositoryAsync _customerRepository;
         //private readonly IUnitOfMEasure
@@ -121,6 +122,9 @@ namespace bbxBE.Application.Commands.cmdImport
                 }
                 if (string.IsNullOrEmpty(createCustomerCommand.CountryCode))
                     createCustomerCommand.CountryCode = "HU";
+
+                var unitPriceType = customerMapping.ContainsKey(CustomerUnitPriceTypeFieldName) ? currentFieldsArray[customerMapping[CustomerUnitPriceTypeFieldName]].Replace("\"", "").Trim() : null;
+                createCustomerCommand.UnitPriceType = unitPriceType.Equals("1") ? "UNIT" : "LIST";
 
                 return createCustomerCommand;
             }
