@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -102,31 +100,7 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Import(List<IFormFile> productFiles, string fieldSeparator)
         {
             var productRequest = new ImportProductCommand() { ProductFiles = productFiles, FieldSeparator = fieldSeparator, SessionID = HttpContext.Session.Id };
-
-            string mapContent = "";
-            using (var reader = new StreamReader(productFiles[0].OpenReadStream()))
-            {
-                mapContent = reader.ReadToEnd();
-            }
-            string CSVContent = "";
-            using (var reader = new StreamReader(productFiles[1].OpenReadStream()))
-            {
-                CSVContent = reader.ReadToEnd();
-            }
-            var sessionID = HttpContext.Session.Id;
-
-
-            //           await Mediator.Send(productRequest).ConfigureAwait(false);
-
-            _ = Task.Run(async () =>
-            {
-                var ct = new CancellationToken();
-                await _pproc.Process(mapContent, CSVContent, fieldSeparator, sessionID, ct);
-            }
-            );
-
-            //         return Ok(await Mediator.Send(productRequest));
-            return Ok("Productimport has been started");
+            return Ok(await Mediator.Send(productRequest));
         }
     }
 }

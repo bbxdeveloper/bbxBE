@@ -168,6 +168,16 @@ namespace bbxBE.Application.Commands.cmdImport
                     importProductResponse.UpdatedItemsCount,
                     importProductResponse.ErroredItemsCount));
 
+                await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"Refresh caches...", SessionID, TimeSpan.FromHours(2));
+
+                //**********
+                //* Caches *
+                //**********
+                await _productcacheService.RefreshCache();
+                await _vatRateCacheService.RefreshCache();
+                await _originCacheService.RefreshCache();
+                await _productGroupCacheService.RefreshCache();
+
             }
             catch (Exception ex)
             {

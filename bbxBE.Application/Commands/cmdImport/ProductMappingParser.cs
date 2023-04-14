@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.IO;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
@@ -26,16 +25,5 @@ namespace bbxBE.Application.Commands.cmdImport
             return this;
         }
 
-        public ProductMappingParser GetProductMapping_OBSOLOTE(ImportProductCommand mappingFile)
-        {
-            string s;
-            using (var reader = new StreamReader(mappingFile.ProductFiles[0].OpenReadStream()))
-            {
-                s = reader.ReadToEnd();
-            }
-
-            this.productMap = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
-            return this;
-        }
     }
 }
