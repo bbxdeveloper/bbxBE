@@ -10,13 +10,8 @@ using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using System.Reflection;
-using Hangfire;
-using Microsoft.Extensions.Logging;
-using FluentMigrator.Runner.Initialization;
 using System;
-using AsyncKeyedLock;
+using System.Reflection;
 
 namespace bbxBE.Infrastructure.Persistence
 {
@@ -32,24 +27,16 @@ namespace bbxBE.Infrastructure.Persistence
             }
             else
             {
-                
+
                 services.AddDbContext<ApplicationDbContext>(options =>
                    options.UseSqlServer(
                        configuration.GetConnectionString("bbxdbconnection"),
                        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)
                        ),
-                       contextLifetime: ServiceLifetime.Transient,
+                       //                       contextLifetime: ServiceLifetime.Transient,
+                       contextLifetime: ServiceLifetime.Singleton,
                         optionsLifetime: ServiceLifetime.Singleton
                );
-                
-                /*
-                services.AddDbContextFactory<ApplicationDbContext>(options =>
-                   options.UseSqlServer(
-                       configuration.GetConnectionString("bbxdbconnection")),
-                       ServiceLifetime.Scoped
-               );
-                */
-         
 
             }
 

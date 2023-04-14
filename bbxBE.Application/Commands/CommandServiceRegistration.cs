@@ -1,9 +1,5 @@
-﻿using bbxBE.Application.Behaviours;
-using bbxBE.Application.Helpers;
-using bbxBE.Application.Interfaces;
-using bbxBE.Domain.Entities;
+﻿using bbxBE.Application.Commands.cmdImport;
 using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
@@ -15,12 +11,16 @@ namespace bbxBE.Application.Commands
     {
         public static void AddCommandInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-     
+
 
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("CommandHandler")).ToList().ForEach((t) =>
             {
                 services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
             });
+
+
+            services.AddTransient<IImportProductProc, ImportProductProc>();
+
         }
 
 

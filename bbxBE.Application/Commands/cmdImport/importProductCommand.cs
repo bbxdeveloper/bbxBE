@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
-    public class ImportProductCommand : IRequest<Response<Object>>
+    public class ImportProductCommand : IRequest<Response<ImportedItemsStatistics>>
     {
         public List<IFormFile> ProductFiles { get; set; }
         public string FieldSeparator { get; set; } = ";";
@@ -34,7 +34,7 @@ namespace bbxBE.Application.Commands.cmdImport
 
     }
 
-    public class ImportProductCommandHandler : ProductMappingParser, IRequestHandler<ImportProductCommand, Response<Object>>
+    public class ImportProductCommandHandler : ProductMappingParser, IRequestHandler<ImportProductCommand, Response<ImportedItemsStatistics>>
     {
         private const string DescriptionFieldName = "Description";
         private const string ProductGroupCodeFieldName = "ProductGroupCode";
@@ -100,93 +100,96 @@ namespace bbxBE.Application.Commands.cmdImport
         }
 
 
-        public async Task<Response<Object>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
+        public async Task<Response<ImportedItemsStatistics>> Handle(ImportProductCommand request, CancellationToken cancellationToken)
         {
 
             await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "0/0", request.SessionID, TimeSpan.FromHours(2));
 
-            var mappedProductColumns = new ProductMappingParser().GetProductMapping(request).ReCalculateIndexValues();
+            var mappedProductColumns = new ProductMappingParser().GetProductMapping_OBSOLOTE(request).ReCalculateIndexValues();
             var productItemsFromCSV = await GetProductItemsAsync(request, mappedProductColumns.productMap);
             var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };
             var productCodes = new Dictionary<string, long>();
             var pCodes = await _productRepository.GetAllProductsFromDBAsync();
 
-            Task.Run(async () =>
+            try
             {
-                try
-                {
 
-                    // Get Products from Db/Cache and filter to OWN category.
-                    foreach (var item in pCodes)
+                // Get Products from Db/Cache and filter to OWN category.
+                foreach (var item in pCodes)
+                {
+                    if (item.ProductCodes != null)
                     {
-                        if (item.ProductCodes != null)
+                        foreach (var item2 in item.ProductCodes)
                         {
-                            foreach (var item2 in item.ProductCodes)
-                            {
-                                if (item2.ProductCodeCategory == "OWN" && (!productCodes.ContainsKey(item2.ProductCodeValue)))
-                                    productCodes.Add(item2.ProductCodeValue, item2.ProductID);
-                            }
+                            if (item2.ProductCodeCategory == "OWN" && (!productCodes.ContainsKey(item2.ProductCodeValue)))
+                                productCodes.Add(item2.ProductCodeValue, item2.ProductID);
                         }
                     }
+                }
 
-                    // create a Product or Update only
-                    int counter = 0;
-                    foreach (var item in productItemsFromCSV)
+                // create a Product or Update only
+                int counter = 0;
+                foreach (var item in productItemsFromCSV)
+                {
+                    if (!productCodes.ContainsKey(item.Value.ProductCode))
                     {
-                        if (!productCodes.ContainsKey(item.Value.ProductCode))
-                        {
-                            createProductCommands.Add(item.Value);
-                        }
-                        else
-                        {
-                            var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
-                            productCodes.TryGetValue(updateProductCommand.ProductCode, out long ID);
-                            updateProductCommand.ID = ID;
-                            updateProductCommands.Add(updateProductCommand);
-                        }
-
-                        if (counter % 1000 == 0)
-                        {
-                            int remaining = productItemsFromCSV.Count - counter;
-                            await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"{counter}/{remaining}", request.SessionID, TimeSpan.FromHours(2));
-                        }
-
-                        counter++;
+                        createProductCommands.Add(item.Value);
+                    }
+                    else
+                    {
+                        var updateProductCommand = _mapper.Map<UpdateProductCommand>(item.Value);
+                        productCodes.TryGetValue(updateProductCommand.ProductCode, out long ID);
+                        updateProductCommand.ID = ID;
+                        updateProductCommands.Add(updateProductCommand);
                     }
 
-                    if (createProductCommands.Count > 0)
-                        await CreateProdcutItems(importProductResponse, cancellationToken);
-                    if (updateProductCommands.Count > 0)
-                        await UpdateProductItems(importProductResponse, cancellationToken);
-
-                    if (importProductResponse.HasErrorDuringImport)
+                    if (counter % 1000 == 0)
                     {
-
-                        throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
+                        await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"{counter}/{productItemsFromCSV.Count}", request.SessionID, TimeSpan.FromHours(2));
                     }
-                    importProductResponse.CreatedItemsCount = createProductCommands.Count;
-                    importProductResponse.UpdatedItemsCount = updateProductCommands.Count;
 
-                    _logger.LogInformation(String.Format(bbxBEConsts.PROD_IMPORT_RESULT,
-                        importProductResponse.AllItemsCount,
-                        importProductResponse.CreatedItemsCount,
-                        importProductResponse.UpdatedItemsCount,
-                        importProductResponse.ErroredItemsCount));
-
-                    return;
+                    counter++;
                 }
-                catch (Exception ex)
+
+
+                if (createProductCommands.Count > 0)
                 {
-                    _logger.LogError(ex, ex.Message, null);
-                    throw;
-                }
-                finally
-                {
-                    await _expiringData.DeleteItemAsync(ImportLockKey);
-                }
-            });
+                    await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"CreateProdcutItems is processing", request.SessionID, TimeSpan.FromHours(2));
 
-            return new Response<object>(true);
+                    await CreateProdcutItems(importProductResponse, cancellationToken);
+                }
+                if (updateProductCommands.Count > 0)
+                {
+                    await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"UpdateProductItems is processing", request.SessionID, TimeSpan.FromHours(2));
+                    await UpdateProductItems(importProductResponse, cancellationToken);
+                }
+
+                if (importProductResponse.HasErrorDuringImport)
+                {
+
+                    throw new ImportParseException("Hiba az importálás közben. További infokért nézze meg a log-ot!");
+                }
+                importProductResponse.CreatedItemsCount = createProductCommands.Count;
+                importProductResponse.UpdatedItemsCount = updateProductCommands.Count;
+
+                _logger.LogInformation(String.Format(bbxBEConsts.PROD_IMPORT_RESULT,
+                    importProductResponse.AllItemsCount,
+                    importProductResponse.CreatedItemsCount,
+                    importProductResponse.UpdatedItemsCount,
+                    importProductResponse.ErroredItemsCount));
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message, null);
+                throw;
+            }
+            finally
+            {
+                await _expiringData.DeleteItemAsync(ImportLockKey);
+            }
+
+            return new Response<ImportedItemsStatistics>(importProductResponse);
         }
 
         private async Task UpdateProductItems(ImportedItemsStatistics importProductResponse, CancellationToken cancellationToken)

@@ -12,7 +12,7 @@ using bxBE.Application.Commands.cmdProduct;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -20,7 +20,9 @@ using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
-    public class ImportProductProcess
+
+
+    public class ImportProductProc : IImportProductProc
     {
         private const string DescriptionFieldName = "Description";
         private const string ProductGroupCodeFieldName = "ProductGroupCode";
@@ -62,7 +64,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private List<ProductGroup> createableProductGroupCodes = new List<ProductGroup>();
 
 
-        public ImportProductProcess(IProductRepositoryAsync productRepository,
+        public ImportProductProc(IProductRepositoryAsync productRepository,
                                             IProductGroupRepositoryAsync productGroupCodeRepository,
                                             IOriginRepositoryAsync originRepository,
                                             IMapper mapper,
@@ -86,25 +88,22 @@ namespace bbxBE.Application.Commands.cmdImport
         }
 
 
-        public async Task ProcessAsynch(ImportProductCommand request, CancellationToken cancellationToken)
+        public async Task Process(string mapFileContent, string CSVContent, string FieldSeparator, string SessionID, CancellationToken cancellationToken)
         {
 
-            await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "0/0", request.SessionID, TimeSpan.FromHours(2));
+            await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "0/0", SessionID, TimeSpan.FromHours(2));
 
             try
             {
-                var importProductResponsex = new ImportedItemsStatistics();
-                var crep = new CreateProductCommand() { ProductCode = "XXX-XXX", UnitOfMeasure = "PIECE" };
-                createProductCommands.Add(crep);
-                await CreateProdcutItems(importProductResponsex, cancellationToken);
-                return;
-
-
-                ProductMappingParser mappedProductColumns = new ProductMappingParser().GetProductMapping_OBSOLOTE(request).ReCalculateIndexValues();
-                var productItemsFromCSV = await GetProductItemsAsync(request, mappedProductColumns.productMap);
-                var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };
+                await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"GetAllProductsFromDB...", SessionID, TimeSpan.FromHours(2));
                 var productCodes = new Dictionary<string, long>();
                 var pCodes = await _productRepository.GetAllProductsFromDBAsync();
+
+
+                var mappedProductColumns = new ProductMappingParser().GetProductMapping(mapFileContent).ReCalculateIndexValues();
+                await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"Parsing CSV...", SessionID, TimeSpan.FromHours(2));
+                var productItemsFromCSV = await GetProductItemsAsync(CSVContent, FieldSeparator, mappedProductColumns.productMap, SessionID);
+                var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };
 
 
                 // Get Products from Db/Cache and filter to OWN category.
@@ -136,23 +135,22 @@ namespace bbxBE.Application.Commands.cmdImport
                         updateProductCommands.Add(updateProductCommand);
                     }
 
-                    if (counter % 1000 == 0)
+                    if (++counter % 1000 == 0)
                     {
-                        await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"{counter}/{productItemsFromCSV.Count}", request.SessionID, TimeSpan.FromHours(2));
+                        await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"Insert/Update preprocessing:{counter}/{productItemsFromCSV.Count}", SessionID, TimeSpan.FromHours(2));
                     }
-
-                    counter++;
                 }
+
 
                 if (createProductCommands.Count > 0)
                 {
-                    await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"CreateProdcutItems is processing", request.SessionID, TimeSpan.FromHours(2));
+                    await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"CreateProdcutItems is processing...", SessionID, TimeSpan.FromHours(2));
 
                     await CreateProdcutItems(importProductResponse, cancellationToken);
                 }
                 if (updateProductCommands.Count > 0)
                 {
-                    await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"UpdateProductItems is processing", request.SessionID, TimeSpan.FromHours(2));
+                    await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"UpdateProductItems is processing...", SessionID, TimeSpan.FromHours(2));
                     await UpdateProductItems(importProductResponse, cancellationToken);
                 }
 
@@ -170,7 +168,6 @@ namespace bbxBE.Application.Commands.cmdImport
                     importProductResponse.UpdatedItemsCount,
                     importProductResponse.ErroredItemsCount));
 
-                return;
             }
             catch (Exception ex)
             {
@@ -343,15 +340,23 @@ namespace bbxBE.Application.Commands.cmdImport
             }
         }
 
-        private static async Task<Dictionary<string, CreateProductCommand>> GetProductItemsAsync(ImportProductCommand request, Dictionary<string, int> productMapping)
+        private async Task<Dictionary<string, CreateProductCommand>> GetProductItemsAsync(string CSVContent, string FieldSeparator, Dictionary<string, int> productMapping, string sessionID)
         {
             var producItems = new Dictionary<string, CreateProductCommand>();
-            using (var reader = new StreamReader(request.ProductFiles[1].OpenReadStream()))
+            List<String> lines = CSVContent.Split('\n').ToList();
+            int counter = 0;
+            lines.ForEach(async currentLine =>
             {
-                string currentLine;
-                while ((currentLine = await reader.ReadLineAsync()) != null)
+                if (!string.IsNullOrWhiteSpace(currentLine))
                 {
-                    var p = GetProductFromCSV(currentLine, productMapping, request.FieldSeparator);
+
+                    Debug.WriteLine(currentLine);
+                    if (++counter % 1000 == 0)
+                    {
+                        await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"Parsing CSV:{counter}/{lines.Count} {currentLine}", sessionID, TimeSpan.FromHours(2));
+                    }
+
+                    var p = GetProductFromCSV(currentLine, productMapping, FieldSeparator);
                     foreach (var item in p)
                     {
                         if ((item.Value.Active) && (!producItems.ContainsKey(item.Key)))
@@ -360,12 +365,13 @@ namespace bbxBE.Application.Commands.cmdImport
                         }
                     }
                 }
-            }
+            });
 
+            Debug.WriteLine("CSV parsing has done");
             return producItems;
         }
 
-        private static Dictionary<string, CreateProductCommand> GetProductFromCSV(string currentLine, Dictionary<string, int> productMapper, string fieldSeparator)
+        private Dictionary<string, CreateProductCommand> GetProductFromCSV(string currentLine, Dictionary<string, int> productMapper, string fieldSeparator)
         {
             string regExpPattern = $"{fieldSeparator}(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
             Regex regexp = new Regex(regExpPattern);
