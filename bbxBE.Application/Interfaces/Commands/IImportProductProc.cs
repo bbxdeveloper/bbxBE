@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdImport
+namespace bbxBE.Application.Interfaces.Commands
 {
     public interface IImportProductProc
     {
