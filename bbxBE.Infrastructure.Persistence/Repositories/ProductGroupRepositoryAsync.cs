@@ -7,7 +7,6 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +20,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class ProductGroupRepositoryAsync : GenericRepositoryAsync<ProductGroup>, IProductGroupRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<ProductGroup> _dataShaperProductGroup;
         private IDataShapeHelper<GetProductGroupViewModel> _dataShaperGetProductGroupViewModel;
         private readonly IMockService _mockData;
@@ -29,7 +28,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private readonly ICacheService<ProductGroup> _cacheService;
 
-        public ProductGroupRepositoryAsync(ApplicationDbContext dbContext,
+        public ProductGroupRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<ProductGroup> dataShaperProductGroup,
             IDataShapeHelper<GetProductGroupViewModel> dataShaperGetProductGroupViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
@@ -96,7 +95,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             ProductGroup pg = null;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 pg = await _dbContext.ProductGroup.Where(x => x.ID == ID).FirstOrDefaultAsync();
 

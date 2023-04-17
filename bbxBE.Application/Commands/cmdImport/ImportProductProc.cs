@@ -2,6 +2,7 @@ using AutoMapper;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Commands.ResultModels;
 using bbxBE.Application.Interfaces;
+using bbxBE.Application.Interfaces.Commands;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
@@ -42,9 +43,9 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string NODISCOUNTFieldName = "NODISCOUNT";
         private const string ImportLockKey = "PRODIMPORT";
 
-        private readonly IProductRepositoryAsync _productRepository;
-        private readonly IProductGroupRepositoryAsync _productGroupRepository;
-        private readonly IOriginRepositoryAsync _originRepository;
+        private readonly IProductGlobalRepositoryAsync _productRepository;
+        private readonly IProductGroupGlobalRepositoryAsync _productGroupRepository;
+        private readonly IOriginGlobalRepositoryAsync _originRepository;
 
         private readonly ICacheService<Product> _productcacheService;
         private readonly ICacheService<ProductGroup> _productGroupCacheService;
@@ -64,9 +65,9 @@ namespace bbxBE.Application.Commands.cmdImport
         private List<ProductGroup> createableProductGroupCodes = new List<ProductGroup>();
 
 
-        public ImportProductProc(IProductRepositoryAsync productRepository,
-                                            IProductGroupRepositoryAsync productGroupCodeRepository,
-                                            IOriginRepositoryAsync originRepository,
+        public ImportProductProc(IProductGlobalRepositoryAsync productGlobalRepository,
+                                            IProductGroupGlobalRepositoryAsync productGroupCodeGlobalRepository,
+                                            IOriginGlobalRepositoryAsync originGlobalRepository,
                                             IMapper mapper,
                                             ILogger<ImportProductCommandHandler> logger,
                                             ICacheService<Product> productCacheService,
@@ -75,9 +76,9 @@ namespace bbxBE.Application.Commands.cmdImport
                                             ICacheService<VatRate> vatRateCacheService,
                                             IExpiringData<ExpiringDataObject> expiringData)
         {
-            _productRepository = productRepository;
-            _productGroupRepository = productGroupCodeRepository;
-            _originRepository = originRepository;
+            _productRepository = productGlobalRepository;
+            _productGroupRepository = productGroupCodeGlobalRepository;
+            _originRepository = originGlobalRepository;
             _mapper = mapper;
             _logger = logger;
             _productcacheService = productCacheService;

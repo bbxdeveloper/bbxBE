@@ -1,12 +1,9 @@
 using bbxBE.Application;
 using bbxBE.Application.Commands;
-using bbxBE.Common.Exceptions;
 using bbxBE.Application.Queries;
 using bbxBE.Infrastructure.Persistence;
 using bbxBE.Infrastructure.Shared;
-using bbxBE.Queries;
 using bbxBE.WebApi.Extensions;
-using bbxBE.WebApi.Middlewares;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,8 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using System.Text.Json;
 using System;
+using System.Text.Json;
 
 namespace bbxBE.WebApi
 {
@@ -44,11 +41,11 @@ namespace bbxBE.WebApi
             // CORS
             services.AddCorsExtension();
             services.AddHealthChecks();
-            
-            
+
+
             //API Security
-            
-            
+
+
             services.AddJWTAuthentication(_config);
 
             services.AddAuthorizationPolicies_HAVETOCHANGE(_config);
@@ -57,7 +54,7 @@ namespace bbxBE.WebApi
             // API explorer
             services.AddMvcCore()
                 .AddApiExplorer();
-       
+
             // API explorer version
             services.AddVersionedApiExplorerExtension();
 
@@ -69,7 +66,7 @@ namespace bbxBE.WebApi
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
                 //options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
-                
+
             });
             services.AddControllersWithViews();
 
@@ -81,7 +78,8 @@ namespace bbxBE.WebApi
 
             // also the following given it's a Web API project
 
-            services.AddControllers().AddJsonOptions(options => {
+            services.AddControllers().AddJsonOptions(options =>
+            {
                 options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
@@ -123,7 +121,7 @@ namespace bbxBE.WebApi
                 .ReadFrom.Configuration(_config)
                 .WriteTo.Console()
                 .CreateLogger();
-        //    var loggerMiddleWare = loggerFactory.AddSerilog(_logger);
+            //    var loggerMiddleWare = loggerFactory.AddSerilog(_logger);
 
 
             //        _logger.Error(new ResourceNotFoundException("Teszt"), "teszt msg");
@@ -134,7 +132,7 @@ namespace bbxBE.WebApi
             .AllowAnyMethod()
             .AllowAnyHeader()
             .WithExposedHeaders("Content-Disposition")      //https://stackoverflow.com/questions/42898162/how-to-read-content-disposition-headers-from-server-response-angular-2
-            );    
+            );
 
             app.UseHttpsRedirection();
             app.UseAuthentication();

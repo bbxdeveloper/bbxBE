@@ -1,36 +1,33 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qCounter;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qCounter;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class CounterRepositoryAsync : GenericRepositoryAsync<Counter>, ICounterRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Counter> _dataShaperCounter;
         private IDataShapeHelper<GetCounterViewModel> _dataShaperGetCounterViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
 
-        public CounterRepositoryAsync(ApplicationDbContext dbContext,
+        public CounterRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<Counter> dataShaperCounter,
             IDataShapeHelper<GetCounterViewModel> dataShaperGetCounterViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
@@ -51,7 +48,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode)
         {
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
 
                 if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
@@ -70,7 +67,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Counter> UpdateCounterAsync(Counter p_Counter, string p_WarehouseCode)
         {
 
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
 
                 var cnt = _dbContext.Counter.Where(x => x.ID == p_Counter.ID).FirstOrDefault();
@@ -89,7 +86,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_COUNTERNOTFOUND, p_Counter.ID));
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_COUNTERNOTFOUND, p_Counter.ID));
                 }
             }
             return p_Counter;
@@ -97,8 +94,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Entity> GetCounterAsync(long ID)
         {
-            var item  = await _dbContext.Counter//.AsNoTracking().AsExpandable()
-                    .Include(i => i.Warehouse).SingleOrDefaultAsync(s=>s.ID == ID);
+            var item = await _dbContext.Counter//.AsNoTracking().AsExpandable()
+                    .Include(i => i.Warehouse).SingleOrDefaultAsync(s => s.ID == ID);
 
             var itemModel = _mapper.Map<Counter, GetCounterViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetCounterViewModel>();
@@ -114,7 +111,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<string> GetNextValueAsync(string CounterCode, long WarehouseID, bool useCounterPool = false)
         {
             var NextValue = "";
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 var counter = await _dbContext.Counter.AsNoTracking()
                     .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefaultAsync();
@@ -149,7 +146,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             counter.CounterPool.Add(new CounterPoolItem() { CounterValue = NextValue, Ticks = DateTime.UtcNow.Ticks });
                         }
                     }
-                    
+
                     await UpdateAsync(counter);
                     await dbContextTransaction.CommitAsync();
                 }
@@ -164,23 +161,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<bool> FinalizeValueAsync(string CounterCode, long WarehouseID, string counterValue)
         {
             var result = false;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 var counter = await _dbContext.Counter.AsNoTracking()
                     .Where(x => x.CounterCode == CounterCode && x.WarehouseID == WarehouseID).FirstOrDefaultAsync();
 
                 if (counter != null)
                 {
-                    
-                    var entity = await _dbContext.FindAsync(typeof(Counter), counter.ID); //To Avoid tracking error
-                    if(entity != null)
-                        _dbContext.Entry(entity).State = EntityState.Detached;
+
+                    var entity = await _dbContext.Instance.FindAsync(typeof(Counter), counter.ID); //To Avoid tracking error
+                    if (entity != null)
+                        _dbContext.Instance.Entry(entity).State = EntityState.Detached;
 
 
 
                     if (counter.CounterPool != null)
                     {
-                        counter.CounterPool = counter.CounterPool.Where(w => w .CounterValue != counterValue).ToList();
+                        counter.CounterPool = counter.CounterPool.Where(w => w.CounterValue != counterValue).ToList();
                         //       _dbContext.Entry<Counter>(counter).State = EntityState.Modified;
 
                         await UpdateAsync(counter);
@@ -200,7 +197,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<bool> RollbackValueAsync(string CounterCode, long WarehouseID, string counterValue)
         {
             var result = false;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
 
                 try
@@ -210,9 +207,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     if (counter != null)
                     {
-                        var entity = await _dbContext.FindAsync(typeof(Counter), counter.ID); //To Avoid tracking error
+                        var entity = await _dbContext.Instance.FindAsync(typeof(Counter), counter.ID); //To Avoid tracking error
                         if (entity != null)
-                            _dbContext.Entry(entity).State = EntityState.Detached;
+                            _dbContext.Instance.Entry(entity).State = EntityState.Detached;
 
                         if (counter.CounterPool != null)
                         {
@@ -232,7 +229,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_COUNTERNOTFOUND2, CounterCode, WarehouseID));
                     }
                 }
-                catch( Exception ex )
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -288,7 +285,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             */
 
-             // retrieve data to list
+            // retrieve data to list
             var resultData = await GetPagedData(query, requestParameter);
 
 
