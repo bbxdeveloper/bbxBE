@@ -1,32 +1,29 @@
-using LinqKit;
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
-using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
-using bbxBE.Infrastructure.Persistence.Repository;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Dynamic.Core;
-using System.Threading.Tasks;
-using System;
-using AutoMapper;
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
-using static bbxBE.Common.NAV.NAV_enums;
-using EFCore.BulkExtensions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static Dapper.SqlMapper;
+using bbxBE.Domain.Entities;
+using bbxBE.Infrastructure.Persistence.Repository;
 using bbxBE.Queries.Mappings;
+using EFCore.BulkExtensions;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Threading.Tasks;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class ProductRepositoryAsync : GenericRepositoryAsync<Product>, IProductRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Product> _dataShaperProduct;
         private IDataShapeHelper<GetProductViewModel> _dataShaperGetProductViewModel;
         private readonly IMockService _mockData;
@@ -58,7 +55,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
   "ean": null,
 "vatRateCode" : "27%"
         */
-        public ProductRepositoryAsync(ApplicationDbContext dbContext,
+        public ProductRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<Product> dataShaperProduct,
             IDataShapeHelper<GetProductViewModel> dataShaperGetProductViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
@@ -70,7 +67,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ) : base(dbContext)
         {
             _dbContext = dbContext;
-
             _dataShaperProduct = dataShaperProduct;
             _dataShaperGetProductViewModel = dataShaperGetProductViewModel;
             _modelHelper = modelHelper;
@@ -161,7 +157,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     p_product.ProductGroupID = pg.ID;
                     p_product.ProductGroup = pg;
-                    _dbContext.Entry(pg).State = EntityState.Unchanged;
+                    _dbContext.Instance.Entry(pg).State = EntityState.Unchanged;
 
                 }
             }
@@ -183,7 +179,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     p_product.OriginID = og.ID;
                     p_product.Origin = og;
-                    _dbContext.Entry(og).State = EntityState.Unchanged;
+                    _dbContext.Instance.Entry(og).State = EntityState.Unchanged;
                 }
             }
 
@@ -213,7 +209,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             p_product.VatRateID = vr.ID;
             p_product.VatRate = vr;
-            _dbContext.Entry(vr).State = EntityState.Unchanged;
+            _dbContext.Instance.Entry(vr).State = EntityState.Unchanged;
 
             foreach (var pc in p_product.ProductCodes)
             {
@@ -227,7 +223,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Product> AddProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 try
                 {
@@ -238,7 +234,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     _productcacheService.AddOrUpdate(p_product);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -261,7 +257,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             try
             {
-                await _dbContext.BulkInsertAsync(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
+                await _dbContext.Instance.BulkInsertAsync(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception e)
@@ -279,7 +275,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 productCodes.AddRange(product.ProductCodes);
             }
-            await _dbContext.BulkInsertAsync(productCodes);
+            await _dbContext.Instance.BulkInsertAsync(productCodes);
 
             await RefreshProductCache();
             await _dbContext.SaveChangesAsync();
@@ -366,7 +362,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!_productcacheService.TryGetValue(p_product.ID, out prodOri))
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, p_product.ID));
 
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
 
                 try
@@ -383,7 +379,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     _productcacheService.AddOrUpdate(p_product);
 
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -405,8 +401,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             try
             {
-                _dbContext.Database.SetCommandTimeout(3600);
-                await _dbContext.BulkUpdateAsync(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
+                _dbContext.Instance.Database.SetCommandTimeout(3600);
+                await _dbContext.Instance.BulkUpdateAsync(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
                 await _dbContext.SaveChangesAsync();
 
             }
@@ -424,7 +420,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 productCodes.AddRange(product.ProductCodes);
             }
-            await _dbContext.BulkUpdateAsync(productCodes);
+            await _dbContext.Instance.BulkUpdateAsync(productCodes);
             //await RefreshProductCache();
 
             await _dbContext.SaveChangesAsync();
@@ -437,7 +433,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
             Product prod = null;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 prod = await _dbContext.Product.Include(p => p.ProductCodes).Where(x => x.ID == ID).FirstOrDefaultAsync();
 
@@ -577,7 +573,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     query = query.OrderBy(o => o.ProductCodes.Single(s =>
                                 s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
-                } else if (requestParameter.FilterByName.HasValue && requestParameter.FilterByName.Value)
+                }
+                else if (requestParameter.FilterByName.HasValue && requestParameter.FilterByName.Value)
                 {
                     query = query.OrderBy(o => o.Description);
                 }
@@ -653,7 +650,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public List<GetProductViewModel> GetAllProductsFromCache()
         {
-            var resultData =  _productcacheService.QueryCache().ToList();
+            var resultData = _productcacheService.QueryCache().ToList();
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetProductViewModel>();
@@ -666,6 +663,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<List<Product>> GetAllProductsFromDBAsync()
         {
+
+
             return await _dbContext.Product.AsNoTracking()
                  .Include(p => p.ProductCodes).AsNoTracking()
                  .Include(pg => pg.ProductGroup).AsNoTracking()

@@ -1,20 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Logging;
-using bbxBE.Application.Interfaces;
+﻿using bbxBE.Application.Interfaces;
 using bbxBE.Domain.Common;
 using bbxBE.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal;
+using Microsoft.Extensions.Logging;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Reflection;
-using Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal;
 
 namespace bbxBE.Infrastructure.Persistence.Contexts
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         private readonly IDateTimeService _dateTime;
         private readonly ILoggerFactory _loggerFactory;
+
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
             IDateTimeService dateTime,
@@ -42,7 +43,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
             }
             _dateTime = dateTime;
             _loggerFactory = loggerFactory;
-          }
+        }
 
         public DbSet<Users> Users { get; set; }
         public DbSet<Customer> Customer { get; set; }
@@ -68,6 +69,10 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<Zip> Zip { get; set; }
 
         public DbSet<Location> Location { get; set; }
+
+        public DbContext Instance => this;
+
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var entry in ChangeTracker.Entries<BaseEntity>())
@@ -94,16 +99,18 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
             //    var seedPositions = _mockData.SeedPositions(1000);
             //    builder.Entity<Position>().HasData(seedPositions);
 
-           
+
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             base.OnModelCreating(builder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-  
+
             optionsBuilder.EnableSensitiveDataLogging();
             optionsBuilder.UseLoggerFactory(_loggerFactory);
         }
+
+
     }
 }

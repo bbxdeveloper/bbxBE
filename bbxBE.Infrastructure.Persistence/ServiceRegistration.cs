@@ -24,6 +24,9 @@ namespace bbxBE.Infrastructure.Persistence
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseInMemoryDatabase("ApplicationDb"));
+
+                services.AddDbContext<ApplicationGlobalDbContext>(options =>
+                    options.UseInMemoryDatabase("ApplicationDb"));
             }
             else
             {
@@ -34,9 +37,18 @@ namespace bbxBE.Infrastructure.Persistence
                        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)
                        ),
                        //                       contextLifetime: ServiceLifetime.Transient,
-                       contextLifetime: ServiceLifetime.Singleton,
+                       contextLifetime: ServiceLifetime.Transient,
                         optionsLifetime: ServiceLifetime.Singleton
                );
+
+                services.AddDbContext<ApplicationGlobalDbContext>(options =>
+                    options.UseSqlServer(
+                        configuration.GetConnectionString("bbxdbconnection"),
+                        b => b.MigrationsAssembly(typeof(ApplicationGlobalDbContext).Assembly.FullName)
+                        ),
+                        contextLifetime: ServiceLifetime.Singleton,
+                         optionsLifetime: ServiceLifetime.Singleton
+                );
 
             }
 
@@ -47,6 +59,9 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddSingleton<Database>();
 
             services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
+            services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
+            services.AddSingleton<IApplicationGlobalDbContext, ApplicationGlobalDbContext>();
+
             services.AddTransient<IUserRepositoryAsync, UserRepositoryAsync>();
             services.AddTransient<ICustomerRepositoryAsync, CustomerRepositoryAsync>();
             services.AddTransient<IProductGroupRepositoryAsync, ProductGroupRepositoryAsync>();

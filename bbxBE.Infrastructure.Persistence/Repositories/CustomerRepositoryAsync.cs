@@ -1,32 +1,30 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qCustomer;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using EFCore.BulkExtensions;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qCustomer;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using EFCore.BulkExtensions;
-using bbxBE.Common.Enums;
-using bbxBE.Common.ExpiringData;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class CustomerRepositoryAsync : GenericRepositoryAsync<Customer>, ICustomerRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Customer> _dataShaperCustomer;
         private IDataShapeHelper<GetCustomerViewModel> _dataShaperGetCustomerViewModel;
         private readonly IMockService _mockData;
@@ -34,7 +32,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private readonly ICacheService<Customer> _cacheService;
 
-        public CustomerRepositoryAsync(ApplicationDbContext dbContext,
+        public CustomerRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<Customer> dataShaperCustomer,
             IDataShapeHelper<GetCustomerViewModel> dataShaperGetCustomerViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
@@ -70,7 +68,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 return res;
             //Ha az hibás, akkor talán IBAN?
             return bllCustomer.ValidateIBAN(bankAccountNumber);
-      }
+        }
 
         public bool CheckCountryCode(string countrycode)
         {
@@ -99,8 +97,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<int> AddCustomerRangeAsync(List<Customer> p_customerList)
         {
 
-            _dbContext.Database.SetCommandTimeout(3600);
-            await _dbContext.BulkInsertAsync(p_customerList, new BulkConfig
+            _dbContext.Instance.Database.SetCommandTimeout(3600);
+            await _dbContext.Instance.BulkInsertAsync(p_customerList, new BulkConfig
             {
                 SetOutputIdentity = true,
                 PreserveInsertOrder = true,
@@ -130,7 +128,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             Customer cust = null;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 cust = await _dbContext.Customer.Where(x => x.ID == ID).FirstOrDefaultAsync();
 
@@ -276,6 +274,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
-    
+
     }
 }
