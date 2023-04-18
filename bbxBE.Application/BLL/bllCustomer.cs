@@ -55,6 +55,9 @@ namespace bbxBE.Application.BLL
 
         public static enValidateBankAccountResult ValidateBankAccount(string bankAccount)
         {
+            if (bankAccount == null)
+                return enValidateBankAccountResult.ERR_EMPTY;
+
             bankAccount = bankAccount.ToUpper(); //IN ORDER TO COPE WITH THE REGEX BELOW
             if (String.IsNullOrEmpty(bankAccount))
                 return enValidateBankAccountResult.ERR_EMPTY;
