@@ -427,6 +427,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return item;
         }
+        public async Task<int> UpdateProductRangeAsync(List<Product> p_productList, bool bsaveChanges)
+        {
+
+            var item = 0;
+            try
+            {
+                _dbContext.Instance.Database.SetCommandTimeout(3600);
+                await _dbContext.Instance.BulkUpdateAsync(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
+                if (bsaveChanges)
+                {
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                p_productList.ForEach(p => _productcacheService.AddOrUpdate(p));
+
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            return item;
+        }
 
         public async Task<Product> DeleteProductAsync(long ID)
         {
