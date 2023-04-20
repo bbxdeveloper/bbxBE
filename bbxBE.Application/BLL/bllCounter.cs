@@ -1,13 +1,7 @@
-﻿using AutoMapper;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
-using bbxBE.Domain.Entities;
-using bxBE.Application.Commands.cmdCounter;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace bbxBE.Application.BLL
@@ -25,15 +19,17 @@ namespace bbxBE.Application.BLL
             {
                 num = await _CounterRepositoryAsync.GetNextValueAsync(CounterCode, WarehouseID);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
             return res;
         }
 
-        public static string GetCounterCode(enInvoiceType p_invoiceType, PaymentMethodType p_paymentMethod, bool Incoming, long WarehouseID)
+        public static string GetCounterCode(enInvoiceType p_invoiceType, PaymentMethodType p_paymentMethod, bool Incoming, long? OriginalInvoiceID, long WarehouseID)
         {
+
+
             if (p_invoiceType == enInvoiceType.BLK)
             {
                 //Blokk
@@ -45,12 +41,25 @@ namespace bbxBE.Application.BLL
             }
             else
             {
-                //Számla, szállítólevél
-                //
-                var first = (Incoming ? "B" : "K");
-                var second = p_invoiceType.ToString();
-                var third = WarehouseID.ToString().PadLeft(3, '0');
-                return String.Format($"{first}{second}_{third}");
+                if (!OriginalInvoiceID.HasValue || OriginalInvoiceID.Value == 0)
+                {
+                    //NORMÁL számla, szállítólevél
+                    //
+                    var first = (Incoming ? "B" : "K");
+                    var second = p_invoiceType.ToString();
+                    var third = WarehouseID.ToString().PadLeft(3, '0');
+                    return String.Format($"{first}{second}_{third}");
+                }
+                else
+                {
+                    //Javítószámla
+                    //
+                    var first = "JS";
+                    var second = (Incoming ? "B" : "K");
+                    var third = WarehouseID.ToString().PadLeft(3, '0');
+                    return String.Format($"{first}{second}_{third}");
+
+                }
             }
         }
 

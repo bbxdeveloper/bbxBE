@@ -1,32 +1,23 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qInvCtrl;
+using bbxBE.Application.Queries.qStock;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qInvCtrl;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using bbxBE.Common.Enums;
 using static bbxBE.Common.NAV.NAV_enums;
-using static bxBE.Application.Commands.cmdInvCtrl.createInvCtrlICPCommand;
-using bbxBE.Infrastructure.Persistence.Caches;
-using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using bbxBE.Application.Queries.qStock;
-using static bxBE.Application.Commands.cmdInvCtrl.createInvCtrlICCCommand;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -65,7 +56,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
     public class InvCtrlRepositoryAsync : GenericRepositoryAsync<InvCtrl>, IInvCtrlRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<InvCtrl> _dataShaperInvCtrl;
         private IDataShapeHelper<GetInvCtrlViewModel> _dataShaperGetInvCtrlViewModel;
         private IDataShapeHelper<GetStockViewModel> _dataShaperGetStockViewModel;
@@ -77,7 +68,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly ICacheService<Product> _productcacheService;
 
-        public InvCtrlRepositoryAsync(ApplicationDbContext dbContext,
+        public InvCtrlRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<InvCtrl> dataShaperInvCtrl,
             IDataShapeHelper<GetInvCtrlViewModel> dataShaperGetInvCtrlViewModel,
             IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
@@ -97,7 +88,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
             _productRepository = productRepository;
             _stockRepository = stockRepository;
-            _customerRepository = customerRepository;   
+            _customerRepository = customerRepository;
             _productcacheService = productCacheService;
         }
 
@@ -116,7 +107,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> AddOrUpdateRangeInvCtrlAsync(List<InvCtrl> p_InvCtrl)
         {
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 try
                 {
@@ -125,7 +116,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var AddInvCtrlItems = new List<InvCtrl>();
                     var UpdInvCtrlItems = new List<InvCtrl>();
 
-                    foreach( var InvCtrl in p_InvCtrl)
+                    foreach (var InvCtrl in p_InvCtrl)
                     {
                         var existing = await GetInvCtrlICPRecordAsync(InvCtrl.InvCtlPeriodID.Value, InvCtrl.ProductID);
 
@@ -138,7 +129,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         var stock = await _dbContext.Stock
                         .Where(x => x.WarehouseID == InvCtrl.WarehouseID && x.ProductID == InvCtrl.ProductID && !x.Deleted)
                         .FirstOrDefaultAsync();
-                        if (stock != null) 
+                        if (stock != null)
                         {
                             InvCtrl.AvgCost = stock.AvgCost;
                         }
@@ -148,7 +139,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         if (InvCtrl.AvgCost == 0)
                         {
                             var prod = _productRepository.GetProduct(InvCtrl.ProductID);
-                            if( prod != null)
+                            if (prod != null)
                             {
                                 InvCtrl.AvgCost = (prod.LatestSupplyPrice != 0 ? prod.LatestSupplyPrice : prod.UnitPrice2);
                             }
@@ -158,7 +149,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         if (existing != null)
                         {
                             InvCtrl.ID = existing.ID;
-                            _dbContext.Entry(InvCtrl).State = EntityState.Modified;
+                            _dbContext.Instance.Entry(InvCtrl).State = EntityState.Modified;
                             UpdInvCtrlItems.Add(InvCtrl);
 
                         }
@@ -167,7 +158,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             AddInvCtrlItems.Add(InvCtrl);
                         }
                     }
-                    
+
                     if (AddInvCtrlItems.Count > 0)
                     {
                         await AddRangeAsync(AddInvCtrlItems);
@@ -181,7 +172,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await dbContextTransaction.CommitAsync();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -192,7 +183,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> AddRangeInvCtrlICCAsync(List<InvCtrl> p_InvCtrl, string p_XRel)
         {
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 try
                 {
@@ -241,7 +232,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await dbContextTransaction.CommitAsync();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -306,8 +297,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var item = await _dbContext.InvCtrl.AsNoTracking()
                 .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
                 .Where(w => w.InvCtrlType == enInvCtrlType.ICC.ToString() &&
-                    w.Warehouse.WarehouseCode == requestParameter.WarehouseCode && w.ProductID == requestParameter.ProductID && 
-                    w.InvCtrlDate >= DateTime.UtcNow.AddDays(requestParameter.RetroDays*-1).Date && !w.Deleted)
+                    w.Warehouse.WarehouseCode == requestParameter.WarehouseCode && w.ProductID == requestParameter.ProductID &&
+                    w.InvCtrlDate >= DateTime.UtcNow.AddDays(requestParameter.RetroDays * -1).Date && !w.Deleted)
                 .FirstOrDefaultAsync();
 
             if (item == null)
@@ -501,7 +492,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             FilterBy(ref query, InvCtrlPeriodID, searchString);
 
             // Count records after filter
-            recordsFiltered =  query.Count();
+            recordsFiltered = query.Count();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -535,7 +526,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 query = query.Select<InvCtrl>("new(" + fields + ")");
             }
- 
+
             // retrieve data to list
             var resultData = await GetPagedData(query, requestParameter, false);
 

@@ -237,6 +237,11 @@ namespace bbxBE.Application.BLL
                     RelDeliveryNoteLines = await invoiceLineRepository.GetInvoiceLineRecordsAsync(
                         request.InvoiceLines.Select(s => s.RelDeliveryNoteInvoiceLineID.Value).ToList());
                 }
+                List<Invoice> ModifivationInvoices = new List<Invoice>();
+                if (request.OriginalInvoiceID.HasValue && request.OriginalInvoiceID.Value != 0)
+                {
+
+                }
 
                 //Megjegyzés
                 if (!string.IsNullOrWhiteSpace(request.Notice))
@@ -378,7 +383,7 @@ namespace bbxBE.Application.BLL
                 invoice = await CalcInvoiceAmountsAsynch(invoice, cancellationToken);
 
                 //Számlaszám megállapítása
-                counterCode = bllCounter.GetCounterCode(invoiceType, paymentMethod, invoice.Incoming, wh.ID);
+                counterCode = bllCounter.GetCounterCode(invoiceType, paymentMethod, invoice.Incoming, invoice.OriginalInvoiceID, wh.ID);
                 invoice.InvoiceNumber = await counterRepository.GetNextValueAsync(counterCode, wh.ID);
                 invoice.Copies = 1;
 
