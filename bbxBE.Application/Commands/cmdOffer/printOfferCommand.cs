@@ -1,35 +1,29 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.BLL;
-using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Common.Consts;
-using bbxBE.Common.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
 using bbxBE.Common;
-using bbxBE.Domain.Entities;
+using bbxBE.Common.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
+using System.ComponentModel;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
-using Telerik.Reporting;
-using Telerik.Reporting.Processing;
-using Telerik.Reporting.XmlSerialization;
 
 namespace bbxBE.Application.Commands.cmdOffer
 {
     public class PrintOfferCommand : IRequest<FileStreamResult>
     {
+        [ColumnLabel("ID")]
+        [Description("ID")]
         public long ID { get; set; }
+
+        [ColumnLabel("Backend URL")]
+        [Description("Backend URL")]
         public string baseURL;
+
+        [ColumnLabel("Példány")]
+        [Description("Példány")]
         public int Copies { get; set; } = 1;
     }
 
@@ -45,10 +39,10 @@ namespace bbxBE.Application.Commands.cmdOffer
         }
 
         public async Task<FileStreamResult> Handle(PrintOfferCommand request, CancellationToken cancellationToken)
-        {         
+        {
             var reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Offer.trdx", Assembly.GetExecutingAssembly());
             var res = await bllOffer.CreateOfferReportAsynch(_offerRepository, reportTRDX, request, cancellationToken);
-    
+
             return res;
         }
 

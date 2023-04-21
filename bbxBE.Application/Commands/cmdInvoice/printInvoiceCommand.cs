@@ -1,38 +1,39 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
-using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Common.Consts;
-using bbxBE.Common.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
 using bbxBE.Common;
-using bbxBE.Domain.Entities;
+using bbxBE.Common.Attributes;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Telerik.Reporting;
 using Telerik.Reporting.Processing;
 using Telerik.Reporting.XmlSerialization;
-using bbxBE.Domain.Enums;
-using bbxBE.Common.Enums;
-using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
 
 namespace bbxBE.Application.Commands.cmdInvoice
 {
     public class PrintInvoiceCommand : IRequest<FileStreamResult>
     {
+        [ColumnLabel("ID")]
+        [Description("ID")]
         public long ID { get; set; }
+
+        [ColumnLabel("Backend URL")]
+        [Description("Backend URL")]
         public string baseURL;
+
+        [ColumnLabel("Példány")]
+        [Description("Példány")]
         public int Copies { get; set; } = 1;
     }
 
@@ -50,7 +51,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
         public async Task<FileStreamResult> Handle(PrintInvoiceCommand request, CancellationToken cancellationToken)
         {
 
-            var invoice = await _invoiceRepository.GetInvoiceRecordAsync(request.ID, true);    
+            var invoice = await _invoiceRepository.GetInvoiceRecordAsync(request.ID, true);
             if (invoice == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));

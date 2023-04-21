@@ -1,17 +1,7 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bxBE.Application.Commands.cmdProductGroup;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdProductGroup
 {
@@ -28,7 +18,7 @@ namespace bbxBE.Application.Commands.cmdProductGroup
                     .Must(
                             (model, Name) =>
                          {
-                             return  IsUniqueProductGroupCode(Name);
+                             return IsUniqueProductGroupCode(Name);
                          }
                      ).WithMessage(bbxBEConsts.ERR_EXISTS)
                  .MaximumLength(bbxBEConsts.CodeLen).WithMessage(bbxBEConsts.ERR_MAXLEN);

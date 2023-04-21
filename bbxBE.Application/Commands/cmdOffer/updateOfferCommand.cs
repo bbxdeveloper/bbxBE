@@ -1,27 +1,16 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.BLL;
-using bbxBE.Common.Consts;
-using bbxBE.Common.Exceptions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
-using bbxBE.Common.Enums;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AngleSharp.Html.Parser;
-using AngleSharp.Html;
-using System.IO;
-using bbxBE.Common;
 
 namespace bxBE.Application.Commands.cmdOffer
 {
@@ -72,33 +61,35 @@ namespace bxBE.Application.Commands.cmdOffer
 
 	 */
     public class UpdateOfferCommand : IRequest<Response<Offer>>
-	{
+    {
 
-		[Description("Árajánlat-sor")]
-		public class OfferLine
-		{
-			public long ID { get; set; }
+        [Description("Árajánlat-sor")]
+        public class OfferLine
+        {
+            [ColumnLabel("ID")]
+            [Description("ID")]
+            public long ID { get; set; }
 
-			[ColumnLabel("#")]
-			[Description("Sor száma")]
-			public short LineNumber { get; set; }
+            [ColumnLabel("#")]
+            [Description("Sor száma")]
+            public short LineNumber { get; set; }
 
 
-			[ColumnLabel("Termékkód")]
-			[Description("Termékkód")]
-			public string ProductCode { get; set; }
+            [ColumnLabel("Termékkód")]
+            [Description("Termékkód")]
+            public string ProductCode { get; set; }
 
-			[ColumnLabel("Megnevezés")]
-			[Description("A termék vagy szolgáltatás megnevezése")]
-			public string LineDescription { get; set; }
+            [ColumnLabel("Megnevezés")]
+            [Description("A termék vagy szolgáltatás megnevezése")]
+            public string LineDescription { get; set; }
 
-			[ColumnLabel("Árengedmény %")]
-			[Description("Árengedmény %)")]
-			public decimal Discount { get; set; }
+            [ColumnLabel("Árengedmény %")]
+            [Description("Árengedmény %)")]
+            public decimal Discount { get; set; }
 
-			[ColumnLabel("Árengedmény megjelenítés?")]
-			[Description("Árengedmény megjelenítés)")]
-			public bool ShowDiscount { get; set; }
+            [ColumnLabel("Árengedmény megjelenítés?")]
+            [Description("Árengedmény megjelenítés)")]
+            public bool ShowDiscount { get; set; }
 
             [ColumnLabel("Pénznem")]
             [Description("Pénznem")]
@@ -109,20 +100,20 @@ namespace bxBE.Application.Commands.cmdOffer
             [Description("Árfolyam")]
             public decimal ExchangeRate { get; set; }
             [ColumnLabel("Mennyiség")]
-			[Description("Mennyiség")]
-			public decimal Quantity { get; set; }
+            [Description("Mennyiség")]
+            public decimal Quantity { get; set; }
 
-			[ColumnLabel("Me.e.")]
-			[Description("Mennyiségi egység kód")]
-			public string UnitOfMeasure { get; set; }
+            [ColumnLabel("Me.e.")]
+            [Description("Mennyiségi egység kód")]
+            public string UnitOfMeasure { get; set; }
 
-			[ColumnLabel("Áfaleíró-kód")]
-			[Description("Áfaleíró-kód")]
-			public string VatRateCode { get; set; }
+            [ColumnLabel("Áfaleíró-kód")]
+            [Description("Áfaleíró-kód")]
+            public string VatRateCode { get; set; }
 
-			[ColumnLabel("Ár")]
-			[Description("Ár")]
-			public decimal UnitPrice { get; set; }
+            [ColumnLabel("Ár")]
+            [Description("Ár")]
+            public decimal UnitPrice { get; set; }
 
             [ColumnLabel("Eredeti ár")]                 //a törzsbeli ár
             [Description("Eredeti ár")]
@@ -139,55 +130,58 @@ namespace bxBE.Application.Commands.cmdOffer
                 */
 
             [ColumnLabel("Bruttó ár")]
-			[Description("Bruttó ár")]
-			public decimal UnitGross { get; set; }
-		}
-		public long ID { get; set; }
+            [Description("Bruttó ár")]
+            public decimal UnitGross { get; set; }
+        }
 
-		[ColumnLabel("Ügyfél ID")]
-		[Description("Ügyfél ID")]
-		public long CustomerID { get; set; }
+        [ColumnLabel("ID")]
+        [Description("ID")]
+        public long ID { get; set; }
 
-		[ColumnLabel("Ajánlat száma")]
-		[Description("Ajánlat száma")]
-		public string OfferNumber { get; set; }
+        [ColumnLabel("Ügyfél ID")]
+        [Description("Ügyfél ID")]
+        public long CustomerID { get; set; }
 
-		[ColumnLabel("Kelt")]
-		[Description("Kiállítás dátuma")]
-		public DateTime OfferIssueDate { get; set; }
+        [ColumnLabel("Ajánlat száma")]
+        [Description("Ajánlat száma")]
+        public string OfferNumber { get; set; }
 
-		[ColumnLabel("Érvényesség")]
-		[Description("Érvényesség dátuma")]
-		public DateTime OfferVaidityDate { get; set; }
+        [ColumnLabel("Kelt")]
+        [Description("Kiállítás dátuma")]
+        public DateTime OfferIssueDate { get; set; }
 
-		[ColumnLabel("Bruttó árak?")]
-		[Description("Bruttó árak megjelenítése?")]
-		public bool IsBrutto { get; set; }
+        [ColumnLabel("Érvényesség")]
+        [Description("Érvényesség dátuma")]
+        public DateTime OfferVaidityDate { get; set; }
 
-		[ColumnLabel("Pénznem")]
+        [ColumnLabel("Bruttó árak?")]
+        [Description("Bruttó árak megjelenítése?")]
+        public bool IsBrutto { get; set; }
+
+        [ColumnLabel("Pénznem")]
         [Description("Pénznem")]
         public string CurrencyCode { get; set; }
 
         [ColumnLabel("Árfolyam")]
         [Description("Árfolyam")]
         public decimal ExchangeRate { get; set; }
-        
-		[ColumnLabel("Megjegyzés")]
-		[Description("Megjegyzés")]
-		public string Notice { get; set; }
 
-		[ColumnLabel("Verzió")]
-		[Description("Verzió")]
-		public short OfferVersion { get; set; }
+        [ColumnLabel("Megjegyzés")]
+        [Description("Megjegyzés")]
+        public string Notice { get; set; }
+
+        [ColumnLabel("Verzió")]
+        [Description("Verzió")]
+        public short OfferVersion { get; set; }
 
 
-		[ColumnLabel("Új verzió?")]
-		[Description("Új verzió?")]
-		public bool NewOfferVersion { get; set; } = false;
+        [ColumnLabel("Új verzió?")]
+        [Description("Új verzió?")]
+        public bool NewOfferVersion { get; set; } = false;
 
-		[ColumnLabel("Ajánlatsorok")]
-		[Description("Ajánlatsorok")]
-		public List<UpdateOfferCommand.OfferLine> OfferLines { get; set; } = new List<UpdateOfferCommand.OfferLine>();
+        [ColumnLabel("Ajánlatsorok")]
+        [Description("Ajánlatsorok")]
+        public List<UpdateOfferCommand.OfferLine> OfferLines { get; set; } = new List<UpdateOfferCommand.OfferLine>();
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
@@ -196,44 +190,44 @@ namespace bxBE.Application.Commands.cmdOffer
 
 
     public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand, Response<Offer>>
-	{
-		private readonly IOfferRepositoryAsync _offerRepository;
-		private readonly ICounterRepositoryAsync _counterRepository;
-		private readonly ICustomerRepositoryAsync _customerRepository;
-		private readonly IProductRepositoryAsync _productRepository;
-		private readonly IVatRateRepositoryAsync _vatRateRepository;
-		private readonly IMapper _mapper;
-		private readonly IConfiguration _configuration;
+    {
+        private readonly IOfferRepositoryAsync _offerRepository;
+        private readonly ICounterRepositoryAsync _counterRepository;
+        private readonly ICustomerRepositoryAsync _customerRepository;
+        private readonly IProductRepositoryAsync _productRepository;
+        private readonly IVatRateRepositoryAsync _vatRateRepository;
+        private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-		public UpdateOfferCommandHandler(IOfferRepositoryAsync offerRepository,
-						ICounterRepositoryAsync counterRepository,
-						ICustomerRepositoryAsync customerRepository,
-						IProductRepositoryAsync productRepository,
-						IVatRateRepositoryAsync vatRateRepository,
-						IMapper mapper, IConfiguration configuration)
-		{
-			_offerRepository = offerRepository;
-			_counterRepository = counterRepository;
-			_customerRepository = customerRepository;
-			_productRepository = productRepository;
-			_vatRateRepository = vatRateRepository;
+        public UpdateOfferCommandHandler(IOfferRepositoryAsync offerRepository,
+                        ICounterRepositoryAsync counterRepository,
+                        ICustomerRepositoryAsync customerRepository,
+                        IProductRepositoryAsync productRepository,
+                        IVatRateRepositoryAsync vatRateRepository,
+                        IMapper mapper, IConfiguration configuration)
+        {
+            _offerRepository = offerRepository;
+            _counterRepository = counterRepository;
+            _customerRepository = customerRepository;
+            _productRepository = productRepository;
+            _vatRateRepository = vatRateRepository;
 
 
-			_mapper = mapper;
-			_configuration = configuration;
-		}
+            _mapper = mapper;
+            _configuration = configuration;
+        }
 
-		public async Task<Response<Offer>> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
-		{
-			var offer = await bllOffer.UpdateOffer(request,
-									_mapper,
-									_offerRepository,
-									_counterRepository,
-									_customerRepository,
-									_productRepository,
-									_vatRateRepository,
-									cancellationToken);
-			return new Response<Offer>(offer);
-		}
-	}
+        public async Task<Response<Offer>> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
+        {
+            var offer = await bllOffer.UpdateOffer(request,
+                                    _mapper,
+                                    _offerRepository,
+                                    _counterRepository,
+                                    _customerRepository,
+                                    _productRepository,
+                                    _vatRateRepository,
+                                    cancellationToken);
+            return new Response<Offer>(offer);
+        }
+    }
 }

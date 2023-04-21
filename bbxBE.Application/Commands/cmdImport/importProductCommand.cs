@@ -1,10 +1,12 @@
 using bbxBE.Application.Interfaces.Commands;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +15,12 @@ namespace bbxBE.Application.Commands.cmdImport
 {
     public class ImportProductCommand : IRequest<Response<string>>
     {
+        [ColumnLabel("Importfájlok")]
+        [Description("Importfájlok: 1.Mapper, 2.CSV")]
         public List<IFormFile> ProductFiles { get; set; }
+
+        [ColumnLabel("Mezõelválasztó")]
+        [Description("Mezõelválasztó")]
         public string FieldSeparator { get; set; } = ";";
 
         [JsonIgnore]
