@@ -1,33 +1,43 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.BLL;
-using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Common.Exceptions;
 
 namespace bbxBE.Application.Commands.cmdUser
 {
 
     public class UpdateUserCommand : IRequest<Response<Users>>
     {
+        [ColumnLabel("ID")]
+        [Description("ID")]
         public long ID { get; set; }
 
+        [ColumnLabel("Név")]
+        [Description("Név")]
         public string Name { get; set; }
+        [ColumnLabel("E-mail")]
+        [Description("E-mail")]
         public string Email { get; set; }
+        [ColumnLabel("Login név")]
+        [Description("Login név")]
         public string LoginName { get; set; }
-
+        [ColumnLabel("Jelszó")]
+        [Description("Jelszó")]
         public string Password { get; set; }
+        [ColumnLabel("Megjegyzés")]
+        [Description("Megjegyzés")]
         public string Comment { get; set; }
+        [ColumnLabel("Aktív?")]
+        [Description("Aktív?")]
         public bool Active { get; set; }
 
     }
@@ -58,7 +68,7 @@ namespace bbxBE.Application.Commands.cmdUser
             else
             {
                 var oriUsr = await _usrRepository.GetUserRecordByIDAsync(request.ID);
-                if( oriUsr == null)
+                if (oriUsr == null)
                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_USERNOTFOUND, request.ID));
                 usr.PasswordHash = oriUsr.PasswordHash;
             }

@@ -1,16 +1,9 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
-using bbxBE.Common.Consts;
-using bbxBE.Domain.Entities;
+using bbxBE.Common.Attributes;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +11,8 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
 {
     public class CloseInvCtrlPeriodCommand : IRequest<Response<bool>>
     {
+        [ColumnLabel("ID")]
+        [Description("ID")]
         public long ID { get; set; }
 
     }

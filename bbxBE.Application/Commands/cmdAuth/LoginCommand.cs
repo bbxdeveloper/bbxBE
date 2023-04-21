@@ -1,30 +1,30 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.BLL;
-using bbxBE.Common.Consts;
+using bbxBE.Application.Commands.ResultModels;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
-using bbxBE.Domain.Entities;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using bbxBE.Common.Exceptions;
-using bbxBE.Application.Commands.ResultModels;
 
 namespace bxBE.Application.Commands.cmdAuth
 {
     public class LoginCommand : IRequest<Response<LoginInfo>>
     {
 
+        [ColumnLabel("Login név")]
+        [Description("Login név")]
         public string LoginName { get; set; }
+
+        [ColumnLabel("Jelszó")]
+        [Description("Jelszó")]
         public string Password { get; set; }
 
 
@@ -70,7 +70,7 @@ namespace bxBE.Application.Commands.cmdAuth
 
             var token = BllAuth.GenerateJSONWebToken(usr, JWTKey, JWTIssuer, JWTAudience, JWTDurationInMinutes);
 
-            return new Response<LoginInfo>(new LoginInfo() {  Token = token, User = usr});
+            return new Response<LoginInfo>(new LoginInfo() { Token = token, User = usr });
         }
 
 

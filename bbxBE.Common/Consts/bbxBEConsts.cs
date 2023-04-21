@@ -35,14 +35,14 @@
         public static string DEF_CUSTLOCK = "custlock";
 
 
-        public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
+        public static string ERR_REQUIRED = "{PropertyName} : mező kitöltése kötelező.";
         public static string TOKEN_PROPERTYNAME = "{PropertyName}";
 
         public static string ERR_MAXLEN = "{PropertyName}:  mező mérete nem lehet több, mint {MaxLength}.";
         public static string ERR_RANGE = "{PropertyName}:  mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
 
 
-        public static string ERR_EXISTS = "{PropertyName}:  már létezik.";
+        public static string ERR_EXISTS = "{PropertyName}: {PropertyValue} már létezik.";
         public static string ERR_INVALIDEMAIL = "{PropertyName}:  érvénytelen email cím.";
         public static string ERR_ERBANK = "{PropertyName}: érvénytelen bankszámlaszám.";
         public static string ERR_INVPRODUCTCROUPCODE = "{PropertyName}: érvénytelen termékcsoport.";
