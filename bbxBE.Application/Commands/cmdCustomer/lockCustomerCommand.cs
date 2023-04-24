@@ -1,17 +1,11 @@
-﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
-using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
 using bbxBE.Common.ExpiringData;
-using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,9 +14,11 @@ namespace bbxBE.Application.Commands.cmdCustomer
 {
     public class LockCustomerCommand : IRequest<Response<string>>
     {
+        [ColumnLabel("ID")]
+        [Description("ID")]
         public long ID { get; set; }
 
-        [JsonIgnore]					
+        [JsonIgnore]
         public string SessionID { get; set; }
 
     }
@@ -47,6 +43,6 @@ namespace bbxBE.Application.Commands.cmdCustomer
             return resp;
         }
 
-      
+
     }
 }

@@ -1,18 +1,8 @@
-﻿using AutoMapper;
-using bbxBE.Application.BLL;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
-using bbxBE.Common.Attributes;
-using bbxBE.Common.ExpiringData;
-using bbxBE.Domain.Entities;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bxBE.Application.Commands.cmdInvoice
 {
@@ -88,6 +78,9 @@ namespace bxBE.Application.Commands.cmdInvoice
         [Description("Bevételhez kapcsolódó számla")]
         public string CustomerInvoiceNumber { get; set; }
 
+        [ColumnLabel("Fiz.mód")]
+        [Description("Fizetési mód")]
+        public string PaymentMethod { get; set; }
         // Javítószámla
         [ColumnLabel("Eredeti számla ID")]
         [Description("Az eredeti számla ID,amelyre a módosítás vonatkozik")]

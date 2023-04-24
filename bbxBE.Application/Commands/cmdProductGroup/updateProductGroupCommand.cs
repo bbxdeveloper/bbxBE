@@ -1,16 +1,11 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
-using bbxBE.Application.BLL;
-using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,8 +13,15 @@ namespace bxBE.Application.Commands.cmdProductGroup
 {
     public class UpdateProductGroupCommand : IRequest<Response<ProductGroup>>
     {
+        [ColumnLabel("ID")]
+        [Description("ID")]
         public long ID { get; set; }
+        [ColumnLabel("Temékcsoport kód")]
+        [Description("Temékcsoport kód")]
         public string ProductGroupCode { get; set; }
+
+        [ColumnLabel("Temékcsoport megnevezés")]
+        [Description("Temékcsoport megnevezés")]
         public string ProductGroupDescription { get; set; }
     }
 

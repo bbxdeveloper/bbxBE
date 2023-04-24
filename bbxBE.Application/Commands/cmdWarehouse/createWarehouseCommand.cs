@@ -1,16 +1,11 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
-using bbxBE.Application.BLL;
-using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +13,12 @@ namespace bxBE.Application.Commands.cmdWarehouse
 {
     public class CreateWarehouseCommand : IRequest<Response<Warehouse>>
     {
+        [ColumnLabel("Raktárkód")]
+        [Description("Raktárkód")]
         public string WarehouseCode { get; set; }
+
+        [ColumnLabel("Raktár megnevezés")]
+        [Description("Raktár megnevezés")]
         public string WarehouseDescription { get; set; }
 
     }
