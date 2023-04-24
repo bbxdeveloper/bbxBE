@@ -23,6 +23,7 @@
     <None Remove="Reports\InvCtrlICP.trdx" />
     <None Remove="Reports\InvCtrlICPReport.trdx" />
     <None Remove="Reports\Invoice.trdx" />
+    <None Remove="Reports\InvoiceBLK.trdx" />
     <None Remove="Reports\InvoiceDNI.trdx" />
     <None Remove="Reports\InvoiceDNO.trdx" />
     <None Remove="Reports\InvoiceINC.trdx" />
@@ -46,6 +47,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\InvCtrlICPReport.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\InvoiceBLK.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\InvoiceDNO.trdx">

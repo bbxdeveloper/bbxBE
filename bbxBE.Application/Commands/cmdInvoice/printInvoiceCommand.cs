@@ -82,6 +82,11 @@ namespace bbxBE.Application.Commands.cmdInvoice
                         reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceDNO.trdx", Assembly.GetExecutingAssembly());
                         break;
                     }
+                case enInvoiceType.BLK:
+                    {
+                        reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceBLK.trdx", Assembly.GetExecutingAssembly());
+                        break;
+                    }
                 case enInvoiceType.INV:
                 default:
                     {
