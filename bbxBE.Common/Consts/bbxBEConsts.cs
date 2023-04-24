@@ -35,33 +35,33 @@
         public static string DEF_CUSTLOCK = "custlock";
 
 
-        public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
+        public static string ERR_REQUIRED = "{PropertyName}: mező kitöltése kötelező.";
         public static string TOKEN_PROPERTYNAME = "{PropertyName}";
 
-        public static string ERR_MAXLEN = "{PropertyName}:  mező mérete nem lehet több, mint {MaxLength}.";
-        public static string ERR_RANGE = "{PropertyName}:  mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
+        public static string ERR_MAXLEN = "{PropertyName}: mező mérete nem lehet több, mint {MaxLength}.";
+        public static string ERR_RANGE = "{PropertyName}: mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
 
 
-        public static string ERR_EXISTS = "{PropertyName}:  már létezik.";
-        public static string ERR_INVALIDEMAIL = "{PropertyName}:  érvénytelen email cím.";
+        public static string ERR_EXISTS = "{PropertyName}: már létezik.";
+        public static string ERR_INVALIDEMAIL = "{PropertyName}: érvénytelen email cím.";
         public static string ERR_ERBANK = "{PropertyName}: érvénytelen bankszámlaszám.";
         public static string ERR_INVPRODUCTCROUPCODE = "{PropertyName}: érvénytelen termékcsoport.";
-        public static string ERR_INVORIGINCODE = "{PropertyName}:  érvénytelen származási hely.";
-        public static string ERR_INVVATRATECODE = "{PropertyName}:  érvénytelen áfakód.";
-        public static string ERR_INVUNITOFMEASURE = "{PropertyName}:  érvénytelen mennyiségi egység:{PropertyValue} ";
+        public static string ERR_INVORIGINCODE = "{PropertyName}: érvénytelen származási hely.";
+        public static string ERR_INVVATRATECODE = "{PropertyName}: érvénytelen áfakód.";
+        public static string ERR_INVUNITOFMEASURE = "{PropertyName}: érvénytelen mennyiségi egység:{PropertyValue} ";
         public static string ERR_INVUNITOFMEASURE2 = "Sor: {0}, termék:{1} : érvénytelen mennyiségi egység:{2} ";
         public static string ERR_DETAIL_PREF = "Sor: {0}, termék:{1}";
         public static string ERR_DISCOUNT = "Sor: {0}, termék:{1}";
         public static string ERR_NOINPUTDATA = "Nincs input adat!";
 
 
-        public static string ERR_INVPAYMENTMETHOD = "{PropertyName}:  érvénytelen fizetési mód:{PropertyValue} ";
-        public static string ERR_EXCHANGERATE = "{PropertyName}:  Érvénytelen árfolyam::{PropertyValue} ";
-        public static string ERR_INVCURRENCY = "{PropertyName}:  érvénytelen pénznem:{PropertyValue}";
+        public static string ERR_INVPAYMENTMETHOD = "{PropertyName}: érvénytelen fizetési mód:{PropertyValue} ";
+        public static string ERR_EXCHANGERATE = "{PropertyName}: Érvénytelen árfolyam::{PropertyValue} ";
+        public static string ERR_INVCURRENCY = "{PropertyName}: érvénytelen pénznem:{PropertyValue}";
         public static string ERR_PRODNOTFOUND = "Termék nem található, ID:{0} ";
         public static string ERR_PRODCODENOTFOUND = "Termék nem található, kód:{0} ";
-        public static string ERR_VATRATECODENOTFOUND = "Áfakód található, kód:{0} ";
-        public static string ERR_VATRATECODENOTFOUND2 = "Áfakód található, ID:{0} ";
+        public static string ERR_VATRATECODENOTFOUND = "Áfakód nem található, kód:{0} ";
+        public static string ERR_VATRATECODENOTFOUND2 = "Áfakód nem található, ID:{0} ";
         public static string ERR_CUSTNOTFOUND = "Partneradat nem található, ID:{0} ";
         public static string ERR_OWNNOTFOUND = "Saját adat nem található!";
         public static string ERR_INVALIDFORMAT = "{PropertyName}: érvénytelen formátum!";
@@ -103,9 +103,9 @@
         public static string ERR_INV_LINES = "{PropertyName}: A számlán nincs tételsor";
         public static string ERR_INV_VATSUMS = "{PropertyName}: A számlán nincs áfánkénti összesítő";
 
-        public static string ERR_CST_OWNEXISTS = "{PropertyName}:  Saját adat már létezik.";
-        public static string ERR_CST_WRONGCOUNTRY = "{PropertyName}:  Helytelen országkód:{PropertyValue}";
-        public static string ERR_CST_WRONGUNITPRICETYPE = "{PropertyName}:  Helytelen eladási ártípus:{PropertyValue}";
+        public static string ERR_CST_OWNEXISTS = "{PropertyName}: Saját adat már létezik.";
+        public static string ERR_CST_WRONGCOUNTRY = "{PropertyName}: Helytelen országkód:{PropertyValue}";
+        public static string ERR_CST_WRONGUNITPRICETYPE = "{PropertyName}: Helytelen eladási ártípus:{PropertyValue}";
 
         public static string ERR_CST_TAXNUMBER_INV = "{PropertyName}: Az adószám csak magyarországi partnerek esetén értelmezett.";
         public static string ERR_CST_TAXNUMBER_INV2 = "{PropertyName}: érvénytelen formátum/tartalom.";
@@ -173,12 +173,13 @@
         public static string DEF_WAREHOUSE = "001";
         public static long DEF_WAREHOUSE_ID = 1;
         public static string DEF_OFFERCOUNTER = "AJ";
+        public static string DEF_JSCOUNTER = "JS";
 
         public static string DEF_NOTICE = "Notice";
         public static string DEF_NOTICEDESC = "Megjegyzés";
 
 
-        public static string EMAIL_FORMAT_ERROR = "{PropertyName}:  Hibás email cím!";
+        public static string EMAIL_FORMAT_ERROR = "{PropertyName}: Hibás email cím!";
 
     }
 }

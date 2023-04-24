@@ -1,4 +1,5 @@
 ﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using System;
@@ -54,7 +55,7 @@ namespace bbxBE.Application.BLL
                 {
                     //Javítószámla
                     //
-                    var first = "JS";
+                    var first = bbxBEConsts.DEF_JSCOUNTER;
                     var second = (Incoming ? "B" : "K");
                     var third = WarehouseID.ToString().PadLeft(3, '0');
                     return String.Format($"{first}{second}_{third}");
