@@ -1,14 +1,9 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
+using bbxBE.Common.Attributes;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +11,8 @@ namespace bbxBE.Application.Commands.cmdLocation
 {
     public class DeleteLocationCommand : IRequest<Response<long>>
     {
+        [ColumnLabel("ID")]
+        [Description("ID")]
         public long ID { get; set; }
 
     }
@@ -37,6 +34,6 @@ namespace bbxBE.Application.Commands.cmdLocation
             return new Response<long>(request.ID);
         }
 
-      
+
     }
 }

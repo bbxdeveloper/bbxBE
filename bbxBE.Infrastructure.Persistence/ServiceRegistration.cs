@@ -10,13 +10,8 @@ using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using System.Reflection;
-using Hangfire;
-using Microsoft.Extensions.Logging;
-using FluentMigrator.Runner.Initialization;
 using System;
-using AsyncKeyedLock;
+using System.Reflection;
 
 namespace bbxBE.Infrastructure.Persistence
 {
@@ -29,27 +24,31 @@ namespace bbxBE.Infrastructure.Persistence
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseInMemoryDatabase("ApplicationDb"));
+
+                services.AddDbContext<ApplicationGlobalDbContext>(options =>
+                    options.UseInMemoryDatabase("ApplicationDb"));
             }
             else
             {
-                
+
                 services.AddDbContext<ApplicationDbContext>(options =>
                    options.UseSqlServer(
                        configuration.GetConnectionString("bbxdbconnection"),
                        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)
                        ),
+                       //                       contextLifetime: ServiceLifetime.Transient,
                        contextLifetime: ServiceLifetime.Transient,
                         optionsLifetime: ServiceLifetime.Singleton
                );
-                
-                /*
-                services.AddDbContextFactory<ApplicationDbContext>(options =>
-                   options.UseSqlServer(
-                       configuration.GetConnectionString("bbxdbconnection")),
-                       ServiceLifetime.Scoped
-               );
-                */
-         
+
+                services.AddDbContext<ApplicationGlobalDbContext>(options =>
+                    options.UseSqlServer(
+                        configuration.GetConnectionString("bbxdbconnection"),
+                        b => b.MigrationsAssembly(typeof(ApplicationGlobalDbContext).Assembly.FullName)
+                        ),
+                        contextLifetime: ServiceLifetime.Singleton,
+                         optionsLifetime: ServiceLifetime.Singleton
+                );
 
             }
 
@@ -60,6 +59,9 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddSingleton<Database>();
 
             services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
+            services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
+            services.AddSingleton<IApplicationGlobalDbContext, ApplicationGlobalDbContext>();
+
             services.AddTransient<IUserRepositoryAsync, UserRepositoryAsync>();
             services.AddTransient<ICustomerRepositoryAsync, CustomerRepositoryAsync>();
             services.AddTransient<IProductGroupRepositoryAsync, ProductGroupRepositoryAsync>();
@@ -80,6 +82,13 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<ICustDiscountRepositoryAsync, CustDiscountRepositoryAsync>();
             services.AddTransient<IZipRepositoryAsync, ZipRepositoryAsync>();
             services.AddTransient<ILocationRepositoryAsync, LocationRepositoryAsync>();
+
+            services.AddTransient<IProductGlobalRepositoryAsync, ProductGlobalRepositoryAsync>();
+            services.AddTransient<IProductGroupGlobalRepositoryAsync, ProductGroupGlobalRepositoryAsync>();
+            services.AddTransient<IOriginGlobalRepositoryAsync, OriginGlobalRepositoryAsync>();
+            services.AddTransient<IProductCodeGlobalRepositoryAsync, ProductCodeGlobalRepositoryAsync>();
+
+
 
             services.AddSingleton<ICacheService<Product>, ProductCacheService>();
             services.AddSingleton<ICacheService<Customer>, CustomerCacheService>();

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace bbxBE.Common.Consts
+﻿namespace bbxBE.Common.Consts
 {
-    public static  class bbxBEConsts
+    public static class bbxBEConsts
     {
         public static int CodeLen = 12;
         public static int DescriptionLen = 80;
@@ -34,19 +30,19 @@ namespace bbxBE.Common.Consts
         public static string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
         public static int WaitForExpiringDataSec = 3;
-        public static int ExpiringDataMaxCount= 5000;
+        public static int ExpiringDataMaxCount = 5000;
         public static int CustomerLockExpoirationSec = 900; //15 perc
         public static string DEF_CUSTLOCK = "custlock";
 
 
-        public static string ERR_REQUIRED = "{PropertyName}:  mező kitöltése kötelező.";
+        public static string ERR_REQUIRED = "{PropertyName} : mező kitöltése kötelező.";
         public static string TOKEN_PROPERTYNAME = "{PropertyName}";
 
         public static string ERR_MAXLEN = "{PropertyName}:  mező mérete nem lehet több, mint {MaxLength}.";
         public static string ERR_RANGE = "{PropertyName}:  mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
 
 
-        public static string ERR_EXISTS = "{PropertyName}:  már létezik.";
+        public static string ERR_EXISTS = "{PropertyName}: {PropertyValue} már létezik.";
         public static string ERR_INVALIDEMAIL = "{PropertyName}:  érvénytelen email cím.";
         public static string ERR_ERBANK = "{PropertyName}: érvénytelen bankszámlaszám.";
         public static string ERR_INVPRODUCTCROUPCODE = "{PropertyName}: érvénytelen termékcsoport.";
@@ -133,6 +129,13 @@ namespace bbxBE.Common.Consts
 
         public static string ERR_INVCTRLNOTFOUND = "Leltári tétel nem található, ID:{0} ";
         public static string ERR_INVCTRL_DATE = "{PropertyName}:Helytelen leltárdátum!";
+
+
+        public static string PROD_IMPORT_RESULT = "***Product import***\n" +
+                                                    "Összes elem    :{0}\n" +
+                                                    "Létrehozva     :{1}\n" +
+                                                    "Aktualuzálva   :{2}\n" +
+                                                    "Hibás          :{3}";
 
 
         public static string NAV_TOKENEXCHANGE_ERR = "{0} NAV tokenExchange error result:{1}";

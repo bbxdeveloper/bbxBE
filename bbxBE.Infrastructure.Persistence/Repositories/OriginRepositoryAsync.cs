@@ -1,30 +1,26 @@
-using LinqKit;
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qOrigin;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qOrigin;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class OriginRepositoryAsync : GenericRepositoryAsync<Origin>, IOriginRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Origin> _dataShaperOrigin;
         private IDataShapeHelper<GetOriginViewModel> _dataShaperGetOriginViewModel;
         private readonly IMockService _mockData;
@@ -34,7 +30,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<Product> _productCacheService;
 
 
-        public OriginRepositoryAsync(ApplicationDbContext dbContext,
+        public OriginRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<Origin> dataShaperOrigin,
             IDataShapeHelper<GetOriginViewModel> dataShaperGetOriginViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
@@ -76,7 +72,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<long> AddOriginRangeAsync(List<Origin> p_originList)
         {
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
 
 
@@ -129,7 +125,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             Origin origin = null;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 origin = _dbContext.Origin.Where(x => x.ID == ID).FirstOrDefault();
 
@@ -209,7 +205,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var query = _cacheService.QueryCache();
 
             // Count records total
-            recordsTotal =  query.Count();
+            recordsTotal = query.Count();
 
             // filter data
             FilterBySearchString(ref query, searchString);

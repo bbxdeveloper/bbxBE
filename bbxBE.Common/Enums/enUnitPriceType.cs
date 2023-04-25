@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 
 namespace bbxBE.Common.Enums
 {
     public enum enUnitPriceType
     {
-        [Description("Egységár")] 
-        UNIT,
         [Description("Listaár")]
-        LIST
+        LIST,
+        [Description("Egységár")]
+        UNIT
+
     }
 }
