@@ -84,6 +84,18 @@ namespace bbxBE.Domain.Entities
             }
         }
 
+        [ColumnLabel("Fizetési határidő")]
+        [Description("Fizetési határidő (napban)")]
+        public short PaymentDays { get; set; }
+
+        [ColumnLabel("Figyelmeztetés limit")]
+        [Description("Figyelmeztetés limit")]
+        public decimal? WarningLimit { get; set; }
+
+        [ColumnLabel("Maximális limit")]
+        [Description("Maximális limit")]
+        public decimal? MaxLimit { get; set; }
+
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
         public bool IsOwnData { get; set; }

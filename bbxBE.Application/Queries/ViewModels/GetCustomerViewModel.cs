@@ -86,6 +86,17 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Eladási ártípus megnevezés")]
         public string UnitPriceTypeX { get; set; }
 
+        [ColumnLabel("Fizetési határidő")]
+        [Description("Fizetési határidő (napban)")]
+        public short PaymentDays { get; set; }
+
+        [ColumnLabel("Figyelmeztetés limit")]
+        [Description("Figyelmeztetés limit")]
+        public decimal? WarningLimit { get; set; }
+
+        [ColumnLabel("Maximális limit")]
+        [Description("Maximális limit")]
+        public decimal? MaxLimit { get; set; }
 
         [MapToEntity("isOwnData")]
         [ColumnLabel("Saját adat?")]

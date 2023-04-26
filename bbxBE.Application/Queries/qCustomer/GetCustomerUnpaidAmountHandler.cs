@@ -15,36 +15,36 @@ using bbxBE.Application.Commands.cmdImport;
 
 namespace bbxBE.Application.Queries.qCustomer
 {
-    public class GetCustomer:  IRequest<Entity>
+    public class GetCustomerUnpaidAmount:  IRequest<decimal>
     {
         public long ID { get; set; }
   //      public string Fields { get; set; }
     }
 
-    public class GetCustomerHandler : IRequestHandler<GetCustomer, Entity>
+    public class GetCustomerUnpaidAmountHandler : IRequestHandler<GetCustomerUnpaidAmount, decimal>
     {
-        private readonly ICustomerRepositoryAsync _customerRepository;
+        private readonly ICustomerRepositoryAsync _positionRepository;
+        private readonly IInvoiceRepositoryAsync _invoiceRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetCustomerHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetCustomerUnpaidAmountHandler(
+            ICustomerRepositoryAsync positionRepository, 
+            IMapper mapper, IModelHelper modelHelper)
         {
-            _customerRepository = customerRepository;
+            _positionRepository = positionRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
-
-        public async Task<Entity> Handle(GetCustomer request, CancellationToken cancellationToken)
+        itt tartok
+        public Task<decimal> Handle(GetCustomerUnpaidAmount request, CancellationToken cancellationToken)
         {
-            var validFilter = request;
-            var pagination = request;
-          
-            // query based on filter
-            var entity = _customerRepository.GetCustomer(validFilter.ID);
-            var data = entity.MapItemFieldsByMapToAnnotation<GetCustomerViewModel>();
+            var entity = _positionRepository.GetCustomer(request.ID);
 
             // response wrapper
-            return data;
+            decimal d = 0;
+            return new Task<decimal>(d);
         }
+
     }
 }
