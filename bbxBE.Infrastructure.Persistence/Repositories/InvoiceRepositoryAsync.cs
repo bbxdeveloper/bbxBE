@@ -253,6 +253,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                   .Include(c => c.Customer)
                   .Include(a => a.AdditionalInvoiceData)
                   .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
+                  .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
                   .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate)
                   .Include(u => u.User)
                   .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
@@ -281,6 +282,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return invoices.ToDictionary(k => k.lineID, i => i.inv);
         }
+        public async Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceNumber(string invoiceNumber)
+        {
+            var q = _dbContext.Invoice.AsNoTracking()
+                .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
+                .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
+                .Include(i => i.Supplier)
+                .Include(i => i.Customer)
+                .Include(i => i.SummaryByVatRates).ThenInclude(t => t.VatRate)
+                .Include(i => i.AdditionalInvoiceData)
+                .Where(x => x.OriginalInvoiceNumber == invoiceNumber && !x.Deleted);
+            return await q.ToListAsync();
+        }
+
+        public async Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceID(long invoiceID)
+        {
+            var q = _dbContext.Invoice.AsNoTracking()
+                .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
+                .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
+                .Include(i => i.Supplier)
+                .Include(i => i.Customer)
+                .Include(i => i.SummaryByVatRates).ThenInclude(t => t.VatRate)
+                .Include(i => i.AdditionalInvoiceData)
+                .Where(x => x.OriginalInvoiceID == invoiceID && !x.Deleted);
+            return await q.ToListAsync();
+        }
+
 
         private IQueryable<GetPendigDeliveryNotesModel> getPendigDeliveryNotesQuery(bool incoming, long warehouseID, string currencyCode)
         {
@@ -453,7 +480,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
         {
 

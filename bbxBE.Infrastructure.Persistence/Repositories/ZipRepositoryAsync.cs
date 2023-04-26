@@ -1,22 +1,19 @@
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class ZipRepositoryAsync : GenericRepositoryAsync<Zip>, IZipRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Zip> _dataShaperZip;
         private IDataShapeHelper<GetZipViewModel> _dataShaperGetZipViewModel;
         private readonly IMockService _mockData;
@@ -24,7 +21,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
 
 
-        public ZipRepositoryAsync(ApplicationDbContext dbContext,
+        public ZipRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<Zip> dataShaperZip,
             IDataShapeHelper<GetZipViewModel> dataShaperGetZipViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)

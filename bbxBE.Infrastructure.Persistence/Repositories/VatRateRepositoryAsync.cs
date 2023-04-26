@@ -1,29 +1,26 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qVatRate;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qVatRate;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class VatRateRepositoryAsync : GenericRepositoryAsync<VatRate>, IVatRateRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<VatRate> _dataShaperVatRate;
         private IDataShapeHelper<GetVatRateViewModel> _dataShaperGetVatRateViewModel;
         private readonly IMockService _mockData;
@@ -31,7 +28,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private readonly ICacheService<VatRate> _cacheService;
 
-        public VatRateRepositoryAsync(ApplicationDbContext dbContext,
+        public VatRateRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<VatRate> dataShaperVatRate,
             IDataShapeHelper<GetVatRateViewModel> dataShaperGetVatRateViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
@@ -65,7 +62,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Entity GetVatRate(long ID)
         {
             var query = _cacheService.QueryCache();
-            var item = query.Where(x => x.ID== ID).FirstOrDefault();
+            var item = query.Where(x => x.ID == ID).FirstOrDefault();
 
             if (item == null)
             {

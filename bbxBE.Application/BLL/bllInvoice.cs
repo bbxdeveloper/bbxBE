@@ -223,9 +223,8 @@ namespace bbxBE.Application.BLL
                 //	- Korrekciós be- ill. kimenő számla esetén
                 //
                 var hasRelDeliveryNotes = (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString() ||
-                                      (request.Correction.HasValue && request.Correction.Value &&
                                         (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
-                                        ));
+                                        && (request.Correction.HasValue && request.Correction.Value));
 
 
                 if (hasRelDeliveryNotes)
@@ -237,10 +236,43 @@ namespace bbxBE.Application.BLL
                     RelDeliveryNoteLines = await invoiceLineRepository.GetInvoiceLineRecordsAsync(
                         request.InvoiceLines.Select(s => s.RelDeliveryNoteInvoiceLineID.Value).ToList());
                 }
-                List<Invoice> ModifivationInvoices = new List<Invoice>();
-                if (request.OriginalInvoiceID.HasValue && request.OriginalInvoiceID.Value != 0)
-                {
 
+                int RealLineNumber = 1;
+
+                //Javítószámla
+                List<Invoice> ModificationInvoices = new List<Invoice>();
+                Invoice OriginalInvoice = null;
+                var isCorrectionInvoice = (request.OriginalInvoiceID.HasValue && request.OriginalInvoiceID.Value != 0)
+                                            && (request.Correction.HasValue && request.Correction.Value);
+                if (isCorrectionInvoice)
+                {
+                    OriginalInvoice = await invoiceRepository.GetInvoiceRecordAsync(request.OriginalInvoiceID.Value, true);
+                    if (OriginalInvoice == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, request.OriginalInvoiceID.Value));
+                    }
+
+                    // Javjtó bizonylat linenumber meghatározás
+                    //      - az eredeti bizonylat linenumber utáni tétel
+                    //        + engedmény esetén áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve)
+                    //      - már elkészült javítószámlák tétel összesen
+                    //        + engedmény esetén már elkészült javítószámlák áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve)
+
+                    // eredeti számla
+                    RealLineNumber += OriginalInvoice.InvoiceLines.Count()
+                                     + (OriginalInvoice.InvoiceDiscountPercent != 0 ? OriginalInvoice.SummaryByVatRates.Count() : 0);
+
+                    // már elkészült javítószámlák
+                    ModificationInvoices = await invoiceRepository.GetCorrectionInvoiceRecordsByInvoiceID(request.OriginalInvoiceID.Value);
+                    ModificationInvoices.ForEach(oi =>
+                    {
+                        RealLineNumber += oi.InvoiceLines.Count()
+                                         + (oi.InvoiceDiscountPercent != 0 ? oi.SummaryByVatRates.Count() : 0);
+                    });
+
+                    invoice.OriginalInvoiceNumber = OriginalInvoice.InvoiceNumber;
+                    invoice.ModificationIndex = (short)(ModificationInvoices.Count() + 1);
+                    invoice.ModifyWithoutMaster = false;
                 }
 
                 //Megjegyzés
@@ -260,6 +292,7 @@ namespace bbxBE.Application.BLL
 
 
                 //Tételsorok előfeldolgozása
+                var lineErrors = new List<string>();
                 foreach (var ln in invoice.InvoiceLines)
                 {
                     var rln = request.InvoiceLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
@@ -378,12 +411,45 @@ namespace bbxBE.Application.BLL
                         ln.PendingDNQuantity = ln.Quantity;
                     }
 
+                    if (isCorrectionInvoice)
+                    {
+                        //Termékkód ell.
+                        if (!OriginalInvoice.InvoiceLines.Any(w => w.ProductID == ln.ProductID))
+                        {
+                            lineErrors.Add(string.Format(bbxBEConsts.ERR_CORRECTIONUNKOWNPROD, ln.ProductID, ln.ProductCode));
+
+                        }
+                        else
+                        {
+
+                            //Mennyiség ell.
+                            var origQty = OriginalInvoice.InvoiceLines.Where(w => w.ProductID == ln.ProductID).Sum(s => s.Quantity);
+                            var modQty = ModificationInvoices.Sum(s => s.InvoiceLines.Where(w => w.ProductID == ln.ProductID).Sum(s => s.Quantity));
+                            if (origQty + modQty + ln.Quantity < 0)
+                            {
+                                lineErrors.Add(string.Format(bbxBEConsts.ERR_WRONGCORRECTIONQTY,
+                                        ln.ProductCode,
+                                        origQty,
+                                        modQty,
+                                        ln.Quantity));
+                            }
+                        }
+
+                        // linenumber véglegesítés javítószámla esetén
+                        ln.LineNumber = (short)(RealLineNumber++);
+
+                    }
+                }
+
+                if (lineErrors.Any())
+                {
+                    throw new ValidationException(lineErrors);
                 }
 
                 invoice = await CalcInvoiceAmountsAsynch(invoice, cancellationToken);
 
                 //Számlaszám megállapítása
-                counterCode = bllCounter.GetCounterCode(invoiceType, paymentMethod, invoice.Incoming, invoice.OriginalInvoiceID, wh.ID);
+                counterCode = bllCounter.GetCounterCode(invoiceType, paymentMethod, invoice.Incoming, isCorrectionInvoice, wh.ID);
                 invoice.InvoiceNumber = await counterRepository.GetNextValueAsync(counterCode, wh.ID);
                 invoice.Copies = 1;
 

@@ -81,6 +81,9 @@
         public static string ERR_STOCKCARDNOTFOUND = "Készletkarton nem található, ID:{0} ";
         public static string ERR_LOCATIONOTFOUND = "Helyiség nem található, ID:{0} ";
         public static string ERR_INVOICELINENOTFOUND = "Bizonylatsor nem található, ID:{0}, bizonylat:{1}, sor ID:{2}";
+        public static string ERR_ORIGINALINVOICENOTFOUND = "Eredeti bionylat nem található, ID:{0}";
+        public static string ERR_WRONGCORRECTIONQTY = "Eredeti bionylaton lévőnél nagyobb mennyiség levonása! Termékkód:{0}, eredeti mennyiség:{1:#,#0.00}, előzőleg lejavítva:{2:#,#0.00}, javítószámlán:{3:#,#0.00}";
+        public static string ERR_CORRECTIONUNKOWNPROD = "Eredeti bionylaton nem létező termék: ID:{0}, Kód:{1}";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 
@@ -125,7 +128,7 @@
         public static string ERR_INVCTRLPERIOD_ALREADYCLOSED = "A leltáridőszak már lezárt!";
         public static string ERR_INVAGGR_RELATED_NOT_ASSIGNED = "A gyűjtőszámlán lévő tételhez nincs szállítólevél rendelve! Szállítólevél:{0}, sor száma:{1}, temékkód:{2} ";
         public static string ERR_INVAGGR_RELATED_NOT_FOUND = "A gyűjtőszámlán lévő tételhez nem található szállítólevél! Szállítólevél:{0}, sor száma:{1}, temékkód:{2}, kapcsolt szállító-sor ID:{3} ";
-        public static string ERR_INVAGGR_WRONG_AGGR_QTY = "A gyűjtőszámlán lévő mennyiség több, mint a szállítólevélen lévő! Szállítólevél:{0}, sor száma:{1}, temékkód:{2}, gyűjtőszámla menny.:{3:N2}, szállítólevél menny.:{4:N2}, kapcsolt szállító-sor ID:{5} ";
+        public static string ERR_INVAGGR_WRONG_AGGR_QTY = "A gyűjtőszámlán lévő mennyiség több, mint a szállítólevélen lévő! Szállítólevél:{0}, sor száma:{1}, temékkód:{2}, gyűjtőszámla menny.:{3:#,#0.00}, szállítólevél menny.:{4:#,#0.00}, kapcsolt szállító-sor ID:{5} ";
 
         public static string ERR_INVCTRLNOTFOUND = "Leltári tétel nem található, ID:{0} ";
         public static string ERR_INVCTRL_DATE = "{PropertyName}:Helytelen leltárdátum!";
@@ -173,6 +176,8 @@
         public static string DEF_WAREHOUSE = "001";
         public static long DEF_WAREHOUSE_ID = 1;
         public static string DEF_OFFERCOUNTER = "AJ";
+        public static string DEF_BLKCOUNTER = "BLK";
+        public static string DEF_BLCCOUNTER = "BLC";
         public static string DEF_JSCOUNTER = "JS";
 
         public static string DEF_NOTICE = "Notice";

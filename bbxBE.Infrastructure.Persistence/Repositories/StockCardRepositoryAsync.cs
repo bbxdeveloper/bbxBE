@@ -1,33 +1,29 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qStockCard;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qStockCard;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
 using static bbxBE.Common.NAV.NAV_enums;
-using bbxBE.Common.Enums;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using bbxBE.Infrastructure.Persistence.Caches;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class StockCardRepositoryAsync : GenericRepositoryAsync<StockCard>, IStockCardRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<StockCard> _dataShaperStockCard;
         private IDataShapeHelper<GetStockCardViewModel> _dataShaperGetStockCardViewModel;
         private readonly IMockService _mockData;
@@ -35,10 +31,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private readonly ICacheService<Product> _productCacheService;
 
-        public StockCardRepositoryAsync(ApplicationDbContext dbContext,
+        public StockCardRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<StockCard> dataShaperStockCard,
             IDataShapeHelper<GetStockCardViewModel> dataShaperGetStockCardViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -107,7 +103,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             else
             {
                 //leltári tétel
- 
+
                 ORealQty = p_Stock.RealQty;
                 OAvgCost = p_Stock.AvgCost;
             }
@@ -163,7 +159,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 latestStockCard = f;
             }
-  //          await _dbContext.SaveChangesAsync();
+            //          await _dbContext.SaveChangesAsync();
             return latestStockCard;
         }
 

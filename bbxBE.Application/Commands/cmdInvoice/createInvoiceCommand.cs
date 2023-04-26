@@ -1,8 +1,18 @@
-﻿using System;
+﻿using AutoMapper;
+using bbxBE.Application.BLL;
+using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
+using bbxBE.Common.ExpiringData;
+using bbxBE.Domain.Entities;
+using MediatR;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bxBE.Application.Commands.cmdInvoice
 {
@@ -87,10 +97,6 @@ namespace bxBE.Application.Commands.cmdInvoice
         public long? OriginalInvoiceID { get; set; } = null;
 
 
-        [ColumnLabel("Fiz.mód")]
-        [Description("Fizetési mód")]
-        public string PaymentMethod { get; set; }
-
         [ColumnLabel("Pénznem")]
         [Description("Pénznem")]
         public string CurrencyCode { get; set; }
@@ -120,7 +126,7 @@ namespace bxBE.Application.Commands.cmdInvoice
         public bool? PriceReview { get; set; } = false;
 
         [ColumnLabel("Módosító bizonylat?")]
-        [Description("Módosító bizonylat jelölése")]
+        [Description("Módosító bizonylat jelölése (mínuszos szállító vagy javítószámla)")]
         public bool? Correction { get; set; } = false;
 
         [ColumnLabel("Típus")]

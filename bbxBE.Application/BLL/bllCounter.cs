@@ -27,7 +27,7 @@ namespace bbxBE.Application.BLL
             return res;
         }
 
-        public static string GetCounterCode(enInvoiceType p_invoiceType, PaymentMethodType p_paymentMethod, bool Incoming, long? OriginalInvoiceID, long WarehouseID)
+        public static string GetCounterCode(enInvoiceType p_invoiceType, PaymentMethodType p_paymentMethod, bool Incoming, bool isCorrectionInvoice, long WarehouseID)
         {
 
 
@@ -36,13 +36,13 @@ namespace bbxBE.Application.BLL
                 //Blokk
                 //
 
-                var prefix = (p_paymentMethod == PaymentMethodType.CASH ? "BLK" : "BLC");
+                var prefix = (p_paymentMethod == PaymentMethodType.CASH ? bbxBEConsts.DEF_BLKCOUNTER : bbxBEConsts.DEF_BLCCOUNTER);
                 var whs = WarehouseID.ToString().PadLeft(3, '0');
                 return String.Format($"{prefix}_{whs}");
             }
             else
             {
-                if (!OriginalInvoiceID.HasValue || OriginalInvoiceID.Value == 0)
+                if (!isCorrectionInvoice)
                 {
                     //NORMÁL számla, szállítólevél
                     //

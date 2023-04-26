@@ -1,34 +1,28 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qStock;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qStock;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
 using static bbxBE.Common.NAV.NAV_enums;
-using bbxBE.Common.Enums;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using bbxBE.Infrastructure.Persistence.Caches;
-using System.Collections;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class StockRepositoryAsync : GenericRepositoryAsync<Stock>, IStockRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Stock> _dataShaperStock;
         private IDataShapeHelper<GetStockViewModel> _dataShaperGetStockViewModel;
         private readonly IMockService _mockData;
@@ -39,7 +33,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ILocationRepositoryAsync _locationRepository;
         private readonly ICacheService<Product> _productcacheService;
 
-        public StockRepositoryAsync(ApplicationDbContext dbContext,
+        public StockRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<Stock> dataShaperStock,
             IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
