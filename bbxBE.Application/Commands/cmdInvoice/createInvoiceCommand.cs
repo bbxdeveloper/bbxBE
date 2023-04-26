@@ -91,6 +91,11 @@ namespace bxBE.Application.Commands.cmdInvoice
         [ColumnLabel("Fiz.mód")]
         [Description("Fizetési mód")]
         public string PaymentMethod { get; set; }
+        // Javítószámla
+        [ColumnLabel("Eredeti számla ID")]
+        [Description("Az eredeti számla ID,amelyre a módosítás vonatkozik")]
+        public long? OriginalInvoiceID { get; set; } = null;
+
 
         [ColumnLabel("Pénznem")]
         [Description("Pénznem")]
@@ -121,12 +126,13 @@ namespace bxBE.Application.Commands.cmdInvoice
         public bool? PriceReview { get; set; } = false;
 
         [ColumnLabel("Módosító bizonylat?")]
-        [Description("Módosító bizonylat jelölése")]
+        [Description("Módosító bizonylat jelölése (mínuszos szállító vagy javítószámla)")]
         public bool? Correction { get; set; } = false;
 
         [ColumnLabel("Típus")]
         [Description("Típus")]
         public string InvoiceCategory { get; set; } = enInvoiceCategory.NORMAL.ToString();
+
 
         [ColumnLabel("Számlasorok")]
         [Description("Számlasorok")]

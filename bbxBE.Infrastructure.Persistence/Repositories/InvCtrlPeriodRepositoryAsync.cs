@@ -1,34 +1,26 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qInvCtrlPeriod;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qInvCtrlPeriod;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using Microsoft.EntityFrameworkCore.Storage;
-using System.Collections;
-using EFCore.BulkExtensions;
-using bbxBE.Application.Queries.qStock;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class InvCtrlPeriodRepositoryAsync : GenericRepositoryAsync<InvCtrlPeriod>, IInvCtrlPeriodRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<InvCtrlPeriod> _dataShaperInvCtrlPeriod;
         private IDataShapeHelper<GetInvCtrlPeriodViewModel> _dataShaperGetInvCtrlPeriodViewModel;
         private IDataShapeHelper<GetStockViewModel> _dataShaperGetStockViewModel;
@@ -39,11 +31,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
 
-        public InvCtrlPeriodRepositoryAsync(ApplicationDbContext dbContext,
+        public InvCtrlPeriodRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<InvCtrlPeriod> dataShaperInvCtrlPeriod,
             IDataShapeHelper<GetInvCtrlPeriodViewModel> dataShaperGetInvCtrlPeriodViewModel,
             IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             IStockRepositoryAsync stockRepository,
             IInvCtrlRepositoryAsync invCtrlRepository,
             ICustomerRepositoryAsync customerRepository) : base(dbContext)
@@ -253,7 +245,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
 
 
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 try
                 {
@@ -270,7 +262,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;

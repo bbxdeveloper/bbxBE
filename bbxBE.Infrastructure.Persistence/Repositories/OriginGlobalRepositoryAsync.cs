@@ -3,13 +3,12 @@ using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class OriginGlobalRepositoryAsync : OriginRepositoryAsync, IOriginGlobalRepositoryAsync
     {
-        public OriginGlobalRepositoryAsync(ApplicationGlobalDbContext dbContext,
+        public OriginGlobalRepositoryAsync(IApplicationGlobalDbContext dbContext,
             IDataShapeHelper<Origin> dataShaperOrigin,
             IDataShapeHelper<GetOriginViewModel> dataShaperGetOriginViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,

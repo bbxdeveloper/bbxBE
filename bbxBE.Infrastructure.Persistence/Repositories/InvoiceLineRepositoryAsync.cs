@@ -1,39 +1,26 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using bbxBE.Common.Attributes;
-using System.ComponentModel;
-using static Dapper.SqlMapper;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using bbxBE.Common.Enums;
-using bbxBE.Application.Interfaces.Queries;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class InvoiceLineRepositoryAsync : GenericRepositoryAsync<InvoiceLine>, IInvoiceLineRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private IDataShapeHelper<GetAggregateInvoiceDeliveryNoteViewModel> _dataShaperGetAggregateInvoiceDeliveryNoteModel;
-        public InvoiceLineRepositoryAsync(ApplicationDbContext dbContext,
+        public InvoiceLineRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             IDataShapeHelper<GetAggregateInvoiceDeliveryNoteViewModel> dataShaperGetAggregateInvoiceDeliveryNoteModel
             ) : base(dbContext)
@@ -58,16 +45,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             var listFieldsModel = _modelHelper.GetModelFields<GetAggregateInvoiceDeliveryNoteViewModel>();
 
-      //      var invoiceLines = await GetInvoiceLineRecordsByRelDeliveryNoteIDAsync(InvoiceID, RelDeliveryNoteInvoiceID);
+            //      var invoiceLines = await GetInvoiceLineRecordsByRelDeliveryNoteIDAsync(InvoiceID, RelDeliveryNoteInvoiceID);
 
             List<InvoiceLine> invoiceLines;
             invoiceLines = await _dbContext.InvoiceLine.AsNoTracking()
                 .Where(x => x.InvoiceID == InvoiceID)
                 .ToListAsync();
 
-            var deliveryNotesCount = invoiceLines.GroupBy( g=>g.RelDeliveryNoteInvoiceID).Count();
+            var deliveryNotesCount = invoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceID).Count();
 
-            var deliveryNote = invoiceLines.Where(x=>x.RelDeliveryNoteInvoiceID == RelDeliveryNoteInvoiceID)
+            var deliveryNote = invoiceLines.Where(x => x.RelDeliveryNoteInvoiceID == RelDeliveryNoteInvoiceID)
                 .GroupBy(g => new
                 {
                     RelDeliveryNoteInvoiceID = g.RelDeliveryNoteInvoiceID,

@@ -1,35 +1,33 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qWarehouse;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qWarehouse;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class WarehouseRepositoryAsync : GenericRepositoryAsync<Warehouse>, IWarehouseRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Warehouse> _dataShaperWarehouse;
         private IDataShapeHelper<GetWarehouseViewModel> _dataShaperGetWarehouseViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
 
-        public WarehouseRepositoryAsync(ApplicationDbContext dbContext,
+        public WarehouseRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<Warehouse> dataShaperWarehouse,
             IDataShapeHelper<GetWarehouseViewModel> dataShaperGetWarehouseViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
@@ -61,7 +59,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             Warehouse Warehouse = null;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 Warehouse = _dbContext.Warehouse.Where(x => x.ID == ID).FirstOrDefault();
 
@@ -85,7 +83,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<Warehouse> GetWarehouseByCodeAsync(string WarehouseCode)
         {
-            return await _dbContext.Warehouse.AsNoTracking().FirstOrDefaultAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted );
+            return await _dbContext.Warehouse.AsNoTracking().FirstOrDefaultAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted);
         }
 
 
@@ -191,6 +189,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-   
+
     }
 }

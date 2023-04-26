@@ -1,6 +1,7 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -44,7 +45,6 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Áfa%")]
         [Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
         public decimal VatPercentage { get; set; }
-
 
         [ColumnLabel("Megnevezés")]
         [Description("A termék vagy szolgáltatás megnevezése")]
@@ -203,6 +203,10 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Áfakulcs")]
         [Description("Áfakulcs")]
         public virtual VatRate VatRate { get; set; }
+
+        [ColumnLabel("Egyéb tételadat")]
+        [Description("A bizonylattételre vonatkozó egyéb adat")]
+        public virtual ICollection<AdditionalInvoiceLineData> AdditionalInvoiceLineData { get; set; }
 
     }
 }
