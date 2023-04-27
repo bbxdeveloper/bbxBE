@@ -308,6 +308,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return await q.ToListAsync();
         }
 
+        public async Task<decimal> GetUnPaidAmountAsyn(long customerID)
+        {
+            //1. kimenő szállítólevélen lévő rendezetlen összeg
+            // Megj: groupoljuk bizonylatonként, hogy a bizonylatkedvezmény bzonylatonként kerülkön a függő tételekre
+            //
+            var q1 = from InvoiceLine in _dbContext.InvoiceLine
+                     join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
+                     where InvoiceLine.PendingDNQuantity > 0
+                        && Invoice.CustomerID == customerID
+                        && !Invoice.Incoming
+                        && Invoice.InvoiceType == enInvoiceType.DNO.ToString()
+                     group InvoiceLine by
+                     new
+                     {
+                         InvoiceID = Invoice.ID,
+                         InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
+                     }
+                 into grpInner
+                     select new
+                     {
+                         SumNetAmountDiscountedHUF = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPriceHUF) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
+                     };
+
+            decimal pendingAmount = q1.SingleOrDefault().SumNetAmountDiscountedHUF;
+
+            //2. kiegyenlítettlen számlák???
+
+            return pendingAmount;
+        }
 
         private IQueryable<GetPendigDeliveryNotesModel> getPendigDeliveryNotesQuery(bool incoming, long warehouseID, string currencyCode)
         {

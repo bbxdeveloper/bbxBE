@@ -1,8 +1,4 @@
-﻿using bbxBE.Common.Enums;
-using bbxBE.Common.NAV;
-using bbxBE.Domain.Entities;
-using FluentMigrator;
-using static bbxBE.Common.NAV.NAV_enums;
+﻿using FluentMigrator;
 
 //https://code-maze.com/dapper-migrations-fluentmigrator-aspnetcore/
 
@@ -21,9 +17,9 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
 
 
             Alter.Table("Customer")
-                .AddColumn("WarningLimit").AsDecimal();
+                .AddColumn("WarningLimit").AsDecimal().Nullable();
             Alter.Table("Customer")
-                .AddColumn("MaxLimit").AsDecimal();
+                .AddColumn("MaxLimit").AsDecimal().Nullable();
         }
     }
 }
