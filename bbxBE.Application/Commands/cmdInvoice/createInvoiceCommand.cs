@@ -127,7 +127,7 @@ namespace bxBE.Application.Commands.cmdInvoice
 
         [ColumnLabel("Módosító bizonylat?")]
         [Description("Módosító bizonylat jelölése (mínuszos szállító vagy javítószámla)")]
-        public bool? Correction { get; set; } = false;
+        public bool? InvoiceCorrection { get; set; } = false;
 
         [ColumnLabel("Típus")]
         [Description("Típus")]

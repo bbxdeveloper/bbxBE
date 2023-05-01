@@ -326,7 +326,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [ColumnLabel("Módosító bizonylat?")]
         [Description("Módosító bizonylat jelölése (értéke false)")]
-        public bool Correction { get; set; }
+        public bool InvoiceCorrection { get; set; }
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]

@@ -224,7 +224,7 @@ namespace bbxBE.Application.BLL
                 //
                 var hasRelDeliveryNotes = (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString() ||
                                         (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
-                                        && (request.Correction.HasValue && request.Correction.Value));
+                                        && (request.InvoiceCorrection.HasValue && request.InvoiceCorrection.Value));
 
 
                 if (hasRelDeliveryNotes)
@@ -242,9 +242,9 @@ namespace bbxBE.Application.BLL
                 //Javítószámla
                 List<Invoice> ModificationInvoices = new List<Invoice>();
                 Invoice OriginalInvoice = null;
-                var isCorrectionInvoice = (request.OriginalInvoiceID.HasValue && request.OriginalInvoiceID.Value != 0)
-                                            && (request.Correction.HasValue && request.Correction.Value);
-                if (isCorrectionInvoice)
+                var isInvoiceCorrection = (request.OriginalInvoiceID.HasValue && request.OriginalInvoiceID.Value != 0)
+                                            && (request.InvoiceCorrection.HasValue && request.InvoiceCorrection.Value);
+                if (isInvoiceCorrection)
                 {
                     OriginalInvoice = await invoiceRepository.GetInvoiceRecordAsync(request.OriginalInvoiceID.Value, true);
                     if (OriginalInvoice == null)
@@ -406,12 +406,12 @@ namespace bbxBE.Application.BLL
 
                     //Normál szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
                     if ((invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO) &&
-                        (!request.Correction.HasValue || !request.Correction.Value))        // Szállítólevél korrekció esetén nincs PendingDNQuantity
+                        (!request.InvoiceCorrection.HasValue || !request.InvoiceCorrection.Value))        // Szállítólevél korrekció esetén nincs PendingDNQuantity
                     {
                         ln.PendingDNQuantity = ln.Quantity;
                     }
 
-                    if (isCorrectionInvoice)
+                    if (isInvoiceCorrection)
                     {
                         //Termékkód ell.
                         if (!OriginalInvoice.InvoiceLines.Any(w => w.ProductID == ln.ProductID))
@@ -449,7 +449,7 @@ namespace bbxBE.Application.BLL
                 invoice = await CalcInvoiceAmountsAsynch(invoice, cancellationToken);
 
                 //Számlaszám megállapítása
-                counterCode = bllCounter.GetCounterCode(invoiceType, paymentMethod, invoice.Incoming, isCorrectionInvoice, wh.ID);
+                counterCode = bllCounter.GetCounterCode(invoiceType, paymentMethod, invoice.Incoming, isInvoiceCorrection, wh.ID);
                 invoice.InvoiceNumber = await counterRepository.GetNextValueAsync(counterCode, wh.ID);
                 invoice.Copies = 1;
 
