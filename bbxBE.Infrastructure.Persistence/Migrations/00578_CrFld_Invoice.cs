@@ -12,7 +12,12 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
         }
         public override void Up()
         {
-            Rename.Column("Invoice").OnTable("Correction").To("InvoiceCorrection");
+            Alter.Table("Invoice")
+                .AddColumn("InvoiceCorrection").AsBoolean().NotNullable().WithDefaultValue(false);
+
+            Execute.Sql(string.Format(@"update Invoice set InvoiceCorrection = Correction"));
+
+            Delete.Column("Correction").FromTable("Invoice");
         }
     }
 }
