@@ -58,10 +58,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Ár")]
         [Description("Ár")]
         public decimal UnitPrice { get; set; }
+
+        #region Nyomtatványon megjelenő mezők
         [ColumnLabel("Ár HUF")]
         [Description("Ár forintban")]
 
-        #region Nyomtatványon megjelenő mezők
         public decimal UnitPriceHUF { get; set; }
         [ColumnLabel("Nettó érték")]
         [Description("Ár a számla pénznemében")]

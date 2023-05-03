@@ -1,18 +1,11 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Infrastructure.Persistence.Contexts;
-using Dapper;
-using FluentMigrator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using FluentMigrator;
 
 //https://code-maze.com/dapper-migrations-fluentmigrator-aspnetcore/
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00055,"v00.02.08 WhsTransfer - raktárközi átadás")]
-    public class InitialTables_00055: Migration
+    [Migration(00055, "v00.02.08 WhsTransfer - raktárközi átadás")]
+    public class InitialTables_00055 : Migration
     {
         public override void Down()
         {
@@ -58,10 +51,10 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("WhsTransferID").AsInt64().ForeignKey()
                     .WithColumn("WhsTransferLineNumber").AsInt16().NotNullable()
                     .WithColumn("ProductID").AsInt64().ForeignKey()
+                    .WithColumn("ProductCode").AsString().NotNullable()
                     .WithColumn("Quantity").AsDecimal().NotNullable().WithDefaultValue(0)
                     .WithColumn("UnitOfMeasure").AsString().NotNullable().WithDefaultValue("")
-                    .WithColumn("UnitPrice").AsCurrency().NotNullable().WithDefaultValue(0)
-                    .WithColumn("AvgCost").AsDecimal().NotNullable().WithDefaultValue(0);        //átlagolt beszerzési egységár
+                    .WithColumn("CurrAvgCost").AsDecimal().NotNullable().WithDefaultValue(0);
 
             Create.Index("INX_WhsTransferLineWarehouseID")
              .OnTable("WhsTransferLine")
