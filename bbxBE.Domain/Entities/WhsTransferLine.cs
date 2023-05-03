@@ -10,7 +10,6 @@ namespace bbxBE.Domain.Entities
     {
 
 
-
         [ColumnLabel("Raktárközi átadás ID")]
         [Description("Raktárközi bizonylat átadás ID")]
         public long WhsTransferID { get; set; }

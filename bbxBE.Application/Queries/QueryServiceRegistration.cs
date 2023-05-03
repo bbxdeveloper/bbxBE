@@ -1,10 +1,8 @@
-﻿using bbxBE.Application.Behaviours;
-using bbxBE.Application.Helpers;
+﻿using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
 using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
@@ -18,7 +16,7 @@ namespace bbxBE.Application.Queries
         public static void AddQueryInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
 
-       
+
             services.AddScoped<IDataShapeHelper<Users>, DataShapeHelper<Users>>();
 
             services.AddScoped<IDataShapeHelper<Customer>, DataShapeHelper<Customer>>();
@@ -49,7 +47,7 @@ namespace bbxBE.Application.Queries
             services.AddScoped<IDataShapeHelper<GetPendigDeliveryNotesModel>, DataShapeHelper<GetPendigDeliveryNotesModel>>();
             services.AddScoped<IDataShapeHelper<GetPendigDeliveryNotesItemModel>, DataShapeHelper<GetPendigDeliveryNotesItemModel>>();
             services.AddScoped<IDataShapeHelper<GetAggregateInvoiceDeliveryNoteViewModel>, DataShapeHelper<GetAggregateInvoiceDeliveryNoteViewModel>>();
-            
+
 
             services.AddScoped<IDataShapeHelper<VatRate>, DataShapeHelper<VatRate>>();
             services.AddScoped<IDataShapeHelper<GetVatRateViewModel>, DataShapeHelper<GetVatRateViewModel>>();
@@ -59,7 +57,7 @@ namespace bbxBE.Application.Queries
 
             services.AddScoped<IDataShapeHelper<Stock>, DataShapeHelper<Stock>>();
             services.AddScoped<IDataShapeHelper<GetStockViewModel>, DataShapeHelper<GetStockViewModel>>();
-            
+
             services.AddScoped<IDataShapeHelper<StockCard>, DataShapeHelper<StockCard>>();
             services.AddScoped<IDataShapeHelper<GetStockCardViewModel>, DataShapeHelper<GetStockCardViewModel>>();
 
@@ -77,6 +75,10 @@ namespace bbxBE.Application.Queries
 
             services.AddScoped<IDataShapeHelper<Location>, DataShapeHelper<Location>>();
             services.AddScoped<IDataShapeHelper<GetLocationViewModel>, DataShapeHelper<GetLocationViewModel>>();
+
+            services.AddScoped<IDataShapeHelper<WhsTransfer>, DataShapeHelper<WhsTransfer>>();
+            services.AddScoped<IDataShapeHelper<WhsTransferLine>, DataShapeHelper<WhsTransferLine>>();
+            services.AddScoped<IDataShapeHelper<GetWhsTransferViewModel>, DataShapeHelper<GetWhsTransferViewModel>>();
 
 
             Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("Handler")).ToList().ForEach((t) =>

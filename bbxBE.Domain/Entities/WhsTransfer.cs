@@ -1,5 +1,7 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,8 +10,6 @@ namespace bbxBE.Domain.Entities
     [Description("Raktárközi átadás")]
     public class WhsTransfer : BaseEntity
     {
-
-
 
         [ColumnLabel("Raktárközi átadás száma")]
         [Description("Raktárközi bizonylat átadás száma")]
@@ -25,7 +25,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Dátum")]
         [Description("Dátum")]
-        public long TransferDate { get; set; }
+        public DateTime TransferDate { get; set; }
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
@@ -46,5 +46,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Felhasználó")]
         [Description("Felhasználó")]
         public virtual Users User { get; set; }
+
+        [ColumnLabel("Bizonylatsorok")]
+        [Description("Bizonylatsorok")]
+        public virtual ICollection<WhsTransferLine> WhsTransferLines { get; set; }
+
+
     }
 }
