@@ -69,7 +69,14 @@ namespace bbxBE.Application.Commands.cmdInvoice
             {
                 case enInvoiceType.INC:
                     {
-                        reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceINC.trdx", Assembly.GetExecutingAssembly());
+                        if (!invoice.InvoiceCorrection)
+                        {
+                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceINC.trdx", Assembly.GetExecutingAssembly());
+                        }
+                        else
+                        {
+                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSB.trdx", Assembly.GetExecutingAssembly());
+                        }
                         break;
                     }
                 case enInvoiceType.DNI:
@@ -90,7 +97,14 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 case enInvoiceType.INV:
                 default:
                     {
-                        reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
+                        if (!invoice.InvoiceCorrection)
+                        {
+                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
+                        }
+                        else
+                        {
+                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSK.trdx", Assembly.GetExecutingAssembly());
+                        }
                         break;
                     }
             }

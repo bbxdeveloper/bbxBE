@@ -27,6 +27,7 @@
     <None Remove="Reports\InvoiceDNI.trdx" />
     <None Remove="Reports\InvoiceDNO.trdx" />
     <None Remove="Reports\InvoiceINC.trdx" />
+    <None Remove="Reports\InvoiceJSB.trdx" />
     <None Remove="Reports\Offer.trdx" />
   </ItemGroup>
 
@@ -62,6 +63,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\Invoice.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\InvoiceJSB.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\Offer.trdx">
