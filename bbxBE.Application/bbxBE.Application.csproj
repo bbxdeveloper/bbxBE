@@ -23,9 +23,12 @@
     <None Remove="Reports\InvCtrlICP.trdx" />
     <None Remove="Reports\InvCtrlICPReport.trdx" />
     <None Remove="Reports\Invoice.trdx" />
+    <None Remove="Reports\InvoiceBLK.trdx" />
     <None Remove="Reports\InvoiceDNI.trdx" />
     <None Remove="Reports\InvoiceDNO.trdx" />
     <None Remove="Reports\InvoiceINC.trdx" />
+    <None Remove="Reports\InvoiceJSB.trdx" />
+    <None Remove="Reports\InvoiceJSK.trdx" />
     <None Remove="Reports\Offer.trdx" />
   </ItemGroup>
 
@@ -48,6 +51,9 @@
     <EmbeddedResource Include="Reports\InvCtrlICPReport.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Reports\InvoiceBLK.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Reports\InvoiceDNO.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -60,6 +66,12 @@
     <EmbeddedResource Include="Reports\Invoice.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Reports\InvoiceJSB.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\InvoiceJSK.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Reports\Offer.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -69,8 +81,8 @@
     <PackageReference Include="AngleSharp" Version="0.17.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="EFCore.BulkExtensions-UDIntel.Fork" Version="3.2.5" />
-    <PackageReference Include="FluentValidation" Version="10.3.3" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.3.3" />
+    <PackageReference Include="FluentValidation" Version="11.5.2" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
     <PackageReference Include="Hangfire.Core" Version="1.7.28" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.2" />

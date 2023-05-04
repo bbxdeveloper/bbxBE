@@ -1,30 +1,22 @@
 ﻿using bbxBE.Application.Commands.cmdInvoice;
-using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
+using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qInvoice;
-using bbxBE.Application.Wrappers;
 using bbxBE.Common;
-using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
-using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdInvoice;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+    //   [Authorize]
     public class InvoiceController : BaseApiController
     {
 
@@ -49,7 +41,7 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] GetInvoice filter)
         {
-             return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(filter));
         }
 
         /// <summary>
@@ -105,7 +97,7 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpGet("paymentmethod")]
         public async Task<IActionResult> GetPaymentMethod()
         {
-            var req = new GetEnum() { type = typeof(PaymentMethodType), FilteredItems = new List<string>() { PaymentMethodType.VOUCHER.ToString(), PaymentMethodType.OTHER.ToString()}};
+            var req = new GetEnum() { type = typeof(PaymentMethodType), FilteredItems = new List<string>() { PaymentMethodType.VOUCHER.ToString(), PaymentMethodType.OTHER.ToString() } };
 
             return Ok(await Mediator.Send(req));
         }
@@ -151,7 +143,7 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPost("importfromnav")]
         public async Task<IActionResult> ImportFromNAV(importFromNAVCommand command)
         {
-                return Ok(await Mediator.Send(command));
+            return Ok(await Mediator.Send(command));
         }
 
         /// <summary>
@@ -199,6 +191,12 @@ namespace bbxBE.WebApi.Controllers.v1
                 return NotFound(); // returns a NotFoundResult with Status404NotFound response.
 
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
+        }
+
+        [HttpGet("customerunpaidamount")]
+        public async Task<IActionResult> GetCustomerUnpaidAmount([FromQuery] GetCustomerUnpaidAmount req)
+        {
+            return Ok(await Mediator.Send(req));
         }
 
     }

@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdImport
 {
@@ -22,16 +19,11 @@ namespace bbxBE.Application.Commands.cmdImport
             return this;
         }
 
-        public ProductMappingParser GetProductMapping(ImportProductCommand mappingFile)
+        public ProductMappingParser GetProductMapping(string mapFileContent)
         {
-            string s;
-            using (var reader = new StreamReader(mappingFile.ProductFiles[0].OpenReadStream()))
-            {
-                s = reader.ReadToEnd();
-            }
-            
-            this.productMap = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
+            this.productMap = JsonConvert.DeserializeObject<Dictionary<string, int>>(mapFileContent);
             return this;
         }
+
     }
 }

@@ -2,12 +2,10 @@
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace bbxBE.Common.ExpiringData
@@ -76,6 +74,8 @@ namespace bbxBE.Common.ExpiringData
                    {
                        throw new LockException(string.Format(bbxBEConsts.ERR_LOCK, Key));
                    }
+                   dobj.Data = Data;
+                   dobj.Lifetime = Lifetime;
                    dobj.LastModifiedTimestamp = DateTime.UtcNow;
                }
 
@@ -138,7 +138,7 @@ namespace bbxBE.Common.ExpiringData
         {
 
             //List<T> ret = new List<T>();
-            var ret= ExpiringDataList.Select( s=>s.Value).ToList();
+            var ret = ExpiringDataList.Select(s => s.Value).ToList();
             return ret;
         }
 

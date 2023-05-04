@@ -65,6 +65,19 @@ namespace bxBE.Application.Commands.cmdCustomer
         [Description("Eladási ártípus")]
         public string UnitPriceType { get; set; }
 
+        [ColumnLabel("Fizetési határidő")]
+        [Description("Fizetési határidő (napban)")]
+        public short PaymentDays { get; set; }
+
+        [ColumnLabel("Figyelmeztetés limit")]
+        [Description("Figyelmeztetés limit")]
+        public decimal? WarningLimit { get; set; }
+
+        [ColumnLabel("Maximális limit")]
+        [Description("Maximális limit")]
+        public decimal? MaxLimit { get; set; }
+
+
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]
         public string Comment { get; set; }

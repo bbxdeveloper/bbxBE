@@ -1,31 +1,29 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
-using bbxBE.Application.Interfaces;
+﻿using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qUser;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Queries.qUser;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class UserRepositoryAsync : GenericRepositoryAsync<Users>, IUserRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Users> _dataShaper;
         private readonly IModelHelper _modelHelper;
         private readonly IMockService _mockData;
 
-        public UserRepositoryAsync(ApplicationDbContext dbContext,
+        public UserRepositoryAsync(IApplicationDbContext dbContext,
             IDataShapeHelper<Users> dataShaper, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -34,11 +32,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
         }
 
- 
+
         public async Task<bool> IsUniqueNameAsync(string UserName, long? ID = null)
         {
             return !await _dbContext.Users.AnyAsync(p => p.Name.ToUpper() == UserName.ToUpper() && p.Active && (ID == null || p.ID != ID.Value));
-         }
+        }
 
 
         public async Task<bool> SeedDataAsync(int rowCount)
@@ -135,17 +133,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!p_USR.Any())
                 return;
 
-            if ( string.IsNullOrEmpty(SearchString) )
+            if (string.IsNullOrEmpty(SearchString))
                 return;
 
             var predicate = PredicateBuilder.New<Users>();
 
-    
-            predicate = predicate.And(p => p.Name.Contains(SearchString.Trim())|| p.LoginName.Contains(SearchString.Trim()));
+
+            predicate = predicate.And(p => p.Name.Contains(SearchString.Trim()) || p.LoginName.Contains(SearchString.Trim()));
 
             p_USR = p_USR.Where(predicate);
         }
 
-       
+
     }
 }

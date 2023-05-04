@@ -8,7 +8,6 @@ using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +22,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class InvoiceRepositoryAsync : GenericRepositoryAsync<Invoice>, IInvoiceRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Invoice> _dataShaperInvoice;
         private IDataShapeHelper<GetInvoiceViewModel> _dataShaperGetInvoiceViewModel;
         private IDataShapeHelper<GetAggregateInvoiceViewModel> _dataShaperGetAggregateInvoiceViewModel;
@@ -36,10 +35,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IInvoiceLineRepositoryAsync _invoiceLineRepository;
         private readonly IStockRepositoryAsync _stockRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
-        public InvoiceRepositoryAsync(ApplicationDbContext dbContext,
-
-
-        IDataShapeHelper<Invoice> dataShaperInvoice,
+        public InvoiceRepositoryAsync(IApplicationDbContext dbContext,
+            IDataShapeHelper<Invoice> dataShaperInvoice,
             IDataShapeHelper<GetInvoiceViewModel> dataShaperGetInvoiceViewModel,
             IDataShapeHelper<GetAggregateInvoiceViewModel> dataShaperGetAggregateInvoiceViewModel,
             IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> dataShaperGetPendigDeliveryNotesSummaryModel,
@@ -86,11 +83,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 if (il.ID == 0)
                 {
-                    _dbContext.Entry(il).State = EntityState.Added;
+                    _dbContext.Instance.Entry(il).State = EntityState.Added;
                 }
                 else
                 {
-                    _dbContext.Entry(il).State = EntityState.Modified;
+                    _dbContext.Instance.Entry(il).State = EntityState.Modified;
                 }
                 il.Product = null;
                 il.VatRate = null;
@@ -99,11 +96,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 if (svr.ID == 0)
                 {
-                    _dbContext.Entry(svr).State = EntityState.Added;
+                    _dbContext.Instance.Entry(svr).State = EntityState.Added;
                 }
                 else
                 {
-                    _dbContext.Entry(svr).State = EntityState.Modified;
+                    _dbContext.Instance.Entry(svr).State = EntityState.Modified;
                 }
                 svr.VatRate = null;
             }
@@ -112,7 +109,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, Dictionary<long, InvoiceLine> p_RelDNInvoiceLines)
         {
 
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 try
                 {
@@ -147,12 +144,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, ICollection<SummaryByVatRate> delSummaryByVatrates)
         {
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 try
                 {
                     prepareInvoiceBeforePersistance(p_invoice);
-                    _dbContext.Entry(p_invoice).State = EntityState.Modified;
+                    _dbContext.Instance.Entry(p_invoice).State = EntityState.Modified;
 
                     await UpdateAsync(p_invoice, true);
 
@@ -161,8 +158,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         foreach (var entity in delSummaryByVatrates)
                         {
                             entity.VatRate = null;
-                            _dbContext.Entry(entity).State = EntityState.Deleted;
-                            _dbContext.Set<SummaryByVatRate>().Remove(entity);
+                            _dbContext.Instance.Entry(entity).State = EntityState.Deleted;
+                            _dbContext.Instance.Set<SummaryByVatRate>().Remove(entity);
                         }
                         await _dbContext.SaveChangesAsync();
                     }
@@ -256,6 +253,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                   .Include(c => c.Customer)
                   .Include(a => a.AdditionalInvoiceData)
                   .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
+                  .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
                   .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate)
                   .Include(u => u.User)
                   .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
@@ -283,6 +281,61 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             return invoices.ToDictionary(k => k.lineID, i => i.inv);
+        }
+        public async Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceNumber(string invoiceNumber)
+        {
+            var q = _dbContext.Invoice.AsNoTracking()
+                .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
+                .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
+                .Include(i => i.Supplier)
+                .Include(i => i.Customer)
+                .Include(i => i.SummaryByVatRates).ThenInclude(t => t.VatRate)
+                .Include(i => i.AdditionalInvoiceData)
+                .Where(x => x.OriginalInvoiceNumber == invoiceNumber && !x.Deleted);
+            return await q.ToListAsync();
+        }
+
+        public async Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceID(long invoiceID)
+        {
+            var q = _dbContext.Invoice.AsNoTracking()
+                .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
+                .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
+                .Include(i => i.Supplier)
+                .Include(i => i.Customer)
+                .Include(i => i.SummaryByVatRates).ThenInclude(t => t.VatRate)
+                .Include(i => i.AdditionalInvoiceData)
+                .Where(x => x.OriginalInvoiceID == invoiceID && !x.Deleted);
+            return await q.ToListAsync();
+        }
+
+        public async Task<decimal> GetUnPaidAmountAsyn(long customerID)
+        {
+            //1. kimenő szállítólevélen lévő rendezetlen összeg
+            // Megj: groupoljuk bizonylatonként, hogy a bizonylatkedvezmény bzonylatonként kerülkön a függő tételekre
+            //
+            var q1 = from InvoiceLine in _dbContext.InvoiceLine
+                     join Invoice in _dbContext.Invoice on InvoiceLine.InvoiceID equals Invoice.ID
+                     where InvoiceLine.PendingDNQuantity > 0
+                        && Invoice.CustomerID == customerID
+                        && !Invoice.Incoming
+                        && Invoice.InvoiceType == enInvoiceType.DNO.ToString()
+                     group InvoiceLine by
+                     new
+                     {
+                         InvoiceID = Invoice.ID,
+                         InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
+                     }
+                 into grpInner
+                     select new
+                     {
+                         SumNetAmountDiscountedHUF = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPriceHUF) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
+                     };
+
+            decimal pendingAmount = q1.SingleOrDefault().SumNetAmountDiscountedHUF;
+
+            //2. kiegyenlítettlen számlák???
+
+            return pendingAmount;
         }
 
         private IQueryable<GetPendigDeliveryNotesModel> getPendigDeliveryNotesQuery(bool incoming, long warehouseID, string currencyCode)
@@ -456,7 +509,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
         {
 

@@ -23,13 +23,13 @@ namespace bbxBE.Application.Queries.qCustomer
 
     public class GetCustomerHandler : IRequestHandler<GetCustomer, Entity>
     {
-        private readonly ICustomerRepositoryAsync _positionRepository;
+        private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public GetCustomerHandler(ICustomerRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetCustomerHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _customerRepository = customerRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -40,7 +40,7 @@ namespace bbxBE.Application.Queries.qCustomer
             var pagination = request;
           
             // query based on filter
-            var entity = _positionRepository.GetCustomer(validFilter.ID);
+            var entity = _customerRepository.GetCustomer(validFilter.ID);
             var data = entity.MapItemFieldsByMapToAnnotation<GetCustomerViewModel>();
 
             // response wrapper

@@ -1,29 +1,23 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
-using bbxBE.Application.BLL;
-using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
-using bbxBE.Common.NAV;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Common.ExpiringData;
 
 namespace bxBE.Application.Commands.cmdCustomer
 {
     public class UpdateCustomerCommand : IRequest<Response<Customer>>
     {
+        [ColumnLabel("ID")]
+        [Description("ID")]
         public long ID { get; set; }
+
         [ColumnLabel("Név")]
         [Description("Ügyfélnév/saját név")]
         public string CustomerName { get; set; }
@@ -66,6 +60,18 @@ namespace bxBE.Application.Commands.cmdCustomer
         [Description("Eladási ártípus")]
         public string UnitPriceType { get; set; }
 
+        [ColumnLabel("Fizetési határidő")]
+        [Description("Fizetési határidő (napban)")]
+        public short PaymentDays { get; set; }
+
+        [ColumnLabel("Figyelmeztetés limit")]
+        [Description("Figyelmeztetés limit")]
+        public decimal? WarningLimit { get; set; }
+
+        [ColumnLabel("Maximális limit")]
+        [Description("Maximális limit")]
+        public decimal? MaxLimit { get; set; }
+
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]
         public string Comment { get; set; }
@@ -83,8 +89,8 @@ namespace bxBE.Application.Commands.cmdCustomer
         private readonly IConfiguration _configuration;
         private readonly IExpiringData<ExpiringDataObject> _expiringData;
 
-        public UpdateCustomerCommandHandler(ICustomerRepositoryAsync customerRepository, 
-                        IMapper mapper, 
+        public UpdateCustomerCommandHandler(ICustomerRepositoryAsync customerRepository,
+                        IMapper mapper,
                         IConfiguration configuration,
                         IExpiringData<ExpiringDataObject> expiringData)
         {

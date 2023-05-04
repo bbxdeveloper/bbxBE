@@ -120,7 +120,7 @@ namespace bbxBE.Application.Queries.qInvoice
                                 x.InvoiceVatAmountHUF.ToString(bbxBEConsts.DEF_NUMFORMAT) + bbxBEConsts.DEF_CSVSEP +
                                 x.InvoiceGrossAmount.ToString(bbxBEConsts.DEF_NUMFORMAT) + bbxBEConsts.DEF_CSVSEP +
                                 x.InvoiceGrossAmountHUF.ToString(bbxBEConsts.DEF_NUMFORMAT) + bbxBEConsts.DEF_CSVSEP +
-                                (x.Correction ? bbxBEConsts.DEF_TRUE : bbxBEConsts.DEF_FALSE) + bbxBEConsts.DEF_CSVSEP +
+                                (x.InvoiceCorrection ? bbxBEConsts.DEF_TRUE : bbxBEConsts.DEF_FALSE) + bbxBEConsts.DEF_CSVSEP +
                                 x.UserID.ToString() + bbxBEConsts.DEF_CSVSEP +
                                 x.UserName + bbxBEConsts.DEF_CSVSEP +
                                 x.WorkNumber + bbxBEConsts.DEF_CSVSEP +

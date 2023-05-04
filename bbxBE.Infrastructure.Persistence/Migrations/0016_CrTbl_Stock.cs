@@ -67,7 +67,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("UnitPrice").AsDecimal().NotNullable().WithDefaultValue(0)       //ár
                     .WithColumn("OAvgCost").AsDecimal().NotNullable().WithDefaultValue(0)        //átlagolt beszerzési egységár
                     .WithColumn("NAvgCost").AsDecimal().NotNullable().WithDefaultValue(0)        //átlagolt beszerzési egységár
-                    .WithColumn("XRel").AsString().Nullable();                                   //Kapcsolt biyonylat száma, aznosítója, egyéb kapcsolt adatok
+                    .WithColumn("XRel").AsString().Nullable();                                   //Kapcsolt bizonylat száma, aznosítója, egyéb kapcsolt adatok
 
             Create.Index("INX_StockCardWarehouse")
                          .OnTable("StockCard")

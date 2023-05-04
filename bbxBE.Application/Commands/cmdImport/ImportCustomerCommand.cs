@@ -3,16 +3,15 @@ using bbxBE.Application.BLL;
 using bbxBE.Application.Commands.ResultModels;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
-using bbxBE.Domain.Extensions;
+using bbxBE.Common.Attributes;
 using bxBE.Application.Commands.cmdCustomer;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +20,12 @@ namespace bbxBE.Application.Commands.cmdImport
 {
     public class ImportCustomerCommand : IRequest<Response<ImportedItemsStatistics>>
     {
+        [ColumnLabel("Importfájlok")]
+        [Description("Importfájlok: 1.Mapper, 2.CSV")]
         public List<IFormFile> CustomerFiles { get; set; }
+
+        [ColumnLabel("Mezőelválasztó")]
+        [Description("Mezőelválasztó")]
         public string FieldSeparator { get; set; } = ";";
     }
 
@@ -38,6 +42,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string HouseNumberFieldName = "HouseNumber";
         private const string CustomerBankAccountNumberFieldName = "CustomerBankAccountNumber";
         private const string TaxpayerIdFieldName = "TaxpayerId";
+        private const string CustomerUnitPriceTypeFieldName = "V_FIZM";
 
         private readonly ICustomerRepositoryAsync _customerRepository;
         //private readonly IUnitOfMEasure
@@ -121,6 +126,9 @@ namespace bbxBE.Application.Commands.cmdImport
                 }
                 if (string.IsNullOrEmpty(createCustomerCommand.CountryCode))
                     createCustomerCommand.CountryCode = "HU";
+
+                var unitPriceType = customerMapping.ContainsKey(CustomerUnitPriceTypeFieldName) ? currentFieldsArray[customerMapping[CustomerUnitPriceTypeFieldName]].Replace("\"", "").Trim() : null;
+                createCustomerCommand.UnitPriceType = unitPriceType.Equals("1") ? "UNIT" : "LIST";
 
                 return createCustomerCommand;
             }

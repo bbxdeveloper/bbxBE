@@ -1,24 +1,17 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.BLL;
-using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
-using bbxBE.Common;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.NAV;
-using bbxBE.Domain.Entities;
 using bbxBE.Domain.Settings;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,8 +19,17 @@ namespace bxBE.Application.Commands.cmdInvoice
 {
     public class importFromNAVCommand : IRequest<Response<long>>
     {
+
+        [ColumnLabel("Bejővő/Kimenő")]
+        [Description("INBOUND/OUTBOUND")]
         public string InvoiceDirection { get; set; }    //InvoiceDirectionType 
+
+        [ColumnLabel("Kelt kezdet")]
+        [Description("Kiállítás dátuma kezdet")]
         public DateTime IssueDateFrom { get; set; }
+
+        [ColumnLabel("Kelt vége")]
+        [Description("Kiállítás dátuma vége")]
         public DateTime IssueDateTo { get; set; }
 
     }
@@ -41,7 +43,7 @@ namespace bxBE.Application.Commands.cmdInvoice
         private readonly NAVSettings _NAVSettings;
         private readonly ILogger<importFromNAVCommand> _logger;
 
-         
+
         public getIncomingInvoicesNAVCommandHandler(IInvoiceRepositoryAsync InvoiceRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILogger<importFromNAVCommand> logger, IConfiguration configuration)
         {
             _InvoiceRepository = InvoiceRepository;
@@ -50,7 +52,7 @@ namespace bxBE.Application.Commands.cmdInvoice
             _logger = logger;
             _configuration = configuration;
 
-    }
+        }
 
         public async Task<Response<long>> Handle(importFromNAVCommand request, CancellationToken cancellationToken)
         {
@@ -60,7 +62,7 @@ namespace bxBE.Application.Commands.cmdInvoice
             {
                 foreach (var invItem in invoicesFromNav)
                 {
-                    var invoiceDataFromNav = bllNavObj.QueryInvoiceData(invItem.invoiceNumber, Enum.Parse<InvoiceDirectionType>( request.InvoiceDirection));
+                    var invoiceDataFromNav = bllNavObj.QueryInvoiceData(invItem.invoiceNumber, Enum.Parse<InvoiceDirectionType>(request.InvoiceDirection));
 
                 }
 
@@ -69,7 +71,7 @@ namespace bxBE.Application.Commands.cmdInvoice
             return new Response<long>(invoicesFromNav.Count());
         }
 
-   
+
 
 
     }

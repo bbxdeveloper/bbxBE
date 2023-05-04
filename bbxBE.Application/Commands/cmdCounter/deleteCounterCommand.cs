@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +12,8 @@ namespace bbxBE.Application.Commands.cmdCounter
 {
     public class DeleteCounterCommand : IRequest<Response<long>>
     {
+        [ColumnLabel("ID")]
+        [Description("ID")]
         public long ID { get; set; }
 
     }
