@@ -49,6 +49,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             List<InvoiceLine> invoiceLines;
             invoiceLines = await _dbContext.InvoiceLine.AsNoTracking()
+                .Include(i => i.DeliveryNote).AsNoTracking()
                 .Where(x => x.InvoiceID == InvoiceID)
                 .ToListAsync();
 
@@ -59,7 +60,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     RelDeliveryNoteInvoiceID = g.RelDeliveryNoteInvoiceID,
                     RelDeliveryNoteNumber = g.RelDeliveryNoteNumber,
-                    LineDeliveryDate = g.LineDeliveryDate
+                    LineDeliveryDate = g.LineDeliveryDate,
+                    DeliveryNoteDiscountPercent = g.DeliveryNote.InvoiceDiscountPercent
                 }, (k, g) =>
                 new GetAggregateInvoiceDeliveryNoteViewModel
                 {
@@ -68,6 +70,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     DeliveryNoteDate = k.LineDeliveryDate,
                     DeliveryNoteNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
                     DeliveryNoteNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF), 1),
+                    DeliveryNoteDiscountPercent = k.DeliveryNoteDiscountPercent,
                     DeliveryNoteDiscountAmount = Math.Round(g.Sum(s => s.LineNetAmount - s.LineNetDiscountedAmount), 1),
                     DeliveryNoteDiscountAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF - s.LineNetDiscountedAmountHUF), 1),
 
