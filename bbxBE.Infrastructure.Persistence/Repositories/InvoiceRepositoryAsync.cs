@@ -219,7 +219,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }, (k, g) =>
                 new GetAggregateInvoiceDeliveryNoteViewModel
                 {
-                    DeliveryNoteInvoiceID = k.RelDeliveryNoteInvoiceID.Value,
+                    DeliveryNoteInvoiceID = k.RelDeliveryNoteInvoiceID,
                     DeliveryNoteNumber = k.RelDeliveryNoteNumber,
                     DeliveryNoteDate = k.LineDeliveryDate,
                     DeliveryNoteNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
