@@ -304,9 +304,14 @@ namespace bbxBE.Application.BLL
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
                     }
 
-                    if (invoice.Incoming)
+
+                    if (!hasRelDeliveryNotes &&         //nem gyűjtőszámla
+                        invoice.Incoming &&             //bevételezés
+                        (invoice.InvoiceType == enInvoiceType.INC.ToString() || invoice.InvoiceType == enInvoiceType.DNI.ToString()))   //szla.v.száll.
                     {
                         prod.LatestSupplyPrice = rln.UnitPrice;     //megjegzezük a legutolsó eladási árat
+                        prod.UnitPrice1 = rln.NewUnitPrice1;        //árváltozás, úgy listaár
+                        prod.UnitPrice2 = rln.NewUnitPrice2;        //árváltozás, úgy egységár
                         updatingProducts.Add(prod);
                     }
 
