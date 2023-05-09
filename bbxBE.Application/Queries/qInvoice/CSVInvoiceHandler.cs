@@ -1,26 +1,17 @@
 ﻿using AutoMapper;
-using MediatR;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Parameters;
-using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
-using System.Collections.Generic;
+using bbxBE.Common.Attributes;
+using bbxBE.Common.Consts;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Domain.Extensions;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Attributes;
-using System.ComponentModel;
-using System;
-using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using System.Linq;
-using bbxBE.Common.Consts;
-using System.Net.Http.Headers;
-using System.IO;
-using bbxBE.Common;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
@@ -89,22 +80,22 @@ namespace bbxBE.Application.Queries.qInvoice
                                 x.SupplierID.ToString() + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierName + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierBankAccountNumber + bbxBEConsts.DEF_CSVSEP +
-                                x.SupplierTaxpayerNumber + bbxBEConsts.DEF_CSVSEP +
+                                (String.IsNullOrWhiteSpace(x.SupplierTaxpayerNumber.Replace("-", "")) ? "" : "\"" + x.SupplierTaxpayerNumber + "\"") + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierCountryCode + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierPostalCode + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierCity + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierAdditionalAddressDetail + bbxBEConsts.DEF_CSVSEP +
-                                x.SupplierThirdStateTaxId + bbxBEConsts.DEF_CSVSEP +
+                                "\"" + x.SupplierThirdStateTaxId + "\"" + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierComment + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerID.ToString() + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerName + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerBankAccountNumber + bbxBEConsts.DEF_CSVSEP +
-                                x.CustomerTaxpayerNumber + bbxBEConsts.DEF_CSVSEP +
+                                (String.IsNullOrWhiteSpace(x.CustomerTaxpayerNumber.Replace("-", "")) ? "" : "\"" + x.CustomerTaxpayerNumber + "\"") + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerCountryCode + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerPostalCode + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerCity + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerAdditionalAddressDetail + bbxBEConsts.DEF_CSVSEP +
-                                x.CustomerThirdStateTaxId + bbxBEConsts.DEF_CSVSEP +
+                                "\"" + x.CustomerThirdStateTaxId + "\"" + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerComment + bbxBEConsts.DEF_CSVSEP +
                                 x.PaymentMethod + bbxBEConsts.DEF_CSVSEP +
                                 x.PaymentMethodX + bbxBEConsts.DEF_CSVSEP +
@@ -124,7 +115,7 @@ namespace bbxBE.Application.Queries.qInvoice
                                 x.UserID.ToString() + bbxBEConsts.DEF_CSVSEP +
                                 x.UserName + bbxBEConsts.DEF_CSVSEP +
                                 x.WorkNumber + bbxBEConsts.DEF_CSVSEP +
-                                (x.PriceReview ? bbxBEConsts.DEF_TRUE : bbxBEConsts.DEF_FALSE) 
+                                (x.PriceReview ? bbxBEConsts.DEF_TRUE : bbxBEConsts.DEF_FALSE)
                     ).ToArray());
 
             var csvHeader = "ID;Raktár ID;Raktár;Bizonylatszám;Kelt;Teljesítés;Fiz.hat;Szállító ID;Szállítónév;Szállító bankszámlaszám;Szállító adószám;Szállító országkód;Szállító irányítószám;Szállító város;Szállítócím;Külföldi adószám;" +
