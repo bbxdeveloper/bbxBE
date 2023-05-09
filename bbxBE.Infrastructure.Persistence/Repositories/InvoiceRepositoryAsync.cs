@@ -214,15 +214,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     RelDeliveryNoteInvoiceID = g.RelDeliveryNoteInvoiceID,
                     RelDeliveryNoteNumber = g.RelDeliveryNoteNumber,
-                    LineDeliveryDate = g.LineDeliveryDate
+                    LineDeliveryDate = g.LineDeliveryDate,
+                    DeliveryNoteDiscountPercent = g.DeliveryNote != null ? g.DeliveryNote.InvoiceDiscountPercent : 0
                 }, (k, g) =>
                 new GetAggregateInvoiceDeliveryNoteViewModel
                 {
-                    DeliveryNoteInvoiceID = k.RelDeliveryNoteInvoiceID.Value,
+                    DeliveryNoteInvoiceID = k.RelDeliveryNoteInvoiceID,
                     DeliveryNoteNumber = k.RelDeliveryNoteNumber,
                     DeliveryNoteDate = k.LineDeliveryDate,
                     DeliveryNoteNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
                     DeliveryNoteNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF), 1),
+                    DeliveryNoteDiscountPercent = k.DeliveryNoteDiscountPercent,
                     DeliveryNoteDiscountAmount = Math.Round(g.Sum(s => s.LineNetAmount - s.LineNetDiscountedAmount), 1),
                     DeliveryNoteDiscountAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF - s.LineNetDiscountedAmountHUF), 1),
 
@@ -254,6 +256,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                   .Include(a => a.AdditionalInvoiceData)
                   .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
                   .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
+                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote)
                   .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate)
                   .Include(u => u.User)
                   .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
