@@ -80,7 +80,7 @@ namespace bbxBE.Application.Queries.qInvoice
                                 x.SupplierID.ToString() + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierName + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierBankAccountNumber + bbxBEConsts.DEF_CSVSEP +
-                                (String.IsNullOrWhiteSpace(x.SupplierTaxpayerNumber.Replace("-", "")) ? "" : "\"" + x.SupplierTaxpayerNumber + "\"") + bbxBEConsts.DEF_CSVSEP +
+                                (String.IsNullOrWhiteSpace(x.SupplierTaxpayerNumber?.Replace("-", "")) ? "" : "\"" + x.SupplierTaxpayerNumber + "\"") + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierCountryCode + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierPostalCode + bbxBEConsts.DEF_CSVSEP +
                                 x.SupplierCity + bbxBEConsts.DEF_CSVSEP +
@@ -90,7 +90,7 @@ namespace bbxBE.Application.Queries.qInvoice
                                 x.CustomerID.ToString() + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerName + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerBankAccountNumber + bbxBEConsts.DEF_CSVSEP +
-                                (String.IsNullOrWhiteSpace(x.CustomerTaxpayerNumber.Replace("-", "")) ? "" : "\"" + x.CustomerTaxpayerNumber + "\"") + bbxBEConsts.DEF_CSVSEP +
+                                (String.IsNullOrWhiteSpace(x.CustomerTaxpayerNumber?.Replace("-", "")) ? "" : "\"" + x.CustomerTaxpayerNumber + "\"") + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerCountryCode + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerPostalCode + bbxBEConsts.DEF_CSVSEP +
                                 x.CustomerCity + bbxBEConsts.DEF_CSVSEP +
