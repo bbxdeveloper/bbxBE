@@ -308,7 +308,7 @@
                     <FormattingRule>
                       <Style Visible="False" />
                       <Filters>
-                        <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                        <Filter Expression="= Fields.deliveryNoteDiscountPercent" Operator="GreaterThan" Value="0" />
                       </Filters>
                     </FormattingRule>
                   </ConditionalFormatting>
@@ -321,7 +321,7 @@
                     <FormattingRule>
                       <Style Visible="False" />
                       <Filters>
-                        <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                        <Filter Expression="= Fields.deliveryNoteDiscountPercent" Operator="GreaterThan" Value="0" />
                       </Filters>
                     </FormattingRule>
                   </ConditionalFormatting>
@@ -334,7 +334,7 @@
                     <FormattingRule>
                       <Style Visible="False" />
                       <Filters>
-                        <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                        <Filter Expression="= Fields.deliveryNoteDiscountPercent" Operator="GreaterThan" Value="0" />
                       </Filters>
                     </FormattingRule>
                   </ConditionalFormatting>
