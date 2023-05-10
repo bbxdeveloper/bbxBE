@@ -1,4 +1,5 @@
 ﻿using bbxBE.Common.Attributes;
+using bbxBE.Common.Enums;
 using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,30 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Dátum")]
         [Description("Dátum")]
         public DateTime TransferDate { get; set; }
+
+        [ColumnLabel("Megjegyzés")]
+        [Description("Megjegyzés")]
+        public string Notice { get; set; }
+
+        private enWhsTransferStatus whsTransferStatus;
+        [ColumnLabel("Státusz")]
+        [Description("Státusz")]
+        public string WhsTransferStatus
+        {
+            get { return Enum.GetName(typeof(enWhsTransferStatus), whsTransferStatus); }
+            set
+            {
+                if (value != null)
+                    whsTransferStatus = (enWhsTransferStatus)Enum.Parse(typeof(enWhsTransferStatus), value);
+                else
+                    whsTransferStatus = enWhsTransferStatus.READY;
+
+            }
+        }
+
+        [ColumnLabel("Példány")]
+        [Description("Nyomtatott példány száma")]
+        public short Copies { get; set; }
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]

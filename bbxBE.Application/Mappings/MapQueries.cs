@@ -218,7 +218,8 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<WhsTransfer, GetWhsTransferViewModel>()
               .ForMember(dst => dst.FromWarehouse, opt => opt.MapFrom(src => src.FromWarehouse.WarehouseCode + "-" + src.FromWarehouse.WarehouseDescription))
-              .ForMember(dst => dst.ToWarehouse, opt => opt.MapFrom(src => src.ToWarehouse.WarehouseCode + "-" + src.ToWarehouse.WarehouseDescription));
+              .ForMember(dst => dst.ToWarehouse, opt => opt.MapFrom(src => src.ToWarehouse.WarehouseCode + "-" + src.ToWarehouse.WarehouseDescription))
+              .ForMember(dst => dst.WhsTransferStatusX, opt => opt.MapFrom(src => enWhsTransferStatusNameResolver(src.WhsTransferStatus)));
 
             CreateMap<WhsTransferLine, GetWhsTransferViewModel.WhsTransferLine>()
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description))
@@ -296,6 +297,14 @@ namespace bbxBE.Queries.Mappings
             return "";
         }
 
-
+        public static string enWhsTransferStatusNameResolver(string WhsTransferStatus)
+        {
+            if (!string.IsNullOrWhiteSpace(WhsTransferStatus))
+            {
+                var _whsTransferStatus = (enWhsTransferStatus)Enum.Parse(typeof(enWhsTransferStatus), WhsTransferStatus);
+                return Common.Utils.GetEnumDescription(_whsTransferStatus);
+            }
+            return "";
+        }
     }
 }

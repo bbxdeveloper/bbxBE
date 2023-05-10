@@ -1,4 +1,5 @@
-﻿using FluentMigrator;
+﻿using bbxBE.Common.Enums;
+using FluentMigrator;
 
 //https://code-maze.com/dapper-migrations-fluentmigrator-aspnetcore/
 
@@ -24,6 +25,9 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("FromWarehouseID").AsInt64().ForeignKey()
                     .WithColumn("ToWarehouseID").AsInt64().ForeignKey()
                     .WithColumn("TransferDate").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
+                    .WithColumn("WhsTransferStatus").AsString().NotNullable().WithDefaultValue(enWhsTransferStatus.READY.ToString())
+                    .WithColumn("Notice").AsString(int.MaxValue).NotNullable().WithDefaultValue("")
+                    .WithColumn("Copies").AsInt16().Nullable()
                     .WithColumn("UserID").AsInt64().ForeignKey();
 
             Create.Index("INX_WhsTransferNumber")
@@ -42,6 +46,13 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
              .OnColumn("ToWarehouseID").Ascending()
              .OnColumn("TransferDate").Ascending()
              .WithOptions().NonClustered();
+
+            Create.Index("INX_WhsTransferStatusToWarehouse")
+               .OnTable("WhsTransfer")
+               .OnColumn("WhsTransferStatus").Ascending()
+               .OnColumn("ToWarehouseID").Ascending()
+               .OnColumn("TransferDate").Ascending()
+               .WithOptions().NonClustered();
 
             Create.Table("WhsTransferLine")
                     .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()

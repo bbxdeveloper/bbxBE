@@ -38,7 +38,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             _dbContext = dbContext;
             _dataShaperWhsTransfer = dataShaperWhsTransfer;
-            _dataShaperGetWhsTransferViewModel = _dataShaperGetWhsTransferViewModel;
+            _dataShaperGetWhsTransferViewModel = dataShaperGetWhsTransferViewModel;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
@@ -53,6 +53,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 try
                 {
+                    await AddAsync(whsTransfer);
                     await dbContextTransaction.CommitAsync();
 
                 }
@@ -78,7 +79,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var itemModel = _mapper.Map<WhsTransfer, GetWhsTransferViewModel>(item);
 
-            var listFieldsModel = _modelHelper.GetModelFields<GetWhsTransferiewModel>();
+            var listFieldsModel = _modelHelper.GetModelFields<GetWhsTransferViewModel>();
 
             // shape data
             var shapeData = _dataShaperGetWhsTransferViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
@@ -149,24 +150,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
 
             // retrieve data to list
-            List<Invoice> resultData = await GetPagedData(query, requestParameter);
+            List<WhsTransfer> resultData = await GetPagedData(query, requestParameter);
 
 
             //TODO: szebben megoldani
-            var resultDataModel = new List<GetInvoiceViewModel>();
+            var resultDataModel = new List<GetWhsTransferViewModel>();
             resultData.ForEach(i =>
             {
-                var im = _mapper.Map<Invoice, GetInvoiceViewModel>(i);
-                if (!requestParameter.FullData)
-                {
-                    im.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
-                    im.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
-                }
+                var im = _mapper.Map<WhsTransfer, GetWhsTransferViewModel>(i);
                 resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
             }
             );
 
-            var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
+            var listFieldsModel = _modelHelper.GetModelFields<GetWhsTransferViewModel>();
 
             var shapeData = _dataShaperGetWhsTransferViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 

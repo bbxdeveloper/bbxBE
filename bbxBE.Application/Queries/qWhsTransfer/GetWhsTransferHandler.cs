@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
 using bbxBE.Domain.Extensions;
 using MediatR;

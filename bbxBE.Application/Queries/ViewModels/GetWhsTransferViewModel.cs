@@ -76,9 +76,25 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Dátum")]
         public DateTime TransferDate { get; set; }
 
+        [ColumnLabel("Megjegyzés")]
+        [Description("Megjegyzés")]
+        public string Notice { get; set; }
+
+        [ColumnLabel("Példány")]
+        [Description("Nyomtatott példány száma")]
+        public short Copies { get; set; }
+
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long? UserID { get; set; } = 0;
+
+        [ColumnLabel("Státusz")]
+        [Description("Státusz")]
+        public string WhsTransferStatus { get; set; }
+
+        [ColumnLabel("Státusz")]
+        [Description("Státusz")]
+        public string WhsTransferStatusX { get; set; }
 
 
         [ColumnLabel("Kiadás raktár")]

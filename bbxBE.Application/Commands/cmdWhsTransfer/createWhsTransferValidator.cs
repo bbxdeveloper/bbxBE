@@ -39,7 +39,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
         public createWhsTransferLinesValidatror()
         {
             RuleFor(p => p.UnitOfMeasure)
-                 .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.LineNumber, model.ProductCode, model.UnitOfMeasure));
+                 .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.WhsTransferLineNumber, model.ProductCode, model.UnitOfMeasure));
         }
 
         public bool CheckUnitOfMEasure(string unitOfMeasure)
