@@ -331,10 +331,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  into grpInner
                      select new
                      {
+                         InvoiceID = grpInner.Key.InvoiceID,
+                         InvoiceDiscountPercent = grpInner.Key.InvoiceDiscountPercent,
+                         Cnt = grpInner.Count(),
                          SumNetAmountDiscountedHUF = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPriceHUF) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
                      };
 
-            decimal pendingAmount = q1.SingleOrDefault().SumNetAmountDiscountedHUF;
+            decimal pendingAmount = q1.Sum(s => s.SumNetAmountDiscountedHUF);
 
             //2. kiegyenlítettlen számlák???
 
