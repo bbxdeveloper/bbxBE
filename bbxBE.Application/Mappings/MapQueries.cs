@@ -162,6 +162,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
 
             CreateMap<Stock, GetStockViewModel>()
+             .ForMember(dst => dst.WarehouseCode, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode))
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
              .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.Product.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description))

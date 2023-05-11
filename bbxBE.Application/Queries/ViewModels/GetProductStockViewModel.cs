@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
-    public class GetStockViewModel
+    public class GetProductStockViewModel
     {
         [MapToEntity("ID")]
         public long ID { get; set; }
@@ -12,10 +12,6 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Raktár ID")]
         [Description("Raktár ID")]
         public long WarehouseID { get; set; }
-
-        [ColumnLabel("Raktár")]
-        [Description("Raktár")]
-        public string Warehouse { get; set; }
 
         [ColumnLabel("Raktárkód")]
         [Description("Raktárkód")]
@@ -25,13 +21,6 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Termék ID")]
         public long ProductID { get; set; }
 
-        [ColumnLabel("Termékkód")]
-        [Description("Termékkód")]
-        public string ProductCode { get; set; }
-
-        [ColumnLabel("Megnevezés")]
-        [Description("Termékmegnevezés, leírás")]
-        public string Product { get; set; }
 
         [ColumnLabel("Valós")]
         [Description("Valós mennyiség")]
