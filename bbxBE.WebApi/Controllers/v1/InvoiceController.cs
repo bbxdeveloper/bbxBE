@@ -26,7 +26,7 @@ namespace bbxBE.WebApi.Controllers.v1
         public InvoiceController(
            IWebHostEnvironment env,
            IConfiguration conf,
-            IHttpContextAccessor context)
+           IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
@@ -39,9 +39,9 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetInvoice filter)
+        public async Task<IActionResult> Get([FromQuery] GetInvoice request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
@@ -50,9 +50,9 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("aggregateinvoice")]
-        public async Task<IActionResult> GetAggregateInvoice([FromQuery] GetAggregateInvoice filter)
+        public async Task<IActionResult> GetAggregateInvoice([FromQuery] GetAggregateInvoice request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
@@ -61,9 +61,9 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("aggregateinvoicedeliverynote")]
-        public async Task<IActionResult> GetAggregateInvoiceDeliveryNote([FromQuery] GetAggregateInvoiceDeliveryNote filter)
+        public async Task<IActionResult> GetAggregateInvoiceDeliveryNote([FromQuery] GetAggregateInvoiceDeliveryNote request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>

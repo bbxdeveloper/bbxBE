@@ -453,7 +453,7 @@ namespace bbxBE.Application.BLL
 
                 invoice = await CalcInvoiceAmountsAsynch(invoice, cancellationToken);
 
-                //Számlaszám megállapítása
+                //Bizonylatszám megállapítása
                 counterCode = bllCounter.GetCounterCode(invoiceType, paymentMethod, invoice.Incoming, isInvoiceCorrection, wh.ID);
                 invoice.InvoiceNumber = await counterRepository.GetNextValueAsync(counterCode, wh.ID);
                 invoice.Copies = 1;

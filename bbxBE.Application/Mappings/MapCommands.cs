@@ -23,9 +23,6 @@ using bxBE.Application.Commands.cmdOrigin;
 using bxBE.Application.Commands.cmdProduct;
 using bxBE.Application.Commands.cmdProductGroup;
 using bxBE.Application.Commands.cmdWarehouse;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace bbxBE.Command.Mappings
 {
@@ -42,12 +39,12 @@ namespace bbxBE.Command.Mappings
             */
 
             CreateMap<UpdateUserCommand, Users>();
-                /*
-             .ForMember(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
-             .ForMember(dst => dst.Email, opt => opt.MapFrom(src => src.Email))
-             .ForMember(dst => dst.LoginName, opt => opt.MapFrom(src => src.LoginName))
-             .ForMember(dst => dst.Comment, opt => opt.MapFrom(src => src.Comment));
-                */
+            /*
+         .ForMember(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
+         .ForMember(dst => dst.Email, opt => opt.MapFrom(src => src.Email))
+         .ForMember(dst => dst.LoginName, opt => opt.MapFrom(src => src.LoginName))
+         .ForMember(dst => dst.Comment, opt => opt.MapFrom(src => src.Comment));
+            */
 
             CreateMap<DeleteUserCommand, Users>();
 
@@ -119,7 +116,7 @@ namespace bbxBE.Command.Mappings
                .ForMember(dst => dst.InvoiceIssueDate, opt => opt.MapFrom(src => src.InvoiceIssueDate.Date))
                .ForMember(dst => dst.InvoiceDeliveryDate, opt => opt.MapFrom(src => src.InvoiceDeliveryDate.Date))
                .ForMember(dst => dst.PaymentDate, opt => opt.MapFrom(src => src.PaymentDate.Date));
-;
+            ;
 
             CreateMap<CreateInvoiceCommand.InvoiceLine, InvoiceLine>();
 
@@ -156,6 +153,8 @@ namespace bbxBE.Command.Mappings
             CreateMap<UpdateLocationCommand, Location>();
             CreateMap<DeleteLocationCommand, Location>();
 
+            CreateMap<CreateWhsTransferCommand, WhsTransfer>();
+            CreateMap<CreateWhsTransferCommand.WhsTransferLine, WhsTransferLine>();
         }
     }
 }

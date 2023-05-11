@@ -1,28 +1,18 @@
 ﻿using bbxBE.Application.Commands.cmdOffer;
-using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qOffer;
-using bbxBE.Application.Wrappers;
 using bbxBE.Common;
-using bbxBE.Common.Enums;
-using bbxBE.Common.NAV;
-using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdOffer;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+    //   [Authorize]
     public class OfferController : BaseApiController
     {
 
@@ -43,12 +33,12 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetOffer filter)
+        public async Task<IActionResult> Get([FromQuery] GetOffer request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
 
@@ -94,9 +84,9 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryOffer filter)
+        public async Task<IActionResult> Query([FromQuery] QueryOffer request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
