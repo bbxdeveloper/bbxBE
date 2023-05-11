@@ -203,6 +203,28 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+        public async Task<IEnumerable<Entity>> GetProductStocksAsync(long productID)
+        {
+
+            var resultData = await _dbContext.Stock.AsNoTracking()
+             .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+             .Include(w => w.Warehouse).AsNoTracking()
+             .Include(l => l.Location).AsNoTracking()
+             .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
+                        && w.ProductID == productID && !w.Deleted).ToListAsync();
+
+
+            var resultDataModel = new List<GetStockViewModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+               _mapper.Map<Stock, GetStockViewModel>(i))
+            );
+
+
+            var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
+
+            var shapeData = await _dataShaperGetStockViewModel.ShapeDataAsync(resultDataModel, String.Join(",", listFieldsModel));
+            return shapeData;
+        }
 
         public async Task<Stock> GetStockRecordAsync(long warehouseID, long productID)
         {
@@ -215,6 +237,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 item = new Stock();
             }
             return item;
+        }
+        public async Task<IEnumerable<Stock>> GetProductStocksRecordAsync(long productID)
+        {
+            var items = await _dbContext.Stock.AsNoTracking()
+             .Include(l => l.Location).AsNoTracking()
+             .Where(w => w.ProductID == productID && !w.Deleted).ToListAsync();
+            return items;
         }
 
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameter)

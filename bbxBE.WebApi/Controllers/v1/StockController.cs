@@ -1,14 +1,6 @@
-﻿using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Queries.qStock;
-using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
+﻿using bbxBE.Application.Queries.qStock;
 using bxBE.Application.Commands.cmdLocation;
-using bxBE.Application.Commands.cmdProductGroup;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
@@ -16,12 +8,12 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+    //   [Authorize]
     public class StockController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        public StockController( IWebHostEnvironment env, IConfiguration conf)
+        public StockController(IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
@@ -42,6 +34,18 @@ namespace bbxBE.WebApi.Controllers.v1
 
         [HttpGet("record")]
         public async Task<IActionResult> GetRecord([FromQuery] GetStockRecord req)
+        {
+            return Ok(await Mediator.Send(req));
+        }
+
+        [HttpGet("productstocks")]
+        public async Task<IActionResult> GetProductStocks([FromQuery] GetProductStocks req)
+        {
+            return Ok(await Mediator.Send(req));
+        }
+
+        [HttpGet("productstockrecords")]
+        public async Task<IActionResult> GetProductStocksRecord([FromQuery] GetProductStocksRecord req)
         {
             return Ok(await Mediator.Send(req));
         }

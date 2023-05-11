@@ -1,8 +1,5 @@
-﻿using AutoMapper.Configuration.Conventions;
-using bbxBE.Common.Attributes;
-using bbxBE.Common.Enums;
-using Newtonsoft.Json;
-using System;
+﻿using bbxBE.Common.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
@@ -15,6 +12,7 @@ namespace bbxBE.Application.Queries.ViewModels
     /// </summary>
     public class GetProductViewModel
     {
+
         [MapToEntity("ID")]
         public long ID { get; set; }
         [ColumnLabel("Termékkód")]
@@ -88,5 +86,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Eng.tilt")]
         [Description("Engedmény adás tiltása")]
         public bool NoDiscount { get; set; }
+
+
+        [ColumnLabel("Készletek raktáranként")]
+        [Description("Készletek raktáranként")]
+        public List<GetStockViewModel> Stocks { get; set; }
     }
 }
