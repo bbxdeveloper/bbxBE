@@ -5,6 +5,7 @@ using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.NAV;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PdfSharp.Pdf;
@@ -64,18 +65,26 @@ namespace bbxBE.Application.Commands.cmdInvoice
             string reportTRDX = String.Empty;
 
             Enum.TryParse(invoice.InvoiceType, out enInvoiceType invoiceType);
+            Enum.TryParse(invoice.InvoiceCategory, out InvoiceCategoryType invoiceCategory);
 
             switch (invoiceType)
             {
                 case enInvoiceType.INC:
                     {
-                        if (!invoice.InvoiceCorrection)
+                        if (invoiceCategory == InvoiceCategoryType.NORMAL)
                         {
-                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceINC.trdx", Assembly.GetExecutingAssembly());
+                            if (!invoice.InvoiceCorrection)
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceINC.trdx", Assembly.GetExecutingAssembly());
+                            }
+                            else
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSB.trdx", Assembly.GetExecutingAssembly());
+                            }
                         }
                         else
                         {
-                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSB.trdx", Assembly.GetExecutingAssembly());
+                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.AggregateINC.trdx", Assembly.GetExecutingAssembly());
                         }
                         break;
                     }
@@ -97,13 +106,20 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 case enInvoiceType.INV:
                 default:
                     {
-                        if (!invoice.InvoiceCorrection)
+                        if (invoiceCategory == InvoiceCategoryType.NORMAL)
                         {
-                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
+                            if (!invoice.InvoiceCorrection)
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
+                            }
+                            else
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSK.trdx", Assembly.GetExecutingAssembly());
+                            }
                         }
                         else
                         {
-                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSK.trdx", Assembly.GetExecutingAssembly());
+                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.AggregateINV.trdx", Assembly.GetExecutingAssembly());
                         }
                         break;
                     }
