@@ -121,7 +121,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // filter data
 
-            FilterBy(ref query, requestParameter.FromWarehouseCode, requestParameter.ToWarehouseCode,
+            FilterBy(ref query, requestParameter.WhsTransferStatus, requestParameter.FromWarehouseCode, requestParameter.ToWarehouseCode,
                                 requestParameter.TransferDateFrom, requestParameter.TransferDateTo);
 
 
@@ -169,7 +169,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBy(ref IQueryable<WhsTransfer> p_items, string FromWarehouseCode, string ToWarehouseCode,
+        private void FilterBy(ref IQueryable<WhsTransfer> p_items, string WhsTransferStatus, string FromWarehouseCode, string ToWarehouseCode,
                                 DateTime? TransferDateFrom, DateTime? TransferDateTo)
         {
             if (!p_items.Any())
@@ -179,7 +179,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<WhsTransfer>();
 
             predicate = predicate.And(p =>
-                               (FromWarehouseCode == null || p.FromWarehouse.WarehouseCode.ToUpper().Contains(FromWarehouseCode))
+                            p.WhsTransferStatus == WhsTransferStatus
+                            && (FromWarehouseCode == null || p.FromWarehouse.WarehouseCode.ToUpper().Contains(FromWarehouseCode))
                             && (ToWarehouseCode == null || p.ToWarehouse.WarehouseCode.ToUpper().Contains(ToWarehouseCode))
                             && (!TransferDateFrom.HasValue || p.TransferDate >= TransferDateFrom.Value)
                             && (!TransferDateTo.HasValue || p.TransferDate <= TransferDateFrom.Value)

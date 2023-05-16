@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -35,6 +35,10 @@ namespace bbxBE.Application.Queries.ViewModels
             [Description("Termékkód")]
             public string ProductCode { get; set; }
 
+            [ColumnLabel("Termék")]
+            [Description("Termék")]
+            public string Product { get; set; }
+
             [ColumnLabel("Mennyiség")]
             [Description("Mennyiség")]
             public decimal Quantity { get; set; }
@@ -51,10 +55,10 @@ namespace bbxBE.Application.Queries.ViewModels
 
             public decimal CurrAvgCost { get; set; }
 
-            [ForeignKey("ProductID")]
-            [ColumnLabel("Termék")]
-            [Description("Termék")]
-            public string Product { get; set; }
+            [ColumnLabel("Tétel értéke")]
+            [Description("Tétel értéke")]
+
+            public decimal ItemAmount { get { return Math.Round(Quantity * CurrAvgCost); } }
         }
 
         [MapToEntity("ID")]
@@ -111,6 +115,12 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [ColumnLabel("Bizonylatsorok")]
         [Description("Bizonylatsorok")]
-        public virtual ICollection<WhsTransferLine> WhsTransferLines { get; set; }
+        public virtual ICollection<WhsTransferLine> WhsTransferLines { get; set; } = new List<WhsTransferLine>();
+
+        [ColumnLabel("Bizonylat értéke")]
+        [Description("Bizonylat értéke")]
+
+        public decimal WhsTransferAmount { get { return WhsTransferLines.Sum(s => s.ItemAmount); } }
+
     }
 }
