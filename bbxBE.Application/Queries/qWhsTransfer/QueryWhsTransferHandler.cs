@@ -39,6 +39,12 @@ namespace bbxBE.Application.Queries.qWhsTransfer
         [ColumnLabel("Végdátum")]
         [Description("Végdátum")]
         public DateTime? TransferDateTo { get; set; }
+
+
+        [ColumnLabel("Töröltek lekérdezése?")]
+        [Description("Töröltek lekérdezése?")]
+        public bool? Deleted { get; set; }
+
     }
 
     public class QueryWhsTransferHandler : IRequestHandler<QueryWhsTransfer, PagedResponse<IEnumerable<Entity>>>
@@ -57,7 +63,6 @@ namespace bbxBE.Application.Queries.qWhsTransfer
         public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryWhsTransfer request, CancellationToken cancellationToken)
         {
             var validFilter = request;
-            var pagination = request;
 
             // query based on filter
             var entities = await _WhsTransferRepository.QueryPagedWhsTransferAsync(validFilter);
