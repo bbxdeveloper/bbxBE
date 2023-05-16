@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Queries.qWhsTransfer;
+﻿using bbxBE.Application.Commands.cmdWhsTransfer;
+using bbxBE.Application.Queries.qWhsTransfer;
 using bbxBE.Common;
 using bxBE.Application.Commands.cmdWarehouse;
 using Microsoft.AspNetCore.Hosting;
@@ -57,6 +58,10 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
-
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery] DeleteWhsTransferCommand request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
     }
 }

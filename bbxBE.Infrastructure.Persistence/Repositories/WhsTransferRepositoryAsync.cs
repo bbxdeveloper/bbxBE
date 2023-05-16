@@ -122,7 +122,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // filter data
 
             FilterBy(ref query, requestParameter.WhsTransferStatus, requestParameter.FromWarehouseCode, requestParameter.ToWarehouseCode,
-                                requestParameter.TransferDateFrom, requestParameter.TransferDateTo);
+                                requestParameter.TransferDateFrom, requestParameter.TransferDateTo, requestParameter.Deleted);
 
 
             // Count records after filter
@@ -170,7 +170,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
         private void FilterBy(ref IQueryable<WhsTransfer> p_items, string WhsTransferStatus, string FromWarehouseCode, string ToWarehouseCode,
-                                DateTime? TransferDateFrom, DateTime? TransferDateTo)
+                                DateTime? TransferDateFrom, DateTime? TransferDateTo, bool? Deleted)
         {
             if (!p_items.Any())
                 return;
@@ -184,9 +184,33 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             && (ToWarehouseCode == null || p.ToWarehouse.WarehouseCode.ToUpper().Contains(ToWarehouseCode))
                             && (!TransferDateFrom.HasValue || p.TransferDate >= TransferDateFrom.Value)
                             && (!TransferDateTo.HasValue || p.TransferDate <= TransferDateFrom.Value)
+                            && (!p.Deleted || (Deleted.HasValue && Deleted.Value))
                            );
 
             p_items = p_items.Where(predicate);
+        }
+
+
+        public async Task<WhsTransfer> DeleteWhsTransferAsync(long ID)
+        {
+
+            WhsTransfer whsTransfer = null;
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            {
+                whsTransfer = await _dbContext.WhsTransfer.Where(x => x.ID == ID).FirstOrDefaultAsync();
+                if (whsTransfer != null)
+                {
+                    whsTransfer.Deleted = true;
+                    await UpdateAsync(whsTransfer);
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERNOTFOUND, ID));
+                }
+            }
+            return whsTransfer;
         }
 
         public Task<bool> SeedDataAsync(int rowCount)

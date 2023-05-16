@@ -14,7 +14,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
         {
             RuleFor(r => r.WhsTransferStatus)
             .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-            .Must(CheckWhsTransferStatus).WithMessage(bbxBEConsts.ERR_INVPAYMENTMETHOD);
+            .Must(CheckWhsTransferStatus).WithMessage(bbxBEConsts.ERR_INVWHSTRANSFERSTATUS);
 
         }
         private bool CheckWhsTransferStatus(string whsTransferStatus)
