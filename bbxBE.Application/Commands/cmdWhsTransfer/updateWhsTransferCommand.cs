@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace bxBE.Application.Commands.cmdWarehouse
 {
-    public class CreateWhsTransferCommand : IRequest<Response<WhsTransfer>>
+    public class UpdateWhsTransferCommand : IRequest<Response<WhsTransfer>>
     {
 
         [Description("Raktárközi átadás-sor")]
@@ -41,6 +41,9 @@ namespace bxBE.Application.Commands.cmdWarehouse
             public decimal CurrAvgCost { get; set; }
         }
 
+        [ColumnLabel("ID")]
+        [Description("ID")]
+        public long ID { get; set; }
 
         [ColumnLabel("Kiadás raktár kód")]
         [Description("Kiadás raktár kód")]
@@ -63,7 +66,6 @@ namespace bxBE.Application.Commands.cmdWarehouse
         public long? UserID { get; set; } = 0;
 
 
-
         [ColumnLabel("Bizonylatsorok")]
         [Description("Bizonylatsorok")]
         public List<WhsTransferLine> WhsTransferLines { get; set; }
@@ -71,23 +73,23 @@ namespace bxBE.Application.Commands.cmdWarehouse
     }
 
 
-    public class CreateWhsTransferCommandHandler : IRequestHandler<CreateWhsTransferCommand, Response<WhsTransfer>>
+    public class UpdateWhsTransferCommandHandler : IRequestHandler<UpdateWhsTransferCommand, Response<WhsTransfer>>
     {
-        private readonly IWhsTransferRepositoryAsync _whsTransferRepositoryAsync;
+        private readonly IWhsTransferRepositoryAsync _whsTransferRepositoryAsyncy;
         private readonly IWarehouseRepositoryAsync _warehouseRepositoryAsync;
         private readonly ICounterRepositoryAsync _counterRepository;
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateWhsTransferCommandHandler(
-            IWhsTransferRepositoryAsync whsTransferRepositoryAsync,
+        public UpdateWhsTransferCommandHandler(
+            IWhsTransferRepositoryAsync whsTransferRepositoryAsyncy,
             IWarehouseRepositoryAsync warehouseRepositoryAsync,
             ICounterRepositoryAsync counterRepository,
             IProductRepositoryAsync productRepository,
             IMapper mapper, IConfiguration configuration)
         {
-            _whsTransferRepositoryAsync = whsTransferRepositoryAsync;
+            _whsTransferRepositoryAsyncy = whsTransferRepositoryAsyncy;
             _warehouseRepositoryAsync = warehouseRepositoryAsync;
             _counterRepository = counterRepository;
             _productRepository = productRepository;
@@ -95,10 +97,10 @@ namespace bxBE.Application.Commands.cmdWarehouse
             _configuration = configuration;
         }
 
-        public async Task<Response<WhsTransfer>> Handle(CreateWhsTransferCommand request, CancellationToken cancellationToken)
+        public async Task<Response<WhsTransfer>> Handle(UpdateWhsTransferCommand request, CancellationToken cancellationToken)
         {
-            var wh = await bllWhsTransfer.CreateWhsTransferAsynch(request, _mapper,
-                    _whsTransferRepositoryAsync, _warehouseRepositoryAsync, _counterRepository, _productRepository,
+            var wh = await bllWhsTransfer.UpdateWhsTransferAsynch(request, _mapper,
+                    _whsTransferRepositoryAsyncy, _warehouseRepositoryAsync, _counterRepository, _productRepository,
                     cancellationToken);
             return new Response<WhsTransfer>(wh);
         }

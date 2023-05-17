@@ -9,10 +9,12 @@ namespace bbxBE.Application.Interfaces.Repositories
     public interface IWhsTransferRepositoryAsync : IGenericRepositoryAsync<WhsTransfer>
     {
         Task<WhsTransfer> AddWhsTransferAsync(WhsTransfer whsTransfer);
+        Task<WhsTransfer> UpdateWhsTransferAsync(WhsTransfer whsTransfer);
+        Task<WhsTransfer> DeleteWhsTransferAsync(long ID);
+
         Task<Entity> GetWhsTransferAsync(long ID);
         Task<WhsTransfer> GetWhsTransferRecordAsync(long ID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedWhsTransferAsync(QueryWhsTransfer requestParameter);
-        Task<WhsTransfer> DeleteWhsTransferAsync(long ID);
 
     }
 }

@@ -4,6 +4,7 @@ using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qWhsTransfer;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
@@ -14,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
@@ -64,6 +66,72 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
 
+            return whsTransfer;
+        }
+        public async Task<WhsTransfer> UpdateWhsTransferAsync(WhsTransfer whsTransfer)
+        {
+
+            WhsTransfer storedWhsTransfer = null;
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    storedWhsTransfer = await _dbContext.WhsTransfer
+                                                    .Include(i => i.WhsTransferLines)
+                                                    .Where(x => x.ID == whsTransfer.ID).FirstOrDefaultAsync();
+                    if (storedWhsTransfer == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERNOTFOUND, whsTransfer.ID));
+                    }
+
+                    //sorokat kitöröljük 
+                    _dbContext.WhsTransferLine.RemoveRange(storedWhsTransfer.WhsTransferLines);
+
+                    var exludedProps = new List<PropertyInfo>()
+                            {   storedWhsTransfer.GetType().GetProperty("ID"),
+                                storedWhsTransfer.GetType().GetProperty("WhsTransferNumber")};
+
+                    Utils.CopyAllTo<WhsTransfer, WhsTransfer>(whsTransfer, storedWhsTransfer, exludedProps);
+                    storedWhsTransfer.WhsTransferLines.ForEach(i =>
+                    {
+                        i.WhsTransferID = whsTransfer.ID;
+                        _dbContext.Instance.Entry(i).State = EntityState.Added;
+                    });
+
+
+                    await UpdateAsync(storedWhsTransfer);
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                catch (Exception)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
+            }
+
+            return storedWhsTransfer;
+        }
+
+        public async Task<WhsTransfer> DeleteWhsTransferAsync(long ID)
+        {
+
+            WhsTransfer whsTransfer = null;
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            {
+                whsTransfer = await _dbContext.WhsTransfer.Where(x => x.ID == ID).FirstOrDefaultAsync();
+                if (whsTransfer != null)
+                {
+                    whsTransfer.Deleted = true;
+                    await UpdateAsync(whsTransfer);
+                    await dbContextTransaction.CommitAsync();
+
+                }
+                else
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERNOTFOUND, ID));
+                }
+            }
             return whsTransfer;
         }
 
@@ -190,28 +258,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             p_items = p_items.Where(predicate);
         }
 
-
-        public async Task<WhsTransfer> DeleteWhsTransferAsync(long ID)
-        {
-
-            WhsTransfer whsTransfer = null;
-            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
-            {
-                whsTransfer = await _dbContext.WhsTransfer.Where(x => x.ID == ID).FirstOrDefaultAsync();
-                if (whsTransfer != null)
-                {
-                    whsTransfer.Deleted = true;
-                    await UpdateAsync(whsTransfer);
-                    await dbContextTransaction.CommitAsync();
-
-                }
-                else
-                {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERNOTFOUND, ID));
-                }
-            }
-            return whsTransfer;
-        }
 
         public Task<bool> SeedDataAsync(int rowCount)
         {

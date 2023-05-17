@@ -74,7 +74,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Bizonylatsorok")]
         [Description("Bizonylatsorok")]
-        public virtual ICollection<WhsTransferLine> WhsTransferLines { get; set; }
+        public virtual List<WhsTransferLine> WhsTransferLines { get; set; }
 
 
     }

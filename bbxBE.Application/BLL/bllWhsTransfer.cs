@@ -27,40 +27,8 @@ namespace bbxBE.Application.BLL
             var counterCode = "";
             try
             {
+                await prepareWhsTransferAsynch(whsTransfer, request.FromWarehouseCode, request.ToWarehouseCode, warehouseRepository, productRepository, cancellationToken);
 
-                var fromWarehouse = await warehouseRepository.GetWarehouseByCodeAsync(request.FromWarehouseCode);
-                if (fromWarehouse == null)
-                {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.FromWarehouseCode));
-                }
-                whsTransfer.FromWarehouseID = fromWarehouse.ID;
-
-
-
-                var toWarehouse = await warehouseRepository.GetWarehouseByCodeAsync(request.ToWarehouseCode);
-                if (toWarehouse == null)
-                {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.ToWarehouseCode));
-                }
-                whsTransfer.ToWarehouseID = toWarehouse.ID;
-
-                //Tételsorok előfeldolgozása
-                var lineErrors = new List<string>();
-                foreach (var ln in whsTransfer.WhsTransferLines)
-                {
-                    var rln = request.WhsTransferLines.SingleOrDefault(i => i.WhsTransferLineNumber == ln.WhsTransferLineNumber);
-
-                    var prod = productRepository.GetProductByProductCode(rln.ProductCode);
-                    if (prod == null)
-                    {
-                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
-                    }
-
-                    ln.ProductID = prod.ID;
-                    ln.ProductCode = rln.ProductCode;
-                    //ln.Product = prod;
-
-                }
 
                 var prefix = "WHT";
                 var whs = whsTransfer.FromWarehouseID.ToString().PadLeft(3, '0');
@@ -82,7 +50,85 @@ namespace bbxBE.Application.BLL
                 }
                 throw;
             }
-            return null;
+        }
+
+        public static async Task<WhsTransfer> UpdateWhsTransferAsynch(UpdateWhsTransferCommand request,
+                 IMapper mapper,
+                 IWhsTransferRepositoryAsync whsTransferRepository,
+                 IWarehouseRepositoryAsync warehouseRepository,
+                 ICounterRepositoryAsync counterRepository,
+                 IProductRepositoryAsync productRepository,
+                 CancellationToken cancellationToken)
+        {
+            var whsTransfer = mapper.Map<WhsTransfer>(request);
+            var counterCode = "";
+            try
+            {
+                await prepareWhsTransferAsynch(whsTransfer, request.FromWarehouseCode, request.ToWarehouseCode, warehouseRepository, productRepository, cancellationToken);
+
+                whsTransfer = await whsTransferRepository.UpdateWhsTransferAsync(whsTransfer);
+                return whsTransfer;
+
+            }
+            catch (Exception)
+            {
+                if (!string.IsNullOrWhiteSpace(whsTransfer.WhsTransferNumber) && !string.IsNullOrWhiteSpace(counterCode))
+                {
+                    await counterRepository.RollbackValueAsync(counterCode, whsTransfer.FromWarehouseID, whsTransfer.WhsTransferNumber);
+                }
+                throw;
+            }
+        }
+
+
+        private static async Task prepareWhsTransferAsynch(WhsTransfer whsTransfer,
+                        string fromWarehouseCode, string toWarehouseCode,
+                        IWarehouseRepositoryAsync warehouseRepository,
+                        IProductRepositoryAsync productRepository,
+                        CancellationToken cancellationToken)
+        {
+            try
+            {
+
+                var fromWarehouse = await warehouseRepository.GetWarehouseByCodeAsync(fromWarehouseCode);
+                if (fromWarehouse == null)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, fromWarehouseCode));
+                }
+                whsTransfer.FromWarehouseID = fromWarehouse.ID;
+
+
+
+                var toWarehouse = await warehouseRepository.GetWarehouseByCodeAsync(toWarehouseCode);
+                if (toWarehouse == null)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, toWarehouseCode));
+                }
+                whsTransfer.ToWarehouseID = toWarehouse.ID;
+
+                //Tételsorok előfeldolgozása
+                var lineErrors = new List<string>();
+                foreach (var ln in whsTransfer.WhsTransferLines)
+                {
+                    var rln = whsTransfer.WhsTransferLines.SingleOrDefault(i => i.WhsTransferLineNumber == ln.WhsTransferLineNumber);
+
+                    var prod = productRepository.GetProductByProductCode(rln.ProductCode);
+                    if (prod == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
+                    }
+
+                    ln.ProductID = prod.ID;
+                    ln.ProductCode = rln.ProductCode;
+                    //ln.Product = prod;
+
+                }
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

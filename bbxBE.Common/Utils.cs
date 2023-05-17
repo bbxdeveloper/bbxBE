@@ -1,4 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using AngleSharp.Dom;
+using AngleSharp.Html;
+using AngleSharp.Html.Parser;
+using MimeKit;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,19 +11,11 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Xml;
-using System.Xml.Serialization;
-using MimeKit;
-using AngleSharp.Html.Parser;
-using AngleSharp.Html;
-using AngleSharp.Dom;
-using System.Net.Http;
 using System.Security.Claims;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace bbxBE.Common
 {
@@ -64,7 +60,7 @@ namespace bbxBE.Common
                 tw.Write(p_s);
                 tw.Close();
             }
-            catch (Exception e) { }
+            catch (Exception) { }
             return p_file;
 
         }
@@ -175,15 +171,18 @@ namespace bbxBE.Common
             return res;
         }
 
-        public static void CopyAllTo<T, T2>(this T source, T2 target)
+        public static void CopyAllTo<T, T2>(this T source, T2 target, List<PropertyInfo> exludedProps)
         {
             var type = typeof(T);
             var type2 = typeof(T2);
             foreach (var sourceProperty in type.GetProperties())
             {
                 var targetProperty = type2.GetProperty(sourceProperty.Name);
-                if (targetProperty != null && targetProperty.CanWrite)
+                if (targetProperty != null && targetProperty.CanWrite
+                    && !exludedProps.Any(a => a.Name == targetProperty.Name))
+                {
                     targetProperty.SetValue(target, sourceProperty.GetValue(source, null), null);
+                }
             }
         }
         public static Type GetGenericCollectionItemType(Type type)
@@ -427,7 +426,7 @@ namespace bbxBE.Common
                     return textReader.CurrentEncoding;
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
 
             return null;    // 
         }
@@ -799,7 +798,7 @@ namespace bbxBE.Common
                 {
                     var element = document.All[i];
                     if (string.IsNullOrWhiteSpace(element.TextContent))
-                    { 
+                    {
                         delElements.Add(element);
                     }
                     else
@@ -851,9 +850,9 @@ namespace bbxBE.Common
             long userID = 0;
             if (p_ClaimsIdentity != null && p_ClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier) != null)
             {
-                userID = Int64.Parse( p_ClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value);
+                userID = Int64.Parse(p_ClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value);
             }
             return userID;
         }
-}
+    }
 }
