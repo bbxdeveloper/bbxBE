@@ -58,6 +58,16 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
+        [HttpPut]
+        public async Task<IActionResult> Update(UpdateWhsTransferCommand command)
+        {
+            if (command.UserID == null || command.UserID == 0)
+            {
+                var identity = HttpContext.User.Identity as ClaimsIdentity;
+                command.UserID = Utils.GetUserIDFromClaimsIdentity(identity);
+            }
+            return Ok(await Mediator.Send(command));
+        }
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] DeleteWhsTransferCommand request)
         {

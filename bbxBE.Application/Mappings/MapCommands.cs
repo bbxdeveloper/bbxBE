@@ -155,6 +155,9 @@ namespace bbxBE.Command.Mappings
 
             CreateMap<CreateWhsTransferCommand, WhsTransfer>();
             CreateMap<CreateWhsTransferCommand.WhsTransferLine, WhsTransferLine>();
+
+            CreateMap<UpdateWhsTransferCommand, WhsTransfer>();
+            CreateMap<UpdateWhsTransferCommand.WhsTransferLine, WhsTransferLine>();
         }
     }
 }
