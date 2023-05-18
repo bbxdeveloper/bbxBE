@@ -30,6 +30,7 @@
     <None Remove="Reports\InvoiceJSB.trdx" />
     <None Remove="Reports\InvoiceJSK.trdx" />
     <None Remove="Reports\Offer.trdx" />
+    <None Remove="Reports\WarehouseTransfer.trdx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,6 +74,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\Offer.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\WarehouseTransfer.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
