@@ -1,11 +1,11 @@
 ﻿using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
-using bxBE.Application.Commands.cmdWarehouse;
+using bxBE.Application.Commands.cmdWhsTransfer;
 using FluentValidation;
 using System;
 
-namespace bbxBE.Application.Commands.cmdInvoice
+namespace bbxBE.Application.Commands.cmdWhsTransfer
 {
 
     public class UpdateWhsTransferValidator : AbstractValidator<UpdateWhsTransferCommand>

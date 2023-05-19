@@ -12,7 +12,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bxBE.Application.Commands.cmdWarehouse
+namespace bxBE.Application.Commands.cmdWhsTransfer
 {
     public class UpdateWhsTransferCommand : IRequest<Response<WhsTransfer>>
     {
