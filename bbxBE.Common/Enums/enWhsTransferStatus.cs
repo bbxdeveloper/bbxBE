@@ -7,6 +7,6 @@ namespace bbxBE.Common.Enums
         [Description("Elkészült")]
         READY,
         [Description("Feldolgozott")]
-        PROCESSED
+        COMPLETED
     }
 }
