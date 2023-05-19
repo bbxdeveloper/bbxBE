@@ -3,7 +3,7 @@ using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qWhsTransfer;
 using bbxBE.Common;
 using bbxBE.Common.Enums;
-using bxBE.Application.Commands.cmdWarehouse;
+using bxBE.Application.Commands.cmdWhsTransfer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +24,7 @@ namespace bbxBE.WebApi.Controllers.v1
         {
             _env = env;
             _conf = conf;
+            _context = context;
         }
 
 
@@ -82,6 +83,24 @@ namespace bbxBE.WebApi.Controllers.v1
             var req = new GetEnum() { type = typeof(enWhsTransferStatus) };
 
             return Ok(await Mediator.Send(req));
+        }
+
+        /// <summary>
+        /// Get whsTrasfer report in PDF format
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("print")]
+        public async Task<IActionResult> Print(PrintWhsTransferCommand command)
+        {
+
+            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var result = await Mediator.Send(command);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
     }

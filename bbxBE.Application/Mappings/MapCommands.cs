@@ -23,6 +23,7 @@ using bxBE.Application.Commands.cmdOrigin;
 using bxBE.Application.Commands.cmdProduct;
 using bxBE.Application.Commands.cmdProductGroup;
 using bxBE.Application.Commands.cmdWarehouse;
+using bxBE.Application.Commands.cmdWhsTransfer;
 
 namespace bbxBE.Command.Mappings
 {
