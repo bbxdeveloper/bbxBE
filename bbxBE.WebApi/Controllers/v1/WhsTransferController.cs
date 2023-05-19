@@ -1,6 +1,8 @@
 ﻿using bbxBE.Application.Commands.cmdWhsTransfer;
+using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qWhsTransfer;
 using bbxBE.Common;
+using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdWarehouse;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -73,5 +75,14 @@ namespace bbxBE.WebApi.Controllers.v1
         {
             return Ok(await Mediator.Send(request));
         }
+
+        [HttpGet("whstransferstatus")]
+        public async Task<IActionResult> GetWhsTransferStatus()
+        {
+            var req = new GetEnum() { type = typeof(enWhsTransferStatus) };
+
+            return Ok(await Mediator.Send(req));
+        }
+
     }
 }
