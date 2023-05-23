@@ -145,7 +145,7 @@
         </TextBox>
         <Panel Width="10.7cm" Height="2.2cm" Left="4.213cm" Top="0.2cm" Name="panel7">
           <Items>
-            <Table Width="9.619cm" Height="0.4cm" Left="0.014cm" Top="1.052cm" Name="tableSummaryByVatRates">
+            <Table Width="9.608cm" Height="0.4cm" Left="0.014cm" Top="1.052cm" Name="tableSummaryByVatRates">
               <Body>
                 <Cells>
                   <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
@@ -168,7 +168,7 @@
                   </TableCell>
                   <TableCell RowIndex="0" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
                     <ReportItem>
-                      <TextBox Width="0.556cm" Height="0.4cm" Left="0cm" Top="0cm" Value=":" Name="textBox53">
+                      <TextBox Width="0.545cm" Height="0.4cm" Left="0cm" Top="0cm" Value=":" Name="textBox53">
                         <Style TextAlign="Center" VerticalAlign="Middle">
                           <Font Name="Courier New" Size="9pt" />
                         </Style>
@@ -178,7 +178,7 @@
                 </Cells>
                 <Columns>
                   <Column Width="6.089cm" />
-                  <Column Width="0.556cm" />
+                  <Column Width="0.545cm" />
                   <Column Width="2.974cm" />
                 </Columns>
                 <Rows>
@@ -212,20 +212,41 @@
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <TextBox Width="6.09cm" Height="0.35cm" Left="0.013cm" Top="1.453cm" Value="Végösszeg kerekítése" Name="textBox57">
-              <Style VerticalAlign="Middle">
+            <TextBox Width="6.084cm" Height="0.35cm" Left="0.013cm" Top="1.453cm" Value="Végösszeg kerekítése" Name="textBox57">
+              <Style Visible="False" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Filters>
+                    <Filter Expression="= Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount" Operator="NotEqual" Value="0" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
             </TextBox>
-            <TextBox Width="0.553cm" Height="0.35cm" Left="6.1cm" Top="1.453cm" Value=":" Name="textBox58">
-              <Style TextAlign="Center" VerticalAlign="Middle">
+            <TextBox Width="0.551cm" Height="0.35cm" Left="6.103cm" Top="1.453cm" Value=":" Name="textBox58">
+              <Style Visible="False" TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" Bold="False" />
               </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Filters>
+                    <Filter Expression="= Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount" Operator="NotEqual" Value="0" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
             </TextBox>
-            <TextBox Width="2.977cm" Height="0.35cm" Left="6.653cm" Top="1.453cm" Value="= Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount&#xD;&#xA;&#xD;&#xA;" Format="{0:N2}" Name="textBox56">
-              <Style TextAlign="Right" VerticalAlign="Middle">
+            <TextBox Width="2.976cm" Height="0.35cm" Left="6.654cm" Top="1.453cm" Value="= Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount&#xD;&#xA;&#xD;&#xA;" Format="{0:N2}" Name="textBox56">
+              <Style Visible="False" TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Filters>
+                    <Filter Expression="= Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount" Operator="NotEqual" Value="0" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
             </TextBox>
             <TextBox Width="6.083cm" Height="0.35cm" Left="0.014cm" Top="1.803cm" Value="Végösszeg" Name="textBox71">
               <Style VerticalAlign="Middle">
