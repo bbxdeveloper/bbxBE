@@ -507,19 +507,40 @@
               </Style>
             </TextBox>
             <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="1.468cm" Value="Végösszeg kerekítése" Name="textBox57">
-              <Style VerticalAlign="Middle">
+              <Style Visible="False" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Filters>
+                    <Filter Expression="= (Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount)" Operator="NotEqual" Value="0" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
             </TextBox>
             <TextBox Width="0.553cm" Height="0.35cm" Left="6.147cm" Top="1.468cm" Value=":" Name="textBox58">
-              <Style TextAlign="Center" VerticalAlign="Middle">
+              <Style Visible="False" TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" Bold="False" />
               </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Filters>
+                    <Filter Expression="= (Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount)" Operator="NotEqual" Value="0" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
             </TextBox>
             <TextBox Width="2.976cm" Height="0.35cm" Left="6.7cm" Top="1.468cm" Value="= Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount&#xD;&#xA;&#xD;&#xA;" Format="{0:N2}" Name="textBox56">
-              <Style TextAlign="Right" VerticalAlign="Middle">
+              <Style Visible="False" TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Filters>
+                    <Filter Expression="= (Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount)" Operator="NotEqual" Value="0" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
             </TextBox>
             <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="1.818cm" Value="Végösszeg" Name="textBox71">
               <Style VerticalAlign="Middle">
