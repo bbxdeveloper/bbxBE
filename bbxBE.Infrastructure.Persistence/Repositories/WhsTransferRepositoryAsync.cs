@@ -138,7 +138,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Entity> GetWhsTransferAsync(long ID)
         {
 
-            WhsTransfer item = await GetWhsTransferRecordAsync(ID);
+            WhsTransfer item = await GetWhsTransferRecordAsync(ID, true);
 
             if (item == null)
             {
@@ -154,15 +154,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<WhsTransfer> GetWhsTransferRecordAsync(long ID)
+        public async Task<WhsTransfer> GetWhsTransferRecordAsync(long ID, bool fulldata)
         {
-
             WhsTransfer item;
-            item = await _dbContext.WhsTransfer
-              .Include(w => w.FromWarehouse)
-              .Include(w => w.ToWarehouse)
-              .Include(l => l.WhsTransferLines).ThenInclude(p => p.Product)
-              .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+            if (fulldata)
+            {
+                item = await _dbContext.WhsTransfer
+                  .Include(w => w.FromWarehouse).AsNoTracking()
+                  .Include(w => w.ToWarehouse).AsNoTracking()
+                  .Include(l => l.WhsTransferLines).ThenInclude(p => p.Product).AsNoTracking()
+                  .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+            }
+            else
+            {
+                item = await _dbContext.WhsTransfer
+                  .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+            }
             return item;
         }
 
@@ -251,7 +258,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             && (FromWarehouseCode == null || p.FromWarehouse.WarehouseCode.ToUpper().Contains(FromWarehouseCode))
                             && (ToWarehouseCode == null || p.ToWarehouse.WarehouseCode.ToUpper().Contains(ToWarehouseCode))
                             && (!TransferDateFrom.HasValue || p.TransferDate >= TransferDateFrom.Value)
-                            && (!TransferDateTo.HasValue || p.TransferDate <= TransferDateFrom.Value)
+                            && (!TransferDateTo.HasValue || p.TransferDate <= TransferDateTo.Value)
                             && (!p.Deleted || (Deleted.HasValue && Deleted.Value))
                            );
 

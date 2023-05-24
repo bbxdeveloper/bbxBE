@@ -13,7 +13,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<WhsTransfer> DeleteWhsTransferAsync(long ID);
 
         Task<Entity> GetWhsTransferAsync(long ID);
-        Task<WhsTransfer> GetWhsTransferRecordAsync(long ID);
+        Task<WhsTransfer> GetWhsTransferRecordAsync(long ID, bool fulldata);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedWhsTransferAsync(QueryWhsTransfer requestParameter);
 
     }

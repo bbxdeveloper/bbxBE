@@ -143,7 +143,7 @@ namespace bbxBE.Application.BLL
         public static async Task<FileStreamResult> CreateWhsTransferReportAsynch(IWhsTransferRepositoryAsync _whsTransferRepositoryAsync, string reportTRDX, PrintWhsTransferCommand request, CancellationToken cancellationToken)
         {
 
-            var whsTransfer = await _whsTransferRepositoryAsync.GetWhsTransferRecordAsync(request.ID);
+            var whsTransfer = await _whsTransferRepositoryAsync.GetWhsTransferRecordAsync(request.ID, false);
             if (whsTransfer == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERNOTFOUND, request.ID));
@@ -198,7 +198,7 @@ namespace bbxBE.Application.BLL
                 //Példányszám beállítása
                 //
                 whsTransfer.Copies++;
-                await _whsTransferRepositoryAsync.UpdateWhsTransferAsync(whsTransfer);
+                await _whsTransferRepositoryAsync.UpdateAsync(whsTransfer);
 
                 Stream stream = new MemoryStream(result.DocumentBytes);
                 var codPdf = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
