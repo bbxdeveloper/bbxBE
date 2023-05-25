@@ -252,7 +252,7 @@ namespace bbxBE.Application.BLL
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, request.OriginalInvoiceID.Value));
                     }
 
-                    // Javjtó bizonylat linenumber meghatározás
+                    // Javító bizonylat linenumber meghatározás
                     //      - az eredeti bizonylat linenumber utáni tétel
                     //        + engedmény esetén áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve)
                     //      - már elkészült javítószámlák tétel összesen
