@@ -89,7 +89,6 @@ namespace bbxBE.Application.BLL
             }
         }
 
-
         private static async Task prepareWhsTransferAsynch(WhsTransfer whsTransfer,
                         string fromWarehouseCode, string toWarehouseCode,
                         IWarehouseRepositoryAsync warehouseRepository,

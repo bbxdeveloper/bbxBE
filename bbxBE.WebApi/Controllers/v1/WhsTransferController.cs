@@ -103,5 +103,10 @@ namespace bbxBE.WebApi.Controllers.v1
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
+        [HttpPatch("process")]
+        public async Task<IActionResult> Process([FromQuery] ProcessWhsTransferCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
     }
 }

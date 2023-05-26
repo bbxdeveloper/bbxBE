@@ -1,6 +1,4 @@
-﻿using bbxBE.Application.Interfaces;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Parameters;
+﻿using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qWarehouse;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;

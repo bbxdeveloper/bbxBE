@@ -116,8 +116,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     }
                     stock.AvgCost = latestStockCard.NAvgCost;
 
-
-                    lstStock.Add(stock);
+                    if (!lstStock.Contains(stock))
+                    {
+                        lstStock.Add(stock);
+                    }
                 }
             }
             await UpdateRangeAsync(lstStock);
@@ -170,10 +172,111 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 invCtrl.StockID = stock.ID;
 
-                lstStock.Add(stock);
+                if (!lstStock.Contains(stock))
+                {
+                    lstStock.Add(stock);
+                }
             }
 
             await UpdateRangeAsync(lstStock);
+
+            return lstStock;
+        }
+
+        public async Task<List<Stock>> MaintainStockByWhsTransferAsync(WhsTransfer whsTransfer, Customer ownData)
+        {
+            var lstStock = new List<Stock>();       //updatelendő készlet gyűjtő
+            foreach (var whsTransferLine in whsTransfer.WhsTransferLines)
+            {
+
+                var stockFrom = lstStock.FirstOrDefault(x => x.WarehouseID == whsTransfer.FromWarehouseID
+                            && x.ProductID == whsTransferLine.ProductID); //már foglalkoztunk a készlettel ?
+                if (stockFrom == null)
+                {
+
+                    stockFrom = await _dbContext.Stock
+                             .Where(x => x.WarehouseID == whsTransfer.FromWarehouseID
+                                    && x.ProductID == whsTransferLine.ProductID && !x.Deleted)
+                             .FirstOrDefaultAsync();
+                }
+
+                if (stockFrom == null)
+                {
+                    stockFrom = new Stock()
+                    {
+                        WarehouseID = whsTransfer.FromWarehouseID,
+                        //Warehouse = 
+                        ProductID = whsTransferLine.ProductID,
+                        //Product = whsTransferLine.Product,
+                        AvgCost = whsTransferLine.CurrAvgCost             //ez nem változik
+                    };
+                    await AddAsync(stockFrom);
+                }
+                if (!lstStock.Contains(stockFrom))
+                {
+                    lstStock.Add(stockFrom);
+                }
+
+
+
+                var stockTo = lstStock.FirstOrDefault(x => x.WarehouseID == whsTransfer.ToWarehouseID
+                            && x.ProductID == whsTransferLine.ProductID); //már foglalkoztunk a készlettel ?
+                if (stockTo == null)
+                {
+
+                    stockTo = await _dbContext.Stock
+                             .Where(x => x.WarehouseID == whsTransfer.ToWarehouseID
+                                    && x.ProductID == whsTransferLine.ProductID && !x.Deleted)
+                             .FirstOrDefaultAsync();
+                }
+
+                if (stockTo == null)
+                {
+                    stockTo = new Stock()
+                    {
+                        WarehouseID = whsTransfer.ToWarehouseID,
+                        //Warehouse = 
+                        ProductID = whsTransferLine.ProductID,
+                        //Product = whsTransferLine.Product,
+                        AvgCost = whsTransferLine.CurrAvgCost             //ez nem változik
+                    };
+                    await AddAsync(stockTo);
+                }
+                if (!lstStock.Contains(stockTo))
+                {
+                    lstStock.Add(stockTo);
+                }
+
+
+                //kiadás láb
+                var stockCardFrom = await _stockCardRepository.CreateStockCard(stockFrom, whsTransfer.TransferDate.Date,
+                            whsTransfer.FromWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, whsTransferLine.ID, ownData.ID,
+                            enStockCardType.WHSTRANSFER,
+                            -whsTransferLine.Quantity,
+                            whsTransferLine.CurrAvgCost,
+                            whsTransfer.WhsTransferNumber);
+
+
+                stockFrom.RealQty -= whsTransferLine.Quantity;
+                stockFrom.LatestOut = DateTime.UtcNow;
+                stockFrom.AvgCost = stockCardFrom.NAvgCost;
+
+                //bevétel láb
+                var stockCardTo = await _stockCardRepository.CreateStockCard(stockTo, whsTransfer.TransferDateIn.Value,
+                            whsTransfer.ToWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, whsTransferLine.ID, ownData.ID,
+                            enStockCardType.WHSTRANSFER,
+                            whsTransferLine.Quantity,
+                            whsTransferLine.CurrAvgCost,
+                            whsTransfer.WhsTransferNumber);
+
+
+                stockTo.RealQty += whsTransferLine.Quantity;
+                stockTo.LatestIn = DateTime.UtcNow;
+                stockTo.AvgCost = stockCardTo.NAvgCost;
+
+            }
+
+            await UpdateRangeAsync(lstStock, false);
 
             return lstStock;
         }
