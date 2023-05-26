@@ -249,7 +249,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
                 //kiadás láb
-                var stockCardFrom = await _stockCardRepository.CreateStockCard(stockFrom, whsTransfer.TransferDate,
+                var stockCardFrom = await _stockCardRepository.CreateStockCard(stockFrom, whsTransfer.TransferDate.Date,
                             whsTransfer.FromWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, whsTransferLine.ID, ownData.ID,
                             enStockCardType.WHSTRANSFER,
                             -whsTransferLine.Quantity,
@@ -262,7 +262,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 stockFrom.AvgCost = stockCardFrom.NAvgCost;
 
                 //bevétel láb
-                var stockCardTo = await _stockCardRepository.CreateStockCard(stockTo, whsTransfer.TransferDate,
+                var stockCardTo = await _stockCardRepository.CreateStockCard(stockTo, whsTransfer.TransferDateIn.Value,
                             whsTransfer.ToWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, whsTransferLine.ID, ownData.ID,
                             enStockCardType.WHSTRANSFER,
                             whsTransferLine.Quantity,
@@ -274,10 +274,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 stockTo.LatestIn = DateTime.UtcNow;
                 stockTo.AvgCost = stockCardTo.NAvgCost;
 
-                //itt tartok
             }
 
-            await UpdateRangeAsync(lstStock);
+            await UpdateRangeAsync(lstStock, false);
 
             return lstStock;
         }

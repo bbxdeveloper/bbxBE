@@ -24,9 +24,13 @@ namespace bbxBE.Domain.Entities
         [Description("Bevétel raktár")]
         public long ToWarehouseID { get; set; }
 
-        [ColumnLabel("Dátum")]
-        [Description("Dátum")]
+        [ColumnLabel("Kiadás dátuma")]
+        [Description("Kiadás dátuma")]
         public DateTime TransferDate { get; set; }
+
+        [ColumnLabel("Bevétel dátuma")]
+        [Description("Bevétel dátuma")]
+        public DateTime? TransferDateIn { get; set; }
 
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]

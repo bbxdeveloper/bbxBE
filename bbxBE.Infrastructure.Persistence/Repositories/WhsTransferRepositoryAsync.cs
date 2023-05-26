@@ -6,6 +6,7 @@ using bbxBE.Application.Queries.qWhsTransfer;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common;
 using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
@@ -163,12 +164,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                   .Include(w => w.FromWarehouse).AsNoTracking()
                   .Include(w => w.ToWarehouse).AsNoTracking()
                   .Include(l => l.WhsTransferLines).ThenInclude(p => p.Product).AsNoTracking()
-                  .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+                  .Where(x => x.ID == ID && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
             }
             else
             {
                 item = await _dbContext.WhsTransfer
-                  .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+                  .Where(x => x.ID == ID && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
             }
             return item;
         }
@@ -266,6 +267,40 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
+        public async Task<WhsTransfer> ProcessAsync(long ID, DateTime transferDateIn)
+        {
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            {
+
+                try
+                {
+                    var whsTransfer = await GetWhsTransferRecordAsync(ID, true);
+                    if (whsTransfer == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERNOTFOUND, ID));
+                    }
+                    var own = _customerRepository.GetOwnData();
+
+                    whsTransfer.WhsTransferStatus = enWhsTransferStatus.COMPLETED.ToString();
+                    whsTransfer.TransferDateIn = transferDateIn;
+
+
+                    await _stockRepository.MaintainStockByWhsTransferAsync(whsTransfer, own);
+
+                    await UpdateAsync(whsTransfer);
+
+                    await _dbContext.SaveChangesAsync();
+                    await dbContextTransaction.CommitAsync();
+
+                    return whsTransfer;
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+        }
         public Task<bool> SeedDataAsync(int rowCount)
         {
             throw new System.NotImplementedException();

@@ -89,41 +89,6 @@ namespace bbxBE.Application.BLL
             }
         }
 
-        public static async Task<WhsTransfer> ProcessWhsTransferAsynch(ProcessWhsTransferCommand request,
-                 IMapper mapper,
-                 IWhsTransferRepositoryAsync whsTransferRepository,
-                 IStockRepositoryAsync stockRepository,
-                 CancellationToken cancellationToken)
-        {
-            var whsTransfer = await whsTransferRepository.GetWhsTransferRecordAsync(request.ID, true);
-            if (whsTransfer == null)
-            {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERNOTFOUND, request.ID));
-            }
-
-            try
-            {
-
-                var stockList = await stockRepository.MaintainStockByInvoiceAsync(p_invoice);
-
-
-                await prepareWhsTransferAsynch(whsTransfer, request.FromWarehouseCode, request.ToWarehouseCode, warehouseRepository, productRepository, cancellationToken);
-
-                whsTransfer = await whsTransferRepository.UpdateWhsTransferAsync(whsTransfer);
-                return whsTransfer;
-
-            }
-            catch (Exception)
-            {
-                if (!string.IsNullOrWhiteSpace(whsTransfer.WhsTransferNumber) && !string.IsNullOrWhiteSpace(counterCode))
-                {
-                    await counterRepository.RollbackValueAsync(counterCode, whsTransfer.FromWarehouseID, whsTransfer.WhsTransferNumber);
-                }
-                throw;
-            }
-        }
-
-
         private static async Task prepareWhsTransferAsynch(WhsTransfer whsTransfer,
                         string fromWarehouseCode, string toWarehouseCode,
                         IWarehouseRepositoryAsync warehouseRepository,

@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +18,11 @@ namespace bxBE.Application.Commands.cmdWhsTransfer
         [ColumnLabel("ID")]
         [Description("ID")]
         public long ID { get; set; }
+
+        [ColumnLabel("Bevétel dátuma")]
+        [Description("Bevétel dátuma")]
+        public DateTime TransferDateIn { get; set; }
+
     }
 
 
@@ -47,10 +52,8 @@ namespace bxBE.Application.Commands.cmdWhsTransfer
 
         public async Task<Response<WhsTransfer>> Handle(ProcessWhsTransferCommand request, CancellationToken cancellationToken)
         {
-            var wh = await bllWhsTransfer.ProcessWhsTransferAsynch(request, _mapper,
-                    _whsTransferRepositoryAsync, _warehouseRepositoryAsync, _counterRepository, _productRepository,
-                    cancellationToken);
-            return new Response<WhsTransfer>(wh);
+            var res = await _whsTransferRepositoryAsync.ProcessAsync(request.ID, request.TransferDateIn);
+            return new Response<WhsTransfer>(res);
         }
 
     }

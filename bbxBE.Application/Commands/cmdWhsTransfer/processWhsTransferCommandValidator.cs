@@ -16,6 +16,8 @@ namespace bbxBE.Application.Commands.cmdWhsTransfer
             RuleFor(p => p.ID)
                 .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
+            RuleFor(r => r.TransferDateIn)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
         }
     }
