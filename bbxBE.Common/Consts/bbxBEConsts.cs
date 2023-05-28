@@ -111,6 +111,7 @@
         public static string ERR_CST_OWNEXISTS = "{PropertyName}: Saját adat már létezik.";
         public static string ERR_CST_WRONGCOUNTRY = "{PropertyName}: Helytelen országkód:{PropertyValue}";
         public static string ERR_CST_WRONGUNITPRICETYPE = "{PropertyName}: Helytelen eladási ártípus:{PropertyValue}";
+        public static string ERR_CST_WRONGDEFPAYMENTTYPE = "{PropertyName}: Helytelen alapértelmezett fizetési mód:{PropertyValue}";
 
         public static string ERR_CST_TAXNUMBER_INV = "{PropertyName}: Az adószám csak magyarországi partnerek esetén értelmezett.";
         public static string ERR_CST_TAXNUMBER_INV2 = "{PropertyName}: érvénytelen formátum/tartalom.";

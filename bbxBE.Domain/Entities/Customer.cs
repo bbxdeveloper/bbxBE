@@ -3,10 +3,7 @@ using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Common;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -95,6 +92,22 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Maximális limit")]
         [Description("Maximális limit")]
         public decimal? MaxLimit { get; set; }
+
+        [ColumnLabel("Alap.fiz.mód")]
+        [Description("Alapértelmezett fizetési mód")]
+        private PaymentMethodType defPaymentMethod;
+        public string DefPaymentMethod
+        {
+            get { return Enum.GetName(typeof(PaymentMethodType), unitPriceType); }
+            set
+            {
+                if (value != null)
+                    defPaymentMethod = (PaymentMethodType)Enum.Parse(typeof(PaymentMethodType), value);
+                else
+                    defPaymentMethod = PaymentMethodType.CASH;
+            }
+        }
+
 
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]

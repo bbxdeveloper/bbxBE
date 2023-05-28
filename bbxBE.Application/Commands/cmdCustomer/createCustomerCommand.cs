@@ -1,20 +1,11 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
-using bbxBE.Application.BLL;
-using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
-using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,7 +29,7 @@ namespace bxBE.Application.Commands.cmdCustomer
         [Description("Adóalany adószám")]
         public string TaxpayerNumber { get; set; }          //9999999-9-99
 
- 
+
         [ColumnLabel("Külföldi adószám")]
         [Description("Külföldi adószám")]
         public string ThirdStateTaxId { get; set; }
@@ -77,6 +68,10 @@ namespace bxBE.Application.Commands.cmdCustomer
         [Description("Maximális limit")]
         public decimal? MaxLimit { get; set; }
 
+        [ColumnLabel("Alap.fiz.mód")]
+        [Description("Alapértelmezett fizetési mód")]
+        public string DefPaymentMethod { get; set; }
+
 
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]
@@ -107,7 +102,7 @@ namespace bxBE.Application.Commands.cmdCustomer
             cust.CustomerBankAccountNumber = cust.CustomerBankAccountNumber?.ToUpper();
             cust.ThirdStateTaxId = cust.ThirdStateTaxId?.ToUpper();
 
-             await _customerRepository.AddCustomerAsync(cust);
+            await _customerRepository.AddCustomerAsync(cust);
             return new Response<Customer>(cust);
         }
 

@@ -24,7 +24,8 @@ namespace bbxBE.Queries.Mappings
                    .ForMember(dst => dst.TaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.TaxpayerId, src.VatCode, src.CountyCode)))
                    .ForMember(dst => dst.FullAddress, opt => opt.MapFrom(src => String.Format("{0} {1} {2}", src.PostalCode, src.City, src.AdditionalAddressDetail).Trim()))
                    .ForMember(dst => dst.CountryCodeX, opt => opt.MapFrom(src => CountryCodeResolver(src.CountryCode)))
-                   .ForMember(dst => dst.UnitPriceTypeX, opt => opt.MapFrom(src => UnitPriceTypeResolver(src.UnitPriceType)));
+                   .ForMember(dst => dst.UnitPriceTypeX, opt => opt.MapFrom(src => UnitPriceTypeResolver(src.UnitPriceType)))
+                   .ForMember(dst => dst.DefPaymentMethodX, opt => opt.MapFrom(src => PaymentMethodNameResolver(src.DefPaymentMethod)));
 
 
             CreateMap<List<ProductGroup>, List<GetProductGroupViewModel>>();
