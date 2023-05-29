@@ -416,7 +416,7 @@
     <PageFooterSection Height="0.433in" Name="pageFooterSection1">
       <Items>
         <TextBox Width="48.62mm" Height="6mm" Left="0mm" Top="5mm" Value="= &quot;Oldal: &quot; + PageNumber + &quot;/&quot; + PageCount" Name="textBox32" />
-        <TextBox Width="49.37mm" Height="6mm" Left="139.25mm" Top="5mm" Value="= Now()" Format="{0:yyyy.MM.dd hh:mm}" Name="textBox33">
+        <TextBox Width="49.37mm" Height="6mm" Left="139.25mm" Top="5mm" Value="= Now()" Format="{0:yyyy.MM.dd HH:mm}" Name="textBox33">
           <Style TextAlign="Right" />
         </TextBox>
         <TextBox Width="149.37mm" Height="5mm" Left="0mm" Top="0mm" Value="= IIf(Fields.userID = 0, &quot;Az árajánlatot készítette:................................................................&quot;, &quot;Az árajánlatot készítette: &quot; + Fields.userName)" Name="textBox4">
