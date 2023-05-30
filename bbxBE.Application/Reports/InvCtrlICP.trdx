@@ -227,7 +227,7 @@
     <PageFooterSection Height="0.9cm" Name="pageFooterSection1">
       <Items>
         <TextBox Width="48.62mm" Height="6mm" Left="0mm" Top="2mm" Value="= &quot;Oldal: &quot; + PageNumber + &quot;/&quot; + PageCount" Name="textBox32" />
-        <TextBox Width="48.62mm" Height="6mm" Left="140mm" Top="2mm" Value="= Now()" Format="{0:g}" Name="textBox33">
+        <TextBox Width="48.62mm" Height="6mm" Left="140mm" Top="2mm" Value="= Now()" Format="{0:yyyy.MM.dd HH:mm}" Name="textBox33">
           <Style TextAlign="Right" />
         </TextBox>
       </Items>
