@@ -56,7 +56,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Ügyfél ID")]
         [Description("Ügyfél ID")]
-        public long? CustomerID { get; set; }
+        public long? CustomerID { get; set; }           //A blokk miatt nullable!
 
         private InvoiceCategoryType invoiceCategory;
 

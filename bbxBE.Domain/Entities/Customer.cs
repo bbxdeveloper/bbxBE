@@ -59,6 +59,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Cím")]
         [Description("Cím")]
         public string AdditionalAddressDetail { get; set; }
+        [ColumnLabel("Teljes cím")]
+        [Description("Teljes cím")]
+        public string FullAddress { get { return (PostalCode + " " + City + " " + AdditionalAddressDetail).Trim(); } }
+
+
         [ColumnLabel("Email")]
         [Description("Email")]
         public string Email { get; set; }
@@ -112,5 +117,6 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
         public bool IsOwnData { get; set; }
+
     }
 }

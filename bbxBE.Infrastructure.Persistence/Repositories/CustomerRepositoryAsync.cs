@@ -4,6 +4,7 @@ using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qCustomer;
+using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;

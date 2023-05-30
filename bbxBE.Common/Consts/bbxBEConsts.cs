@@ -40,6 +40,7 @@
 
         public static string ERR_MAXLEN = "{PropertyName}: mező mérete nem lehet több, mint {MaxLength}.";
         public static string ERR_RANGE = "{PropertyName}: mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
+        public static string ERR_DATEINTERVAL = "{PropertyName}: helytelen időszak.";
 
 
         public static string ERR_EXISTS = "{PropertyName}: már létezik.";
