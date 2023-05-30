@@ -1,6 +1,7 @@
 ﻿using bbxBE.Application.Interfaces;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qCustomer;
+using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Common.Enums;
 using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;

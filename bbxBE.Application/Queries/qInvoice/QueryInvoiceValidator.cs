@@ -1,22 +1,7 @@
-﻿using AutoMapper;
-using MediatR;
-using bbxBE.Application.Interfaces;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Parameters;
-using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Domain.Extensions;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Common.Consts;
-using FluentValidation;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
+using FluentValidation;
+using System;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
@@ -29,6 +14,16 @@ namespace bbxBE.Application.Queries.qInvoice
             RuleFor(p => p.InvoiceType)
                 .Must(CheckInvoiceType)
                 .WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVOICETYPE));
+
+            RuleFor(f => f.InvoiceDeliveryDateTo)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .GreaterThan(f => f.InvoiceDeliveryDateFrom.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
+                .When(f => f.InvoiceDeliveryDateFrom.HasValue);
+
+            RuleFor(f => f.InvoiceIssueDateTo)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .GreaterThan(f => f.InvoiceIssueDateFrom.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
+                .When(f => f.InvoiceIssueDateFrom.HasValue);
 
         }
 
