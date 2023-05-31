@@ -1,5 +1,5 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdProduct;
 using FluentValidation;
@@ -21,7 +21,7 @@ namespace bbxBE.Application.Commands.cmdProduct
 
 
             RuleFor(p => p.ID)
-                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_GREATGHERTHANZERO)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(p => p.ProductCode)

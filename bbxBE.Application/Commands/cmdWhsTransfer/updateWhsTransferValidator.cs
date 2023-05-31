@@ -17,7 +17,7 @@ namespace bbxBE.Application.Commands.cmdWhsTransfer
             this._WhsTransferRepositoryAsync = WhsTransferRepositoryAsync;
 
             RuleFor(p => p.ID)
-                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_GREATGHERTHANZERO)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(r => r.FromWarehouseCode)
@@ -40,6 +40,9 @@ namespace bbxBE.Application.Commands.cmdWhsTransfer
     {
         public UpdateWhsTransferLinesValidatror()
         {
+            RuleFor(p => p.Quantity)
+            .GreaterThan(0).WithMessage(bbxBEConsts.ERR_GREATGHERTHANZERO);
+
             RuleFor(p => p.UnitOfMeasure)
                  .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.WhsTransferLineNumber, model.ProductCode, model.UnitOfMeasure));
         }
