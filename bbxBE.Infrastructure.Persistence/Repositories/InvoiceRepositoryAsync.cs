@@ -369,7 +369,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                      {
                          CustomerID = Customer.ID,
                          CustomerName = Customer.CustomerName,
-                         FullAddress = Customer.FullAddress,
+                         FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
                          InvoiceID = Invoice.ID,
                          InvoiceNumber = Invoice.InvoiceNumber,
                          InvoiceDeliveryDate = Invoice.InvoiceDeliveryDate,
@@ -407,7 +407,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                      {
                          CustomerID = Customer.ID,
                          CustomerName = Customer.CustomerName,
-                         FullAddress = Customer.FullAddress,
+                         FullAddress = (Customer.PostalCode + " " + Customer.City + " " + Customer.AdditionalAddressDetail).Trim(),
                          InvoiceID = Invoice.ID,
                          InvoiceNumber = Invoice.InvoiceNumber,
                          InvoiceDeliveryDate = Invoice.InvoiceDeliveryDate,
@@ -697,7 +697,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Include(s => s.Supplier).AsNoTracking()
                 .Include(c => c.Customer).AsNoTracking()
                 .Where(p => p.InvoiceCategory == enInvoiceCategory.NORMAL.ToString()
-                                    && p.InvoiceType == (p.Incoming ? enInvoiceType.INV.ToString() : enInvoiceType.INC.ToString()));
+                                    && p.InvoiceType == (p.Incoming ? enInvoiceType.INC.ToString() : enInvoiceType.INV.ToString()));
 
             recordsTotal = await query.CountAsync();
 
@@ -715,7 +715,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 Incoming = inv.Incoming,
                 CustomerID = inv.Incoming ? inv.SupplierID : inv.CustomerID.Value,
                 CustomerName = inv.Incoming ? inv.Supplier.CustomerName : inv.Customer.CustomerName,
-                CustomerFullAddress = inv.Incoming ? inv.Supplier.FullAddress : inv.Customer.FullAddress
+                CustomerFullAddress = (inv.Incoming ?
+                        (inv.Supplier.PostalCode + " " + inv.Supplier.City + " " + inv.Supplier.AdditionalAddressDetail).Trim() :
+                        (inv.Customer.PostalCode + " " + inv.Customer.City + " " + inv.Customer.AdditionalAddressDetail).Trim())
             }
             into grp
                      select new GetCustomerInvoiceSummary()
