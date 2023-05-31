@@ -9,7 +9,7 @@ namespace bbxBE.Application.Queries.qInvoice
         {
             RuleFor(f => f.InvoiceDeliveryDateFrom)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .GreaterThan(f => f.InvoiceDeliveryDateTo.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
+                .LessThanOrEqualTo(f => f.InvoiceDeliveryDateTo.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
                 .When(f => f.InvoiceDeliveryDateTo.HasValue);
 
 
