@@ -38,6 +38,9 @@ namespace bbxBE.Application.Commands.cmdWhsTransfer
     {
         public createWhsTransferLinesValidatror()
         {
+            RuleFor(p => p.Quantity)
+            .GreaterThan(0).WithMessage(bbxBEConsts.ERR_GREATGHERTHANZERO);
+
             RuleFor(p => p.UnitOfMeasure)
                  .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.WhsTransferLineNumber, model.ProductCode, model.UnitOfMeasure));
         }

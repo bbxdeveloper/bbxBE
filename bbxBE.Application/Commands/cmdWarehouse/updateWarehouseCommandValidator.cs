@@ -1,5 +1,5 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bxBE.Application.Commands.cmdWarehouse;
 using FluentValidation;
 using System;
@@ -19,7 +19,7 @@ namespace bbxBE.Application.Commands.cmdWarehouse
 
 
             RuleFor(p => p.ID)
-                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_GREATGHERTHANZERO)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(p => p.WarehouseCode)
@@ -42,13 +42,12 @@ namespace bbxBE.Application.Commands.cmdWarehouse
             if (WarehouseCode.Length != 0)
             {
                 return await _WarehouseRepository.IsUniqueWarehouseCodeAsync(WarehouseCode, ID);
+
             }
             else
             {
                 return true;
             }
         }
-
     }
-
 }

@@ -1,17 +1,9 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common;
+using bbxBE.Common.Consts;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Common;
 
 namespace bbxBE.Application.Commands.cmdUser
 {
@@ -25,7 +17,7 @@ namespace bbxBE.Application.Commands.cmdUser
             this._usrRepository = usrRepository;
 
             RuleFor(p => p.ID)
-                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_GREATGHERTHANZERO)
                 .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
 
@@ -33,7 +25,7 @@ namespace bbxBE.Application.Commands.cmdUser
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
                 .MustAsync(
-                    async (model,Name, cancellation) =>
+                    async (model, Name, cancellation) =>
                     {
                         return await IsUniqueNameAsync(Name, model.ID, cancellation);
                     }
@@ -43,22 +35,22 @@ namespace bbxBE.Application.Commands.cmdUser
                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
                .MustAsync(Utils.IsValidEmailAsync).WithMessage(bbxBEConsts.ERR_INVALIDEMAIL);
-            
+
             RuleFor(p => p.LoginName)
                  .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                  .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN);
 
             RuleFor(p => p.Comment)
                  .MaximumLength(2000).WithMessage(bbxBEConsts.ERR_MAXLEN);
-            
+
         }
 
-       
+
         private async Task<bool> IsUniqueNameAsync(string p_UserName, long p_ID, CancellationToken cancellationToken)
         {
-                return await _usrRepository.IsUniqueNameAsync(p_UserName, p_ID);
+            return await _usrRepository.IsUniqueNameAsync(p_UserName, p_ID);
         }
-  
+
     }
 
 }
