@@ -103,7 +103,7 @@ namespace bbxBE.Domain.Entities
         private PaymentMethodType defPaymentMethod;
         public string DefPaymentMethod
         {
-            get { return Enum.GetName(typeof(PaymentMethodType), unitPriceType); }
+            get { return Enum.GetName(typeof(PaymentMethodType), defPaymentMethod); }
             set
             {
                 if (value != null)
