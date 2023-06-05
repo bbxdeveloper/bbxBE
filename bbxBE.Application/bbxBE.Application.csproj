@@ -20,6 +20,7 @@
     <None Remove="Reports\AggregateINV.trdx" />
     <None Remove="Reports\AggregateSubINC.trdx" />
     <None Remove="Reports\AggregateSubINV.trdx" />
+    <None Remove="Reports\CustomerInvoiceSummary.trdx" />
     <None Remove="Reports\InvCtrlICP.trdx" />
     <None Remove="Reports\InvCtrlICPReport.trdx" />
     <None Remove="Reports\Invoice.trdx" />
@@ -124,6 +125,12 @@
       <HintPath>lib\Telerik.Reporting.WebServiceDataSource.dll</HintPath>
       <Private>True</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Reports\CustomerInvoiceSummary.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

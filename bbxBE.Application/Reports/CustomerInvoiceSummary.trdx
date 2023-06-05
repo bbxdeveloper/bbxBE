@@ -487,11 +487,6 @@
         <String>1234</String>
       </Value>
     </ReportParameter>
-    <ReportParameter Name="FullData" Type="Boolean" Text="FullData">
-      <Value>
-        <String>true</String>
-      </Value>
-    </ReportParameter>
     <ReportParameter Name="InvoiceDeliveryDateFrom" Type="DateTime" Text="InvoiceDeliveryDateFrom" Visible="True">
       <Value>
         <String>2023.06.01</String>
