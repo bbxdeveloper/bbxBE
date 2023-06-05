@@ -176,7 +176,7 @@ namespace bbxBE.WebApi.Controllers.v1
 
 
         [HttpGet("csv")]
-        public async Task<IActionResult> Print([FromQuery] CSVInvoice command)
+        public async Task<IActionResult> CSV([FromQuery] CSVInvoice command)
         {
             var result = await Mediator.Send(command);
 
@@ -190,6 +190,25 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> GetCustomerUnpaidAmount([FromQuery] GetCustomerUnpaidAmount req)
         {
             return Ok(await Mediator.Send(req));
+        }
+
+
+        /// <summary>
+        /// POST api/controller
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("printcustomerinvoicesummary")]
+        public async Task<IActionResult> PrintCustomerInvoiceSummary(PrintCustomerInvoiceSummaryCommand command)
+        {
+
+            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var result = await Mediator.Send(command);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
     }

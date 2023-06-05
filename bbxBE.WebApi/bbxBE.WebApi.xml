@@ -186,6 +186,13 @@
             <param name="command"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.PrintCustomerInvoiceSummary(bbxBE.Application.Queries.qInvoice.PrintCustomerInvoiceSummaryCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.LocationController.Get(bbxBE.Application.Queries.qLocation.GetLocation)">
             <summary>
             GET: api/controller

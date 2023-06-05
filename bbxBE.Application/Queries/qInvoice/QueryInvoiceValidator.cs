@@ -12,23 +12,25 @@ namespace bbxBE.Application.Queries.qInvoice
         public QueryInvoiceValidatorValidator()
         {
             RuleFor(p => p.InvoiceType)
-                .Must(CheckInvoiceType)
-                .WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVOICETYPE));
+                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .Must(CheckInvoiceType)
+                .WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVOICETYPE, model.InvoiceType));
 
             RuleFor(f => f.InvoiceDeliveryDateTo)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .LessThanOrEqualTo(f => f.InvoiceDeliveryDateFrom.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
+                .GreaterThan(f => f.InvoiceDeliveryDateFrom.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
                 .When(f => f.InvoiceDeliveryDateFrom.HasValue);
 
             RuleFor(f => f.InvoiceIssueDateTo)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .LessThanOrEqualTo(f => f.InvoiceIssueDateFrom.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
+                .GreaterThan(f => f.InvoiceIssueDateFrom.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
                 .When(f => f.InvoiceIssueDateFrom.HasValue);
 
         }
 
         public bool CheckInvoiceType(string invoiceType)
         {
+            if (string.IsNullOrWhiteSpace(invoiceType)) { return false; }
             var valid = Enum.TryParse(invoiceType, out enInvoiceType it);
             return valid;
         }

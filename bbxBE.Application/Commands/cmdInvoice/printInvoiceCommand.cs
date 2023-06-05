@@ -140,6 +140,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
                     reportSource.ReportDocument = rep;
                 }
 
+                reportSource.Parameters.Add(new Telerik.Reporting.Parameter("JWT", ""));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvoiceID", request.ID));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
 
@@ -150,9 +151,10 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 Telerik.Reporting.Processing.RenderingResult result = reportProcessor.RenderReport("PDF", reportSource, deviceInfo);
 
                 if (result == null)
-                    throw new Exception("Invoice report result is null!");
+                    throw new Exception(bbxBEConsts.ERR_INVOICEREPORT_NULL);
                 if (result.Errors.Length > 0)
-                    throw new Exception("Invoice report finished with error:" + result.Errors[0].Message);
+                    throw new Exception(string.Format(bbxBEConsts.ERR_INVOICEREPORT, result.Errors[0].Message));
+
 
                 //Példányszám beállítása
                 //

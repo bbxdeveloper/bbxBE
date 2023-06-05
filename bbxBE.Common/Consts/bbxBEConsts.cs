@@ -88,6 +88,12 @@
         public static string ERR_CORRECTIONUNKOWNPROD = "Eredeti bionylaton nem létező termék: ID:{0}, Kód:{1}";
         public static string ERR_WHSTRANSFERNOTFOUND = "Raktárközi átadás nem található, ID:{0} ";
         public static string ERR_INVWHSTRANSFERSTATUS = "{PropertyName}: érvénytelen raktárközi átadás státusz:{PropertyValue} ";
+        public static string ERR_INVOICEREPORT_NULL = "Invoice report result is null!";
+        public static string ERR_INVOICEREPORT = "Invoice report finished with error:{0}";
+        public static string ERR_OFFERREPORT_NULL = "Offer report result is null!";
+        public static string ERR_OFFERREPORT = "Offer report finished with error:{0}";
+        public static string ERR_CUSTOMERINVOICESUMMARYREPORT_NULL = "CustomerInvoiceSummary report result is null!";
+        public static string ERR_CUSTOMERINVOICESUMMARYREPORT = "CustomerInvoiceSummary report finished with error:{0}";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 
