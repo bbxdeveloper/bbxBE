@@ -708,6 +708,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             recordsFiltered = await query.CountAsync();
 
+
             var q2 = from inv in query
                      group inv by
             new
@@ -736,10 +737,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          InvoiceGrossAmountSum = grp.Sum(s => s.InvoiceGrossAmount),
                          InvoiceGrossAmountHUFSum = grp.Sum(s => s.InvoiceGrossAmountHUF)
                      };
-            q2 = q2.OrderBy(o => o.CustomerName);
 
-            // retrieve data to list
+            if (string.IsNullOrWhiteSpace(requestParameters.OrderBy))
+            {
+                q2 = q2.OrderBy(o => o.CustomerName);
+            }
+            else
+            {
+                q2 = q2.OrderBy(requestParameters.OrderBy);
+            }
+
+            // paging
+            q2 = q2.Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
+                .Take(requestParameters.PageSize);
             List<GetCustomerInvoiceSummary> resultData = await q2.ToListAsync();
+
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -749,8 +761,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             };
             return (resultData, recordsCount);
         }
+
         private void FilterCustomerInvoiceSummary(ref IQueryable<Invoice> p_items,
-                bool incoming, long? customerID, string warehouseCode, DateTime? invoiceDeliveryDateFrom, DateTime? invoiceDeliveryDateTo)
+              bool incoming, long? customerID, string warehouseCode, DateTime? invoiceDeliveryDateFrom, DateTime? invoiceDeliveryDateTo)
         {
             if (!p_items.Any())
                 return;
