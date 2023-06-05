@@ -113,7 +113,7 @@ namespace bbxBE.Application.Queries.qInvoice
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvoiceDeliveryDateTo", request.InvoiceDeliveryDateTo));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("CustomerID", request.CustomerID));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("CustomerName", customerName));
-            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("WarehouseCode", request.WarehouseCode));
+            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("WarehouseCode", request.WarehouseCode == null ? "" : request.WarehouseCode));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("WarehouseName", warehouseName));
 
 

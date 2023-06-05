@@ -128,9 +128,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Reports\CustomerInvoiceSummary.trdx">
+    <EmbeddedResource Include="Reports\CustomerInvoiceSummary.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

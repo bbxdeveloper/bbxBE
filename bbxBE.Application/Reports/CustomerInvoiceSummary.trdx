@@ -90,7 +90,7 @@
                   <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
                     <ReportItem>
                       <TextBox Width="6.163cm" Height="0.49cm" Left="0cm" Top="0cm" Value="= Fields.customerName" Multiline="True" Name="textBox8">
-                        <Style TextAlign="Center" VerticalAlign="Middle">
+                        <Style TextAlign="Left" VerticalAlign="Middle">
                           <Font Name="Courier New" Size="8pt" />
                         </Style>
                       </TextBox>
