@@ -298,7 +298,7 @@
         <Panel Width="15.16cm" Height="1.6cm" Left="3.747cm" Top="0.6cm" Name="panel2">
           <Style Visible="True" VerticalAlign="Middle" />
           <Items>
-            <TextBox Width="7.453cm" Height="0.5cm" Left="0cm" Top="1cm" Value="= Fields.transferDate" Format="{0:d}" Name="textBox21">
+            <TextBox Width="7.453cm" Height="0.5cm" Left="0cm" Top="1cm" Value="= Fields.transferDate" Format="{0:yyyy.MM.dd}" Name="textBox21">
               <Style VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
               </Style>
@@ -348,19 +348,17 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="18.852cm" Height="1.2cm" Left="0.095cm" Top="2.7cm" Value="= Fields.notice" Name="textBox64">
-          <Style Visible="True" VerticalAlign="Middle">
-            <Font Name="Courier New" Size="10pt" />
-          </Style>
+        <HtmlTextBox Width="18.826cm" Height="1.2cm" Left="0.068cm" Top="2.7cm" Value="= Fields.notice" Name="htmlTextBox1">
+          <Style VerticalAlign="Top" />
           <ConditionalFormatting>
             <FormattingRule>
               <Style Visible="False" />
               <Filters>
-                <Filter Expression="= Len(Fields.notice)" Operator="LessThan" Value="1" />
+                <Filter Expression="= Len(Fields.notice)" Operator="LessThan" Value="= 1" />
               </Filters>
             </FormattingRule>
           </ConditionalFormatting>
-        </TextBox>
+        </HtmlTextBox>
       </Items>
     </ReportHeaderSection>
   </Items>
