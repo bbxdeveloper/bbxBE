@@ -771,7 +771,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<Invoice>();
 
             predicate = predicate.And(p => p.Incoming == incoming
-                            && (!customerID.HasValue || (p.Incoming == incoming && p.SupplierID == customerID) || (p.Incoming == !incoming && p.CustomerID == customerID))
+                            && (!customerID.HasValue || (p.Incoming && p.SupplierID == customerID) || (!p.Incoming && p.CustomerID == customerID))
                             && (warehouseCode == null || p.Warehouse.WarehouseCode.ToUpper() == warehouseCode)
                             && (!invoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= invoiceDeliveryDateFrom.Value)
                             && (!invoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= invoiceDeliveryDateTo.Value)
