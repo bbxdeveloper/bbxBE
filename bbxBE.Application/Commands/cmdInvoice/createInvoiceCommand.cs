@@ -42,6 +42,7 @@ namespace bxBE.Application.Commands.cmdInvoice
             [ColumnLabel("Me.e.")]
             [Description("Mennyiségi egység kód")]
             public string UnitOfMeasure { get; set; }
+
             [ColumnLabel("Ár")]
             [Description("Ár")]
             public decimal UnitPrice { get; set; }
@@ -52,6 +53,13 @@ namespace bxBE.Application.Commands.cmdInvoice
             [Description("Kapcsolt szállítólevél sor")]
             public long? RelDeliveryNoteInvoiceLineID { get; set; }
 
+            [ColumnLabel("Új listaár")]
+            [Description("Új listaár (csak bevételezés esetén értelmezett)")]
+            public decimal NewUnitPrice1 { get; set; }
+
+            [ColumnLabel("Új egységár")]
+            [Description("Új egységár (csak bevételezés esetén értelmezett)")]
+            public decimal NewUnitPrice2 { get; set; }
 
         }
 

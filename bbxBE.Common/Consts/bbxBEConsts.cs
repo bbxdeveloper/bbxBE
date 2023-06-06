@@ -37,9 +37,11 @@
 
         public static string ERR_REQUIRED = "{PropertyName}: mező kitöltése kötelező.";
         public static string TOKEN_PROPERTYNAME = "{PropertyName}";
+        public static string ERR_GREATGHERTHANZERO = "{PropertyName}: mező értéke csak pozitív szám lehet.";
 
         public static string ERR_MAXLEN = "{PropertyName}: mező mérete nem lehet több, mint {MaxLength}.";
         public static string ERR_RANGE = "{PropertyName}: mező értéke {from} {to} között lehet. A megadott érték:{PropertyValue}.";
+        public static string ERR_DATEINTERVAL = "{PropertyName}: helytelen időszak.";
 
 
         public static string ERR_EXISTS = "{PropertyName}: már létezik.";
@@ -84,6 +86,14 @@
         public static string ERR_ORIGINALINVOICENOTFOUND = "Eredeti bionylat nem található, ID:{0}";
         public static string ERR_WRONGCORRECTIONQTY = "Eredeti bionylaton lévőnél nagyobb mennyiség levonása! Termékkód:{0}, eredeti mennyiség:{1:#,#0.00}, előzőleg lejavítva:{2:#,#0.00}, javítószámlán:{3:#,#0.00}";
         public static string ERR_CORRECTIONUNKOWNPROD = "Eredeti bionylaton nem létező termék: ID:{0}, Kód:{1}";
+        public static string ERR_WHSTRANSFERNOTFOUND = "Raktárközi átadás nem található, ID:{0} ";
+        public static string ERR_INVWHSTRANSFERSTATUS = "{PropertyName}: érvénytelen raktárközi átadás státusz:{PropertyValue} ";
+        public static string ERR_INVOICEREPORT_NULL = "Invoice report result is null!";
+        public static string ERR_INVOICEREPORT = "Invoice report finished with error:{0}";
+        public static string ERR_OFFERREPORT_NULL = "Offer report result is null!";
+        public static string ERR_OFFERREPORT = "Offer report finished with error:{0}";
+        public static string ERR_CUSTOMERINVOICESUMMARYREPORT_NULL = "CustomerInvoiceSummary report result is null!";
+        public static string ERR_CUSTOMERINVOICESUMMARYREPORT = "CustomerInvoiceSummary report finished with error:{0}";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 
@@ -109,6 +119,7 @@
         public static string ERR_CST_OWNEXISTS = "{PropertyName}: Saját adat már létezik.";
         public static string ERR_CST_WRONGCOUNTRY = "{PropertyName}: Helytelen országkód:{PropertyValue}";
         public static string ERR_CST_WRONGUNITPRICETYPE = "{PropertyName}: Helytelen eladási ártípus:{PropertyValue}";
+        public static string ERR_CST_WRONGDEFPAYMENTTYPE = "{PropertyName}: Helytelen alapértelmezett fizetési mód:{PropertyValue}";
 
         public static string ERR_CST_TAXNUMBER_INV = "{PropertyName}: Az adószám csak magyarországi partnerek esetén értelmezett.";
         public static string ERR_CST_TAXNUMBER_INV2 = "{PropertyName}: érvénytelen formátum/tartalom.";

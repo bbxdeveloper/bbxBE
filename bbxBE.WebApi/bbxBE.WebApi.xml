@@ -165,6 +165,13 @@
             <param name="filter"></param>
             <returns></returns>
         </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.QueryCustomerInvoiceSummary(bbxBE.Application.Queries.qInvoice.QueryCustomerInvoiceSummary)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.ImportFromNAV(bxBE.Application.Commands.cmdInvoice.importFromNAVCommand)">
             <summary>
             POST api/controller
@@ -179,7 +186,7 @@
             <param name="command"></param>
             <returns></returns>
         </member>
-        <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.PrintAggregate(bbxBE.Application.Commands.cmdInvoice.PrintAggregateInvoiceCommand)">
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.PrintCustomerInvoiceSummary(bbxBE.Application.Queries.qInvoice.PrintCustomerInvoiceSummaryCommand)">
             <summary>
             POST api/controller
             </summary>
@@ -211,7 +218,7 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.OfferController.Create(bxBE.Application.Commands.cmdOffer.CreateOfferCommand)">
@@ -399,6 +406,27 @@
         <member name="M:bbxBE.WebApi.Controllers.v1.WarehouseController.Create(bxBE.Application.Commands.cmdWarehouse.CreateWarehouseCommand)">
             <summary>
             POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.WhsTransferController.Query(bbxBE.Application.Queries.qWhsTransfer.QueryWhsTransfer)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.WhsTransferController.Create(bxBE.Application.Commands.cmdWhsTransfer.CreateWhsTransferCommand)">
+            <summary>
+            POST api/controller
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.WhsTransferController.Print(bbxBE.Application.Commands.cmdWhsTransfer.PrintWhsTransferCommand)">
+            <summary>
+            Get whsTrasfer report in PDF format
             </summary>
             <param name="command"></param>
             <returns></returns>

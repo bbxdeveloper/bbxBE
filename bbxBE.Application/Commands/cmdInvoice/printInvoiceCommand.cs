@@ -5,6 +5,7 @@ using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.NAV;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PdfSharp.Pdf;
@@ -64,18 +65,26 @@ namespace bbxBE.Application.Commands.cmdInvoice
             string reportTRDX = String.Empty;
 
             Enum.TryParse(invoice.InvoiceType, out enInvoiceType invoiceType);
+            Enum.TryParse(invoice.InvoiceCategory, out InvoiceCategoryType invoiceCategory);
 
             switch (invoiceType)
             {
                 case enInvoiceType.INC:
                     {
-                        if (!invoice.InvoiceCorrection)
+                        if (invoiceCategory == InvoiceCategoryType.NORMAL)
                         {
-                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceINC.trdx", Assembly.GetExecutingAssembly());
+                            if (!invoice.InvoiceCorrection)
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceINC.trdx", Assembly.GetExecutingAssembly());
+                            }
+                            else
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSB.trdx", Assembly.GetExecutingAssembly());
+                            }
                         }
                         else
                         {
-                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSB.trdx", Assembly.GetExecutingAssembly());
+                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.AggregateINC.trdx", Assembly.GetExecutingAssembly());
                         }
                         break;
                     }
@@ -97,13 +106,20 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 case enInvoiceType.INV:
                 default:
                     {
-                        if (!invoice.InvoiceCorrection)
+                        if (invoiceCategory == InvoiceCategoryType.NORMAL)
                         {
-                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
+                            if (!invoice.InvoiceCorrection)
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
+                            }
+                            else
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSK.trdx", Assembly.GetExecutingAssembly());
+                            }
                         }
                         else
                         {
-                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSK.trdx", Assembly.GetExecutingAssembly());
+                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.AggregateINV.trdx", Assembly.GetExecutingAssembly());
                         }
                         break;
                     }
@@ -124,6 +140,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
                     reportSource.ReportDocument = rep;
                 }
 
+                reportSource.Parameters.Add(new Telerik.Reporting.Parameter("JWT", ""));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvoiceID", request.ID));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
 
@@ -134,9 +151,10 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 Telerik.Reporting.Processing.RenderingResult result = reportProcessor.RenderReport("PDF", reportSource, deviceInfo);
 
                 if (result == null)
-                    throw new Exception("Invoice report result is null!");
+                    throw new Exception(bbxBEConsts.ERR_INVOICEREPORT_NULL);
                 if (result.Errors.Length > 0)
-                    throw new Exception("Invoice report finished with error:" + result.Errors[0].Message);
+                    throw new Exception(string.Format(bbxBEConsts.ERR_INVOICEREPORT, result.Errors[0].Message));
+
 
                 //Példányszám beállítása
                 //

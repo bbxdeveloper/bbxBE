@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Domain.Entities;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
-using static bbxBE.Common.NAV.NAV_enums;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
+using bbxBE.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Queries.Mappings
 {
@@ -25,7 +24,8 @@ namespace bbxBE.Queries.Mappings
                    .ForMember(dst => dst.TaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.TaxpayerId, src.VatCode, src.CountyCode)))
                    .ForMember(dst => dst.FullAddress, opt => opt.MapFrom(src => String.Format("{0} {1} {2}", src.PostalCode, src.City, src.AdditionalAddressDetail).Trim()))
                    .ForMember(dst => dst.CountryCodeX, opt => opt.MapFrom(src => CountryCodeResolver(src.CountryCode)))
-                   .ForMember(dst => dst.UnitPriceTypeX, opt => opt.MapFrom(src => UnitPriceTypeResolver(src.UnitPriceType)));
+                   .ForMember(dst => dst.UnitPriceTypeX, opt => opt.MapFrom(src => UnitPriceTypeResolver(src.UnitPriceType)))
+                   .ForMember(dst => dst.DefPaymentMethodX, opt => opt.MapFrom(src => PaymentMethodNameResolver(src.DefPaymentMethod)));
 
 
             CreateMap<List<ProductGroup>, List<GetProductGroupViewModel>>();
@@ -86,7 +86,7 @@ namespace bbxBE.Queries.Mappings
 
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null && src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
                                     src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataValue : "")))
-              .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any( il=> il.PriceReview.HasValue && il.PriceReview.Value)))
+              .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any(il => il.PriceReview.HasValue && il.PriceReview.Value)))
              ;
 
             CreateMap<InvoiceLine, GetInvoiceViewModel.InvoiceLine>()
@@ -159,10 +159,11 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.CurrencyCode)));
 
             CreateMap<OfferLine, GetOfferViewModel.OfferLine>()
-             .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver( src.UnitOfMeasure)))
+             .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)))
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
 
             CreateMap<Stock, GetStockViewModel>()
+             .ForMember(dst => dst.WarehouseCode, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode))
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
              .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.Product.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description))
@@ -187,7 +188,7 @@ namespace bbxBE.Queries.Mappings
             CreateMap<CustDiscount, GetCustDiscountViewModel>()
             .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Customer.CustomerName))
             .ForMember(dst => dst.ProductGroupCode, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode))
-            .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode + "-" +src.ProductGroup.ProductGroupDescription));
+            .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode + "-" + src.ProductGroup.ProductGroupDescription));
 
             CreateMap<InvoiceLine, GetPendigDeliveryNotesSummaryModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
             CreateMap<InvoiceLine, GetPendigDeliveryNotesModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
@@ -217,6 +218,14 @@ namespace bbxBE.Queries.Mappings
             CreateMap<List<Location>, List<GetLocationViewModel>>();
             CreateMap<Location, GetLocationViewModel>();
 
+            CreateMap<WhsTransfer, GetWhsTransferViewModel>()
+              .ForMember(dst => dst.FromWarehouse, opt => opt.MapFrom(src => src.FromWarehouse.WarehouseCode + "-" + src.FromWarehouse.WarehouseDescription))
+              .ForMember(dst => dst.ToWarehouse, opt => opt.MapFrom(src => src.ToWarehouse.WarehouseCode + "-" + src.ToWarehouse.WarehouseDescription))
+              .ForMember(dst => dst.WhsTransferStatusX, opt => opt.MapFrom(src => enWhsTransferStatusNameResolver(src.WhsTransferStatus)));
+
+            CreateMap<WhsTransferLine, GetWhsTransferViewModel.WhsTransferLine>()
+             .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description))
+             .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)));
 
         }
 
@@ -290,6 +299,14 @@ namespace bbxBE.Queries.Mappings
             return "";
         }
 
-
+        public static string enWhsTransferStatusNameResolver(string WhsTransferStatus)
+        {
+            if (!string.IsNullOrWhiteSpace(WhsTransferStatus))
+            {
+                var _whsTransferStatus = (enWhsTransferStatus)Enum.Parse(typeof(enWhsTransferStatus), WhsTransferStatus);
+                return Common.Utils.GetEnumDescription(_whsTransferStatus);
+            }
+            return "";
+        }
     }
 }

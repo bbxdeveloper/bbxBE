@@ -3,10 +3,7 @@ using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Common;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -62,6 +59,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Cím")]
         [Description("Cím")]
         public string AdditionalAddressDetail { get; set; }
+        [ColumnLabel("Teljes cím")]
+        [Description("Teljes cím")]
+        public string FullAddress { get { return (PostalCode + " " + City + " " + AdditionalAddressDetail).Trim(); } }
+
+
         [ColumnLabel("Email")]
         [Description("Email")]
         public string Email { get; set; }
@@ -96,8 +98,25 @@ namespace bbxBE.Domain.Entities
         [Description("Maximális limit")]
         public decimal? MaxLimit { get; set; }
 
+        [ColumnLabel("Alap.fiz.mód")]
+        [Description("Alapértelmezett fizetési mód")]
+        private PaymentMethodType defPaymentMethod;
+        public string DefPaymentMethod
+        {
+            get { return Enum.GetName(typeof(PaymentMethodType), defPaymentMethod); }
+            set
+            {
+                if (value != null)
+                    defPaymentMethod = (PaymentMethodType)Enum.Parse(typeof(PaymentMethodType), value);
+                else
+                    defPaymentMethod = PaymentMethodType.CASH;
+            }
+        }
+
+
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
         public bool IsOwnData { get; set; }
+
     }
 }

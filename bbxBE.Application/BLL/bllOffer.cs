@@ -1,26 +1,24 @@
-﻿using bbxBE.Application.Commands.cmdOffer;
-using bbxBE.Common.Consts;
-using bbxBE.Common.Exceptions;
+﻿using AutoMapper;
+using bbxBE.Application.Commands.cmdOffer;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
+using bxBE.Application.Commands.cmdOffer;
 using Microsoft.AspNetCore.Mvc;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Telerik.Reporting;
 using Telerik.Reporting.Processing;
 using Telerik.Reporting.XmlSerialization;
-using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
-using bbxBE.Common.Enums;
-using AutoMapper;
-using bxBE.Application.Commands.cmdOffer;
-using bbxBE.Common;
-using System.Linq;
 
 namespace bbxBE.Application.BLL
 {
@@ -57,6 +55,7 @@ namespace bbxBE.Application.BLL
                     reportSource.ReportDocument = rep;
                 }
 
+                reportSource.Parameters.Add(new Telerik.Reporting.Parameter("JWT", ""));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("OfferID", request.ID));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
 
@@ -76,11 +75,13 @@ namespace bbxBE.Application.BLL
                     throw ex;
                 }
 
-                if (result == null)
-                    throw new Exception("Offer report result is null!");
 
-                if (result.HasErrors)
-                    throw new Exception("Report engine has some reference ERROR!");
+                if (result == null)
+                    throw new Exception(bbxBEConsts.ERR_OFFERREPORT_NULL);
+                if (result.Errors.Length > 0)
+                    throw new Exception(string.Format(bbxBEConsts.ERR_OFFERREPORT, result.Errors[0].Message));
+
+
 
                 //Példányszám beállítása
                 //
@@ -174,7 +175,7 @@ namespace bbxBE.Application.BLL
 
                 return offer;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 if (!string.IsNullOrWhiteSpace(offer.OfferNumber) && !string.IsNullOrWhiteSpace(counterCode))
                 {
@@ -243,7 +244,7 @@ namespace bbxBE.Application.BLL
 
                 return offer;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

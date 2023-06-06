@@ -116,8 +116,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     }
                     stock.AvgCost = latestStockCard.NAvgCost;
 
-
-                    lstStock.Add(stock);
+                    if (!lstStock.Contains(stock))
+                    {
+                        lstStock.Add(stock);
+                    }
                 }
             }
             await UpdateRangeAsync(lstStock);
@@ -170,10 +172,111 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 invCtrl.StockID = stock.ID;
 
-                lstStock.Add(stock);
+                if (!lstStock.Contains(stock))
+                {
+                    lstStock.Add(stock);
+                }
             }
 
             await UpdateRangeAsync(lstStock);
+
+            return lstStock;
+        }
+
+        public async Task<List<Stock>> MaintainStockByWhsTransferAsync(WhsTransfer whsTransfer, Customer ownData)
+        {
+            var lstStock = new List<Stock>();       //updatelendő készlet gyűjtő
+            foreach (var whsTransferLine in whsTransfer.WhsTransferLines)
+            {
+
+                var stockFrom = lstStock.FirstOrDefault(x => x.WarehouseID == whsTransfer.FromWarehouseID
+                            && x.ProductID == whsTransferLine.ProductID); //már foglalkoztunk a készlettel ?
+                if (stockFrom == null)
+                {
+
+                    stockFrom = await _dbContext.Stock
+                             .Where(x => x.WarehouseID == whsTransfer.FromWarehouseID
+                                    && x.ProductID == whsTransferLine.ProductID && !x.Deleted)
+                             .FirstOrDefaultAsync();
+                }
+
+                if (stockFrom == null)
+                {
+                    stockFrom = new Stock()
+                    {
+                        WarehouseID = whsTransfer.FromWarehouseID,
+                        //Warehouse = 
+                        ProductID = whsTransferLine.ProductID,
+                        //Product = whsTransferLine.Product,
+                        AvgCost = whsTransferLine.CurrAvgCost             //ez nem változik
+                    };
+                    await AddAsync(stockFrom);
+                }
+                if (!lstStock.Contains(stockFrom))
+                {
+                    lstStock.Add(stockFrom);
+                }
+
+
+
+                var stockTo = lstStock.FirstOrDefault(x => x.WarehouseID == whsTransfer.ToWarehouseID
+                            && x.ProductID == whsTransferLine.ProductID); //már foglalkoztunk a készlettel ?
+                if (stockTo == null)
+                {
+
+                    stockTo = await _dbContext.Stock
+                             .Where(x => x.WarehouseID == whsTransfer.ToWarehouseID
+                                    && x.ProductID == whsTransferLine.ProductID && !x.Deleted)
+                             .FirstOrDefaultAsync();
+                }
+
+                if (stockTo == null)
+                {
+                    stockTo = new Stock()
+                    {
+                        WarehouseID = whsTransfer.ToWarehouseID,
+                        //Warehouse = 
+                        ProductID = whsTransferLine.ProductID,
+                        //Product = whsTransferLine.Product,
+                        AvgCost = whsTransferLine.CurrAvgCost             //ez nem változik
+                    };
+                    await AddAsync(stockTo);
+                }
+                if (!lstStock.Contains(stockTo))
+                {
+                    lstStock.Add(stockTo);
+                }
+
+
+                //kiadás láb
+                var stockCardFrom = await _stockCardRepository.CreateStockCard(stockFrom, whsTransfer.TransferDate.Date,
+                            whsTransfer.FromWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, whsTransferLine.ID, ownData.ID,
+                            enStockCardType.WHSTRANSFER,
+                            -whsTransferLine.Quantity,
+                            whsTransferLine.CurrAvgCost,
+                            whsTransfer.WhsTransferNumber);
+
+
+                stockFrom.RealQty -= whsTransferLine.Quantity;
+                stockFrom.LatestOut = DateTime.UtcNow;
+                stockFrom.AvgCost = stockCardFrom.NAvgCost;
+
+                //bevétel láb
+                var stockCardTo = await _stockCardRepository.CreateStockCard(stockTo, whsTransfer.TransferDateIn.Value,
+                            whsTransfer.ToWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, whsTransferLine.ID, ownData.ID,
+                            enStockCardType.WHSTRANSFER,
+                            whsTransferLine.Quantity,
+                            whsTransferLine.CurrAvgCost,
+                            whsTransfer.WhsTransferNumber);
+
+
+                stockTo.RealQty += whsTransferLine.Quantity;
+                stockTo.LatestIn = DateTime.UtcNow;
+                stockTo.AvgCost = stockCardTo.NAvgCost;
+
+            }
+
+            await UpdateRangeAsync(lstStock, false);
 
             return lstStock;
         }
@@ -203,6 +306,28 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+        public async Task<IEnumerable<Entity>> GetProductStocksAsync(long productID)
+        {
+
+            var resultData = await _dbContext.Stock.AsNoTracking()
+             .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+             .Include(w => w.Warehouse).AsNoTracking()
+             .Include(l => l.Location).AsNoTracking()
+             .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
+                        && w.ProductID == productID && !w.Deleted).ToListAsync();
+
+
+            var resultDataModel = new List<GetStockViewModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+               _mapper.Map<Stock, GetStockViewModel>(i))
+            );
+
+
+            var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
+
+            var shapeData = await _dataShaperGetStockViewModel.ShapeDataAsync(resultDataModel, String.Join(",", listFieldsModel));
+            return shapeData;
+        }
 
         public async Task<Stock> GetStockRecordAsync(long warehouseID, long productID)
         {
@@ -215,6 +340,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 item = new Stock();
             }
             return item;
+        }
+        public async Task<IEnumerable<Stock>> GetProductStocksRecordAsync(long productID)
+        {
+            var items = await _dbContext.Stock.AsNoTracking()
+             .Include(l => l.Location).AsNoTracking()
+             .Where(w => w.ProductID == productID && !w.Deleted).ToListAsync();
+            return items;
         }
 
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameter)

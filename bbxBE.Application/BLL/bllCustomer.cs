@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common.Enums;
+using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCustomer;
 using System;
@@ -81,6 +82,11 @@ namespace bbxBE.Application.BLL
             return valid;
         }
 
+        public static bool ValidatePaymentMethod(string paymentMethod)
+        {
+            var valid = Enum.TryParse(paymentMethod, out PaymentMethodType pm);
+            return valid;
+        }
 
         public static async Task<int> CreateRangeAsynch(List<CreateCustomerCommand> requestList,
              ICustomerRepositoryAsync _CustomerRepository, IMapper _mapper, CancellationToken cancellationToken)

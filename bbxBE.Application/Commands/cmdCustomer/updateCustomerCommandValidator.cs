@@ -1,14 +1,11 @@
-﻿using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Common.Consts;
+﻿using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdCustomer;
 using FluentValidation;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using bbxBE.Common;
-using bbxBE.Common.Enums;
-using bbxBE.Application.BLL;
 
 namespace bbxBE.Application.Commands.cmdCustomer
 {
@@ -22,7 +19,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
             this._customerRepository = customerRepository;
 
             RuleFor(p => p.ID)
-               .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED)
+               .GreaterThan(0).WithMessage(bbxBEConsts.ERR_GREATGHERTHANZERO)
                .NotNull().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
 
@@ -115,9 +112,17 @@ namespace bbxBE.Application.Commands.cmdCustomer
                .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
                .MustAsync(Utils.IsValidEmailAsync).WithMessage(bbxBEConsts.ERR_INVALIDEMAIL);
 
+            RuleFor(p => p.DefPaymentMethod)
+                .Must(
+                   (model, defPaymentMethod) =>
+                   {
+                       return bllCustomer.ValidatePaymentMethod(defPaymentMethod);
+                   }
+                 ).WithMessage(bbxBEConsts.ERR_CST_WRONGDEFPAYMENTTYPE)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
         }
 
-         private bool CheckTaxPayerNumber(string p_TaxPayerNumber)
+        private bool CheckTaxPayerNumber(string p_TaxPayerNumber)
         {
             return _customerRepository.CheckTaxPayerNumber(p_TaxPayerNumber);
         }

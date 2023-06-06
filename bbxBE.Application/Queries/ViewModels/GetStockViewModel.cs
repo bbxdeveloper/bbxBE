@@ -1,9 +1,6 @@
 ﻿using bbxBE.Common.Attributes;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.Serialization;
-using System.Text;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -19,6 +16,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Raktár")]
         [Description("Raktár")]
         public string Warehouse { get; set; }
+
+        [ColumnLabel("Raktárkód")]
+        [Description("Raktárkód")]
+        public string WarehouseCode { get; set; }
 
         [ColumnLabel("Termék ID")]
         [Description("Termék ID")]

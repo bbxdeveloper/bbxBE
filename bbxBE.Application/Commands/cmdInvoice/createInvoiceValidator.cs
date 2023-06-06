@@ -1,17 +1,10 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using bxBE.Application.Commands.cmdInvoice;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -104,11 +97,15 @@ namespace bbxBE.Application.Commands.cmdInvoice
     }
 
 
-  
+
     public class CreateInvoiceLinesCommandValidatror : AbstractValidator<CreateInvoiceCommand.InvoiceLine>
     {
         public CreateInvoiceLinesCommandValidatror()
         {
+            RuleFor(r => r.Quantity)
+              .NotEmpty()
+              .WithMessage(bbxBEConsts.ERR_REQUIRED);
+
             RuleFor(p => p.UnitOfMeasure)
                  .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.LineNumber, model.ProductCode, model.UnitOfMeasure));
         }

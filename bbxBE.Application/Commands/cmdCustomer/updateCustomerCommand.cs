@@ -72,6 +72,10 @@ namespace bxBE.Application.Commands.cmdCustomer
         [Description("Maximális limit")]
         public decimal? MaxLimit { get; set; }
 
+        [ColumnLabel("Alap.fiz.mód")]
+        [Description("Alapértelmezett fizetési mód")]
+        public string DefPaymentMethod { get; set; }
+
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]
         public string Comment { get; set; }

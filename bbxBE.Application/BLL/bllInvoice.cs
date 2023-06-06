@@ -252,7 +252,7 @@ namespace bbxBE.Application.BLL
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, request.OriginalInvoiceID.Value));
                     }
 
-                    // Javjtó bizonylat linenumber meghatározás
+                    // Javító bizonylat linenumber meghatározás
                     //      - az eredeti bizonylat linenumber utáni tétel
                     //        + engedmény esetén áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve)
                     //      - már elkészült javítószámlák tétel összesen
@@ -304,9 +304,14 @@ namespace bbxBE.Application.BLL
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
                     }
 
-                    if (invoice.Incoming)
+
+                    if (!hasRelDeliveryNotes &&         //nem gyűjtőszámla
+                        invoice.Incoming &&             //bevételezés
+                        (invoice.InvoiceType == enInvoiceType.INC.ToString() || invoice.InvoiceType == enInvoiceType.DNI.ToString()))   //szla.v.száll.
                     {
                         prod.LatestSupplyPrice = rln.UnitPrice;     //megjegzezük a legutolsó eladási árat
+                        prod.UnitPrice1 = rln.NewUnitPrice1;        //árváltozás, úgy listaár
+                        prod.UnitPrice2 = rln.NewUnitPrice2;        //árváltozás, úgy egységár
                         updatingProducts.Add(prod);
                     }
 
@@ -448,7 +453,7 @@ namespace bbxBE.Application.BLL
 
                 invoice = await CalcInvoiceAmountsAsynch(invoice, cancellationToken);
 
-                //Számlaszám megállapítása
+                //Bizonylatszám megállapítása
                 counterCode = bllCounter.GetCounterCode(invoiceType, paymentMethod, invoice.Incoming, isInvoiceCorrection, wh.ID);
                 invoice.InvoiceNumber = await counterRepository.GetNextValueAsync(counterCode, wh.ID);
                 invoice.Copies = 1;

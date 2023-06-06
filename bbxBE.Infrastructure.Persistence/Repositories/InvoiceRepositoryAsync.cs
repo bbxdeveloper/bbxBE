@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AngleSharp.Common;
+using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -214,15 +215,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     RelDeliveryNoteInvoiceID = g.RelDeliveryNoteInvoiceID,
                     RelDeliveryNoteNumber = g.RelDeliveryNoteNumber,
-                    LineDeliveryDate = g.LineDeliveryDate
+                    LineDeliveryDate = g.LineDeliveryDate,
+                    DeliveryNoteDiscountPercent = g.DeliveryNote != null ? g.DeliveryNote.InvoiceDiscountPercent : 0
                 }, (k, g) =>
                 new GetAggregateInvoiceDeliveryNoteViewModel
                 {
-                    DeliveryNoteInvoiceID = k.RelDeliveryNoteInvoiceID.Value,
+                    DeliveryNoteInvoiceID = k.RelDeliveryNoteInvoiceID,
                     DeliveryNoteNumber = k.RelDeliveryNoteNumber,
                     DeliveryNoteDate = k.LineDeliveryDate,
                     DeliveryNoteNetAmount = Math.Round(g.Sum(s => s.LineNetAmount), 1),
                     DeliveryNoteNetAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF), 1),
+                    DeliveryNoteDiscountPercent = k.DeliveryNoteDiscountPercent,
                     DeliveryNoteDiscountAmount = Math.Round(g.Sum(s => s.LineNetAmount - s.LineNetDiscountedAmount), 1),
                     DeliveryNoteDiscountAmountHUF = Math.Round(g.Sum(s => s.LineNetAmountHUF - s.LineNetDiscountedAmountHUF), 1),
 
@@ -254,6 +257,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                   .Include(a => a.AdditionalInvoiceData)
                   .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
                   .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
+                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote)
                   .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate)
                   .Include(u => u.User)
                   .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
@@ -328,10 +332,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  into grpInner
                      select new
                      {
+                         InvoiceID = grpInner.Key.InvoiceID,
+                         InvoiceDiscountPercent = grpInner.Key.InvoiceDiscountPercent,
+                         Cnt = grpInner.Count(),
                          SumNetAmountDiscountedHUF = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPriceHUF) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
                      };
 
-            decimal pendingAmount = q1.SingleOrDefault().SumNetAmountDiscountedHUF;
+            decimal pendingAmount = q1.Sum(s => s.SumNetAmountDiscountedHUF);
 
             //2. kiegyenlítettlen számlák???
 
@@ -605,7 +612,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return (shapeData, recordsCount);
         }
-        public async Task<List<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter)
+        public async Task<IList<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter)
         {
 
             var orderBy = requestParameter.OrderBy;
@@ -659,7 +666,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<Invoice>();
 
             predicate = predicate.And(p => p.InvoiceType == invoiceType
-                            && (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper().Contains(WarehouseCode))
+                            && (WarehouseCode == null || p.Warehouse.WarehouseCode.ToUpper() == WarehouseCode)
                             && (InvoiceNumber == null || p.InvoiceNumber.Contains(InvoiceNumber))
                             && (!InvoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= InvoiceIssueDateFrom.Value)
                             && (!InvoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= InvoiceIssueDateTo.Value)
@@ -673,6 +680,104 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Task<bool> SeedDataAsync(int rowCount)
         {
             throw new System.NotImplementedException();
+        }
+
+        public async Task<(IList<GetCustomerInvoiceSummary> data, RecordsCount recordsCount)> QueryPagedCustomerInvoiceSummaryAsync(QueryCustomerInvoiceSummary requestParameters)
+        {
+            int recordsTotal, recordsFiltered;
+
+            var fields = _modelHelper.GetQueryableFields<QueryCustomerInvoiceSummary, Invoice>();
+
+            //var query = _dbContext.Invoice//.AsNoTracking().AsExpandable()
+            //        .Include(i => i.Warehouse).AsQueryable();
+
+            IQueryable<Invoice> query;
+            query = _dbContext.Invoice.AsNoTracking()
+                .Include(w => w.Warehouse).AsNoTracking()
+                .Include(s => s.Supplier).AsNoTracking()
+                .Include(c => c.Customer).AsNoTracking()
+                .Where(p => p.InvoiceCategory == enInvoiceCategory.NORMAL.ToString()
+                                    && p.InvoiceType == (p.Incoming ? enInvoiceType.INC.ToString() : enInvoiceType.INV.ToString()));
+
+            recordsTotal = await query.CountAsync();
+
+            // filter data
+
+            FilterCustomerInvoiceSummary(ref query, requestParameters.Incoming, requestParameters.CustomerID,
+                requestParameters.WarehouseCode, requestParameters.InvoiceDeliveryDateFrom, requestParameters.InvoiceDeliveryDateTo);
+
+            recordsFiltered = await query.CountAsync();
+
+
+            var q2 = from inv in query
+                     group inv by
+            new
+            {
+                Incoming = inv.Incoming,
+                CustomerID = inv.Incoming ? inv.SupplierID : inv.CustomerID.Value,
+                CustomerName = inv.Incoming ? inv.Supplier.CustomerName : inv.Customer.CustomerName,
+                CustomerFullAddress = (inv.Incoming ?
+                        (inv.Supplier.PostalCode + " " + inv.Supplier.City + " " + inv.Supplier.AdditionalAddressDetail).Trim() :
+                        (inv.Customer.PostalCode + " " + inv.Customer.City + " " + inv.Customer.AdditionalAddressDetail).Trim())
+            }
+            into grp
+                     select new GetCustomerInvoiceSummary()
+                     {
+                         Incoming = grp.Key.Incoming,
+                         CustomerID = grp.Key.CustomerID,
+                         CustomerName = grp.Key.CustomerName,
+                         CustomerFullAddress = grp.Key.CustomerFullAddress,
+                         InvoiceCount = grp.Count(),
+                         InvoiceDiscountSum = grp.Sum(s => s.InvoiceDiscount),
+                         InvoiceDiscountHUFSum = grp.Sum(s => s.InvoiceDiscountHUF),
+                         InvoiceNetAmountSum = grp.Sum(s => s.InvoiceNetAmount),
+                         InvoiceNetAmountHUFSum = grp.Sum(s => s.InvoiceNetAmountHUF),
+                         InvoiceVatAmountSum = grp.Sum(s => s.InvoiceVatAmount),
+                         InvoiceVatAmountHUFSum = grp.Sum(s => s.InvoiceVatAmountHUF),
+                         InvoiceGrossAmountSum = grp.Sum(s => s.InvoiceGrossAmount),
+                         InvoiceGrossAmountHUFSum = grp.Sum(s => s.InvoiceGrossAmountHUF)
+                     };
+
+            if (string.IsNullOrWhiteSpace(requestParameters.OrderBy))
+            {
+                q2 = q2.OrderBy(o => o.CustomerName);
+            }
+            else
+            {
+                q2 = q2.OrderBy(requestParameters.OrderBy);
+            }
+
+            // paging
+            q2 = q2.Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
+                .Take(requestParameters.PageSize);
+            List<GetCustomerInvoiceSummary> resultData = await q2.ToListAsync();
+
+
+            //set Record counts
+            var recordsCount = new RecordsCount
+            {
+                RecordsFiltered = recordsFiltered,
+                RecordsTotal = recordsTotal
+            };
+            return (resultData, recordsCount);
+        }
+
+        private void FilterCustomerInvoiceSummary(ref IQueryable<Invoice> p_items,
+              bool incoming, long? customerID, string warehouseCode, DateTime? invoiceDeliveryDateFrom, DateTime? invoiceDeliveryDateTo)
+        {
+            if (!p_items.Any())
+                return;
+
+            var predicate = PredicateBuilder.New<Invoice>();
+
+            predicate = predicate.And(p => p.Incoming == incoming
+                            && (!customerID.HasValue || (p.Incoming && p.SupplierID == customerID) || (!p.Incoming && p.CustomerID == customerID))
+                            && (warehouseCode == null || p.Warehouse.WarehouseCode.ToUpper() == warehouseCode)
+                            && (!invoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= invoiceDeliveryDateFrom.Value)
+                            && (!invoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= invoiceDeliveryDateTo.Value)
+                           );
+
+            p_items = p_items.Where(predicate);
         }
     }
 }

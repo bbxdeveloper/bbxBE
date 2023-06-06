@@ -1,22 +1,16 @@
 ﻿using bbxBE.Application.Commands.cmdCustomer;
 using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;
-using bbxBE.Application.Wrappers;
+using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
-using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCustomer;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -117,7 +111,7 @@ namespace bbxBE.WebApi.Controllers.v1
             else
             {
                 return BadRequest("Wrong parameters!");
-            }   
+            }
         }
 
 

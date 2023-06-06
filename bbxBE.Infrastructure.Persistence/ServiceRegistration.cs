@@ -82,12 +82,12 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<ICustDiscountRepositoryAsync, CustDiscountRepositoryAsync>();
             services.AddTransient<IZipRepositoryAsync, ZipRepositoryAsync>();
             services.AddTransient<ILocationRepositoryAsync, LocationRepositoryAsync>();
+            services.AddTransient<IWhsTransferRepositoryAsync, WhsTransferRepositoryAsync>();
 
             services.AddTransient<IProductGlobalRepositoryAsync, ProductGlobalRepositoryAsync>();
             services.AddTransient<IProductGroupGlobalRepositoryAsync, ProductGroupGlobalRepositoryAsync>();
             services.AddTransient<IOriginGlobalRepositoryAsync, OriginGlobalRepositoryAsync>();
             services.AddTransient<IProductCodeGlobalRepositoryAsync, ProductCodeGlobalRepositoryAsync>();
-
 
 
             services.AddSingleton<ICacheService<Product>, ProductCacheService>();

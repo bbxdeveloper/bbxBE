@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 
 namespace bbxBE.Common.Enums
 {
@@ -9,18 +6,16 @@ namespace bbxBE.Common.Enums
     {
         [Description("Kezdőállapot")]
         INIT,
-        [Description("Leltár")]         
+        [Description("Leltár")]
         ICP,                           //inventory control
-        [Description("Foly.lelt")]  
-        ICC,                           //inventory control continous (egyelőre nics megvalósítva)
-        [Description("Klt.diekt")]
+        [Description("Foly.lelt")]
+        ICC,                           //inventory control continous 
+        [Description("Klt.diekt módosítás")]
         DIRECT,
         [Description("Szla/Száll")]
         INV_DLV,
-        [Description("Kiad")]
-        TRANSFER,                       //csak a VALÓS készlet változik
-        [Description("Kiad száml")]
-        TRANSFERINV,                    //csak a SZÁMÍTOTT készlet változik
+        [Description("Raktárközi kiadás")]
+        WHSTRANSFER,
         [Description("SZNE")]
         SZNE                            //XXX-es
 
