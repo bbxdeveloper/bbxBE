@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Commands.cmdWhsTransfer;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
@@ -36,6 +37,8 @@ namespace bbxBE.Application.BLL
             var counterCode = "";
             try
             {
+                whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
+
                 await prepareWhsTransferAsynch(whsTransfer, request.FromWarehouseCode, request.ToWarehouseCode, warehouseRepository, productRepository, cancellationToken);
 
 
@@ -73,6 +76,8 @@ namespace bbxBE.Application.BLL
             var counterCode = "";
             try
             {
+                whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
+
                 await prepareWhsTransferAsynch(whsTransfer, request.FromWarehouseCode, request.ToWarehouseCode, warehouseRepository, productRepository, cancellationToken);
 
                 whsTransfer = await whsTransferRepository.UpdateWhsTransferAsync(whsTransfer);
