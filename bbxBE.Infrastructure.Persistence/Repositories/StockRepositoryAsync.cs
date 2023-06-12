@@ -211,6 +211,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         AvgCost = whsTransferLine.CurrAvgCost             //ez nem változik
                     };
                     await AddAsync(stockFrom);
+                    await _dbContext.SaveChangesAsync();
                 }
                 if (!lstStock.Contains(stockFrom))
                 {
@@ -241,6 +242,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         AvgCost = whsTransferLine.CurrAvgCost             //ez nem változik
                     };
                     await AddAsync(stockTo);
+                    await _dbContext.SaveChangesAsync();
                 }
                 if (!lstStock.Contains(stockTo))
                 {
