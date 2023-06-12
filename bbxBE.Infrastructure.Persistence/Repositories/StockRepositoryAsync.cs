@@ -94,7 +94,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     }
 
                     var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
-                                invoice.WarehouseID, invoiceLine.ProductID, invoice.UserID, invoiceLine.ID,
+                                invoice.WarehouseID, invoiceLine.ProductID, invoice.UserID, invoiceLine.ID, null, null,
                                 (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
                                 Common.Enums.enStockCardType.INV_DLV,
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
@@ -158,7 +158,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 invCtrl.ORealQty = stock.RealQty;
 
                 var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invCtrl.InvCtrlDate,
-                            invCtrl.WarehouseID, invCtrl.ProductID, invCtrl.UserID, 0, p_ownData.ID,
+                            invCtrl.WarehouseID, invCtrl.ProductID, invCtrl.UserID, null, invCtrl.ID, null, p_ownData.ID,
                             invCtrl.InvCtrlType == enInvCtrlType.ICP.ToString() ? enStockCardType.ICP : enStockCardType.ICC,
                             invCtrl.NRealQty - invCtrl.ORealQty,        //csak a különbséget kell átadni!!!
                             stock.AvgCost,
@@ -250,7 +250,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 //kiadás láb
                 var stockCardFrom = await _stockCardRepository.CreateStockCard(stockFrom, whsTransfer.TransferDate.Date,
-                            whsTransfer.FromWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, whsTransferLine.ID, ownData.ID,
+                            whsTransfer.FromWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, null, null, whsTransferLine.ID, ownData.ID,
                             enStockCardType.WHSTRANSFER,
                             -whsTransferLine.Quantity,
                             whsTransferLine.CurrAvgCost,
@@ -263,7 +263,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 //bevétel láb
                 var stockCardTo = await _stockCardRepository.CreateStockCard(stockTo, whsTransfer.TransferDateIn.Value,
-                            whsTransfer.ToWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, whsTransferLine.ID, ownData.ID,
+                            whsTransfer.ToWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, null, null, whsTransferLine.ID, ownData.ID,
                             enStockCardType.WHSTRANSFER,
                             whsTransferLine.Quantity,
                             whsTransferLine.CurrAvgCost,

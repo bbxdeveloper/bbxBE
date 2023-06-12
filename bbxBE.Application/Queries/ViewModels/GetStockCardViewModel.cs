@@ -1,10 +1,7 @@
 ﻿using bbxBE.Common.Attributes;
-using bbxBE.Common.Enums;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -37,6 +34,14 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Számlasor ID")]
         [Description("Számlasor ID")]
         public long? InvoiceLineID { get; set; }
+
+        [ColumnLabel("Leltári tétel ID")]
+        [Description("Leltári tétel ID")]
+        public long? InvCtrlID { get; set; }
+
+        [ColumnLabel("Raktárközi átadás tétel ID")]
+        [Description("Raktárközi átadás ID")]
+        public long? WhsTransferLineID { get; set; }
 
         [ColumnLabel("Termék ID")]
         [Description("Termék ID")]
@@ -96,12 +101,12 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Valós mennyiség változás")]
         public decimal XRealQty { get; set; }
 
- 
+
         [ColumnLabel("Új Valós")]
         [Description("Új Valós mennyiség")]
         public decimal NRealQty { get; set; }
 
- 
+
         [ColumnLabel("Ár")]
         [Description("Ár")]
         public decimal UnitPrice { get; set; }
