@@ -98,7 +98,7 @@ namespace bbxBE.Infrastructure.Persistence.Repository
             {
                 _dbContext.Instance.Entry(entity).State = EntityState.Modified;
             }
-            //_dbContext.UpdateRange(entities);
+            // _dbContext.UpdateRange(entities);
             if (savechenges)
                 await _dbContext.SaveChangesAsync();
         }

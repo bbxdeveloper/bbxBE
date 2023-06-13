@@ -2,10 +2,8 @@
 using bbxBE.Common.Enums;
 using bbxBE.Domain.Common;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -28,7 +26,7 @@ namespace bbxBE.Domain.Entities
         [Description("Termék ID")]
         public long? ProductID { get; set; }
 
- 
+
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long? UserID { get; set; }
@@ -36,6 +34,15 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Számlasor ID")]
         [Description("Számlasor ID")]
         public long? InvoiceLineID { get; set; }
+
+        [ColumnLabel("Leltári tétel ID")]
+        [Description("Leltári tétel ID")]
+        public long? InvCtrlID { get; set; }
+
+
+        [ColumnLabel("Raktárközi átadás tétel ID")]
+        [Description("Raktárközi átadás ID")]
+        public long? WhsTransferLineID { get; set; }
 
         [ColumnLabel("Partner ID")]
         [Description("Partner ID")]
@@ -71,7 +78,7 @@ namespace bbxBE.Domain.Entities
         [Description("Új valós mennyiség")]
         public decimal NRealQty { get; set; }
 
- 
+
         [ColumnLabel("Ár")]
         [Description("Ár")]
         public decimal UnitPrice { get; set; }
