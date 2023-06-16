@@ -207,6 +207,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // Először lekérdezünk
             var preQuery = _dbContext.StockCard.AsNoTracking()
                         .Include(w => w.Warehouse).AsNoTracking()
+                        .Include(c => c.Customer).AsNoTracking()
                         .Include(u => u.User).AsNoTracking();
 
             // Count records total
