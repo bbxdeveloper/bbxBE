@@ -48,7 +48,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
         public async Task<StockCard> CreateStockCard(Stock p_Stock, DateTime p_StockCardDate,
-            long p_WarehouseID, long? p_ProductID, long? p_UserID, long? p_InvoiceLineID, long? p_CustomerID,
+            long p_WarehouseID, long? p_ProductID, long? p_UserID, long? p_InvoiceLineID, long? p_InvCtrlID, long? p_WhsTransferLineID, long? p_CustomerID,
             enStockCardType p_ScType, decimal p_XRealQty, decimal p_UnitPrice,
             string p_XRel)
         {
@@ -64,6 +64,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 ProductID = p_ProductID,
                 UserID = p_UserID,
                 InvoiceLineID = p_InvoiceLineID,
+                InvCtrlID = p_InvCtrlID,
+                WhsTransferLineID = p_WhsTransferLineID,
                 CustomerID = p_CustomerID,
                 ScType = p_ScType.ToString(),
                 XRealQty = p_XRealQty,
