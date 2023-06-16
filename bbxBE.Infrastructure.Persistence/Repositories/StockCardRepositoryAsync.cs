@@ -116,7 +116,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             sc.NRealQty = ORealQty + p_XRealQty;
 
             sc.NAvgCost = (p_XRealQty > 0 ?
-                            bllStock.GetNewAvgCost(OAvgCost, ORealQty, (ORealQty + p_XRealQty), p_UnitPrice) :
+                            bllStock.GetNewAvgCost(OAvgCost, ORealQty, p_XRealQty, p_UnitPrice) :
                             OAvgCost);
             await AddAsync(sc);
 
@@ -146,7 +146,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     f.NRealQty = ORealQty + XRealQty;
 
                     f.NAvgCost = (XRealQty > 0 ?
-                                    bllStock.GetNewAvgCost(OAvgCost, ORealQty, (ORealQty + XRealQty), f.UnitPrice) :
+                                    bllStock.GetNewAvgCost(OAvgCost, ORealQty, XRealQty, f.UnitPrice) :
                                     OAvgCost);
 
                     await UpdateAsync(f);
