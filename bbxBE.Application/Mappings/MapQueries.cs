@@ -174,7 +174,10 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription))
              .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.Product.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description))
-             .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => src.Customer.CustomerName));
+             .ForMember(dst => dst.Customer, opt => opt.MapFrom(src => (src.Customer != null ? src.Customer.CustomerName : "")))
+             .ForMember(dst => dst.CustomerAdditionalAddressDetail, opt => opt.MapFrom(src => (src.Customer != null ? String.Format("{0} {1} {2}", src.Customer.PostalCode, src.Customer.City, src.Customer.AdditionalAddressDetail).Trim() : "")));
+
+
 
             CreateMap<InvCtrlPeriod, GetInvCtrlPeriodViewModel>()
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription));
