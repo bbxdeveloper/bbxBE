@@ -104,6 +104,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Alapértelmezett fizetési mód megnevezése")]
         public string DefPaymentMethodX { get; set; }
 
+        [ColumnLabel("Legutoljára megadott kedvezmény %")]
+        [Description("Legutoljára megadott bizonylatkedvezmény %")]
+        public short? LatestDiscountPercent { get; set; }
+
 
         [MapToEntity("isOwnData")]
         [ColumnLabel("Saját adat?")]

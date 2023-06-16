@@ -94,6 +94,7 @@
         public static string ERR_OFFERREPORT = "Offer report finished with error:{0}";
         public static string ERR_CUSTOMERINVOICESUMMARYREPORT_NULL = "CustomerInvoiceSummary report result is null!";
         public static string ERR_CUSTOMERINVOICESUMMARYREPORT = "CustomerInvoiceSummary report finished with error:{0}";
+        public static string ERR_CUSTOMERLATESTDISCOUNTPERCENT = "A legutoljára megadott kedvezmény %-os értékének 0 és 100 közé kell esnie!";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 
