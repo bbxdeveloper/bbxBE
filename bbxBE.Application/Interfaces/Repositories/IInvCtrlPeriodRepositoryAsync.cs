@@ -1,6 +1,4 @@
-﻿using bbxBE.Application.Interfaces;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Parameters;
+﻿using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qInvCtrlPeriod;
 using bbxBE.Domain.Entities;
 using System;
@@ -19,7 +17,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> CanUpdateAsync(long ID);
         Task<Entity> GetInvCtrlPeriodAsync(GetInvCtrlPeriod requestParameter);
         Task<InvCtrlPeriod> GetInvCtrlPeriodRecordAsync(long ID);
-        Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID);
+        Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID, long WarehouseID);
         Task<bool> SeedDataAsync(int rowCount);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlPeriodAsync(QueryInvCtrlPeriod requestParameters);
         Task<bool> CloseAsync(long ID);

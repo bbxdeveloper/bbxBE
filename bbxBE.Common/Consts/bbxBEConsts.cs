@@ -134,6 +134,7 @@
         public static string ERR_INVCTRLPERIOD_DATE2 = "{PropertyName}: A megadott leltáridőszak ütközik más időszakkal!";
         public static string ERR_INVCTRLPERIODNOTFOUND = "Leltáridőszak nem található, ID:{0} ";
         public static string ERR_INVCTRLPERIOD_CANTBEDELETED = "A leltáridőszak már nem törölhető!";
+        public static string ERR_INVCTRLPERIOD_CANTBEUPDATED = "A leltáridőszak már nem módosítható!";
         public static string ERR_INVCTRLPERIOD_CANTBECLOSED = "A leltáridőszak nem zárható le!";
         public static string ERR_INVCTRLPERIOD_NOTCLOSED = "A leltáridőszak nincs lezárva!";
         public static string ERR_INVCTRLPERIOD_ALREADYCLOSED = "A leltáridőszak már lezárt!";

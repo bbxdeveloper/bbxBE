@@ -223,9 +223,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-        public async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID)
+        public async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID, long WarehouseID)
         {
-            var result = await _dbContext.InvCtrlPeriod.AnyAsync(w => !w.Deleted && (ID == null || w.ID != ID.Value) && w.DateFrom < DateTo && DateFrom < w.DateTo);
+            var result = await _dbContext.InvCtrlPeriod.AnyAsync(w => !w.Deleted && w.WarehouseID != WarehouseID && (ID == null || w.ID != ID.Value) && w.DateFrom < DateTo && DateFrom < w.DateTo);
             return !result;
         }
 
