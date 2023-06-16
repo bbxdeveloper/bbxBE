@@ -113,6 +113,10 @@ namespace bbxBE.Domain.Entities
             }
         }
 
+        [ColumnLabel("Legutoljára megadott kedvezmény %")]
+        [Description("Legutoljára megadott bizonylatkedvezmény %")]
+        public decimal? LatestDiscountPercent { get; set; }
+
 
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]

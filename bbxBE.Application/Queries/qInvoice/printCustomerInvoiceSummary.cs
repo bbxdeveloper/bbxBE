@@ -72,6 +72,11 @@ namespace bbxBE.Application.Queries.qInvoice
             if (request.CustomerID.HasValue)
             {
                 var customer = _customerRepository.GetCustomerRecord(request.CustomerID.Value);
+                if (customer == null)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTOMERNOTFOUND, request.CustomerID.Value));
+                }
+
                 customerName = customer.CustomerName;
             }
 
