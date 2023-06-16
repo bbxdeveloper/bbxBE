@@ -478,7 +478,7 @@ namespace bbxBE.Application.BLL
                      && cust != null)
                 {
                     cust.LatestDiscountPercent = request.InvoiceDiscountPercent;
-                    customerRepository.UpdateAsync(cust);
+                    await customerRepository.UpdateAsync(cust);
 
                 }
 
