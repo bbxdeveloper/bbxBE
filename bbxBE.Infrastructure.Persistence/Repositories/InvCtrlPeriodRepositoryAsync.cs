@@ -225,7 +225,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID, long WarehouseID)
         {
-            var result = await _dbContext.InvCtrlPeriod.AnyAsync(w => !w.Deleted && w.WarehouseID != WarehouseID && (ID == null || w.ID != ID.Value) && w.DateFrom < DateTo && DateFrom < w.DateTo);
+            var result = await _dbContext.InvCtrlPeriod.AnyAsync(w => !w.Deleted && w.WarehouseID == WarehouseID && (ID == null || w.ID != ID.Value) && w.DateFrom < DateTo && DateFrom < w.DateTo);
             return !result;
         }
 
