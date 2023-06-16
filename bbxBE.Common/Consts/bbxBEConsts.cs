@@ -168,7 +168,7 @@
         public static string NAV_QTAXPAYER_TOKEN_ERR = "{0} NAV QueryTaxpayer token, taxnumber:{1} error result:{2}";
         public static string NAV_QTAXPAYERT_OK = "{0} NAV QueryTaxpayer OK, taxnumber:{1}";
 
-        public static string ERR_NAV_TAXPAYER = "A lekérdezéshez használt adószámnak 8 jeygűnek kell lennie!";
+        public static string ERR_NAV_TAXPAYER = "A lekérdezéshez használt adószámnak 8 jegyűnek kell lennie!";
 
         public static string ERR_CITYNOTFOUND = "Város nem található, IRSZ:{0} ";
         public static string ERR_ZIPNOTFOUND = "IRSZ nem található, város:{0} ";
