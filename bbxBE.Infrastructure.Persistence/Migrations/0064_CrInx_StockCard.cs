@@ -4,7 +4,7 @@
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00024, "v00.02.10-StockCard indexes")]
+    [Migration(00064, "v00.02.10-StockCard indexes")]
     public class InitialTables_00064 : Migration
     {
         public override void Down()
