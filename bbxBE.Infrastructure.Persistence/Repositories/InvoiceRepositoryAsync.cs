@@ -85,37 +85,44 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 // p_invoice.Supplier = null;
                 _dbContext.Instance.Entry(p_invoice.Supplier).State = EntityState.Unchanged;
             }
-            foreach (var il in p_invoice.InvoiceLines)
+            if (p_invoice.InvoiceLines != null)
             {
-                if (il.ID == 0)
+                foreach (var il in p_invoice.InvoiceLines)
                 {
-                    _dbContext.Instance.Entry(il).State = EntityState.Added;
+                    if (il.ID == 0)
+                    {
+                        _dbContext.Instance.Entry(il).State = EntityState.Added;
+                    }
+                    else
+                    {
+                        _dbContext.Instance.Entry(il).State = EntityState.Modified;
+                    }
+
+                    // il.Product = null;
+                    // il.VatRate = null;
+
+                    _dbContext.Instance.Entry(il.Product).State = EntityState.Unchanged;
+                    _dbContext.Instance.Entry(il.VatRate).State = EntityState.Unchanged;
+
+
                 }
-                else
-                {
-                    _dbContext.Instance.Entry(il).State = EntityState.Modified;
-                }
-
-                // il.Product = null;
-                // il.VatRate = null;
-
-                _dbContext.Instance.Entry(il.Product).State = EntityState.Unchanged;
-                _dbContext.Instance.Entry(il.VatRate).State = EntityState.Unchanged;
-
-
             }
-            foreach (var svr in p_invoice.SummaryByVatRates)
+
+            if (p_invoice.SummaryByVatRates != null)
             {
-                if (svr.ID == 0)
+                foreach (var svr in p_invoice.SummaryByVatRates)
                 {
-                    _dbContext.Instance.Entry(svr).State = EntityState.Added;
+                    if (svr.ID == 0)
+                    {
+                        _dbContext.Instance.Entry(svr).State = EntityState.Added;
+                    }
+                    else
+                    {
+                        _dbContext.Instance.Entry(svr).State = EntityState.Modified;
+                    }
+                    // svr.VatRate = null;
+                    _dbContext.Instance.Entry(svr.VatRate).State = EntityState.Unchanged;
                 }
-                else
-                {
-                    _dbContext.Instance.Entry(svr).State = EntityState.Modified;
-                }
-                // svr.VatRate = null;
-                _dbContext.Instance.Entry(svr.VatRate).State = EntityState.Unchanged;
             }
         }
 
