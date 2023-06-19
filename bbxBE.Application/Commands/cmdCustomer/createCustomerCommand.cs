@@ -74,7 +74,7 @@ namespace bxBE.Application.Commands.cmdCustomer
 
         [ColumnLabel("Legutoljára megadott kedvezmény %")]
         [Description("Legutoljára megadott bizonylatkedvezmény %")]
-        public decimal? LatestDiscountPercent { get; set; }
+        public decimal? LatestDiscountPercent { get; set; } = null;
 
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]
