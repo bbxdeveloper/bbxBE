@@ -189,10 +189,15 @@ namespace bbxBE.Application.BLL
                 }
                 invoice.WarehouseID = wh.ID;
 
-                Customer cust = customerRepository.GetCustomerRecord(request.CustomerID.Value);
-                if (cust == null)
+                Customer cust = null;
+
+                if (invoiceType != enInvoiceType.BLK)
                 {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTOMERNOTFOUND, request.CustomerID.Value));
+                    cust = customerRepository.GetCustomerRecord(request.CustomerID.Value);
+                    if (cust == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTOMERNOTFOUND, request.CustomerID.Value));
+                    }
                 }
 
                 var ownData = customerRepository.GetOwnData();

@@ -565,8 +565,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
                 {
                     //Kis heka...
-                    query = query.OrderBy(o => o.ProductCodes.Single(s =>
-                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                    query = query.OrderBy(o =>
+                            o.ProductCodes != null &&
+                            o.ProductCodes.Any(s =>
+                                    s.ProductCodeValue != null && s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()) ?
+                            o.ProductCodes.SingleOrDefault(s =>
+                                    s.ProductCodeValue != null && s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue :
+                           String.Empty
+                        );
+
                 }
                 else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTGROUP)
                 {
