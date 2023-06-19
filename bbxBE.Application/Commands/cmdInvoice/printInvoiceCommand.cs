@@ -159,6 +159,12 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 //Példányszám beállítása
                 //
                 invoice.Copies++;
+
+                //Nullra vesszük a detail táblákat, csak az Invoice táblát kell menteni
+                invoice.InvoiceLines = null;
+                invoice.SummaryByVatRates = null;
+                invoice.AdditionalInvoiceData = null;
+
                 await _invoiceRepository.UpdateInvoiceAsync(invoice, null);
 
                 //TODO : Az eredeti példány folderbe el kell rakni ay első a PDF-et
