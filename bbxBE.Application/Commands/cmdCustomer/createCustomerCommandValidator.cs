@@ -107,9 +107,13 @@ namespace bbxBE.Application.Commands.cmdCustomer
             .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
             RuleFor(x => x.LatestDiscountPercent)
-                    .Must(x => x >= 0 && x <= 100)
-                    .WithMessage(bbxBEConsts.ERR_CUSTOMERLATESTDISCOUNTPERCENT)
-                    .When(x => x != null);
+                    .Must(
+                       (model, latestDiscountPercent) =>
+                       {
+                           return latestDiscountPercent == null || (latestDiscountPercent.Value >= 0 && latestDiscountPercent.Value <= 100);
+                       }
+                     )
+                    .WithMessage(bbxBEConsts.ERR_CUSTOMERLATESTDISCOUNTPERCENT);
 
 
         }
