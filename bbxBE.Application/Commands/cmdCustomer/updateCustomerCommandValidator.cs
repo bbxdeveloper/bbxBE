@@ -68,12 +68,12 @@ namespace bbxBE.Application.Commands.cmdCustomer
                            var res = CheckBankAccount(customerBankAccountNumber);
                            if (res == enValidateBankAccountResult.ERR_FORMAT)
                            {
-                               context.AddFailure(bbxBEConsts.ERR_INVALIDFORMAT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.PropertyName));
+                               context.AddFailure(bbxBEConsts.ERR_INVALIDFORMAT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.DisplayName));
 
                            }
                            if (res == enValidateBankAccountResult.ERR_CHECKSUM)
                            {
-                               context.AddFailure(bbxBEConsts.ERR_INVALIDCONTENT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.PropertyName));
+                               context.AddFailure(bbxBEConsts.ERR_INVALIDCONTENT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.DisplayName));
                            }
                        });
 
