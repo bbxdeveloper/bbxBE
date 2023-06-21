@@ -2,7 +2,6 @@
 using bbxBE.Application.Commands.cmdImport;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;
-using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdCustomer;
@@ -147,6 +146,12 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(resp);
 
 
+        }
+
+        [HttpPatch("updatelatestdiscountpercent")]
+        public async Task<IActionResult> UpdateCustomerLatestDiscountPercent([FromQuery] updateCustomerLatestDiscountPercentCommand command)
+        {
+            return Ok(await Mediator.Send(command));
         }
 
     }

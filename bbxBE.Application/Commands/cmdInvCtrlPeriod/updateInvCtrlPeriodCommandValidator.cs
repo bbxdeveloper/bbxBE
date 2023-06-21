@@ -1,16 +1,8 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
-using bbxBE.Common.Enums;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bxBE.Application.Commands.cmdInvCtrlPeriod;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +24,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
                         {
                             return await CanUpdateAsync(model.ID, cancellation);
                         }
-                    ).WithMessage(bbxBEConsts.ERR_INVCTRLPERIOD_CANTBEDELETED);
+                    ).WithMessage(bbxBEConsts.ERR_INVCTRLPERIOD_CANTBEUPDATED);
 
             RuleFor(r => r.WarehouseID)
              .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
@@ -48,7 +40,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
                   .MustAsync(
                         async (model, Name, cancellation) =>
                         {
-                            return await IsOverLappedPeriodAsync(model.DateFrom, model.DateTo, model.ID, cancellation);
+                            return await IsOverLappedPeriodAsync(model.DateFrom, model.DateTo, model.ID, model.WarehouseID, cancellation);
                         }
                     ).WithMessage(bbxBEConsts.ERR_INVCTRLPERIOD_DATE2);
 
@@ -57,15 +49,15 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
 
             // RuleFor(r => r.UserID)
             // .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
-      
+
         }
 
 
-        private async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long ID, CancellationToken cancellationToken)
+        private async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long ID, long WarehouseID, CancellationToken cancellationToken)
         {
-            return await _InvCtrlPeriodRepository.IsOverLappedPeriodAsync(DateFrom, DateTo, ID);
+            return await _InvCtrlPeriodRepository.IsOverLappedPeriodAsync(DateFrom, DateTo, ID, WarehouseID);
         }
-        private async Task<bool> CanUpdateAsync( long ID, CancellationToken cancellationToken)
+        private async Task<bool> CanUpdateAsync(long ID, CancellationToken cancellationToken)
         {
             return await _InvCtrlPeriodRepository.CanUpdateAsync(ID);
         }

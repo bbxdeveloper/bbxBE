@@ -1,16 +1,8 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
-using bbxBE.Common.Enums;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bxBE.Application.Commands.cmdInvCtrlPeriod;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,7 +31,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
                   .MustAsync(
                         async (model, Name, cancellation) =>
                         {
-                            return await IsOverLappedPeriodAsync(model.DateFrom, model.DateTo, cancellation);
+                            return await IsOverLappedPeriodAsync(model.DateFrom, model.DateTo, model.WarehouseID, cancellation);
                         }
                     ).WithMessage(bbxBEConsts.ERR_INVCTRLPERIOD_DATE2);
 
@@ -50,13 +42,13 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
             // .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
 
-      
+
         }
 
 
-        private async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, CancellationToken cancellationToken)
+        private async Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long WarehouseID, CancellationToken cancellationToken)
         {
-            return await _InvCtrlPeriodRepository.IsOverLappedPeriodAsync(DateFrom, DateTo, null);
+            return await _InvCtrlPeriodRepository.IsOverLappedPeriodAsync(DateFrom, DateTo, null, WarehouseID);
         }
 
     }

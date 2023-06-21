@@ -116,7 +116,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             sc.NRealQty = ORealQty + p_XRealQty;
 
             sc.NAvgCost = (p_XRealQty > 0 ?
-                            bllStock.GetNewAvgCost(OAvgCost, ORealQty, (ORealQty + p_XRealQty), p_UnitPrice) :
+                            bllStock.GetNewAvgCost(OAvgCost, ORealQty, p_XRealQty, p_UnitPrice) :
                             OAvgCost);
             await AddAsync(sc);
 
@@ -146,7 +146,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     f.NRealQty = ORealQty + XRealQty;
 
                     f.NAvgCost = (XRealQty > 0 ?
-                                    bllStock.GetNewAvgCost(OAvgCost, ORealQty, (ORealQty + XRealQty), f.UnitPrice) :
+                                    bllStock.GetNewAvgCost(OAvgCost, ORealQty, XRealQty, f.UnitPrice) :
                                     OAvgCost);
 
                     await UpdateAsync(f);
@@ -207,6 +207,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // Először lekérdezünk
             var preQuery = _dbContext.StockCard.AsNoTracking()
                         .Include(w => w.Warehouse).AsNoTracking()
+                        .Include(c => c.Customer).AsNoTracking()
                         .Include(u => u.User).AsNoTracking();
 
             // Count records total
@@ -241,12 +242,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 //Kis heka...
                 if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
                 {
-                    query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
-                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                    query = query.OrderBy(o =>
+                            o.Product != null &&
+                            o.Product.ProductCodes != null &&
+                            o.Product.ProductCodes.Any(s =>
+                                    s.ProductCodeValue != null && s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()) ?
+                            o.Product.ProductCodes.SingleOrDefault(s =>
+                                    s.ProductCodeValue != null && s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue :
+                           String.Empty
+                        );
                 }
                 else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCT)
                 {
-                    query = query.OrderBy(o => o.Product.Description);
+                    query = query.OrderBy(o => o.Product != null ? o.Product.Description : string.Empty);
                 }
                 else
                 {

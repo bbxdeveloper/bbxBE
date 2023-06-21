@@ -75,35 +75,54 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             //TODO: ideiglenes megoldás, relációban álló objektumok Detach-olása hogy ne akarja menteni azokat az EF 
             if (p_invoice.Customer != null)
-                p_invoice.Customer = null;
+            {
+                //                p_invoice.Customer = null;
+                _dbContext.Instance.Entry(p_invoice.Customer).State = EntityState.Unchanged;
+            }
 
             if (p_invoice.Supplier != null)
-                p_invoice.Supplier = null;
-
-            foreach (var il in p_invoice.InvoiceLines)
             {
-                if (il.ID == 0)
-                {
-                    _dbContext.Instance.Entry(il).State = EntityState.Added;
-                }
-                else
-                {
-                    _dbContext.Instance.Entry(il).State = EntityState.Modified;
-                }
-                il.Product = null;
-                il.VatRate = null;
+                // p_invoice.Supplier = null;
+                _dbContext.Instance.Entry(p_invoice.Supplier).State = EntityState.Unchanged;
             }
-            foreach (var svr in p_invoice.SummaryByVatRates)
+            if (p_invoice.InvoiceLines != null)
             {
-                if (svr.ID == 0)
+                foreach (var il in p_invoice.InvoiceLines)
                 {
-                    _dbContext.Instance.Entry(svr).State = EntityState.Added;
+                    if (il.ID == 0)
+                    {
+                        _dbContext.Instance.Entry(il).State = EntityState.Added;
+                    }
+                    else
+                    {
+                        _dbContext.Instance.Entry(il).State = EntityState.Modified;
+                    }
+
+                    // il.Product = null;
+                    // il.VatRate = null;
+
+                    _dbContext.Instance.Entry(il.Product).State = EntityState.Unchanged;
+                    _dbContext.Instance.Entry(il.VatRate).State = EntityState.Unchanged;
+
+
                 }
-                else
+            }
+
+            if (p_invoice.SummaryByVatRates != null)
+            {
+                foreach (var svr in p_invoice.SummaryByVatRates)
                 {
-                    _dbContext.Instance.Entry(svr).State = EntityState.Modified;
+                    if (svr.ID == 0)
+                    {
+                        _dbContext.Instance.Entry(svr).State = EntityState.Added;
+                    }
+                    else
+                    {
+                        _dbContext.Instance.Entry(svr).State = EntityState.Modified;
+                    }
+                    // svr.VatRate = null;
+                    _dbContext.Instance.Entry(svr.VatRate).State = EntityState.Unchanged;
                 }
-                svr.VatRate = null;
             }
         }
 
@@ -114,6 +133,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 try
                 {
+
+                    prepareInvoiceBeforePersistance(p_invoice);
+                    await AddAsync(p_invoice);
+
                     if (p_invoice.InvoiceCategory != enInvoiceCategory.AGGREGATE.ToString())
                     {
                         //gyűjtőszámla esetén már nem mozog a készlet...
@@ -127,8 +150,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         await _invoiceLineRepository.UpdateRangeAsync(p_RelDNInvoiceLines.Select(s => s.Value).ToList());
                     }
-                    prepareInvoiceBeforePersistance(p_invoice);
-                    await AddAsync(p_invoice);
 
                     await dbContextTransaction.CommitAsync();
 

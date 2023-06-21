@@ -94,6 +94,7 @@
         public static string ERR_OFFERREPORT = "Offer report finished with error:{0}";
         public static string ERR_CUSTOMERINVOICESUMMARYREPORT_NULL = "CustomerInvoiceSummary report result is null!";
         public static string ERR_CUSTOMERINVOICESUMMARYREPORT = "CustomerInvoiceSummary report finished with error:{0}";
+        public static string ERR_CUSTOMERLATESTDISCOUNTPERCENT = "A legutoljára megadott kedvezmény %-os értékének 0 és 100 közé kell esnie!";
 
         public static string ERR_VALIDATION = "Egy vagy több validációs hiba történt.";
 
@@ -134,6 +135,7 @@
         public static string ERR_INVCTRLPERIOD_DATE2 = "{PropertyName}: A megadott leltáridőszak ütközik más időszakkal!";
         public static string ERR_INVCTRLPERIODNOTFOUND = "Leltáridőszak nem található, ID:{0} ";
         public static string ERR_INVCTRLPERIOD_CANTBEDELETED = "A leltáridőszak már nem törölhető!";
+        public static string ERR_INVCTRLPERIOD_CANTBEUPDATED = "A leltáridőszak már nem módosítható!";
         public static string ERR_INVCTRLPERIOD_CANTBECLOSED = "A leltáridőszak nem zárható le!";
         public static string ERR_INVCTRLPERIOD_NOTCLOSED = "A leltáridőszak nincs lezárva!";
         public static string ERR_INVCTRLPERIOD_ALREADYCLOSED = "A leltáridőszak már lezárt!";
@@ -166,7 +168,7 @@
         public static string NAV_QTAXPAYER_TOKEN_ERR = "{0} NAV QueryTaxpayer token, taxnumber:{1} error result:{2}";
         public static string NAV_QTAXPAYERT_OK = "{0} NAV QueryTaxpayer OK, taxnumber:{1}";
 
-        public static string ERR_NAV_TAXPAYER = "A lekérdezéshez használt adószámnak 8 jeygűnek kell lennie!";
+        public static string ERR_NAV_TAXPAYER = "A lekérdezéshez használt adószámnak 8 jegyűnek kell lennie!";
 
         public static string ERR_CITYNOTFOUND = "Város nem található, IRSZ:{0} ";
         public static string ERR_ZIPNOTFOUND = "IRSZ nem található, város:{0} ";

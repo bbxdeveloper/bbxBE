@@ -189,6 +189,17 @@ namespace bbxBE.Application.BLL
                 }
                 invoice.WarehouseID = wh.ID;
 
+                Customer cust = null;
+
+                if (invoiceType != enInvoiceType.BLK)
+                {
+                    cust = customerRepository.GetCustomerRecord(request.CustomerID.Value);
+                    if (cust == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTOMERNOTFOUND, request.CustomerID.Value));
+                    }
+                }
+
                 var ownData = customerRepository.GetOwnData();
                 if (ownData == null)
                 {
@@ -464,6 +475,16 @@ namespace bbxBE.Application.BLL
                 if (updatingProducts.Count > 0)
                 {
                     await productRepository.UpdateProductRangeAsync(updatingProducts, true);
+                }
+
+                if (!request.Incoming
+                     && !isInvoiceCorrection && !hasRelDeliveryNotes
+                     && (invoiceType == enInvoiceType.INV || invoiceType == enInvoiceType.DNO)
+                     && cust != null)
+                {
+                    cust.LatestDiscountPercent = request.InvoiceDiscountPercent;
+                    await customerRepository.UpdateAsync(cust);
+
                 }
 
 

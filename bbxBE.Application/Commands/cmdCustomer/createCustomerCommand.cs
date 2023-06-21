@@ -72,6 +72,9 @@ namespace bxBE.Application.Commands.cmdCustomer
         [Description("Alapértelmezett fizetési mód")]
         public string DefPaymentMethod { get; set; }
 
+        [ColumnLabel("Legutoljára megadott kedvezmény %")]
+        [Description("Legutoljára megadott bizonylatkedvezmény %")]
+        public decimal? LatestDiscountPercent { get; set; } = null;
 
         [ColumnLabel("Megjegyzés")]
         [Description("Megjegyzés")]

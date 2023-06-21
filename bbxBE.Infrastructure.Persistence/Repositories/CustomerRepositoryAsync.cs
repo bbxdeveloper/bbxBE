@@ -4,7 +4,6 @@ using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qCustomer;
-using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
@@ -123,6 +122,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await expiringData.DeleteItemAsync(key);
 
             return p_customer;
+        }
+
+        public async Task<Customer> UpdateCustomerLatestDiscountPercentAsync(long ID, decimal LatestDiscountPercent)
+        {
+
+            Customer cust = null;
+            if (!_cacheService.TryGetValue(ID, out cust))
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTNOTFOUND, ID));
+
+            cust.LatestDiscountPercent = LatestDiscountPercent;
+            _cacheService.AddOrUpdate(cust);
+            await UpdateAsync(cust);
+            return cust;
         }
 
         public async Task<Customer> DeleteCustomerAsync(long ID)
