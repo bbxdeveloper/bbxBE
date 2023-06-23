@@ -284,7 +284,7 @@
                 <FormattingRule>
                   <Style Visible="True" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="NotEqual" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
@@ -297,7 +297,7 @@
                 <FormattingRule>
                   <Style Visible="True" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="NotEqual" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
@@ -310,7 +310,7 @@
                 <FormattingRule>
                   <Style Visible="True" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="NotEqual" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
@@ -323,7 +323,7 @@
                 <FormattingRule>
                   <Style Visible="True" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="NotEqual" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
@@ -336,7 +336,7 @@
                 <FormattingRule>
                   <Style Visible="True" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="NotEqual" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
@@ -349,7 +349,7 @@
                 <FormattingRule>
                   <Style Visible="True" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="NotEqual" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
