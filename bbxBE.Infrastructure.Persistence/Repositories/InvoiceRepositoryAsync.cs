@@ -77,13 +77,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (p_invoice.Customer != null)
             {
                 //                p_invoice.Customer = null;
-                _dbContext.Instance.Entry(p_invoice.Customer).State = EntityState.Unchanged;
+                _dbContext.Instance.Entry(p_invoice.Customer).State = EntityState.Detached;
             }
 
             if (p_invoice.Supplier != null)
             {
                 // p_invoice.Supplier = null;
-                _dbContext.Instance.Entry(p_invoice.Supplier).State = EntityState.Unchanged;
+                _dbContext.Instance.Entry(p_invoice.Supplier).State = EntityState.Detached;
             }
             if (p_invoice.InvoiceLines != null)
             {
@@ -101,9 +101,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     // il.Product = null;
                     // il.VatRate = null;
 
-                    _dbContext.Instance.Entry(il.Product).State = EntityState.Unchanged;
-                    _dbContext.Instance.Entry(il.VatRate).State = EntityState.Unchanged;
+                    if (il.Product != null)
+                    {
+                        _dbContext.Instance.Entry(il.Product).State = EntityState.Detached;
+                    }
 
+                    if (il.VatRate != null)
+                    {
+                        _dbContext.Instance.Entry(il.VatRate).State = EntityState.Detached;
+                    }
 
                 }
             }
@@ -121,7 +127,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         _dbContext.Instance.Entry(svr).State = EntityState.Modified;
                     }
                     // svr.VatRate = null;
-                    _dbContext.Instance.Entry(svr.VatRate).State = EntityState.Unchanged;
+
+                    if (svr.VatRate != null)
+                    {
+                        _dbContext.Instance.Entry(svr.VatRate).State = EntityState.Detached;
+                    }
                 }
             }
         }
@@ -272,25 +282,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (FullData)
             {
                 item = await _dbContext.Invoice
-                  .Include(w => w.Warehouse)
-                  .Include(s => s.Supplier)
-                  .Include(c => c.Customer)
-                  .Include(a => a.AdditionalInvoiceData)
-                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
-                  .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
-                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote)
-                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate)
-                  .Include(u => u.User)
+                  .Include(w => w.Warehouse).AsNoTracking()
+                  .Include(s => s.Supplier).AsNoTracking()
+                  .Include(c => c.Customer).AsNoTracking()
+                  .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
+                  .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData).AsNoTracking()
+                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote).AsNoTracking()
+                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                  .Include(u => u.User).AsNoTracking()
                   .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
             }
             else
             {
                 item = await _dbContext.Invoice
-                  .Include(w => w.Warehouse)
-                  .Include(s => s.Supplier)
-                  .Include(c => c.Customer)
-                  .Include(a => a.AdditionalInvoiceData)
-                  .Include(i => i.InvoiceLines)                   //nem full data esetén is szüség van az invoiceLines-re
+                  .Include(w => w.Warehouse).AsNoTracking()
+                  .Include(s => s.Supplier).AsNoTracking()
+                  .Include(c => c.Customer).AsNoTracking()
+                  .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+                  .Include(i => i.InvoiceLines).AsNoTracking()                   //nem full data esetén is szüség van az invoiceLines-re
                   .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
             }
             return item;
@@ -299,7 +309,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             var q = _dbContext.InvoiceLine.AsNoTracking()
-                .Include(i => i.Invoice)
+                .Include(i => i.Invoice).AsNoTracking()
                 .Where(x => LstInvoiceLineID.Any(a => a == x.ID) && !x.Invoice.Deleted && !x.Deleted)
                 .Select(s => new { inv = s.Invoice, lineID = s.ID }).Distinct();
             var invoices = await q.ToListAsync();
@@ -310,12 +320,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceNumber(string invoiceNumber)
         {
             var q = _dbContext.Invoice.AsNoTracking()
-                .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
-                .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
-                .Include(i => i.Supplier)
-                .Include(i => i.Customer)
-                .Include(i => i.SummaryByVatRates).ThenInclude(t => t.VatRate)
-                .Include(i => i.AdditionalInvoiceData)
+                .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
+                .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData).AsNoTracking()
+                .Include(i => i.Supplier).AsNoTracking()
+                .Include(i => i.Customer).AsNoTracking()
+                .Include(i => i.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                .Include(i => i.AdditionalInvoiceData).AsNoTracking()
                 .Where(x => x.OriginalInvoiceNumber == invoiceNumber && !x.Deleted);
             return await q.ToListAsync();
         }
@@ -323,10 +333,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceID(long invoiceID)
         {
             var q = _dbContext.Invoice.AsNoTracking()
-                .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate)
-                .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData)
-                .Include(i => i.Supplier)
-                .Include(i => i.Customer)
+                .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
+                .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData).AsNoTracking()
+                .Include(i => i.Supplier).AsNoTracking()
+                .Include(i => i.Customer).AsNoTracking()
                 .Include(i => i.SummaryByVatRates).ThenInclude(t => t.VatRate)
                 .Include(i => i.AdditionalInvoiceData)
                 .Where(x => x.OriginalInvoiceID == invoiceID && !x.Deleted);
