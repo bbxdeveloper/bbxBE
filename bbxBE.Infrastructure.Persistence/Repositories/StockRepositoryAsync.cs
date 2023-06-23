@@ -101,18 +101,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 realInvoiceUnitPriceHUF,
                                 invoice.InvoiceNumber + (invoice.Incoming ? ";" + invoice.CustomerInvoiceNumber : ""));
 
+                    //Időben későbbi leltár van-e. Ha igen, akkor nincs készletváltozatás, mert a leltár lefixálta a készletet.
+                    var nextInvCtrlExist = await _dbContext.StockCard
+                            .AnyAsync(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID.Value
+                                && x.StockCardDate > invoice.InvoiceDeliveryDate
+                                && (x.ScType == enStockCardType.ICC.ToString() || x.ScType == enStockCardType.ICP.ToString())
+                                && !x.Deleted);
 
-                    if (invoice.Incoming)
+                    if (!nextInvCtrlExist)
                     {
-
-                        stock.RealQty += invoiceLine.Quantity;
-                        stock.LatestIn = DateTime.UtcNow;
-
-                    }
-                    else
-                    {
-                        stock.RealQty -= invoiceLine.Quantity;
-                        stock.LatestOut = DateTime.UtcNow;
+                        if (invoice.Incoming)
+                        {
+                            stock.RealQty += invoiceLine.Quantity;
+                            stock.LatestIn = (stock.LatestIn < invoice.InvoiceDeliveryDate ? invoice.InvoiceDeliveryDate : stock.LatestIn);
+                        }
+                        else
+                        {
+                            stock.RealQty -= invoiceLine.Quantity;
+                            stock.LatestOut = (stock.LatestOut < invoice.InvoiceDeliveryDate ? invoice.InvoiceDeliveryDate : stock.LatestOut);
+                        }
                     }
                     stock.AvgCost = latestStockCard.NAvgCost;
 
@@ -122,6 +129,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     }
                 }
             }
+
             await UpdateRangeAsync(lstStock);
             return lstStock;
         }
