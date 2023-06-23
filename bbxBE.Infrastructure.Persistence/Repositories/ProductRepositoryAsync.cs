@@ -635,7 +635,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 return;
 
 
-            var predicate = PredicateBuilder.New<Product>();
+            var predicate = PredicateBuilder.New<Product>(i => true);
 
             var srcFor = p_searchString?.ToUpper().Trim();
 
