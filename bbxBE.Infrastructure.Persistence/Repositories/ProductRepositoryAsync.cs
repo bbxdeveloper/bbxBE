@@ -634,12 +634,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!p_items.Any())
                 return;
 
-            if (string.IsNullOrWhiteSpace(p_searchString))
-                return;
 
             var predicate = PredicateBuilder.New<Product>();
 
-            var srcFor = p_searchString.ToUpper().Trim();
+            var srcFor = p_searchString?.ToUpper().Trim();
 
 
 

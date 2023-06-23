@@ -142,17 +142,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (f.ScType != enStockCardType.ICP.ToString() && f.ScType != enStockCardType.ICC.ToString())
                 {
                     // NEM leltári tétel
-
                     f.NRealQty = ORealQty + XRealQty;
 
-                    f.NAvgCost = (XRealQty > 0 ?
-                                    bllStock.GetNewAvgCost(OAvgCost, ORealQty, XRealQty, f.UnitPrice) :
-                                    OAvgCost);
                 }
                 else
                 {
                     // Leltári tétel esetén nincs NRealQty update, mert a leltárkol állítjuk be a készletet
                 }
+
+                f.OAvgCost = OAvgCost;
+                f.NAvgCost = (XRealQty > 0 ?
+                                 bllStock.GetNewAvgCost(OAvgCost, ORealQty, XRealQty, f.UnitPrice) :
+                                 OAvgCost);
 
                 await UpdateAsync(f);
 
