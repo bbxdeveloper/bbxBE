@@ -308,7 +308,7 @@
                     <FormattingRule>
                       <Style Visible="False" />
                       <Filters>
-                        <Filter Expression="= Fields.deliveryNoteDiscountAmount" Operator="NotEqual" Value="0" />
+                        <Filter Expression="= Fields.deliveryNoteDiscountAmount" Operator="Equal" Value="0" />
                       </Filters>
                     </FormattingRule>
                   </ConditionalFormatting>
@@ -321,7 +321,7 @@
                     <FormattingRule>
                       <Style Visible="False" />
                       <Filters>
-                        <Filter Expression="= Fields.deliveryNoteDiscountAmount" Operator="NotEqual" Value="0" />
+                        <Filter Expression="= Fields.deliveryNoteDiscountAmount" Operator="Equal" Value="0" />
                       </Filters>
                     </FormattingRule>
                   </ConditionalFormatting>
@@ -334,7 +334,7 @@
                     <FormattingRule>
                       <Style Visible="False" />
                       <Filters>
-                        <Filter Expression="= Fields.deliveryNoteDiscountAmount" Operator="NotEqual" Value="0" />
+                        <Filter Expression="= Fields.deliveryNoteDiscountAmount" Operator="Equal" Value="0" />
                       </Filters>
                     </FormattingRule>
                   </ConditionalFormatting>
