@@ -541,7 +541,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = query.Count();
 
             // filter query
-            FilterBySearchString(ref query, requestParameter.SearchString, requestParameter.FilterByCode, requestParameter.FilterByName);
+            FilterBySearchString(ref query, requestParameter.SearchString, requestParameter.FilterByCode, requestParameter.FilterByName, requestParameter.IDList);
 
             // Count records after filter
             recordsFiltered = query.Count();
@@ -629,7 +629,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool? p_filterByCode, bool? p_filterByName)
+        private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool? p_filterByCode, bool? p_filterByName, IList<long> p_IDList)
         {
             if (!p_items.Any())
                 return;
@@ -666,9 +666,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //csak névre keresés, névezdetre keresünk
             else if (p_filterByName.HasValue && p_filterByName.Value)
             {
-                predicate = predicate.And(p => (p.Description.ToUpper().StartsWith(srcFor))
-                    );
+                predicate = predicate.And(p => (p.Description.ToUpper().StartsWith(srcFor)));
             }
+
+
+            if (p_IDList != null && p_IDList.Count > 0)
+            {
+                predicate = predicate.And(p => p_IDList.Contains(p.ID));
+            }
+
             p_items = p_items.Where(predicate);
 
         }
