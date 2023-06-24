@@ -644,27 +644,49 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             //Ha kódban és névben egyszerre kerseünk akkor kód/név részletre keresünk
             if (p_filterByName.HasValue && p_filterByCode.HasValue &&
-                p_filterByName.Value && p_filterByCode.Value)
+            p_filterByName.Value && p_filterByCode.Value)
             {
-                predicate = predicate.And(p => (!p_filterByName.Value || p.Description.ToUpper().Contains(srcFor))
-                    ||
-                    (!p_filterByCode.Value || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
-                    a.ProductCodeValue.ToUpper().Contains(srcFor)))
-                    );
+                if (srcFor != null)
+                {
+                    predicate = predicate.And(p => (!p_filterByName.Value || p.Description.ToUpper().Contains(srcFor))
+                        ||
+                        (!p_filterByCode.Value || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                        a.ProductCodeValue.ToUpper().Contains(srcFor)))
+                        );
+                }
+                else
+                {
+                    predicate = predicate.And(p => false);
+                }
+
             }
 
             //csak kódra keresés, kódkezdetre keresünk
             else if (p_filterByCode.HasValue && p_filterByCode.Value)
             {
-                predicate = predicate.And(p => (p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                if (srcFor != null)
+                {
+                    predicate = predicate.And(p => (p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
                                     a.ProductCodeValue.ToUpper().StartsWith(srcFor)))
                     );
+                }
+                else
+                {
+                    predicate = predicate.And(p => false);
+                }
             }
 
             //csak névre keresés, névezdetre keresünk
             else if (p_filterByName.HasValue && p_filterByName.Value)
             {
-                predicate = predicate.And(p => (p.Description.ToUpper().StartsWith(srcFor)));
+                if (srcFor != null)
+                {
+                    predicate = predicate.And(p => (p.Description.ToUpper().StartsWith(srcFor)));
+                }
+                else
+                {
+                    predicate = predicate.And(p => false);
+                }
             }
 
 
