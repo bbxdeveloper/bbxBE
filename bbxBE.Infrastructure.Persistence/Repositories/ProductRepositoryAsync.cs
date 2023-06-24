@@ -656,7 +656,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    predicate = predicate.And(p => false);
+                    predicate = predicate.And(p => true);
                 }
 
             }
@@ -672,7 +672,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    predicate = predicate.And(p => false);
+                    predicate = predicate.And(p => true);
                 }
             }
 
@@ -685,7 +685,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 else
                 {
-                    predicate = predicate.And(p => false);
+                    predicate = predicate.And(p => true);
                 }
             }
 
