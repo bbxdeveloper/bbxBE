@@ -116,7 +116,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             sc.NRealQty = ORealQty + p_XRealQty;
 
             sc.NAvgCost = (p_XRealQty > 0 ?
-                            bllStock.GetNewAvgCost(OAvgCost, ORealQty, p_XRealQty, p_UnitPrice) :
+                            bllStock.GetNewAvgCost(OAvgCost, ORealQty, p_XRealQty, p_UnitPrice) :   //csak bevételezés esetén változik az ELÁBÉ
                             OAvgCost);
             await AddAsync(sc);
 
@@ -135,26 +135,27 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var f in furtherItems)
             {
 
+                f.ORealQty = ORealQty;
+                var XRealQty = f.NRealQty - f.ORealQty;
+                f.XRealQty = XRealQty;
+
                 if (f.ScType != enStockCardType.ICP.ToString() && f.ScType != enStockCardType.ICC.ToString())
                 {
                     // NEM leltári tétel
-                    var XRealQty = f.NRealQty - f.ORealQty;
-
-                    f.ORealQty = ORealQty;
-                    f.OAvgCost = OAvgCost;
-
                     f.NRealQty = ORealQty + XRealQty;
 
-                    f.NAvgCost = (XRealQty > 0 ?
-                                    bllStock.GetNewAvgCost(OAvgCost, ORealQty, XRealQty, f.UnitPrice) :
-                                    OAvgCost);
-
-                    await UpdateAsync(f);
                 }
                 else
                 {
-                    // Leltári tétel esetén nincs átszámolás!!!!
+                    // Leltári tétel esetén nincs NRealQty update, mert a leltárkol állítjuk be a készletet
                 }
+
+                f.OAvgCost = OAvgCost;
+                f.NAvgCost = (XRealQty > 0 ?
+                                 bllStock.GetNewAvgCost(OAvgCost, ORealQty, XRealQty, f.UnitPrice) :
+                                 OAvgCost);
+
+                await UpdateAsync(f);
 
                 ORealQty = f.NRealQty;
                 OAvgCost = f.NAvgCost;

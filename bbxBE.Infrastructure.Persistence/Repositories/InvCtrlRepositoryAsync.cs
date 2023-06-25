@@ -399,9 +399,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // filter data
             if (!string.IsNullOrEmpty(requestParameter.SearchString))
             {
-                absenedItems = absenedItems.Where(p => p.Product.Description.ToUpper().Contains(requestParameter.SearchString) ||
+                var searchString = requestParameter.SearchString.ToUpper();
+                absenedItems = absenedItems.Where(p => p.Product.Description.ToUpper().Contains(searchString) ||
                         p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
-                        a.ProductCodeValue.ToUpper().Contains(requestParameter.SearchString))).ToList();
+                        a.ProductCodeValue.ToUpper().Contains(searchString))).ToList();
             }
 
             // Count records after filter

@@ -1,16 +1,15 @@
 ﻿using AutoMapper;
-using MediatR;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
+using bbxBE.Domain.Extensions;
+using MediatR;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Domain.Extensions;
-using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Application.Queries.qProduct
 {
@@ -19,6 +18,8 @@ namespace bbxBE.Application.Queries.qProduct
         public string SearchString { get; set; }
         public bool? FilterByCode { get; set; }
         public bool? FilterByName { get; set; }
+
+        public List<long> IDList { get; set; }
 
     }
 
@@ -37,7 +38,7 @@ namespace bbxBE.Application.Queries.qProduct
 
         public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryProduct request, CancellationToken cancellationToken)
         {
-     
+
             // query based on filter
             var entities = await _ProductRepository.QueryPagedProductAsync(request);
 

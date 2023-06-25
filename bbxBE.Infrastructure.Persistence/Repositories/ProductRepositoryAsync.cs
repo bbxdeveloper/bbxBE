@@ -541,7 +541,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = query.Count();
 
             // filter query
-            FilterBySearchString(ref query, requestParameter.SearchString, requestParameter.FilterByCode, requestParameter.FilterByName);
+            FilterBySearchString(ref query, requestParameter.SearchString, requestParameter.FilterByCode, requestParameter.FilterByName, requestParameter.IDList);
 
             // Count records after filter
             recordsFiltered = query.Count();
@@ -629,46 +629,72 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool? p_filterByCode, bool? p_filterByName)
+        private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool? p_filterByCode, bool? p_filterByName, IList<long> p_IDList)
         {
             if (!p_items.Any())
                 return;
 
-            if (string.IsNullOrWhiteSpace(p_searchString))
-                return;
 
-            var predicate = PredicateBuilder.New<Product>();
+            var predicate = PredicateBuilder.New<Product>(i => true);
 
-            var srcFor = p_searchString.ToUpper().Trim();
+            var srcFor = p_searchString?.ToUpper().Trim();
 
 
 
 
             //Ha kódban és névben egyszerre kerseünk akkor kód/név részletre keresünk
             if (p_filterByName.HasValue && p_filterByCode.HasValue &&
-                p_filterByName.Value && p_filterByCode.Value)
+            p_filterByName.Value && p_filterByCode.Value)
             {
-                predicate = predicate.And(p => (!p_filterByName.Value || p.Description.ToUpper().Contains(srcFor))
-                    ||
-                    (!p_filterByCode.Value || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
-                    a.ProductCodeValue.ToUpper().Contains(srcFor)))
-                    );
+                if (srcFor != null)
+                {
+                    predicate = predicate.And(p => (!p_filterByName.Value || p.Description.ToUpper().Contains(srcFor))
+                        ||
+                        (!p_filterByCode.Value || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                        a.ProductCodeValue.ToUpper().Contains(srcFor)))
+                        );
+                }
+                else
+                {
+                    predicate = predicate.And(p => true);
+                }
+
             }
 
             //csak kódra keresés, kódkezdetre keresünk
             else if (p_filterByCode.HasValue && p_filterByCode.Value)
             {
-                predicate = predicate.And(p => (p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                if (srcFor != null)
+                {
+                    predicate = predicate.And(p => (p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
                                     a.ProductCodeValue.ToUpper().StartsWith(srcFor)))
                     );
+                }
+                else
+                {
+                    predicate = predicate.And(p => true);
+                }
             }
 
             //csak névre keresés, névezdetre keresünk
             else if (p_filterByName.HasValue && p_filterByName.Value)
             {
-                predicate = predicate.And(p => (p.Description.ToUpper().StartsWith(srcFor))
-                    );
+                if (srcFor != null)
+                {
+                    predicate = predicate.And(p => (p.Description.ToUpper().StartsWith(srcFor)));
+                }
+                else
+                {
+                    predicate = predicate.And(p => true);
+                }
             }
+
+
+            if (p_IDList != null && p_IDList.Count > 0)
+            {
+                predicate = predicate.And(p => p_IDList.Contains(p.ID));
+            }
+
             p_items = p_items.Where(predicate);
 
         }
