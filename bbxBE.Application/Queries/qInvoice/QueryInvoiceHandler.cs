@@ -1,19 +1,18 @@
 ﻿using AutoMapper;
-using MediatR;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
+using bbxBE.Domain.Extensions;
+using MediatR;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Domain.Extensions;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Attributes;
-using System.ComponentModel;
-using System;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
@@ -33,11 +32,11 @@ namespace bbxBE.Application.Queries.qInvoice
         public string InvoiceType { get; set; }
 
 
-        [ColumnLabel("Kelt.tól")]
+        [ColumnLabel("Keltezés től")]
         [Description("Kiállítás dátumától")]
         public DateTime? InvoiceIssueDateFrom { get; set; }
 
-        [ColumnLabel("Kelt.ig")]
+        [ColumnLabel("Keltezés ig")]
         [Description("Kiállítás dátumáig")]
         public DateTime? InvoiceIssueDateTo { get; set; }
 
@@ -70,8 +69,8 @@ namespace bbxBE.Application.Queries.qInvoice
         public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryInvoice request, CancellationToken cancellationToken)
         {
 
- 
-            var validFilter = request; 
+
+            var validFilter = request;
             var pagination = request;
 
             // query based on filter
