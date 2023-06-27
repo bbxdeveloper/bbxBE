@@ -16,15 +16,15 @@ namespace bbxBE.Application.Queries.qInvoice
                .Must(CheckInvoiceType)
                 .WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVOICETYPE, model.InvoiceType));
 
-            RuleFor(f => f.InvoiceDeliveryDateTo)
+            RuleFor(f => f.InvoiceDeliveryDateFrom)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .GreaterThan(f => f.InvoiceDeliveryDateFrom.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
-                .When(f => f.InvoiceDeliveryDateFrom.HasValue);
+                .GreaterThan(f => f.InvoiceDeliveryDateTo.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
+                .When(f => f.InvoiceDeliveryDateTo.HasValue);
 
-            RuleFor(f => f.InvoiceIssueDateTo)
+            RuleFor(f => f.InvoiceIssueDateFrom)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
-                .GreaterThan(f => f.InvoiceIssueDateFrom.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
-                .When(f => f.InvoiceIssueDateFrom.HasValue);
+                .LessThanOrEqualTo(f => f.InvoiceIssueDateTo.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
+                .When(f => f.InvoiceIssueDateTo.HasValue);
 
         }
 
