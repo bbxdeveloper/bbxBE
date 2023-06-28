@@ -263,7 +263,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (!string.IsNullOrWhiteSpace(p_searchString))
                 {
                     srcFor = p_searchString.ToUpper().Trim();
-                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))));
+                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().StartsWith(srcFor) || p.TaxpayerId.ToUpper().StartsWith(srcFor))));
                 }
                 predicate = predicate.And(p => p.IsOwnData == IsOwnData.Value);
 
@@ -273,7 +273,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (!string.IsNullOrWhiteSpace(p_searchString))
                 {
                     srcFor = p_searchString.ToUpper().Trim();
-                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))));
+                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().StartsWith(srcFor) || p.TaxpayerId.ToUpper().StartsWith(srcFor))));
                 }
                 else
                 {
