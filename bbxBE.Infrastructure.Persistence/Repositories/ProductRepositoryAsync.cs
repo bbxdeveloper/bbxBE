@@ -648,10 +648,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 if (srcFor != null)
                 {
-                    predicate = predicate.And(p => (!p_filterByName.Value || p.Description.ToUpper().Contains(srcFor))
+                    predicate = predicate.And(p => (!p_filterByName.Value || p.Description.ToUpper().StartsWith(srcFor))
                         ||
                         (!p_filterByCode.Value || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
-                        a.ProductCodeValue.ToUpper().Contains(srcFor)))
+                        a.ProductCodeValue.ToUpper().StartsWith(srcFor)))
                         );
                 }
                 else
