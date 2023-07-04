@@ -42,9 +42,9 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryUser filter)
+        public async Task<IActionResult> Query([FromQuery] QueryUser req)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(req));
         }
 
         /// <summary>
@@ -72,6 +72,13 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Delete(DeleteUserCommand command)
         {
             return Ok(await Mediator.Send(command));
+        }
+
+   
+        [HttpGet("loginnameandpwd")]
+        public async Task<IActionResult> GetUserByLoginNameAndPwd([FromQuery] GetUserByLoginNameAndPwd req)
+        {
+            return Ok(await Mediator.Send(req));
         }
     }
 }
