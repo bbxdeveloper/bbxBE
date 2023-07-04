@@ -1,15 +1,20 @@
-﻿using bbxBE.Application.Interfaces;
+﻿using bbxBE.Application.BLL;
+using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qUser;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -21,13 +26,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Users> _dataShaper;
         private readonly IModelHelper _modelHelper;
+        private readonly IConfiguration _configuration;
         private readonly IMockService _mockData;
 
         public UserRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Users> dataShaper, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
+            IDataShapeHelper<Users> dataShaper, IConfiguration configuration, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaper = dataShaper;
+            _configuration = configuration;
             _modelHelper = modelHelper;
             _mockData = mockData;
         }
@@ -144,6 +151,25 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             p_USR = p_USR.Where(predicate);
         }
 
+        public async Task<Entity> GetUserByLoginNameAndPwd(string LoginName, string Password)
+        {
 
+            var usr = await GetUserRecordByLoginNameAsync(LoginName);
+            if (usr == null || !usr.Active)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_USERNOTFOUND2, LoginName));
+            }
+
+            var salt = _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt);
+            if (BllAuth.GetPwdHash(Password, salt) != usr.PasswordHash)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            // shape data
+            var shapeData = _dataShaper.ShapeData(usr, "");
+
+            return shapeData;
+        }
     }
 }
