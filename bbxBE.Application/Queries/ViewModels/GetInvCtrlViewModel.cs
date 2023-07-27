@@ -1,5 +1,4 @@
-﻿using AutoMapper.Configuration.Conventions;
-using bbxBE.Common.Attributes;
+﻿using bbxBE.Common.Attributes;
 using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
@@ -32,7 +31,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [MapToEntity("ID")]
         public long ID { get; set; }
- 
+
         [ColumnLabel("Raktár ID")]
         [Description("Raktár ID")]
         public long WarehouseID { get; set; }
@@ -55,7 +54,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [ColumnLabel("Termékkód")]
         [Description("Termékkód")]
-        public string ProductCode { get; set; }         
+        public string ProductCode { get; set; }
 
 
         [ColumnLabel("Termék")]
@@ -80,6 +79,13 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Átlagolt beszerzési egységár")]
         public decimal AvgCost { get; set; }
 
+        [ColumnLabel("E.Valós érték")]
+        [Description("Eredeti valós érték")]
+        public decimal ORealAmount { get; set; }
+
+        [ColumnLabel("Új valós érték")]
+        [Description("Új valós érték")]
+        public decimal NRealAmount { get; set; }
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]

@@ -1,13 +1,7 @@
 ﻿using bbxBE.Application.Commands.cmdInvCtrl;
-using bbxBE.Application.Commands.cmdInvCtrlPeriod;
-using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qInvCtrl;
-using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
+using bbxBE.Application.Queries.qInvoice;
 using bxBE.Application.Commands.cmdInvCtrl;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +11,14 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+    //   [Authorize]
     public class InvCtrlController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
         private readonly IHttpContextAccessor _context;
 
-        public InvCtrlController( IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
+        public InvCtrlController(IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
@@ -106,5 +100,18 @@ namespace bbxBE.WebApi.Controllers.v1
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
+
+
+        //átalaktani
+        [HttpGet("csv")]
+        public async Task<IActionResult> CSV([FromQuery] CSVInvoice command)
+        {
+            var result = await Mediator.Send(command);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
+        }
     }
 }

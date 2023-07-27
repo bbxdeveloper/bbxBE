@@ -485,7 +485,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Include(w => w.Warehouse).AsNoTracking()
                 .Include(i => i.InvCtrlPeriod).AsNoTracking()
                 .Include(s => s.Stock).AsNoTracking()
-                .Where(w => !w.Deleted && w.InvCtlPeriodID == InvCtrlPeriodID).ToListAsync();
+                .Where(w => !w.Deleted && w.InvCtlPeriodID == InvCtrlPeriodID
+                    && (requestParameter.ShowDeficit == null ||
+                        (requestParameter.ShowDeficit.Value && w.ORealQty > w.NRealQty) ||
+                        (!requestParameter.ShowDeficit.Value && w.ORealQty < w.NRealQty))
+                    ).ToListAsync();
 
             resultList.ForEach(i =>
                 i.Product = prodCachedList.FirstOrDefault(f => f.ID == i.ProductID)
@@ -554,6 +558,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                _mapper.Map<InvCtrl, GetInvCtrlViewModel>(i))
             );
 
+            resultDataModel.ForEach(i =>
+            {
+                i.ORealAmount = Math.Round(i.ORealQty * i.AvgCost, 2);
+                i.NRealAmount = Math.Round(i.NRealQty * i.AvgCost, 2);
+
+            });
 
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
 
