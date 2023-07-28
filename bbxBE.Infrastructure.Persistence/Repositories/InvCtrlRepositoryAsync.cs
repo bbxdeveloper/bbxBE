@@ -463,7 +463,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameter)
+        public async Task<(IEnumerable<GetInvCtrlViewModel> data, RecordsCount recordsCount)> QueryPagedInvCtrlViewModelAsync(QueryInvCtrl requestParameter)
         {
 
             var InvCtrlPeriodID = requestParameter.InvCtrlPeriodID;
@@ -565,11 +565,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             });
 
+            return (resultDataModel, recordsCount);
+        }
+
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameter)
+        {
+            var pagedData = await QueryPagedInvCtrlViewModelAsync(requestParameter);
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
 
-            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(pagedData.data, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapeData, pagedData.recordsCount);
         }
         private void FilterBy(ref IQueryable<InvCtrl> p_item, long? InvCtrlPeriodID, string p_searchString)
         {
