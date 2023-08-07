@@ -1,6 +1,5 @@
 ﻿using bbxBE.Application.Commands.cmdInvCtrl;
 using bbxBE.Application.Queries.qInvCtrl;
-using bbxBE.Application.Queries.qInvoice;
 using bxBE.Application.Commands.cmdInvCtrl;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -104,7 +103,7 @@ namespace bbxBE.WebApi.Controllers.v1
 
         //átalaktani
         [HttpGet("csv")]
-        public async Task<IActionResult> CSV([FromQuery] CSVInvoice command)
+        public async Task<IActionResult> CSV([FromQuery] CSVInvCtrl command)
         {
             var result = await Mediator.Send(command);
 

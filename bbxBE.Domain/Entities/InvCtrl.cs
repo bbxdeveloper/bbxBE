@@ -2,10 +2,8 @@
 using bbxBE.Common.Enums;
 using bbxBE.Domain.Common;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -36,7 +34,7 @@ namespace bbxBE.Domain.Entities
         public long WarehouseID { get; set; }
 
         [ColumnLabel("Leltáridőszak ID")]
-        [Description("Leltáridőszak ID")]       
+        [Description("Leltáridőszak ID")]
         public long? InvCtlPeriodID { get; set; }       //Opcionális, hogy a folyamatos leltárat is kezelni lehessen
 
         [ColumnLabel("Termék ID")]
@@ -55,7 +53,7 @@ namespace bbxBE.Domain.Entities
         [Description("Eredeti valós mennyiség")]
         public decimal ORealQty { get; set; }
 
-        [ColumnLabel("Leltári  valós")]                       
+        [ColumnLabel("Leltári  valós")]
         [Description("Leltári  valós mennyiség")]
         public decimal NRealQty { get; set; }
 
@@ -90,5 +88,9 @@ namespace bbxBE.Domain.Entities
         [Description("Raktárkészlet")]
         public virtual Stock? Stock { get; set; }
 
+        [ForeignKey("UserID")]
+        [ColumnLabel("Felhasználó")]
+        [Description("Felhasználó")]
+        public virtual Users User { get; set; }
     }
 }

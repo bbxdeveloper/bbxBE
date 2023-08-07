@@ -67,28 +67,33 @@ namespace bbxBE.Application.Queries.ViewModels
         public DateTime InvCtrlDate { get; set; }
 
 
-        [ColumnLabel("E.Valós")]
-        [Description("Eredeti valós mennyiség")]
+        [ColumnLabel("E.mennyiség")]
+        [Description("Eredeti mennyiség")]
         public decimal ORealQty { get; set; }
 
-        [ColumnLabel("Új valós")]
-        [Description("Új valós mennyiség")]
+        [ColumnLabel("Új mennyiség")]
+        [Description("Új mennyiség")]
         public decimal NRealQty { get; set; }
 
         [ColumnLabel("ELÁBÉ")]
         [Description("Átlagolt beszerzési egységár")]
         public decimal AvgCost { get; set; }
 
-        [ColumnLabel("E.Valós érték")]
-        [Description("Eredeti valós érték")]
+        [ColumnLabel("E. érték")]
+        [Description("Eredeti érték")]
         public decimal ORealAmount { get; set; }
 
-        [ColumnLabel("Új valós érték")]
-        [Description("Új valós érték")]
+        [ColumnLabel("Új érték")]
+        [Description("Új érték")]
         public decimal NRealAmount { get; set; }
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long? UserID { get; set; } = 0;
+
+        [ColumnLabel("Felhasználó")]
+        [Description("Felhasználó")]
+        public string UserName { get; set; }
+
     }
 }

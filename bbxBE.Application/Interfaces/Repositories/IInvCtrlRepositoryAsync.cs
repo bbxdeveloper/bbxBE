@@ -28,7 +28,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> SeedDataAsync(int rowCount);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryInvCtrlStockAbsentAsync(QueryInvCtrlStockAbsent requestParameters);
 
-        Task<(IEnumerable<GetInvCtrlViewModel> data, RecordsCount recordsCount)> QueryPagedInvCtrlViewModelAsync(QueryInvCtrl requestParameter);
+        Task<(List<GetInvCtrlViewModel> data, RecordsCount recordsCount)> QueryPagedInvCtrlViewModelAsync(QueryInvCtrl requestParameter);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameters);
 
     }
