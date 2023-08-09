@@ -77,6 +77,7 @@ namespace bbxBE.Application.Queries.qInvCtrl
                         x.ORealQty.ToString() + bbxBEConsts.DEF_CSVSEP +
                         x.NRealQty.ToString() + bbxBEConsts.DEF_CSVSEP +
                         x.AvgCost.ToString() + bbxBEConsts.DEF_CSVSEP +
+                        x.ORealAmount.ToString() + bbxBEConsts.DEF_CSVSEP +
                         x.NRealAmount.ToString() + bbxBEConsts.DEF_CSVSEP +
                         x.UserName + Environment.NewLine
             ).ToArray());
