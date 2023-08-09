@@ -1,5 +1,4 @@
-﻿using AutoMapper.Configuration.Conventions;
-using bbxBE.Common.Attributes;
+﻿using bbxBE.Common.Attributes;
 using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
@@ -32,7 +31,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [MapToEntity("ID")]
         public long ID { get; set; }
- 
+
         [ColumnLabel("Raktár ID")]
         [Description("Raktár ID")]
         public long WarehouseID { get; set; }
@@ -55,7 +54,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [ColumnLabel("Termékkód")]
         [Description("Termékkód")]
-        public string ProductCode { get; set; }         
+        public string ProductCode { get; set; }
 
 
         [ColumnLabel("Termék")]
@@ -68,21 +67,33 @@ namespace bbxBE.Application.Queries.ViewModels
         public DateTime InvCtrlDate { get; set; }
 
 
-        [ColumnLabel("E.Valós")]
-        [Description("Eredeti valós mennyiség")]
+        [ColumnLabel("E.mennyiség")]
+        [Description("Eredeti mennyiség")]
         public decimal ORealQty { get; set; }
 
-        [ColumnLabel("Új valós")]
-        [Description("Új valós mennyiség")]
+        [ColumnLabel("Új mennyiség")]
+        [Description("Új mennyiség")]
         public decimal NRealQty { get; set; }
 
         [ColumnLabel("ELÁBÉ")]
         [Description("Átlagolt beszerzési egységár")]
         public decimal AvgCost { get; set; }
 
+        [ColumnLabel("E. érték")]
+        [Description("Eredeti érték")]
+        public decimal ORealAmount { get; set; }
+
+        [ColumnLabel("Új érték")]
+        [Description("Új érték")]
+        public decimal NRealAmount { get; set; }
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long? UserID { get; set; } = 0;
+
+        [ColumnLabel("Felhasználó")]
+        [Description("Felhasználó")]
+        public string UserName { get; set; }
+
     }
 }

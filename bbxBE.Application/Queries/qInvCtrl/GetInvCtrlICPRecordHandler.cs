@@ -1,22 +1,23 @@
 ﻿using AutoMapper;
-using MediatR;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Parameters;
-using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
-using System.Collections.Generic;
+using MediatR;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Domain.Extensions;
-using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Application.Queries.qInvCtrl
 {
-    public class GetInvCtrlICPRecord:  IRequest<InvCtrl>
+    public class GetInvCtrlICPRecord : IRequest<InvCtrl>
     {
+        [ColumnLabel("Leltáridőszak ID")]
+        [Description("Leltáridőszak ID")]
         public long InvCtlPeriodID { get; set; }
+
+        [ColumnLabel("Termék ID")]
+        [Description("Termék ID")]
         public long ProductID { get; set; }
     }
 
@@ -36,7 +37,7 @@ namespace bbxBE.Application.Queries.qInvCtrl
         public async Task<InvCtrl> Handle(GetInvCtrlICPRecord request, CancellationToken cancellationToken)
         {
             var record = await _InvCtrlRepository.GetInvCtrlICPRecordAsync(request.InvCtlPeriodID, request.ProductID);
-            if( record == null ) //Jeremi kérése
+            if (record == null) //Jeremi kérése
             {
                 record = new InvCtrl();
             }
