@@ -463,7 +463,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameter)
+        public async Task<(List<GetInvCtrlViewModel> data, RecordsCount recordsCount)> QueryPagedInvCtrlViewModelAsync(QueryInvCtrl requestParameter)
         {
 
             var InvCtrlPeriodID = requestParameter.InvCtrlPeriodID;
@@ -485,11 +485,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Include(w => w.Warehouse).AsNoTracking()
                 .Include(i => i.InvCtrlPeriod).AsNoTracking()
                 .Include(s => s.Stock).AsNoTracking()
-                .Where(w => !w.Deleted && w.InvCtlPeriodID == InvCtrlPeriodID).ToListAsync();
+                .Include(u => u.User).AsNoTracking()
+                .Where(w => !w.Deleted &&
+                    (!InvCtrlPeriodID.HasValue || w.InvCtlPeriodID == InvCtrlPeriodID.Value)
+                    && (InvCtrlPeriodID.HasValue || (w.InvCtrlDate >= requestParameter.DateFrom && w.InvCtrlDate <= requestParameter.DateTo))
+                    && (requestParameter.ShowDeficit == null ||
+                        (requestParameter.ShowDeficit.Value && w.ORealQty > w.NRealQty) ||
+                        (!requestParameter.ShowDeficit.Value && w.ORealQty < w.NRealQty))
+                    ).ToListAsync();
 
             resultList.ForEach(i =>
                 i.Product = prodCachedList.FirstOrDefault(f => f.ID == i.ProductID)
-                );
+            );
 
 
             var query = resultList.AsQueryable();
@@ -498,7 +505,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = query.Count();
 
             // filter data
-            FilterBy(ref query, InvCtrlPeriodID, searchString);
+            FilterBySeachString(ref query, searchString);
 
             // Count records after filter
             recordsFiltered = query.Count();
@@ -554,27 +561,35 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                _mapper.Map<InvCtrl, GetInvCtrlViewModel>(i))
             );
 
+            resultDataModel.ForEach(i =>
+            {
+                i.ORealAmount = Math.Round(i.ORealQty * i.AvgCost, 2);
+                i.NRealAmount = Math.Round(i.NRealQty * i.AvgCost, 2);
 
+            });
+
+            return (resultDataModel, recordsCount);
+        }
+
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlAsync(QueryInvCtrl requestParameter)
+        {
+            var pagedData = await QueryPagedInvCtrlViewModelAsync(requestParameter);
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
 
-            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(pagedData.data, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapeData, pagedData.recordsCount);
         }
-        private void FilterBy(ref IQueryable<InvCtrl> p_item, long? InvCtrlPeriodID, string p_searchString)
+        private void FilterBySeachString(ref IQueryable<InvCtrl> p_item, string p_searchString)
         {
             if (!p_item.Any())
                 return;
 
-            if (!InvCtrlPeriodID.HasValue && string.IsNullOrWhiteSpace(p_searchString))
+            if (string.IsNullOrWhiteSpace(p_searchString))
                 return;
 
             var predicate = PredicateBuilder.New<InvCtrl>();
 
-            if (InvCtrlPeriodID.HasValue)
-            {
-                predicate = predicate.And(p => p.InvCtlPeriodID == InvCtrlPeriodID.Value);
-            }
             if (!string.IsNullOrWhiteSpace(p_searchString))
             {
                 p_searchString = p_searchString.ToUpper();
