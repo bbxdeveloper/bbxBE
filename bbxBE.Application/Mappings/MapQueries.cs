@@ -71,6 +71,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.SupplierAdditionalAddressDetail, opt => opt.MapFrom(src => src.Supplier.AdditionalAddressDetail))
              .ForMember(dst => dst.SupplierThirdStateTaxId, opt => opt.MapFrom(src => src.Supplier.ThirdStateTaxId))
              .ForMember(dst => dst.SupplierComment, opt => opt.MapFrom(src => src.Supplier.Comment))
+             .ForMember(dst => dst.SupplierVatStatus, opt => opt.MapFrom(src => src.Supplier.CustomerVatStatus))
 
              .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => src.Customer.CustomerName))
              .ForMember(dst => dst.CustomerBankAccountNumber, opt => opt.MapFrom(src => src.Customer.CustomerBankAccountNumber))
@@ -81,6 +82,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CustomerAdditionalAddressDetail, opt => opt.MapFrom(src => src.Customer.AdditionalAddressDetail))
              .ForMember(dst => dst.CustomerThirdStateTaxId, opt => opt.MapFrom(src => src.Customer.ThirdStateTaxId))
              .ForMember(dst => dst.CustomerComment, opt => opt.MapFrom(src => src.Customer.Comment))
+             .ForMember(dst => dst.CustomerVatStatus, opt => opt.MapFrom(src => src.Customer.CustomerVatStatus))
 
              .ForMember(dst => dst.PaymentMethodX, opt => opt.MapFrom(src => PaymentMethodNameResolver(src.PaymentMethod)))
 
