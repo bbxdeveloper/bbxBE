@@ -111,9 +111,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         _dbContext.Instance.Entry(il.VatRate).State = EntityState.Detached;
                     }
 
+                    if (il.AdditionalInvoiceLineData != null)
+                    {
+
+                        foreach (var aild in il.AdditionalInvoiceLineData)
+                        {
+                            if (aild.ID == 0)
+                            {
+                                _dbContext.Instance.Entry(aild).State = EntityState.Added;
+                            }
+                            else
+                            {
+                                _dbContext.Instance.Entry(aild).State = EntityState.Modified;
+                            }
+                        }
+                    }
                 }
             }
-
             if (p_invoice.SummaryByVatRates != null)
             {
                 foreach (var svr in p_invoice.SummaryByVatRates)
