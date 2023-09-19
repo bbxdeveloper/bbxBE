@@ -2,7 +2,6 @@
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.NAV;
-using bxBE.Application.Commands.cmdInvoice;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bbxBE.Application.Commands.cmdInvoice
+namespace bbxBE.Application.Commands.cmdNAV
 {
 
     public class importFromNAVValidator : AbstractValidator<importFromNAVCommand>

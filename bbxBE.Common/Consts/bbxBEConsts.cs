@@ -169,14 +169,17 @@
         public static string NAV_QTAXPAYERT_OK = "{0} NAV QueryTaxpayer OK, taxnumber:{1}";
 
         public static string ERR_NAV_TAXPAYER = "A lekérdezéshez használt adószámnak 8 jegyűnek kell lennie!";
+        public static string ERR_NAVXML_NOINV = "Csak kimenő számláról készíthető NAV beküldő XML, ID:{0}, bizonylatszám:{1} ";
 
         public static string ERR_CITYNOTFOUND = "Város nem található, IRSZ:{0} ";
         public static string ERR_ZIPNOTFOUND = "IRSZ nem található, város:{0} ";
 
 
         public static string ERR_CACHE_NOTUSED = "A gyorsítótár nincs használatban:{0}!";
+        public static string ERR_LINEDESC_MISSING = "Hiányzó terméknév! Bizonylat:{0}, Termékkód:{1}";
 
-
+        public static string DEF_RELDELIVERYNOTE = "Kapcsolt szállítólevél";
+        public static string DEF_RELDELIVERYDISCOUNTPERCENT = "Szállítólevél engedmény/felár";
         public static string VATCODE_27 = "27%";
         public static string VATCODE_KBAET = "KBAET";
         public static string VATCODE_FA = "FA";

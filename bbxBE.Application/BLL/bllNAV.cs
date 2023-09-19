@@ -1,12 +1,10 @@
-﻿using AutoMapper.Configuration;
-using bbxBE.Common.Consts;
+﻿using bbxBE.Application.Commands.cmdNAV;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Common;
+using bbxBE.Common.Consts;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Settings;
-using bxBE.Application.Commands.cmdInvoice;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -161,7 +159,6 @@ namespace bbxBE.Application.BLL
             return result;
         }
 
-
         public static bool NAVPost(string p_uri, string p_requestId, string p_content, string p_procname, out string o_response)
         {
             o_response = "";
@@ -178,7 +175,7 @@ namespace bbxBE.Application.BLL
                 var request = (HttpWebRequest)WebRequest.Create(p_uri);
                 request.Method = "POST";
                 request.ContentType = "application/xml; charset=utf-8";
-           //     request.ContentType = "application/xml";
+                //     request.ContentType = "application/xml";
                 byte[] postBytes = Encoding.UTF8.GetBytes(p_content);
                 request.ContentLength = postBytes.Length;
                 var requestStream = request.GetRequestStream();
@@ -211,10 +208,10 @@ namespace bbxBE.Application.BLL
                 {
                     response = (HttpWebResponse)request.GetResponse();
                 }
-                catch (WebException ex)
+                catch (WebException)
                 {
                     throw;
-              //      response = (HttpWebResponse)ex.Response;
+                    //      response = (HttpWebResponse)ex.Response;
                 }
 
                 if (response != null)
@@ -286,10 +283,10 @@ namespace bbxBE.Application.BLL
                     }
                     else
                     {
-                        msg  = String.Format(bbxBEConsts.NAV_QTAXPAYER_ERR, DEF_procname, request.Taxnumber, response);
+                        msg = String.Format(bbxBEConsts.NAV_QTAXPAYER_ERR, DEF_procname, request.Taxnumber, response);
                     }
-                    
-               }
+
+                }
             }
             else
             {
@@ -298,5 +295,7 @@ namespace bbxBE.Application.BLL
             _logger.LogInformation(msg);
             return result;
         }
+
+
     }
 }

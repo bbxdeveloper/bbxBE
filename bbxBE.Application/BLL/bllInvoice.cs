@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Application.BLL
@@ -251,6 +253,24 @@ namespace bbxBE.Application.BLL
                 int RealLineNumber = 1;
 
                 //Javítószámla
+
+                /* Jóváírás-kezelés:
+                  Adózó módosító számlát bocsát ki, ezen módosító tételként -4 darab „D termék”,
+                  illetve 1 darab „F termék” szerepel. Ezen módosításról történő adatszolgáltatásban az adózó újabb
+                  tételként szerepelteti a -4 db „D terméket”, illetve az 1 db „F terméket”.
+                  Ezen módosító okiratról történő adatszolgáltatásban:
+                  a) A módosító okiratot leíró XML első tételsorában (lineNumber=1) a LineModificationReference
+                  elemben a lineNumberReference elem értéke „6”, lineOperation elem értéke „CREATE”, ez
+                  tartalmazza a -4 darab „D termék” adatait.NAV Online Számla Rendszer 100. oldal
+                  b) A módosító okiratot leíró XML második tételsorában (lineNumber=2) a LineModificationReference
+                  elemben a lineNumberReference elem értéke „7”, lineOperation elem értéke „CREATE”, ez
+                  tartalmazza az 1 darab „F termék” adatait.
+                  c) A módosító okiratot leíró XML invoiceSummary eleme teljes egészében szerepel, abban az egyes
+                  értékek módosulásának előjeles összege szerepel.
+
+                  RÖVIDEN : A jóváíró számlával az eredeti számlatételekhez "hozzáírjuk" a javító tételeket mínuszosan.
+                  */
+
                 List<Invoice> ModificationInvoices = new List<Invoice>();
                 Invoice OriginalInvoice = null;
                 var isInvoiceCorrection = (request.OriginalInvoiceID.HasValue && request.OriginalInvoiceID.Value != 0)
@@ -395,6 +415,23 @@ namespace bbxBE.Application.BLL
                             ln.LineDiscountPercent = relDeliveryNoteLine.LineDiscountPercent;
                         }
 
+                        //Gyűjtőszámla kiegészítő adatok
+                        ln.AdditionalInvoiceLineData = new List<AdditionalInvoiceLineData>();
+                        ln.AdditionalInvoiceLineData.Add(new AdditionalInvoiceLineData()   //a kapcsolt szállítólevél számát külön is letároljuk, hogy menjen fel a NAV-hoz
+                        {
+                            DataName = "X001_RELDELIVERYNOTE",
+                            DataDescription = bbxBEConsts.DEF_RELDELIVERYNOTE,
+                            DataValue = relDeliveryNote.InvoiceNumber
+                        });
+
+                        ln.AdditionalInvoiceLineData.Add(new AdditionalInvoiceLineData()   //a kapcsolt szállítólevél engedményt is letároljuk, hogy menjen fel a NAV-hoz
+                        {
+                            DataName = "X001_RELDELIVERYDISCOUNTPERCENT",
+                            DataDescription = bbxBEConsts.DEF_RELDELIVERYDISCOUNTPERCENT,
+                            DataValue = ln.LineDiscountPercent.ToString()
+                        });
+
+
                         //Szállítólevélen lévő függő mennyiség aktualizálása
                         if (relDeliveryNoteLine.PendingDNQuantity < Math.Abs(ln.Quantity))
                         {
@@ -453,7 +490,8 @@ namespace bbxBE.Application.BLL
 
                         // linenumber véglegesítés javítószámla esetén
                         ln.LineNumber = (short)(RealLineNumber++);
-
+                        ln.LineNumberReference = ln.LineNumber;          //Mivel a javítószámlán a CREATE operációt használjuk csak, ezért a LineNumberReference megyegyezik a LineNumber-el
+                                                                         //NAV doc:Az eredeti számla módosítással érintett tételének sorszáma, (lineNumber).Új tétel létrehozása esetén az új tétel sorszáma, az eredeti számla folytatásaként
                     }
                 }
 
@@ -604,6 +642,287 @@ namespace bbxBE.Application.BLL
             {
                 return p_num + lastDigit - roundNum;
             }
+        }
+
+
+        public static async Task<XmlDocument> GetInvoiceNAVXMLAsynch(GetInvoiceNAVXML request,
+                  IMapper mapper,
+                  IInvoiceRepositoryAsync invoiceRepository,
+                  IInvoiceLineRepositoryAsync invoiceLineRepository,
+                  ICounterRepositoryAsync counterRepository,
+                  IWarehouseRepositoryAsync warehouseRepository,
+                  ICustomerRepositoryAsync customerRepository,
+                  IProductRepositoryAsync productRepository,
+                  IVatRateRepositoryAsync vatRateRepository,
+                  IExpiringData<ExpiringDataObject> expiringData,
+                  CancellationToken cancellationToken)
+        {
+
+            XmlDocument res = new XmlDocument();
+            try
+            {
+                var invoice = await invoiceRepository.GetInvoiceRecordAsync(request.ID, true);
+                if (invoice == null)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
+                }
+
+                if (invoice.InvoiceType != enInvoiceType.INV.ToString())
+                {
+                    throw new Exception(string.Format(bbxBEConsts.ERR_NAVXML_NOINV, invoice.ID, invoice.InvoiceNumber));
+
+                }
+
+                var invoiceDataNAV = new InvoiceData();
+                invoiceDataNAV.invoiceNumber = invoice.InvoiceNumber;
+                invoiceDataNAV.invoiceIssueDate = invoice.InvoiceIssueDate;
+                var invoiceNAV = new InvoiceType();
+
+                invoiceDataNAV.invoiceMain.Items = new InvoiceType[] { invoiceNAV }; //számánként egy-egy adatküldés
+
+
+                Invoice originalInvoice = null;
+                if (invoice.InvoiceCorrection)
+                {
+                    originalInvoice = await invoiceRepository.GetInvoiceRecordAsync(invoice.OriginalInvoiceID.Value, true);
+                    if (originalInvoice == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, invoice.OriginalInvoiceID.Value));
+                    }
+                    var invRefNAV = new InvoiceReferenceType();
+                    invRefNAV.modifyWithoutMaster = invoice.ModifyWithoutMaster;
+                    invRefNAV.modificationIndex = invoice.ModificationIndex;
+                    invRefNAV.originalInvoiceNumber = invoice.OriginalInvoiceNumber;
+                    invoiceNAV.invoiceReference = invRefNAV;
+                }
+
+                /////////////////
+                // F E J L É C //
+                /////////////////
+
+                InvoiceHeadType invHeadNAV = new InvoiceHeadType();
+                invoiceNAV.invoiceHead = invHeadNAV;
+                invHeadNAV.supplierInfo = new SupplierInfoType();
+                invHeadNAV.supplierInfo.supplierTaxNumber = new TaxNumberType();
+
+                invHeadNAV.supplierInfo.supplierTaxNumber.taxpayerId = invoice.Supplier.TaxpayerId;
+                invHeadNAV.supplierInfo.supplierTaxNumber.vatCode = invoice.Supplier.VatCode;
+                invHeadNAV.supplierInfo.supplierTaxNumber.countyCode = invoice.Supplier.CountyCode;
+
+                invHeadNAV.supplierInfo.supplierName = invoice.Supplier.CustomerName;
+
+                invHeadNAV.supplierInfo.supplierAddress = new AddressType();
+                var supplierAddressNAV = new SimpleAddressType();
+                invHeadNAV.supplierInfo.supplierAddress.Item = supplierAddressNAV;
+
+                supplierAddressNAV.countryCode = (!string.IsNullOrWhiteSpace(invoice.Supplier.CountryCode) ? invoice.Supplier.CountryCode : NAVGlobal.NAV_HU);
+                supplierAddressNAV.postalCode = invoice.Supplier.PostalCode;
+                supplierAddressNAV.city = invoice.Supplier.City;
+                if (!string.IsNullOrWhiteSpace(invoice.Supplier.AdditionalAddressDetail))
+                    supplierAddressNAV.additionalAddressDetail = invoice.Supplier.AdditionalAddressDetail;
+
+
+                invHeadNAV.supplierInfo.supplierBankAccountNumber = invoice.Supplier.CustomerBankAccountNumber;
+                //invHead.supplierInfo.individualExemption = false;                 //BBX: nem tartjuk nyilván
+                //invHead.supplierInfo.exciseLicenceNum                             //BBX: nem tartjuk nyilván
+
+                ///////////////
+
+                invHeadNAV.customerInfo = new CustomerInfoType();
+
+                if (invoice.Customer.CustomerVatStatus != CustomerVatStatusType.PRIVATE_PERSON.ToString())
+                {
+                    //Külföldi vevő esetén a a vatStatus OTHER
+                    if (!string.IsNullOrWhiteSpace(invoice.Customer.CountryCode) && invoice.Customer.CountryCode != NAVGlobal.NAV_HU)
+                    {
+                        invHeadNAV.customerInfo.customerVatStatus = CustomerVatStatusType.OTHER;
+                        if (!string.IsNullOrWhiteSpace(invoice.Customer.ThirdStateTaxId))
+                        {
+                            invHeadNAV.customerInfo.customerVatData = new CustomerVatDataType();
+                            invHeadNAV.customerInfo.customerVatData.ItemElementName = ItemChoiceType.communityVatNumber;
+                            invHeadNAV.customerInfo.customerVatData.Item = invoice.Customer.ThirdStateTaxId;
+                        }
+                    }
+                    else
+                    {
+                        invHeadNAV.customerInfo.customerVatStatus = CustomerVatStatusType.DOMESTIC;
+
+                        invHeadNAV.customerInfo.customerVatData = new CustomerVatDataType();
+                        var customerTaxNumber = new CustomerTaxNumberType();
+
+                        customerTaxNumber.taxpayerId = invoice.Customer.TaxpayerId;
+                        customerTaxNumber.vatCode = invoice.Customer.VatCode;
+                        customerTaxNumber.countyCode = invoice.Customer.CountyCode;
+
+                        invHeadNAV.customerInfo.customerVatData.ItemElementName = ItemChoiceType.customerTaxNumber;
+                        invHeadNAV.customerInfo.customerVatData.Item = customerTaxNumber;
+                    }
+
+                    invHeadNAV.customerInfo.customerName = invoice.Customer.CustomerName;
+                    invHeadNAV.customerInfo.customerAddress = new AddressType();
+                    var customerAddressNAV = new SimpleAddressType();
+                    invHeadNAV.customerInfo.customerAddress.Item = customerAddressNAV;
+                    customerAddressNAV.countryCode = (!string.IsNullOrWhiteSpace(invoice.Customer.CountryCode) ? invoice.Customer.CountryCode : NAVGlobal.NAV_HU);
+                    customerAddressNAV.postalCode = (!string.IsNullOrWhiteSpace(invoice.Customer.PostalCode) ? invoice.Customer.PostalCode : "0000");
+                    customerAddressNAV.city = invoice.Customer.City;
+                    if (!string.IsNullOrWhiteSpace(invoice.Customer.AdditionalAddressDetail))
+                        customerAddressNAV.additionalAddressDetail = invoice.Customer.AdditionalAddressDetail;
+
+
+                    invHeadNAV.customerInfo.customerBankAccountNumber = invoice.Customer.CustomerBankAccountNumber;
+                }
+                else
+                {
+                    invHeadNAV.customerInfo.customerVatStatus = CustomerVatStatusType.PRIVATE_PERSON;
+                    invHeadNAV.customerInfo.customerVatData = null;
+
+                }
+
+                ///////////
+                invHeadNAV.fiscalRepresentativeInfo = null;                        //BBX: nem kezeljük
+
+
+                var smallBusinessIndicator = false;                                 //nem kisadózó
+
+                var invoiceDetailNAV = new InvoiceDetailType(
+                    p_invoiceDeliveryPeriodStartSpecified: false,
+                    p_invoiceDeliveryPeriodEndSpecified: false,
+                    p_invoiceAccountingDeliveryDateSpecified: false,
+                    p_periodicalSettlementSpecified: false,
+                    p_smallBusinessIndicatorSpecified: smallBusinessIndicator,
+                    p_utilitySettlementIndicatorSpecified: false,
+                    p_selfBillingIndicatorSpecified: false,
+                    p_paymentMethodSpecified: true,
+                    p_paymentDateSpecified: true,
+                    p_cashAccountingIndicatorSpecified: smallBusinessIndicator      //A kisadózó pénforgalmi elszámolású
+                    );
+                invHeadNAV.invoiceDetail = invoiceDetailNAV;
+
+
+                invoiceDetailNAV.invoiceCategory = Enum.Parse<InvoiceCategoryType>(invoice.InvoiceCategory);
+
+                invoiceDetailNAV.periodicalSettlement = false;                 //BBX:ilyen nincs a NYIL-ban
+                invoiceDetailNAV.invoiceDeliveryDate = invoice.InvoiceDeliveryDate;
+                //invoiceDetailNAV.invoiceDeliveryPeriodStart                //BBX:nincs időszakra számlázás
+                //invoiceDetailNAV.invoiceDeliveryPeriodEnd                  //BBX:nincs időszakra számlázás
+                //invoiceDetailNAV.invoiceAccountingDeliveryDate = Util.GetDateTimeField(rSzamlak, "SZAMLAF");   //Nem kötelező, nem töltjük !
+
+                invoiceDetailNAV.currencyCode = invoice.CurrencyCode;
+                invoiceDetailNAV.exchangeRate = invoice.ExchangeRate;
+
+                invoiceDetailNAV.paymentMethod = Enum.Parse<PaymentMethodType>(invoice.PaymentMethod);
+                invoiceDetailNAV.paymentDate = invoice.PaymentDate;
+
+                //invoiceData.cashAccountingIndicator                   //BBX: nem kezeljük      
+                invoiceDetailNAV.invoiceAppearance = InvoiceAppearanceType.PAPER;
+                //invoiceDataNAV.electronicInvoiceHash                    //BBX: a számlánk papír típusú
+
+                if (invoice.AdditionalInvoiceData?.Count > 0)
+                {
+                    invoiceDetailNAV.additionalInvoiceData =
+                        invoice.AdditionalInvoiceData.Select(s =>
+                        new AdditionalDataType()
+                        {
+                            dataDescription = s.DataDescription,
+                            dataName = s.DataName,
+                            dataValue = s.DataValue
+                        }).ToArray();
+                }
+
+                ///////////////
+                // S O R O K //
+                ///////////////
+                var invoiceLinesNAV = new List<LineType>();
+                foreach (InvoiceLine ili in invoice.InvoiceLines)
+                {
+                    var invlineNAV = new LineType(
+                            p_lineNatureIndicatorSpecified: false,
+                            p_quantitySpecified: true,
+                            p_unitOfMeasureSpecified: true,
+                            p_unitPriceSpecified: true,
+                            p_unitPriceHUFSpecified: true,
+                            p_intermediatedServiceSpecified: false,
+                            p_depositIndicatorSpecified: false,
+                            p_obligatedForProductFeeSpecified: false,
+                            p_GPCExciseSpecified: false,
+                            p_netaDeclarationSpecified: false);
+                    invoiceLinesNAV.Add(invlineNAV);
+
+                    if (string.IsNullOrWhiteSpace(ili.LineDescription))
+                    {
+                        throw new Exception(String.Format(bbxBEConsts.ERR_LINEDESC_MISSING, invoice.InvoiceNumber, ili.ProductCode));
+                    }
+
+
+                    invlineNAV.lineNumber = ili.LineNumber.ToString();
+                    if (invoiceDetailNAV.invoiceCategory == InvoiceCategoryType.AGGREGATE)
+                    {
+                        ////////////////////////
+                        // Gyűjtőszámla sorok //
+                        ////////////////////////
+                        invlineNAV.aggregateInvoiceLineData = new AggregateInvoiceLineDataType(
+                                    p_lineExchangeRateSpecified: true);
+                        invlineNAV.aggregateInvoiceLineData.lineExchangeRate = ili.LineExchangeRate;
+                        invlineNAV.aggregateInvoiceLineData.lineDeliveryDate = ili.LineDeliveryDate;
+
+                    }
+
+                    if (ili.AdditionalInvoiceLineData?.Count > 0)
+                    {
+                        invlineNAV.additionalLineData =
+                            ili.AdditionalInvoiceLineData.Select(s =>
+                            new AdditionalDataType()
+                            {
+                                dataDescription = s.DataDescription,
+                                dataName = s.DataName,
+                                dataValue = s.DataValue
+                            }).ToArray();
+                    }
+
+                    //Módosító szála
+                    if (invoice.InvoiceCorrection)
+                    {
+                        invlineNAV.lineModificationReference = new LineModificationReferenceType();
+
+                        //A javítószámlán lévő tétellel korrigáljuk az eredetit
+                        invlineNAV.lineModificationReference.lineOperation = LineOperationType.CREATE;
+                        invlineNAV.lineModificationReference.lineNumberReference = ili.LineNumberReference.ToString();
+                    }
+
+                    //invlineNAV.referencesToOtherLines               //BBX: nem kezeljük
+                    //invlineNAV.advanceIndicator                     //BBX: nem kezeljük, nincs előleg jellegű tétel
+
+                    var productCodes = new List<ProductCodeType>();
+                    var productCode = new ProductCodeType()
+                    {
+                        productCodeCategory = ProductCodeCategoryType.OWN,
+                        Item = ili.ProductCode
+                    };
+                    productCodes.Add(productCode);
+
+                    var VTSZCode = new ProductCodeType()
+                    {
+                        productCodeCategory = ProductCodeCategoryType.VTSZ,
+                        Item = ili.VTSZ
+                    };
+                    productCodes.Add(VTSZCode);
+
+                    invlineNAV.productCodes = productCodes.ToArray();
+
+                    invlineNAV.lineDescription = ili.LineDescription;
+
+
+                }
+                invoiceNAV.invoiceLines = new LinesType();
+                invoiceNAV.invoiceLines.mergedItemIndicator = false;           //BBX: A számla NEM tartlamaz összevont adattartalmú tétel(eke)t !
+                invoiceNAV.invoiceLines.line = invoiceLinesNAV.ToArray();
+                return res;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return null;
         }
 
     }

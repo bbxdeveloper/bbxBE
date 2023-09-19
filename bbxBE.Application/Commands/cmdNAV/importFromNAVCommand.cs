@@ -15,7 +15,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bxBE.Application.Commands.cmdInvoice
+
+namespace bbxBE.Application.Commands.cmdNAV
 {
     public class importFromNAVCommand : IRequest<Response<long>>
     {
