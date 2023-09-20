@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.qInvoice;
-using bbxBE.Common;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
@@ -689,6 +688,8 @@ namespace bbxBE.Application.BLL
 
                 }
 
+                var summaryByVatRateDict = new Dictionary<string, SummaryByVatRateType>();
+
                 var invoiceDataNAV = new InvoiceData();
                 invoiceDataNAV.invoiceNumber = invoice.InvoiceNumber;
                 invoiceDataNAV.invoiceIssueDate = invoice.InvoiceIssueDate;
@@ -902,7 +903,10 @@ namespace bbxBE.Application.BLL
 
                         //A javítószámlán lévő tétellel korrigáljuk az eredetit
                         invlineNAV.lineModificationReference.lineOperation = LineOperationType.CREATE;
-                        invlineNAV.lineModificationReference.lineNumberReference = ili.LineNumberReference.ToString();
+
+                        //API lerírás: a lineNumberReference(a számla és összes módosításaiban) sorfolytonosan új tételsorszámra mutat és lineOperation értéke „CREATE”.
+                        //
+                        invlineNAV.lineModificationReference.lineNumberReference = invlineNAV.lineNumber;
                     }
 
                     //invlineNAV.referencesToOtherLines               //BBX: nem kezeljük
@@ -1027,7 +1031,9 @@ namespace bbxBE.Application.BLL
 
                 */
 
-                foreach (var disountedVRGrp in invoice.InvoiceLines.Where(w => w.LineDiscountPercent != 0).GroupBy(g => g.VatRateID).ToList())
+                foreach (var disountedVRGrp in invoice.InvoiceLines.Where(w => w.LineDiscountPercent != 0)
+                                                                    .OrderBy(o => o.VatRateID)
+                                                                    .GroupBy(g => g.VatRateID).ToList())
                 {
 
                     var discountValue = Math.Round(disountedVRGrp.Sum(s => (-s.LineDiscountPercent / 100) * s.LineNetAmount), 1);
@@ -1084,13 +1090,25 @@ namespace bbxBE.Application.BLL
 
                         //A javítószámlán lévő tétellel korrigáljuk az eredetit
                         discountLineNAV.lineModificationReference.lineOperation = LineOperationType.CREATE;
-                        /* itt tartok
-                                                OriginalInvoice.
 
-                                                discountLineNAV.lineModificationReference.lineNumberReference = JSzamlTLineCnt + lineEng.lineNumber;
-                        */
+                        //API lerírás: a lineNumberReference(a számla és összes módosításaiban) sorfolytonosan új tételsorszámra mutat és lineOperation értéke „CREATE”.
+                        //
+                        discountLineNAV.lineModificationReference.lineNumberReference = discountLineNAV.lineNumber;
                     }
                 }
+                ///////////////////////
+                // Ö S S Z E S í T Ő //
+                ///////////////////////
+                var invoiceSummaryNAV = new SummaryType();
+                invoiceNAV.invoiceSummary = invoiceSummaryNAV;
+
+                var invoiceSummaryNormalNAV = new SummaryNormalType();
+                invoiceSummaryNAV.Items = new SummaryNormalType[1];
+                invoiceSummaryNAV.Items[0] = invoiceSummaryNormalNAV;
+
+                invoiceSummaryNormalNAV.summaryByVatRate = invoiceLinesNAV.GroupBy(g => g.)
+
+
 
                 invoiceNAV.invoiceLines = new LinesType();
                 invoiceNAV.invoiceLines.mergedItemIndicator = false;           //BBX: A számla NEM tartlamaz összevont adattartalmú tétel(eke)t !
@@ -1104,7 +1122,7 @@ namespace bbxBE.Application.BLL
             return null;
         }
 
-        private static void createVatRate(LineAmountsNormalType lineAmountsNormal, VatRate vatRate, CustomerVatStatusType customerVatStatus)
+        private static void createVatRate(LineAmountsNormalType lineAmountsNormal, VatRate vatRate)
         {
             lineAmountsNormal.lineVatRate = new VatRateType();
             if (!vatRate.VatDomesticReverseCharge)
@@ -1117,22 +1135,23 @@ namespace bbxBE.Application.BLL
                 }
                 else
                 {
-                    //adómentesség
-
-                    // a jelölőkódot is meg kell adni
-                    lineAmountsNormal.lineVatRate.ItemElementName = ItemChoiceType2.vatExemption;
-                    var vatReason = new DetailedReasonType();
-                    if (customerVatStatus == CustomerVatStatusType.DOMESTIC)
+                    //Áfamentesség
+                    if (!string.IsNullOrWhiteSpace(vatRate.VatExemptionCase))
                     {
-                        //belföldi termékértékesítés 0 áfával belföldi vevőnek, tárgyi adómentes
-                        vatReason.@case = Utils.GetEnumDescription(enVatExemption.TAM);
-                        vatReason.reason = bbxBEConsts.DEF_VATREASON_TAM;
+                        //Tárgyi áfamentesség
+                        lineAmountsNormal.lineVatRate.ItemElementName = ItemChoiceType2.vatExemption;
+                        var vatReason = new DetailedReasonType();
+                        vatReason.@case = vatRate.VatExemptionCase;
+                        vatReason.reason = vatRate.VatRateCode;
                     }
                     else
+                    if (!string.IsNullOrWhiteSpace(vatRate.VatOutOfScopeCase))
                     {
-                        //külföldi termékértékesítés 0 áfával külföldi vevőnek, KBAET
-                        vatReason.@case = Utils.GetEnumDescription(enVatExemption.KBAET);
-                        vatReason.reason = bbxBEConsts.DEF_VATREASON_KBAET;
+                        //alanyi adómentes
+                        lineAmountsNormal.lineVatRate.ItemElementName = ItemChoiceType2.vatOutOfScope;
+                        var vatReason = new DetailedReasonType();
+                        vatReason.@case = vatRate.VatOutOfScopeCase;
+                        vatReason.reason = vatRate.VatOutOfScopeReason;
                     }
                 }
             }

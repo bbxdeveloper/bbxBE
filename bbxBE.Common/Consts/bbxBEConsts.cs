@@ -186,6 +186,7 @@
         public const string VATCODE_27 = "27%";
         public const string VATCODE_KBAET = "KBAET";
         public const string VATCODE_FA = "FA";
+        public const string VATCODE_TAM = "TAM";
         public const string PRODUCTFEE_TAKEOVERCODE = "02_ga";
         public const string DEF_VATREASON_AAM = "Alanyi adómentes";
         public const string DEF_VATREASON_TAM = "Tárgyi adómentes";
