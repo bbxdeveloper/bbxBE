@@ -688,7 +688,7 @@ namespace bbxBE.Application.BLL
 
                 }
 
-                var summaryByVatRateDict = new Dictionary<string, SummaryByVatRateType>();
+                var summaryByVatRateNAVDict = new Dictionary<string, SummaryByVatRateType>();
 
                 var invoiceDataNAV = new InvoiceData();
                 invoiceDataNAV.invoiceNumber = invoice.InvoiceNumber;
@@ -972,8 +972,8 @@ namespace bbxBE.Application.BLL
 
                     //Áfa
                     //
-                    createVatRate(lineAmountsNormalNAV, ili.VatRate, invHeadNAV.customerInfo.customerVatStatus);
-
+                    createVatRate(lineAmountsNormalNAV, ili.VatRate);
+                    maintainVatRateSummary(summaryByVatRateNAVDict, lineAmountsNormalNAV, ili.VatRate.VatRateCode);
 
 
                     //invlineNAV.lineDiscountData               //BBX: A kedvezmény tételsorként lesz elküldve
@@ -1002,7 +1002,6 @@ namespace bbxBE.Application.BLL
 
                         productFeeTakeoverDataNAV.takeoverReason = Enum.Parse<TakeoverType>(ili.TakeoverReason);
                         productFeeTakeoverDataNAV.takeoverAmount = ili.TakeoverAmount;
-
 
 
                         /* ITT vannank a KT kódok, soon....
@@ -1037,6 +1036,7 @@ namespace bbxBE.Application.BLL
                 {
 
                     var discountValue = Math.Round(disountedVRGrp.Sum(s => (-s.LineDiscountPercent / 100) * s.LineNetAmount), 1);
+                    var discountValueHUF = Math.Round(disountedVRGrp.Sum(s => (-s.LineDiscountPercent / 100) * s.LineNetAmountHUF), 1);
 
                     var discountLineNAV = new LineType(
                              p_lineNatureIndicatorSpecified: false,
@@ -1057,8 +1057,8 @@ namespace bbxBE.Application.BLL
                     discountLineNAV.lineDescription = discountValue > 0 ? bbxBEConsts.DEF_CHARGE : bbxBEConsts.DEF_DISCOUNT;
                     discountLineNAV.quantity = 1;
                     discountLineNAV.unitOfMeasure = UnitOfMeasureType.PIECE;
-                    discountLineNAV.unitPrice = Math.Round(disountedVRGrp.Sum(s => (-s.LineDiscountPercent / 100) * s.LineNetAmount), 1);
-                    discountLineNAV.unitPriceHUF = Math.Round(disountedVRGrp.Sum(s => (-s.LineDiscountPercent / 100) * s.LineNetAmountHUF), 1);
+                    discountLineNAV.unitPrice = discountValue;
+                    discountLineNAV.unitPriceHUF = discountValueHUF;
 
                     var vatRateDiscount = disountedVRGrp.FirstOrDefault().VatRate;
                     if (vatRateDiscount == null)
@@ -1081,7 +1081,8 @@ namespace bbxBE.Application.BLL
                     discountLineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormalHUF = discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF + discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF;
 
                     //Áfa
-                    createVatRate(discountLineAmountsNormalNAV, vatRateDiscount, invHeadNAV.customerInfo.customerVatStatus);
+                    createVatRate(discountLineAmountsNormalNAV, vatRateDiscount);
+                    maintainVatRateSummary(summaryByVatRateNAVDict, discountLineAmountsNormalNAV, vatRateDiscount.VatRateCode);
 
                     //Módosító szála
                     if (invoice.InvoiceCorrection)
@@ -1099,14 +1100,26 @@ namespace bbxBE.Application.BLL
                 ///////////////////////
                 // Ö S S Z E S í T Ő //
                 ///////////////////////
+
                 var invoiceSummaryNAV = new SummaryType();
                 invoiceNAV.invoiceSummary = invoiceSummaryNAV;
 
                 var invoiceSummaryNormalNAV = new SummaryNormalType();
+                invoiceSummaryNormalNAV.summaryByVatRate = summaryByVatRateNAVDict.Select(s => s.Value).ToArray();
+
                 invoiceSummaryNAV.Items = new SummaryNormalType[1];
                 invoiceSummaryNAV.Items[0] = invoiceSummaryNormalNAV;
 
-                invoiceSummaryNormalNAV.summaryByVatRate = invoiceLinesNAV.GroupBy(g => g.)
+                invoiceSummaryNormalNAV.invoiceNetAmount = summaryByVatRateNAVDict.Sum(s => s.Value.vatRateNetData.vatRateNetAmount);
+                invoiceSummaryNormalNAV.invoiceNetAmountHUF = summaryByVatRateNAVDict.Sum(s => s.Value.vatRateNetData.vatRateNetAmountHUF);
+
+                invoiceSummaryNormalNAV.summaryByVatRate = summaryByVatRateNAVDict.Select(s => s.Value).ToArray();
+
+                invoiceSummaryNormalNAV.invoiceVatAmount = Math.Round(summaryByVatRateNAVDict.Sum(s => s.Value.vatRateVatData.vatRateVatAmount), 0);
+                invoiceSummaryNormalNAV.invoiceVatAmountHUF = Math.Round(summaryByVatRateNAVDict.Sum(s => s.Value.vatRateVatData.vatRateVatAmountHUF), 0);
+
+                invoiceNAV.invoiceSummary.summaryGrossData.invoiceGrossAmount = invoiceSummaryNormalNAV.invoiceNetAmount + invoiceSummaryNormalNAV.invoiceVatAmount;
+                invoiceNAV.invoiceSummary.summaryGrossData.invoiceGrossAmountHUF = invoiceSummaryNormalNAV.invoiceNetAmountHUF + invoiceSummaryNormalNAV.invoiceVatAmountHUF;
 
 
 
@@ -1143,6 +1156,7 @@ namespace bbxBE.Application.BLL
                         var vatReason = new DetailedReasonType();
                         vatReason.@case = vatRate.VatExemptionCase;
                         vatReason.reason = vatRate.VatRateCode;
+                        lineAmountsNormal.lineVatRate.Item = vatReason;
                     }
                     else
                     if (!string.IsNullOrWhiteSpace(vatRate.VatOutOfScopeCase))
@@ -1152,6 +1166,7 @@ namespace bbxBE.Application.BLL
                         var vatReason = new DetailedReasonType();
                         vatReason.@case = vatRate.VatOutOfScopeCase;
                         vatReason.reason = vatRate.VatOutOfScopeReason;
+                        lineAmountsNormal.lineVatRate.Item = vatReason;
                     }
                 }
             }
@@ -1164,5 +1179,28 @@ namespace bbxBE.Application.BLL
 
         }
 
+        private static void maintainVatRateSummary(Dictionary<string, SummaryByVatRateType> summaryByVatRateNAVDict, LineAmountsNormalType lineAmountsNormalNAV, string vatRateCode)
+        {
+            //számla áfaösszesítő
+            //
+            SummaryByVatRateType summaryByVatRateNAV = null;
+            if (summaryByVatRateNAVDict.ContainsKey(vatRateCode))
+            {
+                summaryByVatRateNAV = summaryByVatRateNAVDict[vatRateCode];
+            }
+            else
+            {
+                summaryByVatRateNAV = new SummaryByVatRateType(lineAmountsNormalNAV.lineVatRate);
+                summaryByVatRateNAVDict.Add(vatRateCode, summaryByVatRateNAV);
+            }
+            summaryByVatRateNAV.vatRateNetData.vatRateNetAmount += lineAmountsNormalNAV.lineNetAmountData.lineNetAmount;
+            summaryByVatRateNAV.vatRateNetData.vatRateNetAmountHUF += lineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF;
+
+            summaryByVatRateNAV.vatRateVatData.vatRateVatAmount += lineAmountsNormalNAV.lineVatData.lineVatAmount;
+            summaryByVatRateNAV.vatRateVatData.vatRateVatAmountHUF += lineAmountsNormalNAV.lineVatData.lineVatAmountHUF;
+
+            summaryByVatRateNAV.vatRateGrossData.vatRateGrossAmount += lineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormal;
+            summaryByVatRateNAV.vatRateGrossData.vatRateGrossAmountHUF += lineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormalHUF;
+        }
     }
 }
