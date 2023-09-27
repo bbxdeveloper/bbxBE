@@ -1,4 +1,5 @@
 ﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Common.ExpiringData;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -27,10 +28,15 @@ namespace bbxBE.WebApi.Controllers.v1
 
 
         //   [Authorize]
-        [HttpGet("gettoken")]
-        public async Task<IActionResult> GetToken()
+        [HttpGet("getxml")]
+        public async Task<IActionResult> GetXML([FromQuery] GetInvoiceNAVXML request)
         {
-            return Ok(true);
+            var result = await Mediator.Send(request);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
     }

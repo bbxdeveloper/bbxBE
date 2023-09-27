@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
@@ -13,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Application.BLL
@@ -285,20 +283,20 @@ namespace bbxBE.Application.BLL
 
                     // Javító bizonylat linenumber meghatározás
                     //      - az eredeti bizonylat linenumber utáni tétel
-                    //        + engedmény esetén áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve)
+                    //        + engedmény esetén áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve) sor készül a  NAV-hoz felküldött adatokban
                     //      - már elkészült javítószámlák tétel összesen
                     //        + engedmény esetén már elkészült javítószámlák áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve)
 
                     // eredeti számla
                     RealLineNumber += OriginalInvoice.InvoiceLines.Count()
-                                     + (OriginalInvoice.InvoiceDiscountPercent != 0 ? OriginalInvoice.SummaryByVatRates.Count() : 0);
+                                     + (OriginalInvoice.InvoiceLines.Where(a => a.LineDiscountPercent != 0).GroupBy(g => g.VatRateID).Count());
 
-                    // már elkészült javítószámlák
+                    // már elkészült javítószámlák (láncolt javítás)
                     ModificationInvoices = await invoiceRepository.GetCorrectionInvoiceRecordsByInvoiceID(request.OriginalInvoiceID.Value);
                     ModificationInvoices.ForEach(oi =>
                     {
                         RealLineNumber += oi.InvoiceLines.Count()
-                                         + (oi.InvoiceDiscountPercent != 0 ? oi.SummaryByVatRates.Count() : 0);
+                                     + (oi.InvoiceLines.Where(a => a.LineDiscountPercent != 0).GroupBy(g => g.VatRateID).Count());
                     });
 
                     invoice.OriginalInvoiceNumber = OriginalInvoice.InvoiceNumber;
@@ -493,8 +491,24 @@ namespace bbxBE.Application.BLL
                         ln.LineNumberReference = ln.LineNumber;          //Mivel a javítószámlán a CREATE operációt használjuk csak, ezért a LineNumberReference megyegyezik a LineNumber-el
                                                                          //NAV doc:Az eredeti számla módosítással érintett tételének sorszáma, (lineNumber).Új tétel létrehozása esetén az új tétel sorszáma, az eredeti számla folytatásaként
                     }
-                }
 
+                    //termékdíj
+                    if (prod.ProductFee > 0)
+                    {
+                        ln.TakeoverReason = TakeoverType.Item02_ga.ToString();                  //egyelőre beégetjük a 02_ga-t
+
+                        if (ln.TakeoverReason != TakeoverType.Item01.ToString())                 //későbbi felhasználásra is felkészülünk, 01 esetén nincs átvállalás
+                        {
+                            ln.TakeoverAmount = Math.Round(prod.ProductFee * ln.Quantity, 1);
+                        }
+
+                        //ln.ProductFeeProductCodeValue = //KT v. CSK
+                        ln.ProductFeeQuantity = ln.Quantity;
+                        ln.ProductFeeMeasuringUnit = ln.UnitOfMeasure;
+                        //ln.ProductFeeRate = 
+                        ln.ProductFeeAmount = Math.Round(prod.ProductFee * ln.Quantity, 1);
+                    }
+                }
                 if (lineErrors.Any())
                 {
                     throw new ValidationException(lineErrors);
@@ -524,7 +538,6 @@ namespace bbxBE.Application.BLL
                     await customerRepository.UpdateAsync(cust);
 
                 }
-
 
                 //szemafr kiütések
                 var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + invoice.CustomerID.ToString();
@@ -645,27 +658,13 @@ namespace bbxBE.Application.BLL
         }
 
 
-        public static async Task<XmlDocument> GetInvoiceNAVXMLAsynch(GetInvoiceNAVXML request,
-                  IMapper mapper,
+        public static async Task<InvoiceData> GetInvoiceNAVXMLAsynch(Invoice invoice,
                   IInvoiceRepositoryAsync invoiceRepository,
-                  IInvoiceLineRepositoryAsync invoiceLineRepository,
-                  ICounterRepositoryAsync counterRepository,
-                  IWarehouseRepositoryAsync warehouseRepository,
-                  ICustomerRepositoryAsync customerRepository,
-                  IProductRepositoryAsync productRepository,
-                  IVatRateRepositoryAsync vatRateRepository,
-                  IExpiringData<ExpiringDataObject> expiringData,
                   CancellationToken cancellationToken)
         {
 
-            XmlDocument res = new XmlDocument();
             try
             {
-                var invoice = await invoiceRepository.GetInvoiceRecordAsync(request.ID, true);
-                if (invoice == null)
-                {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
-                }
 
                 if (invoice.InvoiceType != enInvoiceType.INV.ToString())
                 {
@@ -886,7 +885,10 @@ namespace bbxBE.Application.BLL
 
                         //A javítószámlán lévő tétellel korrigáljuk az eredetit
                         invlineNAV.lineModificationReference.lineOperation = LineOperationType.CREATE;
-                        invlineNAV.lineModificationReference.lineNumberReference = ili.LineNumberReference.ToString();
+
+                        //API lerírás: a lineNumberReference(a számla és összes módosításaiban) sorfolytonosan új tételsorszámra mutat és lineOperation értéke „CREATE”.
+                        //
+                        invlineNAV.lineModificationReference.lineNumberReference = invlineNAV.lineNumber;
                     }
 
                     //invlineNAV.referencesToOtherLines               //BBX: nem kezeljük
@@ -910,19 +912,274 @@ namespace bbxBE.Application.BLL
                     invlineNAV.productCodes = productCodes.ToArray();
 
                     invlineNAV.lineDescription = ili.LineDescription;
+                    invlineNAV.quantity = ili.Quantity;
+
+                    if (!string.IsNullOrWhiteSpace(ili.UnitOfMeasure))
+                    {
+                        invlineNAV.lineExpressionIndicator = true;
+                        UnitOfMeasureType um;
+
+                        if (Enum.TryParse<UnitOfMeasureType>(ili.UnitOfMeasure, out um))
+                        {
+                            invlineNAV.unitOfMeasure = um;
+                            invlineNAV.unitOfMeasureOwn = null;
+                        }
+                        else
+                        {
+                            invlineNAV.unitOfMeasure = UnitOfMeasureType.OWN;
+                            invlineNAV.unitOfMeasureOwn = ili.UnitOfMeasure;
+                        }
+                    }
+                    else
+                    {
+                        invlineNAV.lineExpressionIndicator = false;
+                        invlineNAV.unitOfMeasure = UnitOfMeasureType.OWN;
+                        invlineNAV.unitOfMeasureOwn = bbxBEConsts.DEF_NOTFILLED;
+                    }
+
+                    invlineNAV.unitPrice = ili.UnitPrice;
+                    invlineNAV.unitPriceHUF = ili.UnitPriceHUF;
+
+                    var lineAmountsNormalNAV = new LineAmountsNormalType();
+                    invlineNAV.Item = lineAmountsNormalNAV;
+
+                    lineAmountsNormalNAV.lineNetAmountData.lineNetAmount = ili.LineNetAmount;
+                    lineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF = ili.LineNetAmountHUF;
+
+                    lineAmountsNormalNAV.lineVatData.lineVatAmount = ili.LineVatAmount;
+                    lineAmountsNormalNAV.lineVatData.lineVatAmountHUF = ili.LineVatAmountHUF;
+
+                    lineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormal = ili.LineGrossAmountNormal;
+                    lineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormalHUF = ili.LineGrossAmountNormalHUF;
+
+                    //Áfa
+                    //
+                    lineAmountsNormalNAV.lineVatRate = getVatRateNAV(ili.VatRate);
+
+
+                    //invlineNAV.lineDiscountData               //BBX: A kedvezmény tételsorként lesz elküldve
+                    //invlineNAV.intermediatedService           //BBX: nem kezeljük
+
+                    //invlineNAV.newTransportMean               //BBX: nem kezeljük
+                    //invlineNAV.depositIndicator               //BBX: betétdíjat kezelni kellene ?
+                    //invlineNAV.marginSchemeIndicator          //BBX: nem kezeljük
+                    //invlineNAV.ekaerIds                       //BBX: nem kezeljük
+
+                    //invlineNAV.GPCExcise                      //BBX: nem kezeljük
+                    //invlineNAV.netaDeclaration                //BBX: nem kezeljük
+
+                    //Termékdíj
+                    //
+                    if (!string.IsNullOrWhiteSpace(ili.TakeoverReason))
+                    {
+
+                        /* egyelőre csak az átvállalást küldjük */
+                        invlineNAV.obligatedForProductFee = true;
+
+                        invlineNAV.productFeeClause = new ProductFeeClauseType();
+                        var productFeeTakeoverDataNAV = new ProductFeeTakeoverDataType(
+                                                p_takeoverAmountSpecified: true);
+                        invlineNAV.productFeeClause.Item = productFeeTakeoverDataNAV;
+
+                        productFeeTakeoverDataNAV.takeoverReason = Enum.Parse<TakeoverType>(ili.TakeoverReason);
+                        productFeeTakeoverDataNAV.takeoverAmount = ili.TakeoverAmount;
+
+
+                        /* ITT vannank a KT kódok, soon....
+                        invlineNAV.lineProductFeeContent = new ProductFeeDataType();
+                        invlineNAV.lineProductFeeContent.productFeeCode = new ProductCodeType();
+                        invlineNAV.lineProductFeeContent.productFeeCode.productCodeCategory = enproductCodeCategory.KT.ToString();
+                        invlineNAV.lineProductFeeContent.productFeeCode.productCodeValue = "??KT kód??";      //Ezt törzsben meg kellene adni
+                        invlineNAV.lineProductFeeContent.productFeeQuantity
+                        liinvlineNAVne.lineProductFeeContent.productFeeMeasuringUnit
+                        invlineNAV.lineProductFeeContent.productFeeRate
+                        invlineNAV.lineProductFeeContent.productFeeAmount
+                        */
+
+                    }
 
 
                 }
+                //Felár/engedmény
+                /*
+
+                Ha az árengedményt nem a tételsorhoz közvetlenül kapcsolódóan, hanem a számla végösszegéből,
+                százalékosan vagy fix összegben adja az eladó, az árengedményt az adatszolgáltatásban külön tételként
+                szükséges szerepeltetni, nem pedig a lineDiscountData elemben. Ha a számla több, különböző
+                áfamérték alá tartozó tételt tartalmaz, akkor szükséges a végösszegből adott kedvezmény megbontása
+                a különböző adómértékek között, így az ilyen árengedményt több tételként szükséges szerepeltetni
+
+                */
+
+                foreach (var disountedVRGrp in invoice.InvoiceLines.Where(w => w.LineDiscountPercent != 0)
+                                                                    .OrderBy(o => o.VatRateID)
+                                                                    .GroupBy(g => g.VatRateID).ToList())
+                {
+
+                    var discountValue = Math.Round(disountedVRGrp.Sum(s => (-s.LineDiscountPercent / 100) * s.LineNetAmount), 1);
+                    var discountValueHUF = Math.Round(disountedVRGrp.Sum(s => (-s.LineDiscountPercent / 100) * s.LineNetAmountHUF), 1);
+
+                    var discountLineNAV = new LineType(
+                             p_lineNatureIndicatorSpecified: false,
+                             p_quantitySpecified: true,
+                             p_unitOfMeasureSpecified: true,
+                             p_unitPriceSpecified: true,
+                             p_unitPriceHUFSpecified: true,
+                             p_intermediatedServiceSpecified: false,
+                             p_depositIndicatorSpecified: false,
+                             p_obligatedForProductFeeSpecified: false,
+                             p_GPCExciseSpecified: false,
+                             p_netaDeclarationSpecified: false);
+
+                    invoiceLinesNAV.Add(discountLineNAV);
+                    discountLineNAV.lineNumber = (invoiceLinesNAV.Count).ToString();
+
+
+                    discountLineNAV.lineDescription = discountValue > 0 ? bbxBEConsts.DEF_CHARGE : bbxBEConsts.DEF_DISCOUNT;
+                    discountLineNAV.quantity = 1;
+                    discountLineNAV.unitOfMeasure = UnitOfMeasureType.PIECE;
+                    discountLineNAV.unitPrice = discountValue;
+                    discountLineNAV.unitPriceHUF = discountValueHUF;
+
+                    var vatRateDiscount = disountedVRGrp.FirstOrDefault().VatRate;
+                    if (vatRateDiscount == null)
+                    {
+                        throw new Exception(string.Format(bbxBEConsts.ERR_NAVXML_VATRATEMISSING, invoice.InvoiceNumber));
+                    }
+
+
+                    var discountLineAmountsNormalNAV = new LineAmountsNormalType();
+                    discountLineNAV.Item = discountLineAmountsNormalNAV;
+
+
+                    discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount = discountLineNAV.unitPrice * discountLineNAV.quantity;
+                    discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF = discountLineNAV.unitPriceHUF * discountLineNAV.quantity;
+
+                    discountLineAmountsNormalNAV.lineVatData.lineVatAmount = Math.Round(vatRateDiscount.VatPercentage / 100 * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount, 0);
+                    discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF = Math.Round(vatRateDiscount.VatPercentage / 100 * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF, 0); ;
+
+                    discountLineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormal = discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount + discountLineAmountsNormalNAV.lineVatData.lineVatAmount;
+                    discountLineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormalHUF = discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF + discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF;
+
+                    //Áfa
+                    discountLineAmountsNormalNAV.lineVatRate = getVatRateNAV(vatRateDiscount);
+
+                    //Módosító szála
+                    if (invoice.InvoiceCorrection)
+                    {
+                        discountLineNAV.lineModificationReference = new LineModificationReferenceType();
+
+                        //A javítószámlán lévő tétellel korrigáljuk az eredetit
+                        discountLineNAV.lineModificationReference.lineOperation = LineOperationType.CREATE;
+
+                        //API lerírás: a lineNumberReference(a számla és összes módosításaiban) sorfolytonosan új tételsorszámra mutat és lineOperation értéke „CREATE”.
+                        //
+                        discountLineNAV.lineModificationReference.lineNumberReference = discountLineNAV.lineNumber;
+                    }
+                }
+                ///////////////////////
+                // Ö S S Z E S í T Ő //
+                ///////////////////////
+
+                var invoiceSummaryNAV = new SummaryType();
+                invoiceNAV.invoiceSummary = invoiceSummaryNAV;
+
+                var invoiceSummaryNormalNAV = new SummaryNormalType();
+                invoiceSummaryNormalNAV.summaryByVatRate = invoice.SummaryByVatRates.Select(x =>
+                    new SummaryByVatRateType()
+                    {
+                        vatRate = getVatRateNAV(x.VatRate),
+                        vatRateNetData = new VatRateNetDataType()
+                        {
+                            vatRateNetAmount = x.VatRateNetAmount,
+                            vatRateNetAmountHUF = x.VatRateNetAmountHUF
+                        },
+
+                        vatRateVatData = new VatRateVatDataType()
+                        {
+                            vatRateVatAmount = x.VatRateVatAmount,
+                            vatRateVatAmountHUF = x.VatRateVatAmountHUF
+                        },
+
+                        vatRateGrossData = new VatRateGrossDataType()
+                        {
+                            vatRateGrossAmount = x.VatRateGrossAmount,
+                            vatRateGrossAmountHUF = x.VatRateGrossAmountHUF
+                        }
+                    }
+                    ).ToArray();
+
+
+                invoiceSummaryNAV.Items = new SummaryNormalType[1];
+                invoiceSummaryNAV.Items[0] = invoiceSummaryNormalNAV;
+
+                invoiceSummaryNormalNAV.invoiceNetAmount = invoice.InvoiceNetAmount;
+                invoiceSummaryNormalNAV.invoiceNetAmountHUF = invoice.InvoiceNetAmountHUF;
+
+                invoiceSummaryNormalNAV.invoiceVatAmount = invoice.InvoiceVatAmount;
+                invoiceSummaryNormalNAV.invoiceVatAmountHUF = invoice.InvoiceVatAmountHUF;
+
+                invoiceNAV.invoiceSummary.summaryGrossData.invoiceGrossAmount = invoice.InvoiceGrossAmount;
+                invoiceNAV.invoiceSummary.summaryGrossData.invoiceGrossAmountHUF = invoice.InvoiceGrossAmountHUF;
+
+
+
                 invoiceNAV.invoiceLines = new LinesType();
                 invoiceNAV.invoiceLines.mergedItemIndicator = false;           //BBX: A számla NEM tartlamaz összevont adattartalmú tétel(eke)t !
                 invoiceNAV.invoiceLines.line = invoiceLinesNAV.ToArray();
-                return res;
+
+                return invoiceDataNAV;
+
             }
             catch (Exception)
             {
                 throw;
             }
             return null;
+        }
+
+        private static VatRateType getVatRateNAV(VatRate vatRate)
+        {
+            var vatRateNAV = new VatRateType();
+            if (!vatRate.VatDomesticReverseCharge)
+            {
+                if (vatRate.VatPercentage != 0)
+                {
+                    //normál áfa
+                    vatRateNAV.ItemElementName = ItemChoiceType2.vatPercentage;
+                    vatRateNAV.Item = vatRate.VatPercentage;
+                }
+                else
+                {
+                    //Áfamentesség
+                    if (!string.IsNullOrWhiteSpace(vatRate.VatExemptionCase))
+                    {
+                        //Tárgyi áfamentesség
+                        vatRateNAV.ItemElementName = ItemChoiceType2.vatExemption;
+                        var vatReason = new DetailedReasonType();
+                        vatReason.@case = vatRate.VatExemptionCase;
+                        vatReason.reason = vatRate.VatRateCode;
+                        vatRateNAV.Item = vatReason;
+                    }
+                    else
+                    if (!string.IsNullOrWhiteSpace(vatRate.VatOutOfScopeCase))
+                    {
+                        //alanyi adómentes
+                        vatRateNAV.ItemElementName = ItemChoiceType2.vatOutOfScope;
+                        var vatReason = new DetailedReasonType();
+                        vatReason.@case = vatRate.VatOutOfScopeCase;
+                        vatReason.reason = vatRate.VatOutOfScopeReason;
+                        vatRateNAV.Item = vatReason;
+                    }
+                }
+            }
+            else
+            {
+                //fordított adózás
+                vatRateNAV.ItemElementName = ItemChoiceType2.vatDomesticReverseCharge;
+                vatRateNAV.Item = true;
+            }
+            return vatRateNAV;
         }
 
     }

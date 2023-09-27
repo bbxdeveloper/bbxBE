@@ -243,11 +243,11 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Egyéb adat")]
         [Description("A számlára vonatkozó egyéb adat")]
-        public virtual ICollection<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
+        public virtual IList<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
 
         [ColumnLabel("Áfa összesítő")]
         [Description("Összesítés áfa-mérték szerint")]
-        public virtual ICollection<SummaryByVatRate> SummaryByVatRates { get; set; }
+        public virtual IList<SummaryByVatRate> SummaryByVatRates { get; set; }
 
 
         [ForeignKey("UserID")]
