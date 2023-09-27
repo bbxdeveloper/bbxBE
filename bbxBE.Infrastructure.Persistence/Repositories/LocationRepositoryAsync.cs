@@ -181,7 +181,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<Location>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.LocationDescription.ToUpper().Contains(srcFor));
+            predicate = predicate.And(p => p.LocationCode.ToUpper().Contains(srcFor) || p.LocationDescription.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }
