@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
@@ -13,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Application.BLL
@@ -660,27 +658,13 @@ namespace bbxBE.Application.BLL
         }
 
 
-        public static async Task<XmlDocument> GetInvoiceNAVXMLAsynch(GetInvoiceNAVXML request,
-                  IMapper mapper,
+        public static async Task<InvoiceData> GetInvoiceNAVXMLAsynch(Invoice invoice,
                   IInvoiceRepositoryAsync invoiceRepository,
-                  IInvoiceLineRepositoryAsync invoiceLineRepository,
-                  ICounterRepositoryAsync counterRepository,
-                  IWarehouseRepositoryAsync warehouseRepository,
-                  ICustomerRepositoryAsync customerRepository,
-                  IProductRepositoryAsync productRepository,
-                  IVatRateRepositoryAsync vatRateRepository,
-                  IExpiringData<ExpiringDataObject> expiringData,
                   CancellationToken cancellationToken)
         {
 
-            XmlDocument res = new XmlDocument();
             try
             {
-                var invoice = await invoiceRepository.GetInvoiceRecordAsync(request.ID, true);
-                if (invoice == null)
-                {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
-                }
 
                 if (invoice.InvoiceType != enInvoiceType.INV.ToString())
                 {
@@ -981,8 +965,8 @@ namespace bbxBE.Application.BLL
                     //invlineNAV.marginSchemeIndicator          //BBX: nem kezeljük
                     //invlineNAV.ekaerIds                       //BBX: nem kezeljük
 
-                    //invlineNAV.GPCExcise                    //BBX: nem kezeljük
-                    //invlineNAV.netaDeclaration              //BBX: nem kezeljük
+                    //invlineNAV.GPCExcise                      //BBX: nem kezeljük
+                    //invlineNAV.netaDeclaration                //BBX: nem kezeljük
 
                     //Termékdíj
                     //
@@ -1143,7 +1127,9 @@ namespace bbxBE.Application.BLL
                 invoiceNAV.invoiceLines = new LinesType();
                 invoiceNAV.invoiceLines.mergedItemIndicator = false;           //BBX: A számla NEM tartlamaz összevont adattartalmú tétel(eke)t !
                 invoiceNAV.invoiceLines.line = invoiceLinesNAV.ToArray();
-                return res;
+
+                return invoiceDataNAV;
+
             }
             catch (Exception)
             {
