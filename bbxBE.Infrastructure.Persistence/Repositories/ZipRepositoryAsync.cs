@@ -38,6 +38,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             Zip Zip = await _dbContext.Zip
                     .Where(x => x.ZipCode == zipCode && !x.Deleted)
+                    .OrderBy(x => x.ZipCity)
                     .FirstOrDefaultAsync();
 
             return Zip;
@@ -46,6 +47,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             Zip Zip = await _dbContext.Zip
                     .Where(x => x.ZipCity.ToUpper() == zipCity.ToUpper() && !x.Deleted)
+                    .OrderBy(o => o.ZipCode)
                     .FirstOrDefaultAsync();
 
             return Zip;
