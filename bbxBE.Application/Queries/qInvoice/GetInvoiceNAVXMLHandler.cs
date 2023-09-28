@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common;
 using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Common.ExpiringData;
-using bbxBE.Domain.Extensions;
+using bbxBE.Common.NAV;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -60,19 +62,20 @@ namespace bbxBE.Application.Queries.qInvoice
         public async Task<FileStreamResult> Handle(GetInvoiceNAVXML request, CancellationToken cancellationToken)
         {
 
-            var entity = await _invoiceRepository.GetInvoiceAsync(request.ID, true);
-            var data = entity.MapItemFieldsByMapToAnnotation<GetInvoiceViewModel>();
+            var invoice = await _invoiceRepository.GetInvoiceRecordAsync(request.ID, true);
+            if (invoice == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
+            }
 
-            string xml = "";
+            var invoiceNAVXML = await bllInvoice.GetInvoiceNAVXMLAsynch(invoice, _invoiceRepository, cancellationToken);
+            var xmlStr = XMLUtil.Object2XMLString<InvoiceData>(invoiceNAVXML, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+
             // response wrapper
             Random rnd = new Random();
-            string fileName = $"Invoices_{rnd.Next()}.xml";
-            var sbContent = new StringBuilder();
-
-            sbContent.Append(xml);
-
+            string fileName = $"{invoice.InvoiceNumber}_{rnd.Next()}.xml";
             var enc = Encoding.GetEncoding(bbxBEConsts.DEF_ENCODING);
-            Stream stream = new MemoryStream(enc.GetBytes(sbContent.ToString()));
+            Stream stream = new MemoryStream(enc.GetBytes(xmlStr));
             var fsr = new FileStreamResult(stream, $"application/xml") { FileDownloadName = fileName };
 
             return fsr;

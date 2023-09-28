@@ -147,8 +147,8 @@ namespace bbxBE.Domain.Entities
         [Description("Az átvállalt termékdíj összege forintban, ha a vevő vállalja át az eladó termékdíjkötelezettségét")]
         public decimal TakeoverAmount { get; set; }
 
-        //Termékdíj tartalom
 
+        //Termékdíj tartalom
         [ColumnLabel("Termékdíj kat.")]
         [Description("Termékdíj kategória (Kt vagy Csk)")]
         public string ProductFeeProductCodeCategory { get; set; }

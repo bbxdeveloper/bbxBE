@@ -1,16 +1,15 @@
 ﻿using AutoMapper;
-using MediatR;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Wrappers;
 using bbxBE.Domain.Entities;
+using bbxBE.Domain.Extensions;
+using MediatR;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Domain.Extensions;
-using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Application.Queries.qLocation
 {
@@ -21,13 +20,13 @@ namespace bbxBE.Application.Queries.qLocation
 
     public class QueryLocationHandler : IRequestHandler<QueryLocation, PagedResponse<IEnumerable<Entity>>>
     {
-        private readonly ILocationRepositoryAsync _LocationRepository;
+        private readonly ILocationRepositoryAsync _locationRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public QueryLocationHandler(ILocationRepositoryAsync LocationRepository, IMapper mapper, IModelHelper modelHelper)
+        public QueryLocationHandler(ILocationRepositoryAsync locationRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _LocationRepository = LocationRepository;
+            _locationRepository = locationRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -36,11 +35,11 @@ namespace bbxBE.Application.Queries.qLocation
         {
             var validFilter = request;
             var pagination = request;
-            
-      
+
+
 
             // query based on filter
-            var entities = await _LocationRepository.QueryPagedLocationAsync(validFilter);
+            var entities = await _locationRepository.QueryPagedLocationAsync(validFilter);
             var data = entities.data.MapItemsFieldsByMapToAnnotation<GetLocationViewModel>();
             RecordsCount recordCount = entities.recordsCount;
 
