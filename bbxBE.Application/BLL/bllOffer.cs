@@ -159,6 +159,7 @@ namespace bbxBE.Application.BLL
                     //	ln.Product = prod;
                     ln.ProductID = prod.ID;
                     ln.ProductCode = rln.ProductCode;
+                    ln.NoDiscount = prod.NoDiscount;
                     //Ez modelből jön: ln.LineDescription = prod.Description;
 
                     //	ln.VatRate = vatRate;
@@ -198,8 +199,6 @@ namespace bbxBE.Application.BLL
 
             offer.Notice = Utils.TidyHtml(offer.Notice);
 
-            var counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
-
             try
             {
 
@@ -223,6 +222,7 @@ namespace bbxBE.Application.BLL
                     //	ln.Product = prod;
                     ln.ProductID = prod.ID;
                     ln.ProductCode = rln.ProductCode;
+                    ln.NoDiscount = prod.NoDiscount;
                     //Ez modelből jön: ln.LineDescription = prod.Description;
 
                     //	ln.VatRate = vatRate;

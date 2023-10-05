@@ -133,6 +133,10 @@ namespace bbxBE.Application.Queries.ViewModels
             [NotDBField]
             public bool ShowBrtAmount { get; set; }
 
+            [ColumnLabel("Eng.tilt")]
+            [Description("Engedmény adás tiltása")]
+            public bool NoDiscount { get; set; }
+
         }
 
 
