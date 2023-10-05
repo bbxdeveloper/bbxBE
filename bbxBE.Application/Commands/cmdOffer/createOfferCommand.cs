@@ -93,6 +93,9 @@ namespace bxBE.Application.Commands.cmdOffer
             [Description("Eredeti ár")]
             public decimal OriginalUnitPrice { get; set; }
 
+            [ColumnLabel("Eredeti ár HUF")]                 //a törzsbeli ár
+            [Description("Eredeti ár forintban")]
+            public decimal OriginalUnitPriceHUF { get; set; }
 
             [ColumnLabel("E/L")]                        //Eygségár/listaár flag
             [Description("Egységár/Listaár")]
