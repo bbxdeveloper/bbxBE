@@ -36,6 +36,9 @@ namespace bbxBE.Domain.Entities
         [Description("Árengedmény megjelenítés)")]
         public bool ShowDiscount { get; set; }
 
+        [ColumnLabel("Eng.tilt")]
+        [Description("Engedmény adás tiltása")]
+        public bool NoDiscount { get; set; }
 
         [ColumnLabel("Áfa ID")]
         [Description("Áfa ID")]
