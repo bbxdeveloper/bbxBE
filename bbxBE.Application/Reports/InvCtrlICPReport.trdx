@@ -41,17 +41,17 @@
         </TextBox>
       </Items>
     </PageHeaderSection>
-    <DetailSection Height="1.5cm" Name="detailSection1">
+    <DetailSection Height="1.718cm" Name="detailSection1">
       <Style TextAlign="Center" VerticalAlign="Middle">
         <Font Name="Tahoma" Size="9pt" />
       </Style>
       <Items>
-        <Table DataSourceName="webServiceDataSource1" Width="189.73mm" Height="12.18mm" Left="0mm" Top="0mm" Name="table1">
+        <Table DataSourceName="webServiceDataSource1" Width="189.46mm" Height="17.18mm" Left="0mm" Top="0mm" Name="table1">
           <Body>
             <Cells>
               <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="53.14mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.productCode" Name="textBox5">
+                  <TextBox Width="39.65mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.productCode" Name="textBox5">
                     <Style TextAlign="Left" VerticalAlign="Middle">
                       <Font Name="Tahoma" Size="7pt" />
                       <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
@@ -63,7 +63,7 @@
               </TableCell>
               <TableCell RowIndex="0" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="86.59mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.product" Name="textBox8">
+                  <TextBox Width="49.81mm" Height="6.09mm" Left="0cm" Top="0cm" Value="= Fields.product" Name="textBox8">
                     <Style TextAlign="Left" VerticalAlign="Middle">
                       <Font Name="Tahoma" Size="7pt" />
                       <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
@@ -97,15 +97,68 @@
                   </TextBox>
                 </ReportItem>
               </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="4" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="25mm" Height="6.09mm" Left="0in" Top="0in" Value="= Fields.oRealAmount" Format="{0:N2}" Name="textBox3" StyleName="">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Name="Tahoma" Size="7pt" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="5" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="25mm" Height="6.09mm" Left="0in" Top="0in" Value="= Fields.nRealAmount" Format="{0:N2}" Name="textBox14" StyleName="">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Name="Tahoma" Size="7pt" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="1" ColumnIndex="4" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="25mm" Height="5mm" Left="0in" Top="0in" Value="= Sum(Fields.oRealAmount)" Format="{0:N2}" Name="textBox19" StyleName="">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Name="Tahoma" Size="8pt" Bold="True" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="1" ColumnIndex="5" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="25mm" Height="5mm" Left="0in" Top="0in" Value="= Sum(Fields.nRealAmount)" Format="{0:N2}" Name="textBox20" StyleName="">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Name="Tahoma" Size="8pt" Bold="True" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="1" ColumnIndex="0" RowSpan="1" ColumnSpan="4">
+                <ReportItem>
+                  <TextBox Width="139.46mm" Height="5mm" Left="0in" Top="0in" Value="Összesen:" Name="textBox15" StyleName="">
+                    <Style TextAlign="Right" VerticalAlign="Middle">
+                      <Font Name="Tahoma" Size="8pt" Bold="True" />
+                      <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
             </Cells>
             <Columns>
-              <Column Width="53.14mm" />
-              <Column Width="86.59mm" />
+              <Column Width="39.65mm" />
+              <Column Width="49.81mm" />
+              <Column Width="25mm" />
+              <Column Width="25mm" />
               <Column Width="25mm" />
               <Column Width="25mm" />
             </Columns>
             <Rows>
               <Row Height="6.09mm" />
+              <Row Height="5mm" />
             </Rows>
           </Body>
           <Corner />
@@ -120,11 +173,12 @@
                 <Grouping />
               </Groupings>
             </TableGroup>
+            <TableGroup Name="group3" />
           </RowGroups>
           <ColumnGroups>
             <TableGroup Name="tableGroup">
               <ReportItem>
-                <TextBox Width="53.14mm" Height="6.09mm" Left="0cm" Top="0cm" Value="Termékkód" Name="textBox4">
+                <TextBox Width="39.65mm" Height="6.09mm" Left="0cm" Top="0cm" Value="Termékkód" Name="textBox4">
                   <Style BackgroundColor="217, 217, 217" VerticalAlign="Middle">
                     <Font Name="Tahoma" Size="9pt" Bold="True" />
                     <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
@@ -136,7 +190,7 @@
             </TableGroup>
             <TableGroup Name="tableGroup1">
               <ReportItem>
-                <TextBox Width="86.59mm" Height="6.09mm" Left="0cm" Top="0cm" Value="Termék név" Name="textBox6">
+                <TextBox Width="49.81mm" Height="6.09mm" Left="0cm" Top="0cm" Value="Termék név" Name="textBox6">
                   <Style BackgroundColor="217, 217, 217" VerticalAlign="Middle">
                     <Font Name="Tahoma" Size="9pt" Bold="True" />
                     <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
@@ -166,6 +220,26 @@
                     <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
                     <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                     <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
+                  </Style>
+                </TextBox>
+              </ReportItem>
+            </TableGroup>
+            <TableGroup Name="group1">
+              <ReportItem>
+                <TextBox Width="25mm" Height="6.09mm" Left="0in" Top="0in" Value="Rkt.Ért." Name="textBox2" StyleName="">
+                  <Style BackgroundColor="217, 217, 217" VerticalAlign="Middle">
+                    <Font Bold="True" />
+                    <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
+                  </Style>
+                </TextBox>
+              </ReportItem>
+            </TableGroup>
+            <TableGroup Name="group2">
+              <ReportItem>
+                <TextBox Width="25mm" Height="6.09mm" Left="0in" Top="0in" Value="Lelt.Ért." Name="textBox13" StyleName="">
+                  <Style BackgroundColor="217, 217, 217" VerticalAlign="Middle">
+                    <Font Bold="True" />
+                    <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
                   </Style>
                 </TextBox>
               </ReportItem>
