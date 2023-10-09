@@ -299,7 +299,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .Where(w => w.InvCtrlType == enInvCtrlType.ICC.ToString() &&
                     w.Warehouse.WarehouseCode == requestParameter.WarehouseCode && w.ProductID == requestParameter.ProductID &&
                     w.InvCtrlDate >= DateTime.UtcNow.AddDays(requestParameter.RetroDays * -1).Date && !w.Deleted)
+                .OrderByDescending(o => o.ID)
+
                 .FirstOrDefaultAsync();
+
+            var aa = _dbContext.InvCtrl.AsNoTracking()
+                .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
+                .Where(w => w.InvCtrlType == enInvCtrlType.ICC.ToString() &&
+                    w.Warehouse.WarehouseCode == requestParameter.WarehouseCode && w.ProductID == requestParameter.ProductID &&
+                    w.InvCtrlDate >= DateTime.UtcNow.AddDays(requestParameter.RetroDays * -1).Date && !w.Deleted)
+                .OrderByDescending(o => o.ID).ToList();
 
             if (item == null)
             {
@@ -367,7 +376,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             var absenedItems = stockItems.Where(s =>
-                        !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
+                        s.Product == null || !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
                         (!requestParameter.IsInStock || s.RealQty != 0)).ToList();
 
             if (!requestParameter.IsInStock)
@@ -381,7 +390,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     absenedItems.Add(new Stock()
                     {
                         WarehouseID = invCtrlPeriod.WarehouseID,
-                        ProductID = p.ID,
+                        ProductID = (p != null ? p.ID : 0),
                         RealQty = 0,
                         AvgCost = 0,
                         LatestIn = null,
@@ -400,9 +409,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!string.IsNullOrEmpty(requestParameter.SearchString))
             {
                 var searchString = requestParameter.SearchString.ToUpper();
-                absenedItems = absenedItems.Where(p => p.Product.Description.ToUpper().Contains(searchString) ||
+                absenedItems = absenedItems.Where(p => p.Product != null && (p.Product.Description.ToUpper().Contains(searchString) ||
                         p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
-                        a.ProductCodeValue.ToUpper().Contains(searchString))).ToList();
+                        a.ProductCodeValue.ToUpper().Contains(searchString)))).ToList();
             }
 
             // Count records after filter
