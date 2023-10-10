@@ -263,6 +263,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     query = query.OrderBy(orderBy);
                 }
             }
+            else
+            {
+                // ha nincs rendezettség, akkor alapból 
+                query = query.OrderBy(o => o.StockCardDate).OrderBy(o => o.ID);
+
+            }
+
 
             // select columns
             if (!string.IsNullOrWhiteSpace(fields))

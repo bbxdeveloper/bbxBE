@@ -300,16 +300,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     w.Warehouse.WarehouseCode == requestParameter.WarehouseCode && w.ProductID == requestParameter.ProductID &&
                     w.InvCtrlDate >= DateTime.UtcNow.AddDays(requestParameter.RetroDays * -1).Date && !w.Deleted)
                 .OrderByDescending(o => o.ID)
-
                 .FirstOrDefaultAsync();
 
-            var aa = _dbContext.InvCtrl.AsNoTracking()
-                .Include(w => w.Warehouse).AsNoTracking().AsExpandable()
-                .Where(w => w.InvCtrlType == enInvCtrlType.ICC.ToString() &&
-                    w.Warehouse.WarehouseCode == requestParameter.WarehouseCode && w.ProductID == requestParameter.ProductID &&
-                    w.InvCtrlDate >= DateTime.UtcNow.AddDays(requestParameter.RetroDays * -1).Date && !w.Deleted)
-                .OrderByDescending(o => o.ID).ToList();
-
+ 
             if (item == null)
             {
                 return null;
