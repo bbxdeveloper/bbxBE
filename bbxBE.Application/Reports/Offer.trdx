@@ -379,7 +379,7 @@
             </TableGroup>
             <TableGroup Name="group7">
               <ReportItem>
-                <TextBox Width="20mm" Height="5mm" Left="0in" Top="0in" Value="Nettó érték" Name="textBox28" StyleName="Normal.TableHeader">
+                <TextBox Width="20mm" Height="5mm" Left="0in" Top="0in" Value="Ajánlat nett." Name="textBox28" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
                     <Font Size="8pt" Bold="True" />
                     <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
@@ -391,7 +391,7 @@
             </TableGroup>
             <TableGroup Name="group8">
               <ReportItem>
-                <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="Bruttó érték" Name="textBox8" StyleName="Normal.TableHeader">
+                <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="Ajánlat brt." Name="textBox8" StyleName="Normal.TableHeader">
                   <Style Visible="False" BackgroundColor="217, 217, 217" TextAlign="Center">
                     <Font Size="8pt" Bold="True" />
                     <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
