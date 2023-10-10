@@ -265,7 +265,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             else
             {
-                // ha nincs rendezettség, akkor alapból 
+                // ha nincs rendezettség, akkor alapból ey legyen:
                 query = query.OrderBy(o => o.StockCardDate).OrderBy(o => o.ID);
 
             }
