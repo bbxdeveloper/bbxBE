@@ -1,18 +1,7 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
-using bbxBE.Common.Enums;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bxBE.Application.Commands.cmdInvCtrl;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdInvCtrl
 {
@@ -41,7 +30,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
         {
             this._InvCtrlRepository = InvCtrlRepository;
 
-            RuleFor(r => r.WarehouseCode)
+            RuleFor(r => r.WarehouseID)
              .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
             RuleFor(r => r.ProductID)
              .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
