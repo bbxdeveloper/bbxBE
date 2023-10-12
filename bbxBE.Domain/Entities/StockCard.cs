@@ -95,6 +95,9 @@ namespace bbxBE.Domain.Entities
         [Description("Kapcsolt bizonylat")]
         public string XRel { get; set; }
 
+        [ColumnLabel("Korrekcós tétel?")]
+        [Description("Az adott tétel utólagosan (korábbi dátummal), későbbi tételeket módosítva került be ?")]
+        public bool Correction { get; set; }
 
         //Relációk
         [ForeignKey("StockID")]
