@@ -16,6 +16,11 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
             Alter.Table("StockCard")
                 .AddColumn("Correction").AsBoolean().Nullable();
 
+            Execute.Sql(string.Format(@"update sc set sc.Correction = 0 from StockCard sc where sc.Correction is null"));
+
+            Alter.Table("StockCard")
+                .AlterColumn("Correction").AsBoolean().NotNullable();
+
         }
     }
 }
