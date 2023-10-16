@@ -285,6 +285,7 @@
           </Body>
           <Corner />
           <Style>
+            <Font Size="8pt" />
             <BorderStyle Top="None" Bottom="None" Left="None" Right="None" />
             <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
             <BorderWidth Top="1pt" Bottom="1pt" Left="1pt" Right="1pt" />
@@ -309,7 +310,7 @@
               <ReportItem>
                 <TextBox Width="6.96mm" Height="5mm" Left="0in" Top="0in" Value="Ssz" Name="textBox14" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="8pt" Bold="True" />
+                    <Font Size="7pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
@@ -318,7 +319,7 @@
               <ReportItem>
                 <TextBox Width="28.9mm" Height="5mm" Left="0in" Top="0in" Value="Termék kód" Name="textBox16" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="8pt" Bold="True" />
+                    <Font Size="7pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
@@ -327,7 +328,7 @@
               <ReportItem>
                 <TextBox Width="47.64mm" Height="5mm" Left="0in" Top="0in" Value="Leírás" Name="textBox18" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="8pt" Bold="True" />
+                    <Font Size="7pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
@@ -336,7 +337,7 @@
               <ReportItem>
                 <TextBox Width="10.96mm" Height="5mm" Left="0cm" Top="0cm" Value="Menny" Name="textBox2" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="8pt" Bold="True" />
+                    <Font Size="7pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
@@ -345,7 +346,7 @@
               <ReportItem>
                 <TextBox Width="11.91mm" Height="5mm" Left="0in" Top="0in" Value="M.e." Name="textBox20" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="8pt" Bold="True" />
+                    <Font Size="7pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
@@ -354,7 +355,7 @@
               <ReportItem>
                 <TextBox Width="14.06mm" Height="5mm" Left="0in" Top="0in" Value="Nettó ár" Name="textBox27" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="8pt" Bold="True" />
+                    <Font Size="7pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
@@ -363,25 +364,25 @@
               <ReportItem>
                 <TextBox Width="9.32mm" Height="5mm" Left="0in" Top="0in" Value="K%" Name="textBox22" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="8pt" Bold="True" />
+                    <Font Size="7pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
             </TableGroup>
             <TableGroup Name="group5">
               <ReportItem>
-                <TextBox Width="19.71mm" Height="5mm" Left="0cm" Top="0cm" Value="Árajánlat" Name="textBox13" StyleName="Normal.TableHeader">
+                <TextBox Width="19.71mm" Height="5mm" Left="0cm" Top="0cm" Value="Árajánlat ár" Name="textBox13" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="8pt" Bold="True" />
+                    <Font Size="7pt" Bold="True" />
                   </Style>
                 </TextBox>
               </ReportItem>
             </TableGroup>
             <TableGroup Name="group7">
               <ReportItem>
-                <TextBox Width="20mm" Height="5mm" Left="0in" Top="0in" Value="Ajánlat nett." Name="textBox28" StyleName="Normal.TableHeader">
+                <TextBox Width="20mm" Height="5mm" Left="0in" Top="0in" Value="Nettó érték" Name="textBox28" StyleName="Normal.TableHeader">
                   <Style BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="8pt" Bold="True" />
+                    <Font Size="7pt" Bold="True" />
                     <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
                     <BorderColor Top="Black" Bottom="Black" Left="Black" Right="Black" />
                     <BorderWidth Top="1px" Bottom="1px" Left="1px" Right="1px" />
@@ -391,9 +392,9 @@
             </TableGroup>
             <TableGroup Name="group8">
               <ReportItem>
-                <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="Ajánlat brt." Name="textBox8" StyleName="Normal.TableHeader">
+                <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="Bruttó érték" Name="textBox8" StyleName="Normal.TableHeader">
                   <Style Visible="False" BackgroundColor="217, 217, 217" TextAlign="Center">
-                    <Font Size="8pt" Bold="True" />
+                    <Font Size="7pt" Bold="True" />
                     <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />
                   </Style>
                   <ConditionalFormatting>
