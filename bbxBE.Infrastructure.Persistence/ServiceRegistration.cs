@@ -58,6 +58,8 @@ namespace bbxBE.Infrastructure.Persistence
             //Connection DB létrehozásnak
             services.AddSingleton<Database>();
 
+            // az ApplicationDbContext (contextLifetime=Transient) -t használó repók
+            //
             services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
             services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
             services.AddSingleton<IApplicationGlobalDbContext, ApplicationGlobalDbContext>();
@@ -83,13 +85,19 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IZipRepositoryAsync, ZipRepositoryAsync>();
             services.AddTransient<ILocationRepositoryAsync, LocationRepositoryAsync>();
             services.AddTransient<IWhsTransferRepositoryAsync, WhsTransferRepositoryAsync>();
+            services.AddTransient<INAVXChangeRepositoryAsync, NAVXChangeRepositoryAsync>();
+            services.AddTransient<INAVXResultRepositoryAsync, NAVXResultRepositoryAsync>();
 
+            // az ApplicationGlobalDbContext (contextLifetime=Signleton) -t használó repók
+            //
             services.AddTransient<IProductGlobalRepositoryAsync, ProductGlobalRepositoryAsync>();
             services.AddTransient<IProductGroupGlobalRepositoryAsync, ProductGroupGlobalRepositoryAsync>();
             services.AddTransient<IOriginGlobalRepositoryAsync, OriginGlobalRepositoryAsync>();
             services.AddTransient<IProductCodeGlobalRepositoryAsync, ProductCodeGlobalRepositoryAsync>();
 
 
+            //Cache-k
+            //
             services.AddSingleton<ICacheService<Product>, ProductCacheService>();
             services.AddSingleton<ICacheService<Customer>, CustomerCacheService>();
             services.AddSingleton<ICacheService<ProductGroup>, ProductGroupCacheService>();

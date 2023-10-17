@@ -25,15 +25,17 @@
 
 
         public const string DEF_CUSTOMERLOCK_KEY = "CUST_";
+        public const string DEF_NAVLOCK_KEY = "NAV_";
 
         public const string CONF_CacheSettings = "CacheSettings";
         public const string CONF_WaitForCacheInSeconds = "WaitForCacheInSeconds";
 
         public const int WaitForExpiringDataSec = 3;
         public const int ExpiringDataMaxCount = 5000;
-        public const int CustomerLockExpoirationSec = 900; //15 perc
+        public const int CustomerLockExpirationSec = 900; //15 perc
         public const string DEF_CUSTLOCK = "custlock";
 
+        public const int CustomerLockExpoirationSec = 900; //15 perc
 
         public const string ERR_REQUIRED = "{PropertyName}: mező kitöltése kötelező.";
         public const string TOKEN_PROPERTYNAME = "{PropertyName}";
@@ -74,6 +76,7 @@
         public const string ERR_ORIGINNOTFOUND = "Származási hely nem található, ID:{0} ";
         public const string ERR_OFFERNOTFOUND = "Árajánlat nem található, ID:{0} ";
         public const string ERR_INVOICENOTFOUND = "Számla/szállítólevél nem található, ID:{0} ";
+        public const string ERR_INVOICENOTFOUND2 = "Számla nem található, bizonylatszám:{0} ";
         public const string ERR_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
         public const string ERR_USERNOTFOUND = "Felhasználó nem található, ID:{0} ";
         public const string ERR_USERNOTFOUND2 = "Felhasználó nem található, név:{0} ";

@@ -296,6 +296,5 @@ namespace bbxBE.Application.BLL
             return result;
         }
 
-
     }
 }

@@ -36,6 +36,7 @@ namespace bbxBE.Domain.Entities
         [Description("Sor")]
         public string Line { get; set; }
 
+        //navigációs komponens
         [ColumnLabel("NAV adatcsere")]
         [Description("NAV adatcsere")]
         public virtual NAVXChange XChange { get; set; }

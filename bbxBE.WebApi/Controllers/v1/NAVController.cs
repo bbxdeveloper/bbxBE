@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Commands.cmdNAV;
+using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Common.ExpiringData;
 using Microsoft.AspNetCore.Hosting;
@@ -39,5 +40,11 @@ namespace bbxBE.WebApi.Controllers.v1
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
+
+        [HttpGet("getxml")]
+        public async Task<IActionResult> SendInvoiceToNAV([FromQuery] sendInvoiceToNAVCommand request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
     }
 }

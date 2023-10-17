@@ -38,7 +38,7 @@ namespace bbxBE.Application.Queries.qInvoice
         public async Task<Entity> Handle(GetInvoice request, CancellationToken cancellationToken)
         {
 
-            var entity = await _invoiceRepository.GetInvoiceAsync(request.ID, request.FullData);
+            var entity = await _invoiceRepository.GetInvoiceAsync(request.ID, (request.FullData ? invoiceQueryTypes.full : invoiceQueryTypes.small));
             var data = entity.MapItemFieldsByMapToAnnotation<GetInvoiceViewModel>();
 
             // response wrapper

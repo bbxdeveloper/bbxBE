@@ -5,6 +5,8 @@ using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace bbxBE.Domain.Entities
 {
@@ -171,8 +173,13 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Eredmény-sorok")]
         [Description("Eredmény-sorok")]
-        public virtual ICollection<NAVXResult> Results { get; set; }
+        public virtual ICollection<NAVXResult> NAVXResults { get; set; }
 
+        [JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez
+        [ForeignKey("InvoiceID")]
+        [ColumnLabel("Számla")]
+        [Description("Számla")]
+        public virtual Invoice Invoice { get; set; }
 
     }
 }

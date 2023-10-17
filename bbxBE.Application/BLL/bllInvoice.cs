@@ -275,7 +275,7 @@ namespace bbxBE.Application.BLL
                                             && (request.InvoiceCorrection.HasValue && request.InvoiceCorrection.Value);
                 if (isInvoiceCorrection)
                 {
-                    OriginalInvoice = await invoiceRepository.GetInvoiceRecordAsync(request.OriginalInvoiceID.Value, true);
+                    OriginalInvoice = await invoiceRepository.GetInvoiceRecordAsync(request.OriginalInvoiceID.Value, invoiceQueryTypes.full);
                     if (OriginalInvoice == null)
                     {
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, request.OriginalInvoiceID.Value));
@@ -573,7 +573,7 @@ namespace bbxBE.Application.BLL
 
             try
             {
-                var invoice = await invoiceRepository.GetInvoiceRecordAsync(request.ID, true);
+                var invoice = await invoiceRepository.GetInvoiceRecordAsync(request.ID, invoiceQueryTypes.full);
                 if (invoice == null)
                 {
                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
@@ -683,7 +683,7 @@ namespace bbxBE.Application.BLL
                 Invoice originalInvoice = null;
                 if (invoice.InvoiceCorrection)
                 {
-                    originalInvoice = await invoiceRepository.GetInvoiceRecordAsync(invoice.OriginalInvoiceID.Value, true);
+                    originalInvoice = await invoiceRepository.GetInvoiceRecordAsync(invoice.OriginalInvoiceID.Value, invoiceQueryTypes.full);
                     if (originalInvoice == null)
                     {
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, invoice.OriginalInvoiceID.Value));

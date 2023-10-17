@@ -52,7 +52,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
         public async Task<FileStreamResult> Handle(PrintInvoiceCommand request, CancellationToken cancellationToken)
         {
 
-            var invoice = await _invoiceRepository.GetInvoiceRecordAsync(request.ID, true);
+            var invoice = await _invoiceRepository.GetInvoiceRecordAsync(request.ID, invoiceQueryTypes.full);
             if (invoice == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));

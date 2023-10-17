@@ -221,10 +221,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<Entity> GetInvoiceAsync(long ID, bool FullData)
+        public async Task<Entity> GetInvoiceAsync(long ID, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
         {
 
-            Invoice item = await GetInvoiceRecordAsync(ID, FullData);
+            Invoice item = await GetInvoiceRecordAsync(ID, invoiceQueryType);
 
             if (item == null)
             {
@@ -233,7 +233,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);
 
-            if (!FullData)
+            if (invoiceQueryType == invoiceQueryTypes.small)
             {
                 itemModel.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
                 itemModel.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
@@ -248,7 +248,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Entity> GetAggregateInvoiceAsync(long ID)
         {
 
-            Invoice item = await GetInvoiceRecordAsync(ID, true);
+            Invoice item = await GetInvoiceRecordAsync(ID, invoiceQueryTypes.full);
 
             if (item == null)
             {
@@ -288,37 +288,45 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true)
+        public async Task<Invoice> GetInvoiceRecordAsync(long ID, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
         {
 
-            Invoice item;
-
-            if (FullData)
+            Invoice item = null;
+            switch (invoiceQueryType)
             {
-                item = await getFullInvoiceQuery()
-                  .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
-            }
-            else
-            {
-                item = await getSmallInvoiceQuery()
-                  .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+                case (invoiceQueryTypes.small):
+                    item = await getSmallInvoiceQuery()
+                      .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+                    break;
+                case (invoiceQueryTypes.full):
+                    item = await getFullInvoiceQuery()
+                      .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+                    break;
+                case (invoiceQueryTypes.NAV):
+                    item = await getNAVInvoiceQuery()
+                      .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+                    break;
             }
             return item;
         }
-        public async Task<Invoice> GetInvoiceRecordByInvoiceNumberAsync(string invoiceNumner, bool FullData = true)
+        public async Task<Invoice> GetInvoiceRecordByInvoiceNumberAsync(string invoiceNumner, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
         {
 
-            Invoice item;
-
-            if (FullData)
+            Invoice item = null;
+            switch (invoiceQueryType)
             {
-                item = await getFullInvoiceQuery()
-                  .Where(x => x.InvoiceNumber == invoiceNumner && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
-            }
-            else
-            {
-                item = await getSmallInvoiceQuery()
-                  .Where(x => x.InvoiceNumber == invoiceNumner && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                case (invoiceQueryTypes.small):
+                    item = await getSmallInvoiceQuery()
+                                .Where(x => x.InvoiceNumber == invoiceNumner && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                    break;
+                case (invoiceQueryTypes.full):
+                    item = await getFullInvoiceQuery()
+                            .Where(x => x.InvoiceNumber == invoiceNumner && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                    break;
+                case (invoiceQueryTypes.NAV):
+                    item = await getNAVInvoiceQuery()
+                        .Where(x => x.InvoiceNumber == invoiceNumner && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                    break;
             }
             return item;
         }
@@ -361,11 +369,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         private IQueryable<Invoice> getFullInvoiceQuery()
         {
-            return _dbContext.Invoice.AsNoTracking()
-                 .Include(w => w.Warehouse).AsNoTracking()
-                 .Include(s => s.Supplier).AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking()
-                 .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+            return getSmallInvoiceQuery()
                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote).AsNoTracking()
@@ -373,6 +377,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(u => u.User).AsNoTracking();
         }
 
+        private IQueryable<Invoice> getNAVInvoiceQuery()
+        {
+            return getFullInvoiceQuery()
+                 .Include(i => i.NAVXChanges).ThenInclude(x => x.NAVXResults).AsNoTracking();
+        }
         public async Task<decimal> GetUnPaidAmountAsyn(long customerID)
         {
             //1. kimenő szállítólevélen lévő rendezetlen összeg

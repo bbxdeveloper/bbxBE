@@ -182,7 +182,7 @@ namespace bbxBE.Domain.Entities
         public decimal LineDiscountPercent { get; set; }        //NoDiscount esetén értéke 0!
 
 
-        //Relációk
+        //Relációk, navigációs komponensek
         [JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez
         [ForeignKey("InvoiceID")]
         [ColumnLabel("Számla")]
