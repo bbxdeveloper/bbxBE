@@ -36,7 +36,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
         public async Task<Response<string>> Handle(LockCustomerCommand request, CancellationToken cancellationToken)
         {
             var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + request.ID.ToString();
-            await _expiringData.AddOrUpdateItemAsync(key, request.ID, request.SessionID, TimeSpan.FromSeconds(bbxBEConsts.CustomerLockExpoirationSec));
+            await _expiringData.AddOrUpdateItemAsync(key, request.ID, request.SessionID, TimeSpan.FromSeconds(bbxBEConsts.CustomerLockExpirationSec));
             var resp = new Response<string>(key);
             resp.Succeeded = true;
             resp.Data = key;
