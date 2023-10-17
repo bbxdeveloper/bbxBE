@@ -173,9 +173,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             XRel);
 
 
+                /*
+                                stock.RealQty = invCtrl.NRealQty;
+                                stock.AvgCost = invCtrl.AvgCost;
+                */
 
-                stock.RealQty = invCtrl.NRealQty;
-                stock.AvgCost = invCtrl.AvgCost;
+                stock.RealQty = latestStockCard.NRealQty;       //Ha egy leltár 'mögé'
+                stock.AvgCost = latestStockCard.NAvgCost;
 
 
                 invCtrl.StockID = stock.ID;

@@ -87,17 +87,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<Entity> GetWarehouseAsync(long ID)
+        public async Task<Warehouse> GetWarehouseRecordAsync(long ID)
         {
 
             var item = await GetByIdAsync(ID);
-
-            //            var fields = requestParameter.Fields;
 
             if (item == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, ID));
             }
+            return item;
+        }
+
+        public async Task<Entity> GetWarehouseAsync(long ID)
+        {
+
+            var item = await GetWarehouseRecordAsync(ID);
 
             var itemModel = _mapper.Map<Warehouse, GetWarehouseViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetWarehouseViewModel>();
@@ -107,6 +112,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedWarehouseAsync(QueryWarehouse requestParameter)
         {
 

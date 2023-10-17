@@ -118,6 +118,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             sc.NAvgCost = (p_XRealQty > 0 ?
                             bllStock.GetNewAvgCost(OAvgCost, ORealQty, p_XRealQty, p_UnitPrice) :   //csak bevételezés esetén változik az ELÁBÉ
                             OAvgCost);
+
+            //következő napokra vonatkozó készletmódosító tételek
+            //
+            var furtherItems = await _dbContext.StockCard
+                     .Where(w => w.WarehouseID == p_WarehouseID && w.ProductID == p_ProductID &&
+                             w.StockCardDate > p_StockCardDate)
+                      .OrderBy(o1 => o1.StockCardDate)
+                      .ThenBy(o2 => o2.ID).ToListAsync();
+
+            sc.Correction = furtherItems.Any();
             await AddAsync(sc);
 
             ORealQty = sc.NRealQty;
@@ -125,13 +135,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
 
-            //Ezután az utána következő, többi elemet számoljuk át
-
-            var furtherItems = await _dbContext.StockCard
-                     .Where(w => w.WarehouseID == p_WarehouseID && w.ProductID == p_ProductID &&
-                             w.StockCardDate > p_StockCardDate)
-                      .OrderBy(o1 => o1.StockCardDate)
-                      .ThenBy(o2 => o2.ID).ToListAsync();
+            //Ezután az következő napok elemeit számoljuk át
+            //
             foreach (var f in furtherItems)
             {
 
@@ -147,14 +152,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     f.NAvgCost = (f.XRealQty > 0 ?
                                      bllStock.GetNewAvgCost(OAvgCost, ORealQty, f.XRealQty, f.UnitPrice) :
                                      OAvgCost);
+                    f.Correction = false;       //előző napok alapján lett átszámolva, emiatt már nem lehet korrekciós tétel
                 }
                 else
                 {
-                    // Leltári tétel esetén a XRealQty változik, a MRealQty nem változik
+                    // Leltári tétel esetén a XRealQty változik, a NRealQty nem változik
                     f.XRealQty = f.NRealQty - ORealQty;
                     f.NAvgCost = OAvgCost;
+                    // leltár esetén meg kell tartani a f.Correction flag értékét, hogy lásssuk, mely tételek voltak visszamenőlegesen leltározva
                 }
-
 
                 await UpdateAsync(f);
 

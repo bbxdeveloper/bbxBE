@@ -83,9 +83,9 @@
         public const string ERR_STOCKCARDNOTFOUND = "Készletkarton nem található, ID:{0} ";
         public const string ERR_LOCATIONOTFOUND = "Helyiség nem található, ID:{0} ";
         public const string ERR_INVOICELINENOTFOUND = "Bizonylatsor nem található, ID:{0}, bizonylat:{1}, sor ID:{2}";
-        public const string ERR_ORIGINALINVOICENOTFOUND = "Eredeti bionylat nem található, ID:{0}";
-        public const string ERR_WRONGCORRECTIONQTY = "Eredeti bionylaton lévőnél nagyobb mennyiség levonása! Termékkód:{0}, eredeti mennyiség:{1:#,#0.00}, előzőleg lejavítva:{2:#,#0.00}, javítószámlán:{3:#,#0.00}";
-        public const string ERR_CORRECTIONUNKOWNPROD = "Eredeti bionylaton nem létező termék: ID:{0}, Kód:{1}";
+        public const string ERR_ORIGINALINVOICENOTFOUND = "Eredeti bizonylat nem található, ID:{0}";
+        public const string ERR_WRONGCORRECTIONQTY = "Eredeti bizonylaton lévőnél nagyobb mennyiség levonása! Termékkód:{0}, eredeti mennyiség:{1:#,#0.00}, előzőleg lejavítva:{2:#,#0.00}, javítószámlán:{3:#,#0.00}";
+        public const string ERR_CORRECTIONUNKOWNPROD = "Eredeti bizonylaton nem létező termék: ID:{0}, Kód:{1}";
         public const string ERR_WHSTRANSFERNOTFOUND = "Raktárközi átadás nem található, ID:{0} ";
         public const string ERR_INVWHSTRANSFERSTATUS = "{PropertyName}: érvénytelen raktárközi átadás státusz:{PropertyValue} ";
         public const string ERR_INVOICEREPORT_NULL = "Invoice report result is null!";
