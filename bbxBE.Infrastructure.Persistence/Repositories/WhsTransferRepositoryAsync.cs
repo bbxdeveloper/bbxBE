@@ -279,6 +279,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERNOTFOUND, ID));
                     }
+                    if (whsTransfer.TransferDate > transferDateIn)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERWRONGINDATE, whsTransfer.TransferDate));
+                    }
+
+                    if (whsTransfer.WhsTransferStatus != enWhsTransferStatus.READY.ToString())
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERWRONGSTATE));
+                    }
+
                     var own = _customerRepository.GetOwnData();
 
                     whsTransfer.WhsTransferStatus = enWhsTransferStatus.COMPLETED.ToString();
