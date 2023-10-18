@@ -8,7 +8,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class OriginGlobalRepositoryAsync : OriginRepositoryAsync, IOriginGlobalRepositoryAsync
     {
-        public OriginGlobalRepositoryAsync(IApplicationGlobalDbContext dbContext,
+        public OriginGlobalRepositoryAsync(IApplicationCommandDbContext dbContext,
             IDataShapeHelper<Origin> dataShaperOrigin,
             IDataShapeHelper<GetOriginViewModel> dataShaperGetOriginViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,

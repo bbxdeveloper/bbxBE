@@ -1,18 +1,12 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
-using bbxBE.Application.BLL;
-using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,11 +40,11 @@ namespace bxBE.Application.Commands.cmdCounter
 
     public class CreateCounterCommandHandler : IRequestHandler<CreateCounterCommand, Response<Counter>>
     {
-        private readonly ICounterRepositoryAsync _CounterRepository;
+        private readonly ICounterRepositoryAsyncC _CounterRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateCounterCommandHandler(ICounterRepositoryAsync CounterRepository, IMapper mapper, IConfiguration configuration)
+        public CreateCounterCommandHandler(ICounterRepositoryAsyncC CounterRepository, IMapper mapper, IConfiguration configuration)
         {
             _CounterRepository = CounterRepository;
             _mapper = mapper;

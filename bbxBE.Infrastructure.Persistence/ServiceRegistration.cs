@@ -25,7 +25,7 @@ namespace bbxBE.Infrastructure.Persistence
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseInMemoryDatabase("ApplicationDb"));
 
-                services.AddDbContext<ApplicationGlobalDbContext>(options =>
+                services.AddDbContext<ApplicationCommandDbContext>(options =>
                     options.UseInMemoryDatabase("ApplicationDb"));
             }
             else
@@ -41,10 +41,10 @@ namespace bbxBE.Infrastructure.Persistence
                         optionsLifetime: ServiceLifetime.Singleton
                );
 
-                services.AddDbContext<ApplicationGlobalDbContext>(options =>
+                services.AddDbContext<ApplicationCommandDbContext>(options =>
                     options.UseSqlServer(
                         configuration.GetConnectionString("bbxdbconnection"),
-                        b => b.MigrationsAssembly(typeof(ApplicationGlobalDbContext).Assembly.FullName)
+                        b => b.MigrationsAssembly(typeof(ApplicationCommandDbContext).Assembly.FullName)
                         ),
                         contextLifetime: ServiceLifetime.Singleton,
                          optionsLifetime: ServiceLifetime.Singleton
@@ -60,7 +60,13 @@ namespace bbxBE.Infrastructure.Persistence
 
             services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
             services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
-            services.AddSingleton<IApplicationGlobalDbContext, ApplicationGlobalDbContext>();
+            services.AddSingleton<IApplicationCommandDbContext, ApplicationCommandDbContext>();
+
+            services.AddTransient<ICounterRepositoryAsync, CounterRepositoryAsync>();
+            services.AddTransient<ICounterRepositoryAsyncC, CounterRepositoryAsyncC>();
+
+            services.AddTransient<ICustDiscountRepositoryAsync, CustDiscountRepositoryAsync>();
+            services.AddTransient<ICustDiscountRepositoryAsyncC, CustDiscountRepositoryAsyncC>();
 
             services.AddTransient<IUserRepositoryAsync, UserRepositoryAsync>();
             services.AddTransient<ICustomerRepositoryAsync, CustomerRepositoryAsync>();
@@ -69,7 +75,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IProductCodeRepositoryAsync, ProductCodeRepositoryAsync>();
             services.AddTransient<IProductRepositoryAsync, ProductRepositoryAsync>();
             services.AddTransient<IWarehouseRepositoryAsync, WarehouseRepositoryAsync>();
-            services.AddTransient<ICounterRepositoryAsync, CounterRepositoryAsync>();
+            // services.AddTransient<ICounterRepositoryAsync, CounterRepositoryAsync>();
             services.AddTransient<IInvoiceLineRepositoryAsync, InvoiceLineRepositoryAsync>();
             services.AddTransient<IInvoiceRepositoryAsync, InvoiceRepositoryAsync>();
             services.AddTransient<IVatRateRepositoryAsync, VatRateRepositoryAsync>();
@@ -79,7 +85,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IStockCardRepositoryAsync, StockCardRepositoryAsync>();
             services.AddTransient<IInvCtrlPeriodRepositoryAsync, InvCtrlPeriodRepositoryAsync>();
             services.AddTransient<IInvCtrlRepositoryAsync, InvCtrlRepositoryAsync>();
-            services.AddTransient<ICustDiscountRepositoryAsync, CustDiscountRepositoryAsync>();
+            // services.AddTransient<ICustDiscountRepositoryAsync, CustDiscountRepositoryAsync>();
             services.AddTransient<IZipRepositoryAsync, ZipRepositoryAsync>();
             services.AddTransient<ILocationRepositoryAsync, LocationRepositoryAsync>();
             services.AddTransient<IWhsTransferRepositoryAsync, WhsTransferRepositoryAsync>();

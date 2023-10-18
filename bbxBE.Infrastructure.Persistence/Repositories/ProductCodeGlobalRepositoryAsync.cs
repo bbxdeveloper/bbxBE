@@ -8,7 +8,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class ProductCodeGlobalRepositoryAsync : ProductCodeRepositoryAsync, IProductCodeGlobalRepositoryAsync
     {
-        public ProductCodeGlobalRepositoryAsync(IApplicationGlobalDbContext dbContext,
+        public ProductCodeGlobalRepositoryAsync(IApplicationCommandDbContext dbContext,
             IDataShapeHelper<ProductGroup> dataShaperProductGroup,
             IDataShapeHelper<GetProductGroupViewModel> dataShaperGetProductGroupViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData)
