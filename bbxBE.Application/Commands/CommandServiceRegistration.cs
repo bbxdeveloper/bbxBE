@@ -13,15 +13,11 @@ namespace bbxBE.Application.Commands
         public static void AddCommandInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
 
-            Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("CommandHandler") && w.Name != "CreateCounterCommandHandler").ToList().ForEach((t) =>
+            Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("CommandHandler")).ToList().ForEach((t) =>
             {
                 services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
             });
 
-            Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name == "CreateCounterCommandHandler").ToList().ForEach((t) =>
-            {
-                services.AddTransient(t.GetTypeInfo().ImplementedInterfaces.First(), t);
-            });
 
 
             services.AddTransient<IImportProductProc, ImportProductProc>();

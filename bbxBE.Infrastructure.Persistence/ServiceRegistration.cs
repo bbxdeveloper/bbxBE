@@ -63,10 +63,10 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddSingleton<IApplicationCommandDbContext, ApplicationCommandDbContext>();
 
             services.AddTransient<ICounterRepositoryAsync, CounterRepositoryAsync>();
-            services.AddTransient<ICounterRepositoryAsyncC, CounterRepositoryAsyncC>();
+            services.AddTransient<ICounterRepositoryAsync, CounterRepositoryAsyncC>();
 
             services.AddTransient<ICustDiscountRepositoryAsync, CustDiscountRepositoryAsync>();
-            services.AddTransient<ICustDiscountRepositoryAsyncC, CustDiscountRepositoryAsyncC>();
+            services.AddTransient<ICustDiscountRepositoryAsync, CustDiscountRepositoryAsyncC>();
 
             services.AddTransient<IUserRepositoryAsync, UserRepositoryAsync>();
             services.AddTransient<ICustomerRepositoryAsync, CustomerRepositoryAsync>();

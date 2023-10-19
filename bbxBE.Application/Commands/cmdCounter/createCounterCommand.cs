@@ -40,11 +40,11 @@ namespace bxBE.Application.Commands.cmdCounter
 
     public class CreateCounterCommandHandler : IRequestHandler<CreateCounterCommand, Response<Counter>>
     {
-        private readonly ICounterRepositoryAsyncC _CounterRepository;
+        private readonly ICounterRepositoryAsync _CounterRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CreateCounterCommandHandler(ICounterRepositoryAsyncC CounterRepository, IMapper mapper, IConfiguration configuration)
+        public CreateCounterCommandHandler(ICounterRepositoryAsync CounterRepository, IMapper mapper, IConfiguration configuration)
         {
             _CounterRepository = CounterRepository;
             _mapper = mapper;

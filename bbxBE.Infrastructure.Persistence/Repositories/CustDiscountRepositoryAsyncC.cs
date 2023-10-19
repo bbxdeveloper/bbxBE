@@ -7,7 +7,7 @@ using bbxBE.Domain.Entities;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
-    public class CustDiscountRepositoryAsyncC : CustDiscountRepositoryAsync, ICustDiscountRepositoryAsyncC
+    public class CustDiscountRepositoryAsyncC : CustDiscountRepositoryAsync, ICustDiscountRepositoryAsync
     {
         public CustDiscountRepositoryAsyncC(IApplicationCommandDbContext dbContext,
             IDataShapeHelper<CustDiscount> dataShaperCustDiscount,

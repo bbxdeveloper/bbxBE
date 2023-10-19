@@ -20,10 +20,10 @@ namespace bbxBE.Application.Commands.cmdCounter
 
     public class DeleteCounterCommandHandler : IRequestHandler<DeleteCounterCommand, Response<long>>
     {
-        private readonly ICounterRepositoryAsyncC _CounterRepository;
+        private readonly ICounterRepositoryAsync _CounterRepository;
         private readonly IMapper _mapper;
 
-        public DeleteCounterCommandHandler(ICounterRepositoryAsyncC CounterRepository, IMapper mapper)
+        public DeleteCounterCommandHandler(ICounterRepositoryAsync CounterRepository, IMapper mapper)
         {
             _CounterRepository = CounterRepository;
             _mapper = mapper;

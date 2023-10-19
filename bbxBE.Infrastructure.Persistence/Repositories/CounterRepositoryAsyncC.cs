@@ -6,7 +6,7 @@ using bbxBE.Domain.Entities;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
-    public class CounterRepositoryAsyncC : CounterRepositoryAsync, ICounterRepositoryAsyncC
+    public class CounterRepositoryAsyncC : CounterRepositoryAsync, ICounterRepositoryAsync
     {
 
         public CounterRepositoryAsyncC(IApplicationCommandDbContext dbContext,

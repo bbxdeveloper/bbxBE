@@ -35,12 +35,12 @@ namespace bxBE.Application.Commands.cmdCustDiscount
 
     public class CreateCustDiscountCommandHandler : IRequestHandler<CreateCustDiscountCommand, Response<List<CustDiscount>>>
     {
-        private readonly ICustDiscountRepositoryAsyncC _custDiscountRepository;
+        private readonly ICustDiscountRepositoryAsync _custDiscountRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IExpiringData<ExpiringDataObject> _expiringData;
 
-        public CreateCustDiscountCommandHandler(ICustDiscountRepositoryAsyncC custDiscountRepository,
+        public CreateCustDiscountCommandHandler(ICustDiscountRepositoryAsync custDiscountRepository,
                 IMapper mapper,
                 IConfiguration configuration,
                 IExpiringData<ExpiringDataObject> expiringData)

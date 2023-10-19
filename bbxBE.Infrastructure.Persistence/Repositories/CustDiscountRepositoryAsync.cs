@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -50,7 +51,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     long customerID,
                     IExpiringData<ExpiringDataObject> expiringData)
         {
-            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            //            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            using (TransactionScope scope = new TransactionScope())
+
             {
 
                 Customer cust = null;
@@ -79,8 +82,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + cust.ID.ToString();
                 await expiringData.DeleteItemAsync(key);
 
+                scope.Complete();
 
-                await dbContextTransaction.CommitAsync();
+                //                await dbContextTransaction.CommitAsync();
             }
 
             return p_CustDiscountList.Count();

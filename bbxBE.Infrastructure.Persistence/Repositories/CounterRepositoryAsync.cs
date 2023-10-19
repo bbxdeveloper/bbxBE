@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -48,7 +49,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Counter> AddCounterAsync(Counter p_Counter, string p_WarehouseCode)
         {
-            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            //            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            using (TransactionScope scope = new TransactionScope())
             {
 
                 if (!string.IsNullOrWhiteSpace(p_WarehouseCode))
@@ -58,7 +60,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
 
                 await AddAsync(p_Counter);
-                await dbContextTransaction.CommitAsync();
+                scope.Complete();
+                //               await dbContextTransaction.CommitAsync();
 
             }
             return p_Counter;
