@@ -34,9 +34,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ILocationRepositoryAsync _locationRepository;
 
         private readonly ICacheService<Product> _productCacheService;
-        private readonly ICacheService<ProductGroup> _productGroupCacheService;
-        private readonly ICacheService<Origin> _originCacheService;
-        private readonly ICacheService<VatRate> _vatRateCacheService;
 
         public StockRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,

@@ -1,10 +1,10 @@
 ﻿using bbxBE.Application.BLL;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qUser;
 using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
@@ -14,7 +14,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -30,10 +29,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
 
         public UserRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Users> dataShaper, IConfiguration configuration, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
+            IConfiguration configuration, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaper = dataShaper;
+            _dataShaper = new DataShapeHelper<Users>();
             _configuration = configuration;
             _modelHelper = modelHelper;
             _mockData = mockData;

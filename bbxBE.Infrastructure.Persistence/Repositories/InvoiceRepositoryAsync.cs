@@ -1,5 +1,6 @@
 ﻿using AngleSharp.Common;
 using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -37,35 +38,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IStockRepositoryAsync _stockRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
         public InvoiceRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Invoice> dataShaperInvoice,
-            IDataShapeHelper<GetInvoiceViewModel> dataShaperGetInvoiceViewModel,
-            IDataShapeHelper<GetAggregateInvoiceViewModel> dataShaperGetAggregateInvoiceViewModel,
-            IDataShapeHelper<GetPendigDeliveryNotesSummaryModel> dataShaperGetPendigDeliveryNotesSummaryModel,
-            IDataShapeHelper<GetPendigDeliveryNotesModel> dataShaperGetPendigDeliveryNotesModel,
-            IDataShapeHelper<GetPendigDeliveryNotesItemModel> dataShaperGetPendigDeliveryNotesItemModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IInvoiceLineRepositoryAsync invoiceLineRepository,
-            IStockRepositoryAsync stockRepository,
-            ICustomerRepositoryAsync customerRepository
+            ICacheService<Product> productCacheService,
+            ICacheService<Customer> customerCacheService,
+            ICacheService<ProductGroup> productGroupCacheService,
+            ICacheService<Origin> originCacheService,
+            ICacheService<VatRate> vatRateCacheService
             ) : base(dbContext)
         {
             _dbContext = dbContext;
 
-            _dataShaperInvoice = dataShaperInvoice;
-            _dataShaperGetInvoiceViewModel = dataShaperGetInvoiceViewModel;
-            _dataShaperGetAggregateInvoiceViewModel = dataShaperGetAggregateInvoiceViewModel;
-            _dataShaperGetPendigDeliveryNotesSummaryModel = dataShaperGetPendigDeliveryNotesSummaryModel;
-            _dataShaperGetPendigDeliveryNotesModel = dataShaperGetPendigDeliveryNotesModel;
-            _dataShaperGetPendigDeliveryNotesItemModel = dataShaperGetPendigDeliveryNotesItemModel;
+            _dataShaperInvoice = new DataShapeHelper<Invoice>();
+            _dataShaperGetInvoiceViewModel = new DataShapeHelper<GetInvoiceViewModel>();
+            _dataShaperGetAggregateInvoiceViewModel = new DataShapeHelper<GetAggregateInvoiceViewModel>();
+            _dataShaperGetPendigDeliveryNotesSummaryModel = new DataShapeHelper<GetPendigDeliveryNotesSummaryModel>();
+            _dataShaperGetPendigDeliveryNotesModel = new DataShapeHelper<GetPendigDeliveryNotesModel>();
+            _dataShaperGetPendigDeliveryNotesItemModel = new DataShapeHelper<GetPendigDeliveryNotesItemModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _invoiceLineRepository = invoiceLineRepository;
-            _stockRepository = stockRepository;
-            _customerRepository = customerRepository;
+            _invoiceLineRepository = new InvoiceLineRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, customerCacheService);
         }
-
-
         public async Task<bool> IsUniqueInvoiceNumberAsync(string InvoiceNumber, long? ID = null)
         {
             return !await _dbContext.Invoice.AnyAsync(p => p.InvoiceNumber == InvoiceNumber && !p.Deleted && (ID == null || p.ID != ID.Value));

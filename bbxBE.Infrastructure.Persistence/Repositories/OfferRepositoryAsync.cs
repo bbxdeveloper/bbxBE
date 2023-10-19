@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -55,20 +56,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<Product> _productCacheService;
 
         public OfferRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Offer> dataShaperOffer,
-            IDataShapeHelper<GetOfferViewModel> dataShaperGetOfferViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IOfferLineRepositoryAsync offerLineRepository,
             ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
 
-            _dataShaperOffer = dataShaperOffer;
-            _dataShaperGetOfferViewModel = dataShaperGetOfferViewModel;
+            _dataShaperOffer = new DataShapeHelper<Offer>();
+            _dataShaperGetOfferViewModel = new DataShapeHelper<GetOfferViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _offerLineRepository = offerLineRepository;
+            _offerLineRepository = new OfferLineRepositoryAsync(dbContext, modelHelper, mapper, mockData);
             _productCacheService = productCacheService;
         }
 

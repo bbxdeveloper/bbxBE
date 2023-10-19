@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -29,19 +30,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<VatRate> _cacheService;
 
         public VatRateRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<VatRate> dataShaperVatRate,
-            IDataShapeHelper<GetVatRateViewModel> dataShaperGetVatRateViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<VatRate> cacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperVatRate = dataShaperVatRate;
-            _dataShaperGetVatRateViewModel = dataShaperGetVatRateViewModel;
+            _dataShaperVatRate = new DataShapeHelper<VatRate>();
+            _dataShaperGetVatRateViewModel = new DataShapeHelper<GetVatRateViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
             _cacheService = cacheService;
-
 
             var t = RefreshVatRateCache();
             t.GetAwaiter().GetResult();
