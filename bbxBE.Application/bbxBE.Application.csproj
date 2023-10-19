@@ -109,7 +109,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\" />
     <Folder Include="lib\" />
   </ItemGroup>
 
