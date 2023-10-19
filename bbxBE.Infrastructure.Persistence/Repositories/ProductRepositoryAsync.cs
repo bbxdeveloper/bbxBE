@@ -1,4 +1,5 @@
 using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -56,19 +57,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 "vatRateCode" : "27%"
         */
         public ProductRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Product> dataShaperProduct,
-            IDataShapeHelper<GetProductViewModel> dataShaperGetProductViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<Product> productCacheService,
             ICacheService<ProductGroup> productGroupCacheService,
             ICacheService<Origin> originCacheService,
-            ICacheService<VatRate> vatRateCacheService,
-            IProductCodeRepositoryAsync productCodeRepository
+            ICacheService<VatRate> vatRateCacheService
             ) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperProduct = dataShaperProduct;
-            _dataShaperGetProductViewModel = dataShaperGetProductViewModel;
+            _dataShaperProduct = new DataShapeHelper<Product>();
+            _dataShaperGetProductViewModel = new DataShapeHelper<GetProductViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
@@ -76,7 +74,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productGroupCacheService = productGroupCacheService;
             _originCacheService = originCacheService;
             _vatRateCacheService = vatRateCacheService;
-            _productCodeRepository = productCodeRepository;
+            _productCodeRepository = new ProductCodeRepositoryAsync(dbContext, modelHelper, mapper, mockData);
         }
 
 

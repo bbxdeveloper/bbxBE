@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -32,21 +33,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IStockRepositoryAsync _stockRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
         public WhsTransferRepositoryAsync(IApplicationDbContext dbContext,
-                IDataShapeHelper<WhsTransfer> dataShaperWhsTransfer,
-                IDataShapeHelper<GetWhsTransferViewModel> dataShaperGetWhsTransferViewModel,
-                IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-                IStockRepositoryAsync stockRepository,
-                ICustomerRepositoryAsync customerRepository
-            ) : base(dbContext)
+                ICacheService<Product> productCacheService,
+                ICacheService<Customer> customerCacheService,
+                ICacheService<ProductGroup> productGroupCacheService,
+                ICacheService<Origin> originCacheService,
+                ICacheService<VatRate> vatRateCacheService,
+                IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperWhsTransfer = dataShaperWhsTransfer;
-            _dataShaperGetWhsTransferViewModel = dataShaperGetWhsTransferViewModel;
+            _dataShaperWhsTransfer = new DataShapeHelper<WhsTransfer>();
+            _dataShaperGetWhsTransferViewModel = new DataShapeHelper<GetWhsTransferViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _stockRepository = stockRepository;
-            _customerRepository = customerRepository;
+            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, customerCacheService);
         }
 
         public async Task<WhsTransfer> AddWhsTransferAsync(WhsTransfer whsTransfer)
