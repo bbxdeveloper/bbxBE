@@ -1,4 +1,16 @@
-﻿using System;
+﻿using bbxBE.Application.Interfaces;
+using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Domain.Entities;
+using bbxBE.Infrastructure.Persistence.Caches;
+using bbxBE.Infrastructure.Persistence.Contexts;
+using bbxBE.Infrastructure.Persistence.Migrations;
+using bbxBE.Infrastructure.Persistence.Repositories;
+using bbxBE.Infrastructure.Persistence.Repository;
+using FluentMigrator.Runner;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Reflection;
 
 namespace bbxBE.Infrastructure.Persistence
