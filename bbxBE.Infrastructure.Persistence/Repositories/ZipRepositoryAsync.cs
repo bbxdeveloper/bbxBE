@@ -1,4 +1,5 @@
 using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.ViewModels;
@@ -22,13 +23,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
         public ZipRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Zip> dataShaperZip,
-            IDataShapeHelper<GetZipViewModel> dataShaperGetZipViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperZip = dataShaperZip;
-            _dataShaperGetZipViewModel = dataShaperGetZipViewModel;
+            _dataShaperZip = new DataShapeHelper<Zip>();
+            _dataShaperGetZipViewModel = new DataShapeHelper<GetZipViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;

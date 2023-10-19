@@ -35,6 +35,7 @@
         public const int CustomerLockExpirationSec = 900; //15 perc
         public const string DEF_CUSTLOCK = "custlock";
 
+        public const int NAVLockExpoirationSec = 60; //1 perc
         public const int CustomerLockExpoirationSec = 900; //15 perc
 
         public const string ERR_REQUIRED = "{PropertyName}: mező kitöltése kötelező.";
@@ -90,6 +91,9 @@
         public const string ERR_WRONGCORRECTIONQTY = "Eredeti bizonylaton lévőnél nagyobb mennyiség levonása! Termékkód:{0}, eredeti mennyiség:{1:#,#0.00}, előzőleg lejavítva:{2:#,#0.00}, javítószámlán:{3:#,#0.00}";
         public const string ERR_CORRECTIONUNKOWNPROD = "Eredeti bizonylaton nem létező termék: ID:{0}, Kód:{1}";
         public const string ERR_WHSTRANSFERNOTFOUND = "Raktárközi átadás nem található, ID:{0} ";
+        public const string ERR_WHSTRANSFERSAMEWHS = "A kiadási- és bevételi raktár nem egyezhet meg!";
+        public const string ERR_WHSTRANSFERWRONGINDATE = "Raktárközi átadás dátuma nem lehet korábbi, mint a kiadás:{0:yyyy.MM.dd} ";
+        public const string ERR_WHSTRANSFERWRONGSTATE = "Feldolgozni/véglegesíteni csak 'Elkészült' státuszú tételt lehet!";
         public const string ERR_INVWHSTRANSFERSTATUS = "{PropertyName}: érvénytelen raktárközi átadás státusz:{PropertyValue} ";
         public const string ERR_INVOICEREPORT_NULL = "Invoice report result is null!";
         public const string ERR_INVOICEREPORT = "Invoice report finished with error:{0}";

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.ViewModels;
@@ -21,15 +22,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private IDataShapeHelper<GetAggregateInvoiceDeliveryNoteViewModel> _dataShaperGetAggregateInvoiceDeliveryNoteModel;
         public InvoiceLineRepositoryAsync(IApplicationDbContext dbContext,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IDataShapeHelper<GetAggregateInvoiceDeliveryNoteViewModel> dataShaperGetAggregateInvoiceDeliveryNoteModel
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData
             ) : base(dbContext)
         {
             _dbContext = dbContext;
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _dataShaperGetAggregateInvoiceDeliveryNoteModel = dataShaperGetAggregateInvoiceDeliveryNoteModel;
+            _dataShaperGetAggregateInvoiceDeliveryNoteModel = new DataShapeHelper<GetAggregateInvoiceDeliveryNoteViewModel>();
         }
 
         public async Task<List<InvoiceLine>> GetInvoiceLineRecordsByRelDeliveryNoteIDAsync(long InvoiceID, long RelDeliveryNoteInvoiceID)

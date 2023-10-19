@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -31,28 +32,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IStockCardRepositoryAsync _stockCardRepository;
         private readonly IProductRepositoryAsync _productRepository;
         private readonly ILocationRepositoryAsync _locationRepository;
-        private readonly ICacheService<Product> _productcacheService;
+
+        private readonly ICacheService<Product> _productCacheService;
 
         public StockRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Stock> dataShaperStock,
-            IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IStockCardRepositoryAsync stockCardRepository,
-            IProductRepositoryAsync productRepository,
-            ILocationRepositoryAsync locationRepository,
-            ICacheService<Product> productcacheService
-          ) : base(dbContext)
+            ICacheService<Product> productCacheService,
+            ICacheService<ProductGroup> productGroupCacheService,
+            ICacheService<Origin> originCacheService,
+            ICacheService<VatRate> vatRateCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperStock = dataShaperStock;
-            _dataShaperGetStockViewModel = dataShaperGetStockViewModel;
+            _dataShaperStock = new DataShapeHelper<Stock>();
+            _dataShaperGetStockViewModel = new DataShapeHelper<GetStockViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _stockCardRepository = stockCardRepository;
-            _productRepository = productRepository;
-            _productcacheService = productcacheService;
-            _locationRepository = locationRepository;
+
+            _productCacheService = productCacheService;
+
+            _stockCardRepository = new StockCardRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService);
+
+            _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+
+            _locationRepository = new LocationRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+
         }
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
@@ -390,7 +394,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultList = await preQuery.ToListAsync();
 
             //Ezután feltöltjük a cache-ből a productot
-            var prodCachedList = _productcacheService.ListCache();
+            var prodCachedList = _productCacheService.ListCache();
             resultList.ForEach(i =>
                 i.Product = prodCachedList.FirstOrDefault(f => f.ID == i.ProductID)
                 );
@@ -477,7 +481,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!string.IsNullOrWhiteSpace(p_searchString))
             {
                 p_searchString = p_searchString.ToUpper();
-                predicate = predicate.And(p => p.Product.Description.ToUpper().Contains(p_searchString) ||
+                predicate = predicate.And(p => p.Product == null || p.Product.Description.ToUpper().Contains(p_searchString) ||
                         p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
                         a.ProductCodeValue.ToUpper().Contains(p_searchString)));
             }

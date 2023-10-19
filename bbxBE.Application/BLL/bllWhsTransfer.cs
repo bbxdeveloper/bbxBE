@@ -37,9 +37,15 @@ namespace bbxBE.Application.BLL
             var counterCode = "";
             try
             {
-                whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
 
                 await prepareWhsTransferAsynch(whsTransfer, request.FromWarehouseCode, request.ToWarehouseCode, warehouseRepository, productRepository, cancellationToken);
+
+                if (whsTransfer.FromWarehouseID == whsTransfer.ToWarehouseID)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERSAMEWHS));
+                }
+
+                whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
 
 
                 var prefix = "WHT";
@@ -76,9 +82,13 @@ namespace bbxBE.Application.BLL
             var counterCode = "";
             try
             {
-                whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
 
                 await prepareWhsTransferAsynch(whsTransfer, request.FromWarehouseCode, request.ToWarehouseCode, warehouseRepository, productRepository, cancellationToken);
+                if (whsTransfer.FromWarehouseID == whsTransfer.ToWarehouseID)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERSAMEWHS));
+                }
+                whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
 
                 whsTransfer = await whsTransferRepository.UpdateWhsTransferAsync(whsTransfer);
                 return whsTransfer;
@@ -194,7 +204,7 @@ namespace bbxBE.Application.BLL
                 }
 
                 if (result == null)
-                    throw new Exception("Offer report result is null!");
+                    throw new Exception("WhsTransfer report result is null!");
 
                 if (result.HasErrors)
                     throw new Exception("Report engine has some reference ERROR!");
@@ -213,7 +223,7 @@ namespace bbxBE.Application.BLL
             }
 
 
-            string fileName = $"Offer{whsTransfer.WhsTransferNumber.Replace("/", "-")}.pdf";
+            string fileName = $"WhsTransfer{whsTransfer.WhsTransferNumber.Replace("/", "-")}.pdf";
 
             MemoryStream resultStream = new MemoryStream();
             resultPdf.Save(resultStream, false);

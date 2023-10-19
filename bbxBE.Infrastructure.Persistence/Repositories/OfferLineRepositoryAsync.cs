@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
 
@@ -15,8 +14,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
 
         public OfferLineRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<ProductGroup> dataShaperProductGroup,
-            IDataShapeHelper<GetProductGroupViewModel> dataShaperGetProductGroupViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using bbxBE.Application.BLL;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -33,14 +34,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<Customer> _cacheService;
 
         public CustomerRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Customer> dataShaperCustomer,
-            IDataShapeHelper<GetCustomerViewModel> dataShaperGetCustomerViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<Customer> customerCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperCustomer = dataShaperCustomer;
-            _dataShaperGetCustomerViewModel = dataShaperGetCustomerViewModel;
+            _dataShaperCustomer = new DataShapeHelper<Customer>();
+            _dataShaperGetCustomerViewModel = new DataShapeHelper<GetCustomerViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;

@@ -1,14 +1,7 @@
-﻿using AutoMapper;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Common.Enums;
+﻿using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
-using bbxBE.Domain.Entities;
-using bxBE.Application.Commands.cmdCustomer;
 using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace bbxBE.Application.BLL
 {
@@ -88,18 +81,7 @@ namespace bbxBE.Application.BLL
             return valid;
         }
 
-        public static async Task<int> CreateRangeAsynch(List<CreateCustomerCommand> requestList,
-             ICustomerRepositoryAsync _CustomerRepository, IMapper _mapper, CancellationToken cancellationToken)
-        {
-            var customerList = new List<Customer>();
-            foreach (var customer in requestList)
-            {
-                var cust = _mapper.Map<Customer>(customer);
-                customerList.Add(cust);
-            }
 
-            return await _CustomerRepository.AddCustomerRangeAsync(customerList);
-        }
 
     }
 }
