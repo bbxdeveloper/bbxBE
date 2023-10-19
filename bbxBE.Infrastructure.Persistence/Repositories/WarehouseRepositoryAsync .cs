@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -28,13 +29,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
 
         public WarehouseRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Warehouse> dataShaperWarehouse,
-            IDataShapeHelper<GetWarehouseViewModel> dataShaperGetWarehouseViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperWarehouse = dataShaperWarehouse;
-            _dataShaperGetWarehouseViewModel = dataShaperGetWarehouseViewModel;
+            _dataShaperWarehouse = new DataShapeHelper<Warehouse>();
+            _dataShaperGetWarehouseViewModel = new DataShapeHelper<GetWarehouseViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;

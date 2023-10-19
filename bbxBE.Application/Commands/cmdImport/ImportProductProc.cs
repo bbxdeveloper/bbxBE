@@ -43,9 +43,9 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string NODISCOUNTFieldName = "NODISCOUNT";
         private const string ImportLockKey = "PRODIMPORT";
 
-        private readonly IProductGlobalRepositoryAsync _productRepository;
-        private readonly IProductGroupGlobalRepositoryAsync _productGroupRepository;
-        private readonly IOriginGlobalRepositoryAsync _originRepository;
+        private readonly IProductRepositoryAsync _productRepository;
+        private readonly IProductGroupRepositoryAsync _productGroupRepository;
+        private readonly IOriginRepositoryAsync _originRepository;
 
         private readonly ICacheService<Product> _productcacheService;
         private readonly ICacheService<ProductGroup> _productGroupCacheService;
@@ -65,16 +65,16 @@ namespace bbxBE.Application.Commands.cmdImport
         private List<ProductGroup> createableProductGroupCodes = new List<ProductGroup>();
 
 
-        public ImportProductProc(IProductGlobalRepositoryAsync productGlobalRepository,
-                                            IProductGroupGlobalRepositoryAsync productGroupCodeGlobalRepository,
-                                            IOriginGlobalRepositoryAsync originGlobalRepository,
-                                            IMapper mapper,
-                                            ILogger<ImportProductCommandHandler> logger,
-                                            ICacheService<Product> productCacheService,
-                                            ICacheService<ProductGroup> productGroupCacheService,
-                                            ICacheService<Origin> originCacheService,
-                                            ICacheService<VatRate> vatRateCacheService,
-                                            IExpiringData<ExpiringDataObject> expiringData)
+        public ImportProductProc(IProductRepositoryAsync productGlobalRepository,
+                            IProductGroupRepositoryAsync productGroupCodeGlobalRepository,
+                            IOriginRepositoryAsync originGlobalRepository,
+                            IMapper mapper,
+                            ILogger<ImportProductCommandHandler> logger,
+                            ICacheService<Product> productCacheService,
+                            ICacheService<ProductGroup> productGroupCacheService,
+                            ICacheService<Origin> originCacheService,
+                            ICacheService<VatRate> vatRateCacheService,
+                            IExpiringData<ExpiringDataObject> expiringData)
         {
             _productRepository = productGlobalRepository;
             _productGroupRepository = productGroupCodeGlobalRepository;

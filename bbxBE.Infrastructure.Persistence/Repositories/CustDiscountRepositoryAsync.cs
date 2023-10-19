@@ -1,21 +1,21 @@
-using LinqKit;
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using bbxBE.Common.ExpiringData;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -31,14 +31,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IExpiringData<ExpiringDataObject> _expiringData;
 
         public CustDiscountRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<CustDiscount> dataShaperCustDiscount,
-            IDataShapeHelper<GetCustDiscountViewModel> dataShaperGetCustDiscountViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<Customer> customerCacheService,
             ICacheService<ProductGroup> productGroupCacheService, IExpiringData<ExpiringDataObject> expiringData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperGetCustDiscountViewModel = dataShaperGetCustDiscountViewModel;
+            _dataShaperGetCustDiscountViewModel = new DataShapeHelper<GetCustDiscountViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
@@ -48,8 +46,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _expiringData = expiringData;
         }
 
-        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList, 
-                    long customerID, 
+        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList,
+                    long customerID,
                     IExpiringData<ExpiringDataObject> expiringData)
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
@@ -88,7 +86,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return p_CustDiscountList.Count();
         }
 
-        public async Task<Entity>  GetCustDiscountAsync(long ID)
+        public async Task<Entity> GetCustDiscountAsync(long ID)
         {
 
             var CustDiscount = await _dbContext.CustDiscount.AsNoTracking().AsExpandable()
@@ -105,15 +103,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        
-        public async Task<List<Entity>> GetCustDiscountForCustomerListAsync( long customerID)
+
+        public async Task<List<Entity>> GetCustDiscountForCustomerListAsync(long customerID)
         {
 
             var query = _dbContext.CustDiscount.AsNoTracking()
                        .Include(i => i.Customer).AsNoTracking()
                        .Include(i => i.ProductGroup).AsNoTracking()
                        .Where(s => s.CustomerID == customerID)
-                       .OrderBy( o=>o.ProductGroup.ProductGroupCode);
+                       .OrderBy(o => o.ProductGroup.ProductGroupCode);
 
             var listFieldsModel = _modelHelper.GetModelFields<GetCustDiscountViewModel>();
             List<Entity> shapeData = new List<Entity>();

@@ -1,4 +1,5 @@
 using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -28,13 +29,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
 
         public LocationRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Location> dataShaperLocation,
-            IDataShapeHelper<GetLocationViewModel> dataShaperGetLocationViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperLocation = dataShaperLocation;
-            _dataShaperGetLocationViewModel = dataShaperGetLocationViewModel;
+            _dataShaperLocation = new DataShapeHelper<Location>();
+            _dataShaperGetLocationViewModel = new DataShapeHelper<GetLocationViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;

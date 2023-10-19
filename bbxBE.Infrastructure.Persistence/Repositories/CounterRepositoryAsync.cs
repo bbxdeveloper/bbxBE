@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -28,16 +29,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
 
         public CounterRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Counter> dataShaperCounter,
-            IDataShapeHelper<GetCounterViewModel> dataShaperGetCounterViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperCounter = dataShaperCounter;
-            _dataShaperGetCounterViewModel = dataShaperGetCounterViewModel;
+            _dataShaperCounter = new DataShapeHelper<Counter>();
+            _dataShaperGetCounterViewModel = new DataShapeHelper<GetCounterViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+
         }
 
 

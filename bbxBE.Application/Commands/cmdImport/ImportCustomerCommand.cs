@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using bbxBE.Application.BLL;
 using bbxBE.Application.Commands.ResultModels;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.NAV;
+using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCustomer;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -71,7 +71,15 @@ namespace bbxBE.Application.Commands.cmdImport
             var customerItemsFromCSV = await GetCustomerItemsAsync(request, mappedCustomerColumns.customerMap);
             var importCustomerResponse = new ImportedItemsStatistics { AllItemsCount = customerItemsFromCSV.Count };
 
-            await bllCustomer.CreateRangeAsynch(customerItemsFromCSV, _customerRepository, _mapper, cancellationToken);
+            var customerList = new List<Customer>();
+            foreach (var customer in customerItemsFromCSV)
+            {
+                var cust = _mapper.Map<Customer>(customer);
+                customerList.Add(cust);
+            }
+
+            await _customerRepository.AddCustomerRangeAsync(customerList);
+
             return new Response<ImportedItemsStatistics>(importCustomerResponse);
         }
 
@@ -134,7 +142,7 @@ namespace bbxBE.Application.Commands.cmdImport
                 var unitPriceType = customerMapping.ContainsKey(CustomerUnitPriceTypeFieldName) ? currentFieldsArray[customerMapping[CustomerUnitPriceTypeFieldName]].Replace("\"", "").Trim() : null;
                 createCustomerCommand.UnitPriceType = unitPriceType.Equals("1") ? "UNIT" : "LIST";
 
-                createCustomerCommand.DefPaymentMethod = unitPriceType.Equals("1") ? PaymentMethodType.CASH.ToString() 
+                createCustomerCommand.DefPaymentMethod = unitPriceType.Equals("1") ? PaymentMethodType.CASH.ToString()
                     : unitPriceType.Equals("2") ? PaymentMethodType.TRANSFER.ToString() : PaymentMethodType.CASH.ToString();
 
                 if (customerMapping.ContainsKey(CustomerLatestDiscountPercentFieldName)
