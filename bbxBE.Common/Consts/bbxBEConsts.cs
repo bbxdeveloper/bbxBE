@@ -179,6 +179,17 @@
         public const string ERR_NAVXML_NOINV = "Csak kimenő számláról készíthető NAV beküldő XML, ID:{0}, bizonylatszám:{1} ";
         public const string ERR_NAVXML_VATRATEMISSING = "Hiányzó áfa a kedvezmény XML meghatározásánál, bizonylatszám:{1} ";
 
+
+        public const string DEF_NAVAnnulmentReason = "Hibás adatszolgáltatás";
+
+        public const string DEF_NAVGeneralExceptionResponse = "GeneralExceptionResponse";
+        public const string DEF_NAVGeneralErrorResponse = "GeneralErrorResponse";
+
+        public const string DEF_NAVEMPTYTOKEN = "EMPTYTOKEN";
+        public const string DEF_NAVNULLTOKEN = "NULLTOKEN";
+
+
+
         public const string ERR_CITYNOTFOUND = "Város nem található, IRSZ:{0} ";
         public const string ERR_ZIPNOTFOUND = "IRSZ nem található, város:{0} ";
 

@@ -2,15 +2,18 @@ using AutoMapper;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.NAV;
 using bbxBE.Domain.Settings;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.ComponentModel;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,7 +57,14 @@ namespace bbxBE.Application.Commands.cmdNAV
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, (request.InvoiceNumber)));
             }
+
+            var invoiceNAVXML = await bllInvoice.GetInvoiceNAVXMLAsynch(invoice, _invoiceRepository, cancellationToken);
+            var xmlStr = XMLUtil.Object2XMLString<InvoiceData>(invoiceNAVXML, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+
             var bllNavObj = new bllNAV(_NAVSettings, _logger);
+
+            var xml = bllNavObj.get
+
 
             return new Response<long>(1);
         }
