@@ -1,5 +1,4 @@
 using AutoMapper;
-using bbxBE.Application.BLL;
 using bbxBE.Application.Commands.ResultModels;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Commands;
@@ -202,7 +201,7 @@ namespace bbxBE.Application.Commands.cmdImport
             // save Prodcuts list into DB. They need to update only
             try
             {
-                await bllProduct.UpdateRangeAsynch(updateProductCommands, _productRepository, _mapper, cancellationToken);
+                await _productRepository.UpdateRangeAsynch(updateProductCommands, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -228,7 +227,7 @@ namespace bbxBE.Application.Commands.cmdImport
             // save Prodcuts list into DB. They need to create only
             try
             {
-                await bllProduct.CreateRangeAsynch(createProductCommands, _productRepository, _mapper, cancellationToken);
+                await _productRepository.CreateRangeAsynch(createProductCommands, cancellationToken);
             }
             catch (Exception ex)
             {
