@@ -1,13 +1,9 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Infrastructure.Persistence.Migrations;
+﻿using bbxBE.Infrastructure.Persistence.Migrations;
 using FluentMigrator.Runner;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
 public static class MigrationManager
 {
@@ -16,7 +12,7 @@ public static class MigrationManager
         //https://code-maze.com/dapper-migrations-fluentmigrator-aspnetcore/
         using (var scope = host.Services.CreateScope())
         {
-            var databaseService = scope.ServiceProvider.GetRequiredService<Database>();
+            var databaseService = scope.ServiceProvider.GetRequiredService<DatabaseMigration>();
             var migrationService = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
 
             try

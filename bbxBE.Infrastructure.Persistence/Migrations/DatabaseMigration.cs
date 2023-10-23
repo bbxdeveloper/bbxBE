@@ -1,17 +1,14 @@
 ﻿using bbxBE.Infrastructure.Persistence.Contexts;
 using Dapper;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    public class Database
+    public class DatabaseMigration
     {
-        public  DapperContext Context { get; set; }
+        public DapperContext Context { get; set; }
 
-        public Database(DapperContext context)
+        public DatabaseMigration(DapperContext context)
         {
             Context = context;
         }

@@ -9,6 +9,7 @@ using bbxBE.Common;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
 using LinqKit;
@@ -33,6 +34,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IStockRepositoryAsync _stockRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
         public WhsTransferRepositoryAsync(IApplicationDbContext dbContext,
+                IExpiringData<ExpiringDataObject> expiringData,
                 ICacheService<Product> productCacheService,
                 ICacheService<Customer> customerCacheService,
                 ICacheService<ProductGroup> productGroupCacheService,
@@ -47,7 +49,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
-            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, customerCacheService);
+            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
         }
 
         public async Task<WhsTransfer> AddWhsTransferAsync(WhsTransfer whsTransfer)

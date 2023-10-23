@@ -7,6 +7,7 @@ using bbxBE.Application.Queries.qInvCtrlPeriod;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
 using LinqKit;
@@ -34,6 +35,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public InvCtrlPeriodRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            IExpiringData<ExpiringDataObject> expiringData,
             ICacheService<Product> productCacheService,
             ICacheService<Customer> customerCacheService,
             ICacheService<ProductGroup> productGroupCacheService,
@@ -49,8 +51,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
-            _invCtrlRepository = new InvCtrlRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, customerCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
-            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, customerCacheService);
+            _invCtrlRepository = new InvCtrlRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, productCacheService, customerCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
         }
         public async Task<InvCtrlPeriod> AddInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
         {

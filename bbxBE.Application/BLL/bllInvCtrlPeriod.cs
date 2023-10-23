@@ -1,26 +1,21 @@
-﻿using bbxBE.Application.Commands.cmdOffer;
+﻿using bbxBE.Application.Commands.cmdInvCtrlPeriod;
+using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Telerik.Reporting;
 using Telerik.Reporting.Processing;
 using Telerik.Reporting.XmlSerialization;
-using bbxBE.Application.Commands.cmdInvCtrlPeriod;
 
 namespace bbxBE.Application.BLL
 {
     public static class bllInvCtrlPeriod
     {
-
         public static async Task<FileStreamResult> CreateInvCtrlPeriodReportAsynch(IInvCtrlPeriodRepositoryAsync _invCtrlPeriodRepository, string reportTRDX, PrintInvCtrlPeriodCommand request, CancellationToken cancellationToken)
         {
 
@@ -30,10 +25,8 @@ namespace bbxBE.Application.BLL
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVCTRLPERIODNOTFOUND, request.InvCtrlPeriodID));
             }
 
-
             InstanceReportSource reportSource = null;
             Telerik.Reporting.Report rep = null;
-
 
             System.Xml.XmlReaderSettings settings = new System.Xml.XmlReaderSettings();
             settings.IgnoreWhitespace = true;
@@ -75,7 +68,5 @@ namespace bbxBE.Application.BLL
 
             return fsr;
         }
-
-
     }
 }

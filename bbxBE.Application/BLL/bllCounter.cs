@@ -1,9 +1,7 @@
-﻿using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Common.Consts;
+﻿using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
 using System;
-using System.Threading.Tasks;
 
 namespace bbxBE.Application.BLL
 {
@@ -12,20 +10,7 @@ namespace bbxBE.Application.BLL
     {
         public static object Locker = new object();
 
-        public static async Task<string> SafeGetNextAsync(ICounterRepositoryAsync _CounterRepositoryAsync, string CounterCode, long WarehouseID)
-        {
-            string num = "";
-            string res = "???";
-            try
-            {
-                num = await _CounterRepositoryAsync.GetNextValueAsync(CounterCode, WarehouseID);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return res;
-        }
+
 
         public static string GetCounterCode(enInvoiceType p_invoiceType, PaymentMethodType p_paymentMethod, bool Incoming, bool isCorrectionInvoice, long WarehouseID)
         {

@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using bbxBE.Application.BLL;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
@@ -51,34 +48,16 @@ namespace bxBE.Application.Commands.cmdInvoice
     public class UpdatePricePreviewCommandHandler : IRequestHandler<UpdatePricePreviewCommand, Response<Invoice>>
     {
         private readonly IInvoiceRepositoryAsync _InvoiceRepository;
-        private readonly IInvoiceLineRepositoryAsync _InvoiceLineRepository;
-        private readonly ICustomerRepositoryAsync _CustomerRepository;
-        private readonly IProductRepositoryAsync _ProductRepository;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
-        public UpdatePricePreviewCommandHandler(
-            IInvoiceRepositoryAsync InvoiceRepository,
-            IInvoiceLineRepositoryAsync InvoiceLineRepository,
-            ICustomerRepositoryAsync CustomerRepository,
-            IProductRepositoryAsync ProductRepository,
-            IMapper mapper, IConfiguration configuration)
+        public UpdatePricePreviewCommandHandler(IInvoiceRepositoryAsync InvoiceRepository)
         {
             _InvoiceRepository = InvoiceRepository;
-            _InvoiceLineRepository = InvoiceLineRepository;
-            _CustomerRepository = CustomerRepository;
-            _ProductRepository = ProductRepository;
-            _mapper = mapper;
-            _configuration = configuration;
         }
 
         public async Task<Response<Invoice>> Handle(UpdatePricePreviewCommand request, CancellationToken cancellationToken)
         {
 
-            var inv = await bllInvoice.UpdatePricePreviewAsynch(request, _mapper,
-                                    _InvoiceRepository,
-                                    _ProductRepository,
-                                    cancellationToken);
+            var inv = await _InvoiceRepository.UpdatePricePreviewAsynch(request, cancellationToken);
             return new Response<Invoice>(inv);
         }
 

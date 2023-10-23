@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
-using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,19 +25,10 @@ namespace bxBE.Application.Commands.cmdCustomer
     public class updateCustomerLatestDiscountPercentCommandHandler : IRequestHandler<updateCustomerLatestDiscountPercentCommand, Response<Customer>>
     {
         private readonly ICustomerRepositoryAsync _customerRepository;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
-        private readonly IExpiringData<ExpiringDataObject> _expiringData;
 
-        public updateCustomerLatestDiscountPercentCommandHandler(ICustomerRepositoryAsync customerRepository,
-                        IMapper mapper,
-                        IConfiguration configuration,
-                        IExpiringData<ExpiringDataObject> expiringData)
+        public updateCustomerLatestDiscountPercentCommandHandler(ICustomerRepositoryAsync customerRepository)
         {
             _customerRepository = customerRepository;
-            _mapper = mapper;
-            _configuration = configuration;
-            _expiringData = expiringData;
         }
 
         public async Task<Response<Customer>> Handle(updateCustomerLatestDiscountPercentCommand request, CancellationToken cancellationToken)

@@ -1,5 +1,6 @@
 ﻿using AngleSharp.Common;
 using AutoMapper;
+using bbxBE.Application.BLL;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -9,14 +10,18 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
+using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
+using bxBE.Application.Commands.cmdInvoice;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Threading;
 using System.Threading.Tasks;
 using static bbxBE.Common.NAV.NAV_enums;
 
@@ -34,17 +39,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly IExpiringData<ExpiringDataObject> _expiringData;
+
         private readonly IInvoiceLineRepositoryAsync _invoiceLineRepository;
         private readonly IStockRepositoryAsync _stockRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
+        private readonly ICounterRepositoryAsync _counterRepository;
+        private readonly IWarehouseRepositoryAsync _warehouseRepository;
+        private readonly IProductRepositoryAsync _productRepository;
+        private readonly IVatRateRepositoryAsync _vatRateRepository;
         public InvoiceRepositoryAsync(IApplicationDbContext dbContext,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            ICacheService<Product> productCacheService,
-            ICacheService<Customer> customerCacheService,
-            ICacheService<ProductGroup> productGroupCacheService,
-            ICacheService<Origin> originCacheService,
-            ICacheService<VatRate> vatRateCacheService
-            ) : base(dbContext)
+                IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+                IExpiringData<ExpiringDataObject> expiringData,
+                ICacheService<Product> productCacheService,
+                ICacheService<Customer> customerCacheService,
+                ICacheService<ProductGroup> productGroupCacheService,
+                ICacheService<Origin> originCacheService,
+                ICacheService<VatRate> vatRateCacheService
+                ) : base(dbContext)
         {
             _dbContext = dbContext;
 
@@ -57,9 +69,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+
             _invoiceLineRepository = new InvoiceLineRepositoryAsync(dbContext, modelHelper, mapper, mockData);
             _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
-            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, customerCacheService);
+            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
+            _counterRepository = new CounterRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _warehouseRepository = new WarehouseRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _vatRateRepository = new VatRateRepositoryAsync(dbContext, modelHelper, mapper, mockData, vatRateCacheService);
+
+            _expiringData = expiringData;
         }
         public async Task<bool> IsUniqueInvoiceNumberAsync(string InvoiceNumber, long? ID = null)
         {
@@ -148,36 +167,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Invoice> AddInvoiceAsync(Invoice p_invoice, Dictionary<long, InvoiceLine> p_RelDNInvoiceLines)
         {
 
-            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            try
             {
-                try
+
+                prepareInvoiceBeforePersistance(p_invoice);
+                await AddAsync(p_invoice);
+
+                if (p_invoice.InvoiceCategory != enInvoiceCategory.AGGREGATE.ToString())
                 {
-
-                    prepareInvoiceBeforePersistance(p_invoice);
-                    await AddAsync(p_invoice);
-
-                    if (p_invoice.InvoiceCategory != enInvoiceCategory.AGGREGATE.ToString())
-                    {
-                        //gyűjtőszámla esetén már nem mozog a készlet...
-                        var stockList = await _stockRepository.MaintainStockByInvoiceAsync(p_invoice);
-                    }
-
-                    //Kapcsolt szállítólevelek PendingDNQuantity-k beaktualizálása
-                    // Gyűjtőszámla, mínuszos szállítók esetében
-                    //
-                    if (p_RelDNInvoiceLines.Count > 0)
-                    {
-                        await _invoiceLineRepository.UpdateRangeAsync(p_RelDNInvoiceLines.Select(s => s.Value).ToList());
-                    }
-
-                    await dbContextTransaction.CommitAsync();
-
+                    //gyűjtőszámla esetén már nem mozog a készlet...
+                    var stockList = await _stockRepository.MaintainStockByInvoiceAsync(p_invoice);
                 }
-                catch (Exception)
+
+                //Kapcsolt szállítólevelek PendingDNQuantity-k beaktualizálása
+                // Gyűjtőszámla, mínuszos szállítók esetében
+                //
+                if (p_RelDNInvoiceLines.Count > 0)
                 {
-                    await dbContextTransaction.RollbackAsync();
-                    throw;
+                    await _invoiceLineRepository.UpdateRangeAsync(p_RelDNInvoiceLines.Select(s => s.Value).ToList());
                 }
+            }
+            catch (Exception)
+            {
+                throw;
             }
 
             return p_invoice;
@@ -185,41 +197,36 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, ICollection<SummaryByVatRate> delSummaryByVatrates)
         {
-            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            try
             {
-                try
+                prepareInvoiceBeforePersistance(p_invoice);
+                _dbContext.Instance.Entry(p_invoice).State = EntityState.Modified;
+
+                await UpdateAsync(p_invoice, true);
+
+                if (delSummaryByVatrates != null)
                 {
-                    prepareInvoiceBeforePersistance(p_invoice);
-                    _dbContext.Instance.Entry(p_invoice).State = EntityState.Modified;
-
-                    await UpdateAsync(p_invoice, true);
-
-                    if (delSummaryByVatrates != null)
+                    foreach (var entity in delSummaryByVatrates)
                     {
-                        foreach (var entity in delSummaryByVatrates)
-                        {
-                            entity.VatRate = null;
-                            _dbContext.Instance.Entry(entity).State = EntityState.Deleted;
-                            _dbContext.Instance.Set<SummaryByVatRate>().Remove(entity);
-                        }
-                        await _dbContext.SaveChangesAsync();
+                        entity.VatRate = null;
+                        _dbContext.Instance.Entry(entity).State = EntityState.Deleted;
+                        _dbContext.Instance.Set<SummaryByVatRate>().Remove(entity);
                     }
-                    await dbContextTransaction.CommitAsync();
-
+                    await _dbContext.SaveChangesAsync();
                 }
-                catch (Exception)
-                {
-                    await dbContextTransaction.RollbackAsync();
-                    throw;
-                }
-                return p_invoice;
             }
+            catch (Exception)
+            {
+                throw;
+            }
+            return p_invoice;
+
         }
 
         public async Task<Entity> GetInvoiceAsync(long ID, bool FullData)
         {
 
-            Invoice item = await GetInvoiceRecordAsync(ID, FullData);
+            Invoice item = await this.GetInvoiceRecordAsync(ID, FullData);
 
             if (item == null)
             {
@@ -835,5 +842,499 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             p_items = p_items.Where(predicate);
         }
+
+
+        public async Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand request, CancellationToken cancellationToken)
+        {
+            var invoice = _mapper.Map<Invoice>(request);
+            var deliveryNotes = new Dictionary<int, Invoice>();
+            var counterCode = "";
+            var updatingProducts = new List<Product>();
+
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            {
+                try
+                {
+
+                    var paymentMethod = (PaymentMethodType)Enum.Parse(typeof(PaymentMethodType), request.PaymentMethod);
+                    var invoiceType = (enInvoiceType)Enum.Parse(typeof(enInvoiceType), request.InvoiceType);
+
+                    /*****************************************/
+                    /* Mentés előtt Invoice mezők feltöltése */
+                    /*****************************************/
+
+
+                    //ID-k feloldása
+                    if (string.IsNullOrWhiteSpace(request.WarehouseCode))
+                    {
+                        request.WarehouseCode = bbxBEConsts.DEF_WAREHOUSE;      //Átmenetileg
+                    }
+
+                    if (string.IsNullOrWhiteSpace(request.CurrencyCode))
+                    {
+                        request.CurrencyCode = enCurrencyCodes.HUF.ToString();
+                    }
+                    var wh = await _warehouseRepository.GetWarehouseByCodeAsync(request.WarehouseCode);
+                    if (wh == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
+                    }
+                    invoice.WarehouseID = wh.ID;
+
+                    Customer cust = null;
+
+                    if (invoiceType != enInvoiceType.BLK)
+                    {
+                        cust = _customerRepository.GetCustomerRecord(request.CustomerID.Value);
+                        if (cust == null)
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTOMERNOTFOUND, request.CustomerID.Value));
+                        }
+                    }
+
+                    var ownData = _customerRepository.GetOwnData();
+                    if (ownData == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OWNNOTFOUND));
+                    }
+
+                    if (invoiceType != enInvoiceType.BLK)
+                    {
+                        if (request.Incoming)
+                        {
+                            invoice.SupplierID = request.CustomerID.Value;
+                            invoice.CustomerID = ownData.ID;
+                        }
+                        else
+                        {
+                            invoice.SupplierID = ownData.ID;
+                            invoice.CustomerID = request.CustomerID.Value;
+                        }
+                    }
+                    else
+                    {
+                        invoice.SupplierID = ownData.ID;
+                        invoice.CustomerID = null;
+                    }
+
+                    var RelDeliveryNotesByLineID = new Dictionary<long, Invoice>();
+                    var RelDeliveryNoteLines = new Dictionary<long, InvoiceLine>();
+
+
+                    //Kezelni kell-e kapcsolt szállítóleveleket?
+                    //	- gyűjtőszámla esetén
+                    //	- Korrekciós be- ill. kimenő számla esetén
+                    //
+                    var hasRelDeliveryNotes = (request.InvoiceCategory == enInvoiceCategory.AGGREGATE.ToString() ||
+                                            (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
+                                            && (request.InvoiceCorrection.HasValue && request.InvoiceCorrection.Value));
+
+
+                    if (hasRelDeliveryNotes)
+                    {
+                        var RelDeliveryNoteLineIDs = request.InvoiceLines.GroupBy(g => g.RelDeliveryNoteInvoiceLineID)
+                                .Select(s => s.Key.Value).ToList();
+                        RelDeliveryNotesByLineID = await this.GetInvoiceRecordsByInvoiceLinesAsync(RelDeliveryNoteLineIDs);
+
+                        RelDeliveryNoteLines = await _invoiceLineRepository.GetInvoiceLineRecordsAsync(
+                            request.InvoiceLines.Select(s => s.RelDeliveryNoteInvoiceLineID.Value).ToList());
+                    }
+
+                    int RealLineNumber = 1;
+
+                    //Javítószámla
+
+                    /* Jóváírás-kezelés:
+                      Adózó módosító számlát bocsát ki, ezen módosító tételként -4 darab „D termék”,
+                      illetve 1 darab „F termék” szerepel. Ezen módosításról történő adatszolgáltatásban az adózó újabb
+                      tételként szerepelteti a -4 db „D terméket”, illetve az 1 db „F terméket”.
+                      Ezen módosító okiratról történő adatszolgáltatásban:
+                      a) A módosító okiratot leíró XML első tételsorában (lineNumber=1) a LineModificationReference
+                      elemben a lineNumberReference elem értéke „6”, lineOperation elem értéke „CREATE”, ez
+                      tartalmazza a -4 darab „D termék” adatait.NAV Online Számla Rendszer 100. oldal
+                      b) A módosító okiratot leíró XML második tételsorában (lineNumber=2) a LineModificationReference
+                      elemben a lineNumberReference elem értéke „7”, lineOperation elem értéke „CREATE”, ez
+                      tartalmazza az 1 darab „F termék” adatait.
+                      c) A módosító okiratot leíró XML invoiceSummary eleme teljes egészében szerepel, abban az egyes
+                      értékek módosulásának előjeles összege szerepel.
+
+                      RÖVIDEN : A jóváíró számlával az eredeti számlatételekhez "hozzáírjuk" a javító tételeket mínuszosan.
+                      */
+
+                    List<Invoice> ModificationInvoices = new List<Invoice>();
+                    Invoice OriginalInvoice = null;
+                    var isInvoiceCorrection = (request.OriginalInvoiceID.HasValue && request.OriginalInvoiceID.Value != 0)
+                                                && (request.InvoiceCorrection.HasValue && request.InvoiceCorrection.Value);
+                    if (isInvoiceCorrection)
+                    {
+                        OriginalInvoice = await this.GetInvoiceRecordAsync(request.OriginalInvoiceID.Value, true);
+                        if (OriginalInvoice == null)
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, request.OriginalInvoiceID.Value));
+                        }
+
+                        // Javító bizonylat linenumber meghatározás
+                        //      - az eredeti bizonylat linenumber utáni tétel
+                        //        + engedmény esetén áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve) sor készül a  NAV-hoz felküldött adatokban
+                        //      - már elkészült javítószámlák tétel összesen
+                        //        + engedmény esetén már elkészült javítószámlák áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve)
+
+                        // eredeti számla
+                        RealLineNumber += OriginalInvoice.InvoiceLines.Count()
+                                         + (OriginalInvoice.InvoiceLines.Where(a => a.LineDiscountPercent != 0).GroupBy(g => g.VatRateID).Count());
+
+                        // már elkészült javítószámlák (láncolt javítás)
+                        ModificationInvoices = await this.GetCorrectionInvoiceRecordsByInvoiceID(request.OriginalInvoiceID.Value);
+                        ModificationInvoices.ForEach(oi =>
+                        {
+                            RealLineNumber += oi.InvoiceLines.Count()
+                                         + (oi.InvoiceLines.Where(a => a.LineDiscountPercent != 0).GroupBy(g => g.VatRateID).Count());
+                        });
+
+                        invoice.OriginalInvoiceNumber = OriginalInvoice.InvoiceNumber;
+                        invoice.ModificationIndex = (short)(ModificationInvoices.Count() + 1);
+                        invoice.ModifyWithoutMaster = false;
+                    }
+
+                    //Megjegyzés
+                    if (!string.IsNullOrWhiteSpace(request.Notice))
+                    {
+                        invoice.AdditionalInvoiceData = new List<AdditionalInvoiceData>() {  new AdditionalInvoiceData()
+                            { DataName = bbxBEConsts.DEF_NOTICE, DataDescription = bbxBEConsts.DEF_NOTICEDESC, DataValue = request.Notice }};
+
+                    }
+
+
+                    //Szállítólevél esetén a PaymentMethod OTHER
+                    if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
+                    {
+                        invoice.PaymentMethod = PaymentMethodType.OTHER.ToString();
+                    }
+
+
+                    //Tételsorok előfeldolgozása
+                    var lineErrors = new List<string>();
+                    foreach (var ln in invoice.InvoiceLines)
+                    {
+                        var rln = request.InvoiceLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
+
+
+                        var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
+                        if (prod == null)
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
+                        }
+
+
+                        if (!hasRelDeliveryNotes &&         //nem gyűjtőszámla
+                            invoice.Incoming &&             //bevételezés
+                            (invoice.InvoiceType == enInvoiceType.INC.ToString() || invoice.InvoiceType == enInvoiceType.DNI.ToString()))   //szla.v.száll.
+                        {
+                            prod.LatestSupplyPrice = rln.UnitPrice;     //megjegzezük a legutolsó eladási árat
+                            prod.UnitPrice1 = rln.NewUnitPrice1;        //árváltozás, új listaár
+                            prod.UnitPrice2 = rln.NewUnitPrice2;        //árváltozás, új egységár
+
+                            if (updatingProducts.Any(a => a.ID == prod.ID))
+                            {
+                                // az előző előfordulást töröljük, a "legutolsó" árak lesznek az érvényesek
+                                updatingProducts.RemoveAll(r => r.ID == prod.ID);
+                            }
+                            updatingProducts.Add(prod);
+                        }
+
+
+                        var vatRate = _vatRateRepository.GetVatRateByCode(rln.VatRateCode);
+                        if (vatRate == null)
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
+                        }
+
+                        ln.PriceReview = request.PriceReview;
+
+                        //	Product
+                        //
+                        ln.ProductID = prod.ID;
+                        ln.ProductCode = rln.ProductCode;
+                        ln.Product = prod;
+
+
+                        ln.VTSZ = prod.ProductCodes.FirstOrDefault(c => c.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ProductCodeValue;
+                        ln.LineDescription = prod.Description;
+
+                        ln.VatRate = vatRate;
+                        ln.VatRateID = vatRate.ID;
+                        ln.VatPercentage = vatRate.VatPercentage;
+
+                        ln.LineNatureIndicator = prod.NatureIndicator;
+
+                        if (hasRelDeliveryNotes)
+                        {
+                            //gyűjtőszámla
+                            if (!ln.RelDeliveryNoteInvoiceLineID.HasValue || ln.RelDeliveryNoteInvoiceLineID.Value == 0)
+                            {
+                                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVAGGR_RELATED_NOT_ASSIGNED,
+                                        invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode));
+                            }
+
+                            //gyűjtőszámla esetén is egy árfolyam lesz!
+
+                            if (!RelDeliveryNotesByLineID.ContainsKey(ln.RelDeliveryNoteInvoiceLineID.Value))
+                            {
+                                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVAGGR_RELATED_NOT_FOUND,
+                                        invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode, ln.RelDeliveryNoteInvoiceLineID));
+                            }
+
+                            var relDeliveryNote = RelDeliveryNotesByLineID[ln.RelDeliveryNoteInvoiceLineID.Value];
+                            var relDeliveryNoteLine = RelDeliveryNoteLines[ln.RelDeliveryNoteInvoiceLineID.Value];
+
+                            ln.RelDeliveryNoteNumber = relDeliveryNote.InvoiceNumber;
+                            ln.RelDeliveryNoteInvoiceID = relDeliveryNote.ID;
+                            ln.RelDeliveryNoteInvoiceLineID = ln.RelDeliveryNoteInvoiceLineID.Value;
+
+                            ln.LineExchangeRate = relDeliveryNote.ExchangeRate;
+                            ln.LineDeliveryDate = relDeliveryNote.InvoiceDeliveryDate;
+
+                            //Bizonylatkedvezmény a kapcsolt szállítólevél alapján
+                            if (!prod.NoDiscount)
+                            {
+                                //NoDiscount a kapcsolt szállítólevél alapján van meghatáriza
+                                ln.NoDiscount = relDeliveryNoteLine.NoDiscount;
+                                ln.LineDiscountPercent = relDeliveryNoteLine.LineDiscountPercent;
+                            }
+                            else
+                            {
+                                //elég extrém helyzet, a szállítólevél adásakor még igen, de a gyűjtőszámla készítésekor
+                                //már nem adható kedvezmény.
+                                //
+                                //TODO: erre ne legyen figyelmeztetés?
+                                ln.NoDiscount = true;
+                                ln.LineDiscountPercent = relDeliveryNoteLine.LineDiscountPercent;
+                            }
+
+                            //Gyűjtőszámla kiegészítő adatok
+                            ln.AdditionalInvoiceLineData = new List<AdditionalInvoiceLineData>();
+                            ln.AdditionalInvoiceLineData.Add(new AdditionalInvoiceLineData()   //a kapcsolt szállítólevél számát külön is letároljuk, hogy menjen fel a NAV-hoz
+                            {
+                                DataName = "X001_RELDELIVERYNOTE",
+                                DataDescription = bbxBEConsts.DEF_RELDELIVERYNOTE,
+                                DataValue = relDeliveryNote.InvoiceNumber
+                            });
+
+                            ln.AdditionalInvoiceLineData.Add(new AdditionalInvoiceLineData()   //a kapcsolt szállítólevél engedményt is letároljuk, hogy menjen fel a NAV-hoz
+                            {
+                                DataName = "X001_RELDELIVERYDISCOUNTPERCENT",
+                                DataDescription = bbxBEConsts.DEF_RELDELIVERYDISCOUNTPERCENT,
+                                DataValue = ln.LineDiscountPercent.ToString()
+                            });
+
+
+                            //Szállítólevélen lévő függő mennyiség aktualizálása
+                            if (relDeliveryNoteLine.PendingDNQuantity < Math.Abs(ln.Quantity))
+                            {
+                                throw new DataContextException(string.Format(bbxBEConsts.ERR_INVAGGR_WRONG_AGGR_QTY,
+                                        relDeliveryNoteLine.Invoice.InvoiceNumber, rln.LineNumber, rln.ProductCode,
+                                         Math.Abs(ln.Quantity), relDeliveryNoteLine.PendingDNQuantity,
+                                        ln.RelDeliveryNoteInvoiceLineID));
+                            }
+                            relDeliveryNoteLine.PendingDNQuantity -= Math.Abs(ln.Quantity); // mínuszos szállítólevelek miatt kell az abszolút érték
+                        }
+                        else
+                        {
+                            ln.LineExchangeRate = invoice.ExchangeRate;
+                            ln.LineDeliveryDate = invoice.InvoiceDeliveryDate;
+
+                            //NoDiscount a cikktörzs alapján van meghatározva
+                            ln.NoDiscount = prod.NoDiscount;
+
+                            //Bizonylatkedvezmény a request alapján
+                            if (!prod.NoDiscount)
+                            {
+                                ln.LineDiscountPercent = request.InvoiceDiscountPercent;
+                            }
+                        }
+
+                        //Normál szállítólevél esetén a rendezetlen mennyiséget is feltöltjük
+                        if ((invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO) &&
+                            (!request.InvoiceCorrection.HasValue || !request.InvoiceCorrection.Value))        // Szállítólevél korrekció esetén nincs PendingDNQuantity
+                        {
+                            ln.PendingDNQuantity = ln.Quantity;
+                        }
+
+                        if (isInvoiceCorrection)
+                        {
+                            //Termékkód ell.
+                            if (!OriginalInvoice.InvoiceLines.Any(w => w.ProductID == ln.ProductID))
+                            {
+                                lineErrors.Add(string.Format(bbxBEConsts.ERR_CORRECTIONUNKOWNPROD, ln.ProductID, ln.ProductCode));
+
+                            }
+                            else
+                            {
+
+                                //Mennyiség ell.
+                                var origQty = OriginalInvoice.InvoiceLines.Where(w => w.ProductID == ln.ProductID).Sum(s => s.Quantity);
+                                var modQty = ModificationInvoices.Sum(s => s.InvoiceLines.Where(w => w.ProductID == ln.ProductID).Sum(s => s.Quantity));
+                                if (origQty + modQty + ln.Quantity < 0)
+                                {
+                                    lineErrors.Add(string.Format(bbxBEConsts.ERR_WRONGCORRECTIONQTY,
+                                            ln.ProductCode,
+                                            origQty,
+                                            modQty,
+                                            ln.Quantity));
+                                }
+                            }
+
+                            // linenumber véglegesítés javítószámla esetén
+                            ln.LineNumber = (short)(RealLineNumber++);
+                            ln.LineNumberReference = ln.LineNumber;          //Mivel a javítószámlán a CREATE operációt használjuk csak, ezért a LineNumberReference megyegyezik a LineNumber-el
+                                                                             //NAV doc:Az eredeti számla módosítással érintett tételének sorszáma, (lineNumber).Új tétel létrehozása esetén az új tétel sorszáma, az eredeti számla folytatásaként
+                        }
+
+                        //termékdíj
+                        if (prod.ProductFee > 0)
+                        {
+                            ln.TakeoverReason = TakeoverType.Item02_ga.ToString();                  //egyelőre beégetjük a 02_ga-t
+
+                            if (ln.TakeoverReason != TakeoverType.Item01.ToString())                 //későbbi felhasználásra is felkészülünk, 01 esetén nincs átvállalás
+                            {
+                                ln.TakeoverAmount = Math.Round(prod.ProductFee * ln.Quantity, 1);
+                            }
+
+                            //ln.ProductFeeProductCodeValue = //KT v. CSK
+                            ln.ProductFeeQuantity = ln.Quantity;
+                            ln.ProductFeeMeasuringUnit = ln.UnitOfMeasure;
+                            //ln.ProductFeeRate = 
+                            ln.ProductFeeAmount = Math.Round(prod.ProductFee * ln.Quantity, 1);
+                        }
+                    }
+                    if (lineErrors.Any())
+                    {
+                        throw new ValidationException(lineErrors);
+                    }
+
+                    invoice = bllInvoice.CalcInvoiceAmounts(invoice);
+
+                    //Bizonylatszám megállapítása
+                    counterCode = bllCounter.GetCounterCode(invoiceType, paymentMethod, invoice.Incoming, isInvoiceCorrection, wh.ID);
+                    invoice.InvoiceNumber = await _counterRepository.GetNextValueAsync(counterCode, wh.ID);
+                    invoice.Copies = 1;
+
+
+                    await this.AddInvoiceAsync(invoice, RelDeliveryNoteLines);
+                    await _counterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
+                    if (updatingProducts.Count > 0)
+                    {
+                        await _productRepository.UpdateProductRangeAsync(updatingProducts, true);
+                    }
+
+                    if (!request.Incoming
+                         && !isInvoiceCorrection && !hasRelDeliveryNotes
+                         && (invoiceType == enInvoiceType.INV || invoiceType == enInvoiceType.DNO)
+                         && cust != null)
+                    {
+                        cust.LatestDiscountPercent = request.InvoiceDiscountPercent;
+                        await _customerRepository.UpdateAsync(cust);
+
+                    }
+
+                    //szemafr kiütések
+                    var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + invoice.CustomerID.ToString();
+                    await _expiringData.DeleteItemAsync(key);
+                    key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + invoice.SupplierID.ToString();
+                    await _expiringData.DeleteItemAsync(key);
+
+
+
+                    invoice.InvoiceLines.Clear();
+                    invoice.SummaryByVatRates.Clear();
+                    if (invoice.AdditionalInvoiceData != null)
+                        invoice.AdditionalInvoiceData.Clear();
+
+
+                    await dbContextTransaction.CommitAsync();
+
+
+                    return invoice;
+                }
+                catch (Exception)
+                {
+                    await dbContextTransaction.RollbackAsync();
+
+                    if (!string.IsNullOrWhiteSpace(invoice.InvoiceNumber) && !string.IsNullOrWhiteSpace(counterCode))
+                    {
+                        await _counterRepository.RollbackValueAsync(counterCode, invoice.WarehouseID, invoice.InvoiceNumber);
+                    }
+                    throw;
+                }
+            }
+            return null;
+        }
+        public async Task<Invoice> UpdatePricePreviewAsynch(UpdatePricePreviewCommand request, CancellationToken cancellationToken)
+        {
+
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var invoice = await this.GetInvoiceRecordAsync(request.ID, true);
+                    if (invoice == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
+                    }
+
+                    invoice.CustomerID = request.CustomerID;
+
+
+                    //A SummaryByVatRates-t újrageneráljuk. Eltároljuk az eredei állapotot, mert az update során kitöröljük
+                    //
+                    var oriSummaryByVatRates = invoice.SummaryByVatRates;
+
+                    //Tételsorok előfeldolgozása
+                    foreach (var rln in request.InvoiceLines)
+                    {
+                        var ln = invoice.InvoiceLines.Where(w => w.ID == rln.ID).FirstOrDefault();
+                        if (ln == null)
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICELINENOTFOUND, invoice.ID,
+                                    invoice.InvoiceNumber, rln.ID));
+                        }
+                        ln.UnitPrice = rln.UnitPrice;
+
+                        if (ln.ProductID.HasValue)
+                        {
+                            var prod = _productRepository.GetProduct(ln.ProductID.Value);
+                            if (prod == null)
+                            {
+                                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, ln.ProductID.Value));
+                            }
+                            ln.NoDiscount = prod.NoDiscount;
+                        }
+                        ln.PriceReview = false;         //megtörtént az ár felülvizsgálat
+                    }
+
+                    invoice = bllInvoice.CalcInvoiceAmounts(invoice);
+                    invoice.SummaryByVatRates.ToList().ForEach(i => i.InvoiceID = invoice.ID);
+
+
+                    await this.UpdateInvoiceAsync(invoice, oriSummaryByVatRates);
+
+                    invoice.InvoiceLines.Clear();
+                    invoice.SummaryByVatRates.Clear();
+                    if (invoice.AdditionalInvoiceData != null)
+                        invoice.AdditionalInvoiceData.Clear();
+
+                    await dbContextTransaction.CommitAsync();
+
+                    return invoice;
+                }
+                catch (Exception)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
+            }
+            return null;
+        }
+
     }
 }
