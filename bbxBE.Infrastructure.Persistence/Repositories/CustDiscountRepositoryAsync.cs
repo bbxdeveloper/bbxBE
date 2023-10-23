@@ -46,9 +46,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _expiringData = expiringData;
         }
 
-        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList,
-                    long customerID,
-                    IExpiringData<ExpiringDataObject> expiringData)
+        public async Task<long> MaintanenceCustDiscountRangeAsync(List<CustDiscount> p_CustDiscountList, long customerID)
         {
             using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
             {
@@ -77,7 +75,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 //szemafr kiütések
                 var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + cust.ID.ToString();
-                await expiringData.DeleteItemAsync(key);
+                await _expiringData.DeleteItemAsync(key);
 
 
                 await dbContextTransaction.CommitAsync();

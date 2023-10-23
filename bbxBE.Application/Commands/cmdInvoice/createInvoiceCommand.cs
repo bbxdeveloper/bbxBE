@@ -1,12 +1,8 @@
-﻿using AutoMapper;
-using bbxBE.Application.BLL;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
-using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -151,37 +147,10 @@ namespace bxBE.Application.Commands.cmdInvoice
     public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, Response<Invoice>>
     {
         private readonly IInvoiceRepositoryAsync _InvoiceRepository;
-        private readonly IInvoiceLineRepositoryAsync _InvoiceLineRepository;
-        private readonly ICounterRepositoryAsync _CounterRepository;
-        private readonly IWarehouseRepositoryAsync _WarehouseRepository;
-        private readonly ICustomerRepositoryAsync _CustomerRepository;
-        private readonly IProductRepositoryAsync _ProductRepository;
-        private readonly IVatRateRepositoryAsync _VatRateRepository;
-        private readonly IExpiringData<ExpiringDataObject> _expiringData;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
-        public CreateInvoiceCommandHandler(
-            IInvoiceRepositoryAsync InvoiceRepository,
-            IInvoiceLineRepositoryAsync InvoiceLineRepository,
-            ICounterRepositoryAsync CounterRepository,
-            IWarehouseRepositoryAsync WarehouseRepository,
-            ICustomerRepositoryAsync CustomerRepository,
-            IProductRepositoryAsync ProductRepository,
-            IVatRateRepositoryAsync VatRateRepository,
-            IExpiringData<ExpiringDataObject> expiringData,
-            IMapper mapper, IConfiguration configuration)
+        public CreateInvoiceCommandHandler(IInvoiceRepositoryAsync InvoiceRepository)
         {
             _InvoiceRepository = InvoiceRepository;
-            _InvoiceLineRepository = InvoiceLineRepository;
-            _CounterRepository = CounterRepository;
-            _WarehouseRepository = WarehouseRepository;
-            _CustomerRepository = CustomerRepository;
-            _ProductRepository = ProductRepository;
-            _VatRateRepository = VatRateRepository;
-            _expiringData = expiringData;
-            _mapper = mapper;
-            _configuration = configuration;
         }
         /*
 {
@@ -230,19 +199,8 @@ namespace bxBE.Application.Commands.cmdInvoice
         public async Task<Response<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
         {
 
-            var inv = await bllInvoice.CreateInvoiceAsynch(request, _mapper,
-                                    _InvoiceRepository,
-                                    _InvoiceLineRepository,
-                                    _CounterRepository,
-                                    _WarehouseRepository,
-                                    _CustomerRepository,
-                                    _ProductRepository,
-                                    _VatRateRepository,
-                                    _expiringData,
-                                    cancellationToken);
+            var inv = await _InvoiceRepository.CreateInvoiceAsynch(request, cancellationToken);
             return new Response<Invoice>(inv);
         }
-
-
     }
 }

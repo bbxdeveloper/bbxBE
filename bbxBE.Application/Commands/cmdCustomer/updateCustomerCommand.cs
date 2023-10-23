@@ -2,10 +2,8 @@
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
-using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -94,18 +92,11 @@ namespace bxBE.Application.Commands.cmdCustomer
     {
         private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
-        private readonly IExpiringData<ExpiringDataObject> _expiringData;
 
-        public UpdateCustomerCommandHandler(ICustomerRepositoryAsync customerRepository,
-                        IMapper mapper,
-                        IConfiguration configuration,
-                        IExpiringData<ExpiringDataObject> expiringData)
+        public UpdateCustomerCommandHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;
-            _configuration = configuration;
-            _expiringData = expiringData;
         }
 
         public async Task<Response<Customer>> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
@@ -114,7 +105,7 @@ namespace bxBE.Application.Commands.cmdCustomer
             cust.CustomerBankAccountNumber = cust.CustomerBankAccountNumber?.ToUpper();
             cust.ThirdStateTaxId = cust.ThirdStateTaxId?.ToUpper();
 
-            await _customerRepository.UpdateCustomerAsync(cust, _expiringData);
+            await _customerRepository.UpdateCustomerAsync(cust);
             return new Response<Customer>(cust);
         }
 
