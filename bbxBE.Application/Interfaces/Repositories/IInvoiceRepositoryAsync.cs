@@ -2,7 +2,9 @@
 using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
+using bxBE.Application.Commands.cmdInvoice;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace bbxBE.Application.Interfaces.Repositories
@@ -36,6 +38,10 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameters);
         Task<(IList<GetCustomerInvoiceSummary> data, RecordsCount recordsCount)> QueryPagedCustomerInvoiceSummaryAsync(QueryCustomerInvoiceSummary requestParameters);
         Task<IList<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter);
+
+
+        Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand request, CancellationToken cancellationToken);
+        Task<Invoice> UpdatePricePreviewAsynch(UpdatePricePreviewCommand request, CancellationToken cancellationToken);
 
     }
 }

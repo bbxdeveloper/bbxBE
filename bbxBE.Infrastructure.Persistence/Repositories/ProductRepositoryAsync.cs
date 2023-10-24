@@ -10,6 +10,7 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
 using bbxBE.Queries.Mappings;
+using bxBE.Application.Commands.cmdProduct;
 using EFCore.BulkExtensions;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Threading;
 using System.Threading.Tasks;
 using static bbxBE.Common.NAV.NAV_enums;
 
@@ -732,5 +734,113 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _productcacheService.RefreshCache();
         }
 
+        public async Task<Product> CreateAsynch(CreateProductCommand request, CancellationToken cancellationToken)
+        {
+            var prod = _mapper.Map<Product>(request);
+
+            prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
+
+            prod.ProductCodes = new List<ProductCode>();
+
+            var pcCode = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+            prod.ProductCodes.Add(pcCode);
+            var pcVTSZ = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+            prod.ProductCodes.Add(pcVTSZ);
+            ProductCode pcEAN = null;
+            if (!string.IsNullOrWhiteSpace(request.EAN))
+            {
+                pcEAN = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+                prod.ProductCodes.Add(pcEAN);
+            }
+
+            prod = await this.AddProductAsync(prod, request.ProductGroupCode, request.OriginCode, request.VatRateCode);
+            return prod;
+        }
+
+        public async Task<int> CreateRangeAsynch(List<CreateProductCommand> requestList, CancellationToken cancellationToken)
+        {
+            var prodList = new List<Product>();
+            var productGroupCodeList = new List<string>();
+            var originCodeList = new List<string>();
+            var vatRateCodeList = new List<string>();
+            foreach (var request in requestList)
+            {
+                var prod = _mapper.Map<Product>(request);
+
+                prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
+
+                prod.ProductCodes = new List<ProductCode>();
+
+                var pcCode = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+                prod.ProductCodes.Add(pcCode);
+                var pcVTSZ = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+                prod.ProductCodes.Add(pcVTSZ);
+                ProductCode pcEAN = null;
+                if (!string.IsNullOrWhiteSpace(request.EAN))
+                {
+                    pcEAN = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+                    prod.ProductCodes.Add(pcEAN);
+                };
+                prodList.Add(prod);
+                productGroupCodeList.Add(request.ProductGroupCode);
+                originCodeList.Add(request.OriginCode);
+                vatRateCodeList.Add(request.VatRateCode);
+            }
+            return await this.AddProductRangeAsync(prodList, productGroupCodeList, originCodeList, vatRateCodeList);
+
+        }
+
+        public async Task<Product> UpdateAsynch(UpdateProductCommand request, CancellationToken cancellationToken)
+        {
+
+
+            var prod = _mapper.Map<Product>(request);
+            prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
+            var pcCode = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+            prod.ProductCodes = new List<ProductCode>();
+            prod.ProductCodes.Add(pcCode);
+            var pcVTSZ = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+            prod.ProductCodes.Add(pcVTSZ);
+
+            ProductCode pcEAN = null;
+            if (!string.IsNullOrWhiteSpace(request.EAN))
+            {
+                pcEAN = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+                prod.ProductCodes.Add(pcEAN);
+            }
+            return await this.UpdateProductAsync(prod, request.ProductGroupCode, request.OriginCode, request.VatRateCode);
+        }
+
+
+        public async Task<int> UpdateRangeAsynch(List<UpdateProductCommand> requestList, CancellationToken cancellationToken)
+        {
+            var prodList = new List<Product>();
+            var productGroupCodeList = new List<string>();
+            var originCodeList = new List<string>();
+            var vatRateCodeList = new List<string>();
+            foreach (var request in requestList)
+            {
+                var prod = _mapper.Map<Product>(request);
+                prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
+                var pcCode = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+                prod.ProductCodes = new List<ProductCode>();
+                prod.ProductCodes.Add(pcCode);
+                var pcVTSZ = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+                prod.ProductCodes.Add(pcVTSZ);
+
+                ProductCode pcEAN = null;
+                if (!string.IsNullOrWhiteSpace(request.EAN))
+                {
+                    pcEAN = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+                    prod.ProductCodes.Add(pcEAN);
+                }
+
+                prodList.Add(prod);
+                productGroupCodeList.Add(request.ProductGroupCode);
+                originCodeList.Add(request.OriginCode);
+                vatRateCodeList.Add(request.VatRateCode);
+            }
+            return await this.UpdateProductRangeAsync(prodList, productGroupCodeList, originCodeList, vatRateCodeList);
+        }
     }
 }

@@ -5,17 +5,21 @@ using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qOffer;
 using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
+using bxBE.Application.Commands.cmdOffer;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
@@ -53,11 +57,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly IOfferLineRepositoryAsync _offerLineRepository;
+        private readonly ICounterRepositoryAsync _counterRepository;
+        private readonly IProductRepositoryAsync _productRepository;
+        private readonly IVatRateRepositoryAsync _vatRateRepository;
+
         private readonly ICacheService<Product> _productCacheService;
 
         public OfferRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            ICacheService<Product> productCacheService) : base(dbContext)
+            ICacheService<Product> productCacheService,
+            ICacheService<Customer> customerCacheService,
+            ICacheService<ProductGroup> productGroupCacheService,
+            ICacheService<Origin> originCacheService,
+            ICacheService<VatRate> vatRateCacheService,
+            IExpiringData<ExpiringDataObject> expiringData
+            ) : base(dbContext)
         {
             _dbContext = dbContext;
 
@@ -67,10 +81,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _offerLineRepository = new OfferLineRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _counterRepository = new CounterRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _vatRateRepository = new VatRateRepositoryAsync(dbContext, modelHelper, mapper, mockData, vatRateCacheService);
             _productCacheService = productCacheService;
         }
-
-
         public async Task<Offer> AddOfferAsync(Offer p_Offer)
         {
 
@@ -417,6 +432,128 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Task<bool> SeedDataAsync(int rowCount)
         {
             throw new System.NotImplementedException();
+        }
+        public async Task<Offer> CreateOfferAsync(CreateOfferCommand request, CancellationToken cancellationToken)
+        {
+            var offer = _mapper.Map<Offer>(request);
+            offer.OfferVersion = 0;
+            offer.Notice = Utils.TidyHtml(offer.Notice);
+
+
+            if (string.IsNullOrWhiteSpace(offer.CurrencyCode))
+            {
+                offer.CurrencyCode = enCurrencyCodes.HUF.ToString();    // Forintos a default
+                offer.ExchangeRate = 1;
+            }
+
+            var counterCode = "";
+            try
+            {
+
+                offer.LatestVersion = true;
+                //Árajánlatszám megállapítása
+                counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
+                offer.OfferNumber = await _counterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);
+                offer.Copies = 1;
+
+                //Tételsorok
+                foreach (var ln in offer.OfferLines)
+                {
+                    var rln = request.OfferLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
+
+
+                    var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
+                    if (prod == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
+                    }
+                    var vatRate = _vatRateRepository.GetVatRateByCode(rln.VatRateCode);
+                    if (vatRate == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
+                    }
+
+                    //	ln.Product = prod;
+                    ln.ProductID = prod.ID;
+                    ln.ProductCode = rln.ProductCode;
+                    ln.NoDiscount = prod.NoDiscount;
+                    //Ez modelből jön: ln.LineDescription = prod.Description;
+
+                    //	ln.VatRate = vatRate;
+                    ln.VatRateID = vatRate.ID;
+                    ln.VatPercentage = vatRate.VatPercentage;
+
+                }
+
+                await this.AddOfferAsync(offer);
+
+                await _counterRepository.FinalizeValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, offer.OfferNumber);
+
+                return offer;
+            }
+            catch (Exception)
+            {
+                if (!string.IsNullOrWhiteSpace(offer.OfferNumber) && !string.IsNullOrWhiteSpace(counterCode))
+                {
+                    await _counterRepository.RollbackValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, offer.OfferNumber);
+                }
+                throw;
+            }
+        }
+
+        public async Task<Offer> ModifyOfferAsync(UpdateOfferCommand request, CancellationToken cancellationToken)
+        {
+            var offer = _mapper.Map<Offer>(request);
+
+            offer.Notice = Utils.TidyHtml(offer.Notice);
+
+            try
+            {
+                //Tételsorok
+                foreach (var ln in offer.OfferLines)
+                {
+                    var rln = request.OfferLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
+
+                    var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
+                    if (prod == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
+                    }
+                    var vatRate = _vatRateRepository.GetVatRateByCode(rln.VatRateCode);
+                    if (vatRate == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
+                    }
+
+                    //	ln.Product = prod;
+                    ln.ProductID = prod.ID;
+                    ln.ProductCode = rln.ProductCode;
+                    ln.NoDiscount = prod.NoDiscount;
+                    //Ez modelből jön: ln.LineDescription = prod.Description;
+
+                    //	ln.VatRate = vatRate;
+                    ln.VatRateID = vatRate.ID;
+                    ln.VatPercentage = vatRate.VatPercentage;
+
+                }
+                if (request.NewOfferVersion)
+                {
+                    offer.OfferVersion++;
+                    offer.ID = 0;
+                    await UpdateOfferAsync(offer);
+                }
+                else
+                {
+                    await this.UpdateOfferAsync(offer);
+                }
+
+
+                return offer;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

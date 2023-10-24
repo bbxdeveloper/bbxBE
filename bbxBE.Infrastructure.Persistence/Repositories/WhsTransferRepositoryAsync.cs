@@ -9,8 +9,10 @@ using bbxBE.Common;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
+using bxBE.Application.Commands.cmdWhsTransfer;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
@@ -32,7 +35,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private readonly IStockRepositoryAsync _stockRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
+        private readonly ICounterRepositoryAsync _counterRepository;
+        private readonly IWarehouseRepositoryAsync _warehouseRepository;
+        private readonly IProductRepositoryAsync _productRepository;
+
         public WhsTransferRepositoryAsync(IApplicationDbContext dbContext,
+                IExpiringData<ExpiringDataObject> expiringData,
                 ICacheService<Product> productCacheService,
                 ICacheService<Customer> customerCacheService,
                 ICacheService<ProductGroup> productGroupCacheService,
@@ -47,7 +55,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
-            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, customerCacheService);
+            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
+            _counterRepository = new CounterRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _warehouseRepository = new WarehouseRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
         }
 
         public async Task<WhsTransfer> AddWhsTransferAsync(WhsTransfer whsTransfer)
@@ -316,5 +327,114 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             throw new System.NotImplementedException();
         }
+
+        public async Task<WhsTransfer> CreateWhsTransferAsynch(CreateWhsTransferCommand request, CancellationToken cancellationToken)
+        {
+            var whsTransfer = _mapper.Map<WhsTransfer>(request);
+            var counterCode = "";
+            try
+            {
+
+                await prepareWhsTransferAsynch(whsTransfer, request.FromWarehouseCode, request.ToWarehouseCode, cancellationToken);
+
+                if (whsTransfer.FromWarehouseID == whsTransfer.ToWarehouseID)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERSAMEWHS));
+                }
+
+                whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
+
+
+                var prefix = "WHT";
+                var whs = whsTransfer.FromWarehouseID.ToString().PadLeft(3, '0');
+                counterCode = String.Format($"{prefix}_{whs}");
+                whsTransfer.WhsTransferNumber = await _counterRepository.GetNextValueAsync(counterCode, whsTransfer.FromWarehouseID);
+                whsTransfer.Copies = 1;
+                whsTransfer.WhsTransferStatus = enWhsTransferStatus.READY.ToString();
+
+                await this.AddWhsTransferAsync(whsTransfer);
+                await _counterRepository.FinalizeValueAsync(counterCode, whsTransfer.FromWarehouseID, whsTransfer.WhsTransferNumber);
+                return whsTransfer;
+
+            }
+            catch (Exception)
+            {
+                if (!string.IsNullOrWhiteSpace(whsTransfer.WhsTransferNumber) && !string.IsNullOrWhiteSpace(counterCode))
+                {
+                    await _counterRepository.RollbackValueAsync(counterCode, whsTransfer.FromWarehouseID, whsTransfer.WhsTransferNumber);
+                }
+                throw;
+            }
+        }
+
+        public async Task<WhsTransfer> UpdateWhsTransferAsynch(UpdateWhsTransferCommand request, CancellationToken cancellationToken)
+        {
+            var whsTransfer = _mapper.Map<WhsTransfer>(request);
+            try
+            {
+
+                await prepareWhsTransferAsynch(whsTransfer, request.FromWarehouseCode, request.ToWarehouseCode, cancellationToken);
+                if (whsTransfer.FromWarehouseID == whsTransfer.ToWarehouseID)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WHSTRANSFERSAMEWHS));
+                }
+                whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
+
+                whsTransfer = await this.UpdateWhsTransferAsync(whsTransfer);
+                return whsTransfer;
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task prepareWhsTransferAsynch(WhsTransfer whsTransfer, string fromWarehouseCode, string toWarehouseCode, CancellationToken cancellationToken)
+        {
+            try
+            {
+
+                var fromWarehouse = await _warehouseRepository.GetWarehouseByCodeAsync(fromWarehouseCode);
+                if (fromWarehouse == null)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, fromWarehouseCode));
+                }
+                whsTransfer.FromWarehouseID = fromWarehouse.ID;
+
+
+
+                var toWarehouse = await _warehouseRepository.GetWarehouseByCodeAsync(toWarehouseCode);
+                if (toWarehouse == null)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, toWarehouseCode));
+                }
+                whsTransfer.ToWarehouseID = toWarehouse.ID;
+
+                //Tételsorok előfeldolgozása
+                var lineErrors = new List<string>();
+                foreach (var ln in whsTransfer.WhsTransferLines)
+                {
+                    var rln = whsTransfer.WhsTransferLines.SingleOrDefault(i => i.WhsTransferLineNumber == ln.WhsTransferLineNumber);
+
+                    var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
+                    if (prod == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
+                    }
+
+                    ln.ProductID = prod.ID;
+                    ln.ProductCode = rln.ProductCode;
+                    //ln.Product = prod;
+
+                }
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
     }
 }

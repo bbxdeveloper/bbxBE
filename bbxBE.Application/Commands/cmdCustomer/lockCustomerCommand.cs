@@ -1,5 +1,4 @@
-﻿using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
+﻿using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
 using bbxBE.Common.ExpiringData;
@@ -25,11 +24,9 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
     public class LockCustomerCommandHandler : IRequestHandler<LockCustomerCommand, Response<string>>
     {
-        private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly IExpiringData<ExpiringDataObject> _expiringData;
-        public LockCustomerCommandHandler(ICustomerRepositoryAsync customerRepository, IExpiringData<ExpiringDataObject> expiringData)
+        public LockCustomerCommandHandler(IExpiringData<ExpiringDataObject> expiringData)
         {
-            _customerRepository = customerRepository;
             _expiringData = expiringData;
         }
 

@@ -1,10 +1,8 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -56,9 +54,6 @@ namespace bbxBE.Domain.Entities
         [Description("Elhelyezés")]
         public virtual Location Location { get; set; }
 
-        [ColumnLabel("Leltári tételek")]
-        [Description("Leltári tételek")]
-        public virtual List<InvCtrl> InvCtrlItems { get; set; }
 
     }
 }

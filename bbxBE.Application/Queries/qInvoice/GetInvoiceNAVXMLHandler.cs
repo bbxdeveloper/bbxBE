@@ -6,6 +6,7 @@ using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.ExpiringData;
 using bbxBE.Common.NAV;
+using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -68,7 +69,16 @@ namespace bbxBE.Application.Queries.qInvoice
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
             }
 
-            var invoiceNAVXML = await bllInvoice.GetInvoiceNAVXMLAsynch(invoice, _invoiceRepository, cancellationToken);
+            Invoice originalInvoice = null;
+            if (invoice.InvoiceCorrection)
+            {
+                originalInvoice = await _invoiceRepository.GetInvoiceRecordAsync(invoice.OriginalInvoiceID.Value, true);
+                if (originalInvoice == null)
+                {
+                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, invoice.OriginalInvoiceID.Value));
+                }
+            }
+            var invoiceNAVXML = bllInvoice.GetInvoiceNAVXML(invoice, cancellationToken);
             var xmlStr = XMLUtil.Object2XMLString<InvoiceData>(invoiceNAVXML, Encoding.UTF8, NAVGlobal.XMLNamespaces);
 
             // response wrapper

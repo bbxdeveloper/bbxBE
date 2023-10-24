@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
@@ -41,12 +40,10 @@ namespace bbxBE.Application.Commands.cmdInvoice
     public class PrintInvoiceCommandHandler : IRequestHandler<PrintInvoiceCommand, FileStreamResult>
     {
         private readonly IInvoiceRepositoryAsync _invoiceRepository;
-        private readonly IMapper _mapper;
 
-        public PrintInvoiceCommandHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper)
+        public PrintInvoiceCommandHandler(IInvoiceRepositoryAsync invoiceRepository)
         {
             _invoiceRepository = invoiceRepository;
-            _mapper = mapper;
         }
 
         public async Task<FileStreamResult> Handle(PrintInvoiceCommand request, CancellationToken cancellationToken)

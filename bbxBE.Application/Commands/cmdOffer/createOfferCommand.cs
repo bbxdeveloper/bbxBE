@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using bbxBE.Application.BLL;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -152,41 +149,15 @@ namespace bxBE.Application.Commands.cmdOffer
     public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Response<Offer>>
     {
         private readonly IOfferRepositoryAsync _offerRepository;
-        private readonly ICounterRepositoryAsync _counterRepository;
-        private readonly ICustomerRepositoryAsync _customerRepository;
-        private readonly IProductRepositoryAsync _productRepository;
-        private readonly IVatRateRepositoryAsync _vatRateRepository;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
-        public CreateOfferCommandHandler(IOfferRepositoryAsync OfferRepository,
-                        ICounterRepositoryAsync CounterRepository,
-                        ICustomerRepositoryAsync CustomerRepository,
-                        IProductRepositoryAsync ProductRepository,
-                        IVatRateRepositoryAsync VatRateRepository,
-                        IMapper mapper, IConfiguration configuration)
+        public CreateOfferCommandHandler(IOfferRepositoryAsync OfferRepository)
         {
             _offerRepository = OfferRepository;
-            _counterRepository = CounterRepository;
-            _customerRepository = CustomerRepository;
-            _productRepository = ProductRepository;
-            _vatRateRepository = VatRateRepository;
-
-
-            _mapper = mapper;
-            _configuration = configuration;
         }
 
         public async Task<Response<Offer>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
         {
-            var offer = await bllOffer.CreateOffer(request,
-                                    _mapper,
-                                    _offerRepository,
-                                    _counterRepository,
-                                    _customerRepository,
-                                    _productRepository,
-                                    _vatRateRepository,
-                                    cancellationToken);
+            var offer = await _offerRepository.CreateOfferAsync(request, cancellationToken);
             return new Response<Offer>(offer);
         }
     }

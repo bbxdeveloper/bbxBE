@@ -31,10 +31,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly IExpiringData<ExpiringDataObject> _expiringData;
         private readonly ICacheService<Customer> _cacheService;
 
         public CustomerRepositoryAsync(IApplicationDbContext dbContext,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData, IExpiringData<ExpiringDataObject> expiringData,
             ICacheService<Customer> customerCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -43,6 +44,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _expiringData = expiringData;
             _cacheService = customerCacheService;
         }
 
@@ -111,14 +113,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         }
 
-        public async Task<Customer> UpdateCustomerAsync(Customer p_customer, IExpiringData<ExpiringDataObject> expiringData)
+        public async Task<Customer> UpdateCustomerAsync(Customer p_customer)
         {
             _cacheService.AddOrUpdate(p_customer);
             await UpdateAsync(p_customer);
 
             //szemafr kiütések
             var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + p_customer.ID.ToString();
-            await expiringData.DeleteItemAsync(key);
+            await _expiringData.DeleteItemAsync(key);
 
             return p_customer;
         }

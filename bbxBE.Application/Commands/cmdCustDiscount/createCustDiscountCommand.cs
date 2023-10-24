@@ -1,22 +1,15 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
-using bbxBE.Application.BLL;
-using bbxBE.Common.Consts;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using bbxBE.Common.ExpiringData;
 
 namespace bxBE.Application.Commands.cmdCustDiscount
 {
@@ -24,7 +17,7 @@ namespace bxBE.Application.Commands.cmdCustDiscount
     {
         public class CustDiscountItem
         {
- 
+
             [ColumnLabel("Termékcsoport ID")]
             [Description("Termékcsoport ID")]
             public long ProductGroupID { get; set; }
@@ -44,18 +37,14 @@ namespace bxBE.Application.Commands.cmdCustDiscount
     {
         private readonly ICustDiscountRepositoryAsync _custDiscountRepository;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
-        private readonly IExpiringData<ExpiringDataObject> _expiringData;
 
-        public CreateCustDiscountCommandHandler(ICustDiscountRepositoryAsync custDiscountRepository, 
-                IMapper mapper, 
+        public CreateCustDiscountCommandHandler(ICustDiscountRepositoryAsync custDiscountRepository,
+                IMapper mapper,
                 IConfiguration configuration,
                 IExpiringData<ExpiringDataObject> expiringData)
         {
             _custDiscountRepository = custDiscountRepository;
             _mapper = mapper;
-            _configuration = configuration;
-            _expiringData = expiringData;
         }
 
         public async Task<Response<List<CustDiscount>>> Handle(CreateCustDiscountCommand request, CancellationToken cancellationToken)
@@ -74,7 +63,7 @@ namespace bxBE.Application.Commands.cmdCustDiscount
                 }
                 );
             }
-            var res = await _custDiscountRepository.MaintanenceCustDiscountRangeAsync(CustDiscountItems, request.CustomerID, _expiringData);
+            var res = await _custDiscountRepository.MaintanenceCustDiscountRangeAsync(CustDiscountItems, request.CustomerID);
             return new Response<List<CustDiscount>>(CustDiscountItems);
         }
 

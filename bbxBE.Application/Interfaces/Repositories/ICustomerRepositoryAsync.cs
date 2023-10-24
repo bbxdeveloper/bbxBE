@@ -1,7 +1,6 @@
 ﻿using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Common.Enums;
-using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,7 +19,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Customer> AddCustomerAsync(Customer p_customer);
         Task<int> AddCustomerRangeAsync(List<Customer> p_customerList);
         Task<Customer> DeleteCustomerAsync(long ID);
-        Task<Customer> UpdateCustomerAsync(Customer p_customer, IExpiringData<ExpiringDataObject> expiringData);
+        Task<Customer> UpdateCustomerAsync(Customer p_customer);
         Task<Customer> UpdateCustomerLatestDiscountPercentAsync(long ID, decimal LatestDiscountPercent);
         Customer GetOwnData();
         Customer GetCustomerRecord(long customerID);

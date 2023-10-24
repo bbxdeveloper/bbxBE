@@ -9,6 +9,7 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
 using LinqKit;
@@ -70,7 +71,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<Product> _productcacheService;
 
         public InvCtrlRepositoryAsync(IApplicationDbContext dbContext,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+                IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+                IExpiringData<ExpiringDataObject> expiringData,
                 ICacheService<Product> productCacheService,
                 ICacheService<Customer> customerCacheService,
                 ICacheService<ProductGroup> productGroupCacheService,
@@ -86,7 +88,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
             _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
             _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
-            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, customerCacheService);
+            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
             _productcacheService = productCacheService;
         }
 
