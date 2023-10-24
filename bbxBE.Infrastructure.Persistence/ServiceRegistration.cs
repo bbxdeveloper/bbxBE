@@ -3,11 +3,13 @@ using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Caches;
 using bbxBE.Infrastructure.Persistence.Contexts;
+using bbxBE.Infrastructure.Persistence.Extensions;
 using bbxBE.Infrastructure.Persistence.Migrations;
 using bbxBE.Infrastructure.Persistence.Repositories;
 using bbxBE.Infrastructure.Persistence.Repository;
 using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -25,7 +27,7 @@ namespace bbxBE.Infrastructure.Persistence
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseInMemoryDatabase("ApplicationDb"));
 
-                services.AddDbContext<ApplicationGlobalDbContext>(options =>
+                services.AddDbContext<ApplicationQueryDbContext>(options =>
                     options.UseInMemoryDatabase("ApplicationDb"));
             }
             else
@@ -35,16 +37,16 @@ namespace bbxBE.Infrastructure.Persistence
                    options.UseSqlServer(
                        configuration.GetConnectionString("bbxdbconnection"),
                        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)
-                       ),
-                       //                       contextLifetime: ServiceLifetime.Transient,
-                       contextLifetime: ServiceLifetime.Transient,
+                       )
+                         .ReplaceService<IDbContextTransactionManager, NestedTransactionManager>(),
+                      contextLifetime: ServiceLifetime.Transient,
                         optionsLifetime: ServiceLifetime.Singleton
                );
 
-                services.AddDbContext<ApplicationGlobalDbContext>(options =>
+                services.AddDbContext<ApplicationQueryDbContext>(options =>
                     options.UseSqlServer(
                         configuration.GetConnectionString("bbxdbconnection"),
-                        b => b.MigrationsAssembly(typeof(ApplicationGlobalDbContext).Assembly.FullName)
+                        b => b.MigrationsAssembly(typeof(ApplicationQueryDbContext).Assembly.FullName)
                         ),
                         contextLifetime: ServiceLifetime.Singleton,
                          optionsLifetime: ServiceLifetime.Singleton
@@ -56,11 +58,11 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddSingleton<DapperContext>();
 
             //Connection DB létrehozásnak
-            services.AddSingleton<Database>();
+            services.AddSingleton<DatabaseMigration>();
 
             services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
             services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
-            services.AddSingleton<IApplicationGlobalDbContext, ApplicationGlobalDbContext>();
+            services.AddSingleton<IApplicationQueryDbContext, ApplicationQueryDbContext>();
 
             services.AddTransient<IUserRepositoryAsync, UserRepositoryAsync>();
             services.AddTransient<ICustomerRepositoryAsync, CustomerRepositoryAsync>();
@@ -83,11 +85,6 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IZipRepositoryAsync, ZipRepositoryAsync>();
             services.AddTransient<ILocationRepositoryAsync, LocationRepositoryAsync>();
             services.AddTransient<IWhsTransferRepositoryAsync, WhsTransferRepositoryAsync>();
-
-            services.AddTransient<IProductGlobalRepositoryAsync, ProductGlobalRepositoryAsync>();
-            services.AddTransient<IProductGroupGlobalRepositoryAsync, ProductGroupGlobalRepositoryAsync>();
-            services.AddTransient<IOriginGlobalRepositoryAsync, OriginGlobalRepositoryAsync>();
-            services.AddTransient<IProductCodeGlobalRepositoryAsync, ProductCodeGlobalRepositoryAsync>();
 
 
             services.AddSingleton<ICacheService<Product>, ProductCacheService>();

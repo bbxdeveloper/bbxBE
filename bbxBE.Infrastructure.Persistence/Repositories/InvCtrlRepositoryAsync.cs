@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -8,6 +9,7 @@ using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
 using LinqKit;
@@ -69,26 +71,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<Product> _productcacheService;
 
         public InvCtrlRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<InvCtrl> dataShaperInvCtrl,
-            IDataShapeHelper<GetInvCtrlViewModel> dataShaperGetInvCtrlViewModel,
-            IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IProductRepositoryAsync productRepository,
-            IStockRepositoryAsync stockRepository,
-            IWarehouseRepositoryAsync warehouseRepository,
-            ICacheService<Product> productCacheService,
-            ICustomerRepositoryAsync customerRepository) : base(dbContext)
+                IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+                IExpiringData<ExpiringDataObject> expiringData,
+                ICacheService<Product> productCacheService,
+                ICacheService<Customer> customerCacheService,
+                ICacheService<ProductGroup> productGroupCacheService,
+                ICacheService<Origin> originCacheService,
+                ICacheService<VatRate> vatRateCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperInvCtrl = dataShaperInvCtrl;
-            _dataShaperGetInvCtrlViewModel = dataShaperGetInvCtrlViewModel;
-            _dataShaperGetStockViewModel = dataShaperGetStockViewModel;
+            _dataShaperInvCtrl = new DataShapeHelper<InvCtrl>();
+            _dataShaperGetInvCtrlViewModel = new DataShapeHelper<GetInvCtrlViewModel>();
+            _dataShaperGetStockViewModel = new DataShapeHelper<GetStockViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _productRepository = productRepository;
-            _stockRepository = stockRepository;
-            _customerRepository = customerRepository;
+            _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
             _productcacheService = productCacheService;
         }
 
@@ -302,7 +302,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 .OrderByDescending(o => o.ID)
                 .FirstOrDefaultAsync();
 
- 
+
             if (item == null)
             {
                 return null;

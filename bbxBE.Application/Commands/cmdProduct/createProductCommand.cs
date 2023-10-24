@@ -1,21 +1,11 @@
-﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
-using bbxBE.Application.BLL;
-using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bxBE.Application.Commands.cmdProduct
 {
@@ -78,20 +68,16 @@ namespace bxBE.Application.Commands.cmdProduct
 
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Response<Product>>
     {
-        private readonly IProductRepositoryAsync _ProductRepository;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
+        private readonly IProductRepositoryAsync _productRepository;
 
-        public CreateProductCommandHandler(IProductRepositoryAsync ProductRepository, IMapper mapper, IConfiguration configuration)
+        public CreateProductCommandHandler(IProductRepositoryAsync productRepository)
         {
-            _ProductRepository = ProductRepository;
-            _mapper = mapper;
-            _configuration = configuration;
+            _productRepository = productRepository;
         }
 
         public async Task<Response<Product>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            var prod = await bllProduct.CreateAsynch(request, _ProductRepository, _mapper, cancellationToken);
+            var prod = await _productRepository.CreateAsynch(request, cancellationToken);
             return new Response<Product>(prod);
         }
     }

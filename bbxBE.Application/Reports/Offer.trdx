@@ -203,7 +203,7 @@
               </TableCell>
               <TableCell RowIndex="1" ColumnIndex="8" RowSpan="1" ColumnSpan="1">
                 <ReportItem>
-                  <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Format="{0:## ### ##0.00}" Name="textBox49" StyleName="Normal.TableBody">
+                  <TextBox Width="20mm" Height="5mm" Left="0cm" Top="0cm" Value="=Sum(Fields.netAmount)" Format="{0:## ### ##0.00}" Name="textBox49" StyleName="Normal.TableBody">
                     <Style TextAlign="Right" VerticalAlign="Middle">
                       <Font Size="7pt" Bold="True" />
                       <BorderStyle Top="Solid" Bottom="Solid" Left="Solid" Right="Solid" />

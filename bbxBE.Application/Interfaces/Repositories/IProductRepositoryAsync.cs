@@ -2,7 +2,9 @@
 using bbxBE.Application.Queries.qProduct;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
+using bxBE.Application.Commands.cmdProduct;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace bbxBE.Application.Interfaces.Repositories
@@ -29,5 +31,11 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<List<Product>> GetAllProductsFromDBAsync();
         List<GetProductViewModel> GetAllProductsFromCache();
         Task RefreshProductCache();
+
+        Task<Product> CreateAsynch(CreateProductCommand request, CancellationToken cancellationToken);
+        Task<int> CreateRangeAsynch(List<CreateProductCommand> requestList, CancellationToken cancellationToken);
+        Task<Product> UpdateAsynch(UpdateProductCommand request, CancellationToken cancellationToken);
+        Task<int> UpdateRangeAsynch(List<UpdateProductCommand> requestList, CancellationToken cancellationToken);
+
     }
 }

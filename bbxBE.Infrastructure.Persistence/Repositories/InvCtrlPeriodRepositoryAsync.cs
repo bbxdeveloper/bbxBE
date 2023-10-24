@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -6,6 +7,7 @@ using bbxBE.Application.Queries.qInvCtrlPeriod;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
 using LinqKit;
@@ -27,29 +29,30 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private readonly IStockRepositoryAsync _StockRepository;
+        private readonly IStockRepositoryAsync _stockRepository;
         private readonly IInvCtrlRepositoryAsync _invCtrlRepository;
         private readonly ICustomerRepositoryAsync _customerRepository;
 
         public InvCtrlPeriodRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<InvCtrlPeriod> dataShaperInvCtrlPeriod,
-            IDataShapeHelper<GetInvCtrlPeriodViewModel> dataShaperGetInvCtrlPeriodViewModel,
-            IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IStockRepositoryAsync stockRepository,
-            IInvCtrlRepositoryAsync invCtrlRepository,
+            IExpiringData<ExpiringDataObject> expiringData,
+            ICacheService<Product> productCacheService,
+            ICacheService<Customer> customerCacheService,
+            ICacheService<ProductGroup> productGroupCacheService,
+            ICacheService<Origin> originCacheService,
+            ICacheService<VatRate> vatRateCacheService,
             ICustomerRepositoryAsync customerRepository) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperInvCtrlPeriod = dataShaperInvCtrlPeriod;
-            _dataShaperGetInvCtrlPeriodViewModel = dataShaperGetInvCtrlPeriodViewModel;
-            _dataShaperGetStockViewModel = dataShaperGetStockViewModel;
+            _dataShaperInvCtrlPeriod = new DataShapeHelper<InvCtrlPeriod>();
+            _dataShaperGetInvCtrlPeriodViewModel = new DataShapeHelper<GetInvCtrlPeriodViewModel>();
+            _dataShaperGetStockViewModel = new DataShapeHelper<GetStockViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _StockRepository = stockRepository;
-            _invCtrlRepository = invCtrlRepository;
-            _customerRepository = customerRepository;
+            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _invCtrlRepository = new InvCtrlRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, productCacheService, customerCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
         }
         public async Task<InvCtrlPeriod> AddInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)
         {
@@ -250,7 +253,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 try
                 {
                     var invCtrlItems = await _dbContext.InvCtrl.AsNoTracking().Where(x => x.InvCtlPeriodID == ID).ToListAsync();
-                    var stockList = await _StockRepository.MaintainStockByInvCtrlAsync(invCtrlItems, ownData,
+                    var stockList = await _stockRepository.MaintainStockByInvCtrlAsync(invCtrlItems, ownData,
                                 invCtrlPeriod.Warehouse.WarehouseCode + "-" + invCtrlPeriod.Warehouse.WarehouseDescription + " " + invCtrlPeriod.DateFrom.ToString(bbxBEConsts.DEF_DATEFORMAT) + "-" + invCtrlPeriod.DateTo.ToString(bbxBEConsts.DEF_DATEFORMAT));
 
 
