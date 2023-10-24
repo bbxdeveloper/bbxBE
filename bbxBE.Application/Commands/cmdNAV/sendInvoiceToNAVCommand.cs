@@ -57,13 +57,12 @@ namespace bbxBE.Application.Commands.cmdNAV
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, (request.InvoiceNumber)));
             }
-
-            var invoiceNAVXML = await bllInvoice.GetInvoiceNAVXMLAsynch(invoice, _invoiceRepository, cancellationToken);
+            var invoiceNAVXML = await _invoiceRepository.GetInvoiceNAVXMLAsynch(invoice, cancellationToken);
             var xmlStr = XMLUtil.Object2XMLString<InvoiceData>(invoiceNAVXML, Encoding.UTF8, NAVGlobal.XMLNamespaces);
 
             var bllNavObj = new bllNAV(_NAVSettings, _logger);
 
-            var xml = bllNavObj.get
+            //            var xml = bllNavObj.get
 
 
             return new Response<long>(1);

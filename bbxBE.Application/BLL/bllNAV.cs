@@ -2,6 +2,7 @@
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Common;
 using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
@@ -13,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Text;
 
 namespace bbxBE.Application.BLL
@@ -264,7 +264,7 @@ namespace bbxBE.Application.BLL
             TaxpayerDataType result = null;
             string response = "";
             string msg = "";
-            if (bllNAV.NAVPost(_NAVSettings.TokenExchange, ter.header.requestId, reqTer, DEF_procname, out response))
+            if (bllNAV.NAVPost(_NAVSettings.TokenExchange, ter.header.requestId, reqTer, MethodBase.GetCurrentMethod().Name, out response))
             {
 
                 TokenExchangeResponse resp = XMLUtil.XMLStringToObject<TokenExchangeResponse>(response);
@@ -273,31 +273,32 @@ namespace bbxBE.Application.BLL
 
                 var qtpTer = XMLUtil.Object2XMLString<QueryTaxpayerRequest>(qtp, Encoding.UTF8, NAVGlobal.XMLNamespaces);
 
-                if (bllNAV.NAVPost(_NAVSettings.QueryTaxPayer, qtp.header.requestId, qtpTer, DEF_procname, out response))
+                if (bllNAV.NAVPost(_NAVSettings.QueryTaxPayer, qtp.header.requestId, qtpTer, MethodBase.GetCurrentMethod().Name, out response))
                 {
 
                     QueryTaxpayerResponse respQtp = XMLUtil.XMLStringToObject<QueryTaxpayerResponse>(response);
                     if (respQtp.taxpayerData != null)
                     {
                         result = respQtp.taxpayerData;
-                        msg = String.Format(bbxBEConsts.NAV_QTAXPAYERT_OK, DEF_procname, request.Taxnumber);
+                        msg = String.Format(bbxBEConsts.NAV_QTAXPAYERT_OK, MethodBase.GetCurrentMethod().Name, request.Taxnumber);
                         Console.WriteLine(msg);
                     }
                     else
                     {
-                        msg = String.Format(bbxBEConsts.NAV_QTAXPAYER_ERR, DEF_procname, request.Taxnumber, response);
+                        msg = String.Format(bbxBEConsts.NAV_QTAXPAYER_ERR, MethodBase.GetCurrentMethod().Name, request.Taxnumber, response);
                     }
 
                 }
             }
             else
             {
-                msg = String.Format(bbxBEConsts.NAV_QTAXPAYER_TOKEN_ERR, DEF_procname, request.Taxnumber, response);
+                msg = String.Format(bbxBEConsts.NAV_QTAXPAYER_TOKEN_ERR, MethodBase.GetCurrentMethod().Name, request.Taxnumber, response);
             }
             _logger.LogInformation(msg);
             return result;
         }
 
+        /*
         public static void ProcessSendInvoiceErrorResponse(XChange p_XChange, string p_response, NAVSqliteAccess p_SQLiteDB)
         {
             p_XChange.InvResponse = p_response;
@@ -340,7 +341,8 @@ namespace bbxBE.Application.BLL
             }
         }
 
-        public NAVXChange SendInvoice(string p_InvoiceXML)
+        */
+        public NAVXChange SendManageInvoice(string p_InvoiceXML)
         {
             var result = new NAVXChange();
             var ter = new TokenExchangeRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey);
@@ -348,9 +350,9 @@ namespace bbxBE.Application.BLL
             var reqTer = XMLUtil.Object2XMLString<TokenExchangeRequest>(ter, Encoding.UTF8, NAVGlobal.XMLNamespaces);
             result.TokenTime = DateTime.UtcNow;
             result.TokenRequest = reqTer;
-
+            result.Status = enNAVStatus.CREATED.ToString();
             string resp = "";
-            if (bllNAV.NAVPost(_NAVSettings.TokenExchange, ter.header.requestId, reqTer, DEF_procname, out resp))
+            if (bllNAV.NAVPost(_NAVSettings.TokenExchange, ter.header.requestId, reqTer, MethodBase.GetCurrentMethod().Name, out resp))
             {
                 TokenExchangeResponse tokenResponse = XMLUtil.XMLStringToObject<TokenExchangeResponse>(resp);
 
@@ -359,96 +361,123 @@ namespace bbxBE.Application.BLL
                 result.Token = Convert.ToBase64String(token);
                 result.TokenFuncCode = tokenResponse.result.funcCode.ToString();
                 result.TokenMessage = (tokenResponse.result.errorCode + " " + tokenResponse.result.message).Trim();
+                result.Status = enNAVStatus.TOKEN_SENT.ToString();
 
                 var mar = new ManageInvoiceRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey, _NAVSettings.ExchangeKey,
                     token, new string[] { p_InvoiceXML });
                 var reqManageInvoice = XMLUtil.Object2XMLString<ManageInvoiceRequest>(mar, Encoding.UTF8, NAVGlobal.XMLNamespaces);
 
-
-
-
-            }
-            else
-            {
-                result.TokenResponse = resp;
-                result.TokenFuncCode = FunctionCodeType.ERROR.ToString();
-                result.TokenMessage = String.Format(bbxBEConsts.NAV_TOKENEXCHANGE_ERR, DEF_procname, resp);
-                throw new NAVException(result.TokenMessage);
-            }
-            ///////////////////
-
-
-            try
-            {
-                //1.Token kikérése
-                string o_request = "";
-                string o_response = "";
-                string tokenUri = (p_test ? NAVGlobal.NAV_TOKENEXCHANGE_TEST : NAVGlobal.NAV_TOKENEXCHANGE);
-
-                p_XChange.TokenTime = DateTime.Now.ToString(Global.DATETIMEFORMAT);
-                p_XChange.InvoiceXml = p_InvoiceData;
-
-                if (p_SQLiteDB != null)
-                    p_SQLiteDB.updateObjEx(p_XChange);
-
-                var tokenResp = XNAVGetToken.GetToken(tokenUri, p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey, p_procName, out o_request, out o_response);
-                if (tokenResp != null)
+                resp = "";
+                if (bllNAV.NAVPost(_NAVSettings.ManageInvoice, ter.header.requestId, reqTer, MethodBase.GetCurrentMethod().Name, out resp))
                 {
+                    TokenExchangeResponse tokenResponse = XMLUtil.XMLStringToObject<TokenExchangeResponse>(resp);
 
-                    var token = tokenResp.encodedExchangeToken;
-                    if (token.Length > 0)
+
+                    result.Status = enNAVStatus.DATA_SENT.ToString();
+                    result.SendResponse = resp;
+                    result.SendFuncCode = resp.result.funcCode.ToString();
+                    p_XChange.InvMessage = (miresp.result.errorCode + " " + miresp.result.message).Trim();
+                    p_XChange.TransactionID = miresp.transactionId;
+
+                    bResult = (miresp.result.funcCode == FunctionCodeType.OK);
+
+
+                }
+                else
+                {
+                    result.TokenResponse = resp;
+                    result.TokenFuncCode = FunctionCodeType.ERROR.ToString();
+                    result.TokenMessage = String.Format(bbxBEConsts.NAV_TOKENEXCHANGE_ERR, MethodBase.GetCurrentMethod().Name, resp);
+                    throw new NAVException(result.TokenMessage);
+                }
+                ///////////////////
+
+                /*
+                try
+                {
+                    //1.Token kikérése
+                    string o_request = "";
+                    string o_response = "";
+                    string tokenUri = (p_test ? NAVGlobal.NAV_TOKENEXCHANGE_TEST : NAVGlobal.NAV_TOKENEXCHANGE);
+
+                    p_XChange.TokenTime = DateTime.Now.ToString(Global.DATETIMEFORMAT);
+                    p_XChange.InvoiceXml = p_InvoiceData;
+
+                    if (p_SQLiteDB != null)
+                        p_SQLiteDB.updateObjEx(p_XChange);
+
+                    var tokenResp = XNAVGetToken.GetToken(tokenUri, p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey, p_procName, out o_request, out o_response);
+                    if (tokenResp != null)
                     {
-                        // tokenkérés eredményének beírása a DB-be 
-                        p_XChange.TokenRequest = o_request;
-                        p_XChange.TokenResponse = o_response;
-                        p_XChange.Token = Convert.ToBase64String(token);
-                        p_XChange.TokenFuncCode = tokenResp.result.funcCode.ToString();
-                        p_XChange.TokenMessage = (tokenResp.result.errorCode + " " + tokenResp.result.message).Trim();
 
-                        if (p_SQLiteDB != null)
-                            p_SQLiteDB.updateObjEx(p_XChange);
-
-
-                        //2. Manageinvoice
-                        var mar = new ManageInvoiceRequest(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey, p_XMLXchangeKey, token, new string[] { p_InvoiceData });
-                        var marStr = XMLUtil.Object2XMLString<ManageInvoiceRequest>(mar, Encoding.UTF8, NAVGlobal.XMLNamespaces);
-
-                        string manageInvoiceUri = (p_test ? NAVGlobal.NAV_MANAGEINVOICE_TEST : NAVGlobal.NAV_MANAGEINVOICE);
-
-                        // DB !
-                        p_XChange.InvTime = DateTime.Now.ToString(Global.DATETIMEFORMAT);
-                        p_XChange.InvRequest = marStr;
-
-                        if (p_SQLiteDB != null)
-                            p_SQLiteDB.updateObjEx(p_XChange);
-
-                        var manageInvoieSucceed = (XNAV.Post(manageInvoiceUri, mar.RequestId, marStr, p_procName, out o_response));
-                        if (manageInvoieSucceed)
+                        var token = tokenResp.encodedExchangeToken;
+                        if (token.Length > 0)
                         {
+                            // tokenkérés eredményének beírása a DB-be 
+                            p_XChange.TokenRequest = o_request;
+                            p_XChange.TokenResponse = o_response;
+                            p_XChange.Token = Convert.ToBase64String(token);
+                            p_XChange.TokenFuncCode = tokenResp.result.funcCode.ToString();
+                            p_XChange.TokenMessage = (tokenResp.result.errorCode + " " + tokenResp.result.message).Trim();
 
-                            p_XChange.Status = NAVGlobal.NAV_STATUS_SENT;
-                            p_XChange.InvResponse = o_response;
-                            ManageInvoiceResponse miresp = XMLUtil.XMLStringToObject<ManageInvoiceResponse>(o_response);
+                            if (p_SQLiteDB != null)
+                                p_SQLiteDB.updateObjEx(p_XChange);
 
-                            p_XChange.InvFuncCode = miresp.result.funcCode.ToString();
-                            p_XChange.InvMessage = (miresp.result.errorCode + " " + miresp.result.message).Trim();
-                            p_XChange.TransactionID = miresp.transactionId;
 
-                            bResult = (miresp.result.funcCode == FunctionCodeType.OK);
+                            //2. Manageinvoice
+                            var mar = new ManageInvoiceRequest(p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey, p_XMLXchangeKey, token, new string[] { p_InvoiceData });
+                            var marStr = XMLUtil.Object2XMLString<ManageInvoiceRequest>(mar, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+
+                            string manageInvoiceUri = (p_test ? NAVGlobal.NAV_MANAGEINVOICE_TEST : NAVGlobal.NAV_MANAGEINVOICE);
+
+                            // DB !
+                            p_XChange.InvTime = DateTime.Now.ToString(Global.DATETIMEFORMAT);
+                            p_XChange.InvRequest = marStr;
+
+                            if (p_SQLiteDB != null)
+                                p_SQLiteDB.updateObjEx(p_XChange);
+
+                            var manageInvoieSucceed = (XNAV.Post(manageInvoiceUri, mar.RequestId, marStr, p_procName, out o_response));
+                            if (manageInvoieSucceed)
+                            {
+
+                                p_XChange.Status = NAVGlobal.NAV_STATUS_SENT;
+                                p_XChange.InvResponse = o_response;
+                                ManageInvoiceResponse miresp = XMLUtil.XMLStringToObject<ManageInvoiceResponse>(o_response);
+
+                                p_XChange.InvFuncCode = miresp.result.funcCode.ToString();
+                                p_XChange.InvMessage = (miresp.result.errorCode + " " + miresp.result.message).Trim();
+                                p_XChange.TransactionID = miresp.transactionId;
+
+                                bResult = (miresp.result.funcCode == FunctionCodeType.OK);
+                            }
+                            else
+                            {
+                                XNAV.ProcessGeneralErrorResponse(p_XChange, o_response, p_SQLiteDB);
+                            }
+                            if (p_SQLiteDB != null)
+                                p_SQLiteDB.updateObjEx(p_XChange);
                         }
                         else
                         {
-                            XNAV.ProcessGeneralErrorResponse(p_XChange, o_response, p_SQLiteDB);
+                            // Token hiba nem blokkolja a feldolgozást
+                            //      p_XChange.Status = Global.NAV_STATUS_ERROR;
+                            p_XChange.TokenFuncCode = Global.DEF_EMPTYTOKEN;
+                            p_XChange.TokenMessage = String.Format("{0} Empty token! p_uri:{1}, p_taxnum:{2}, p_techUserLogin:{3}, p_techUserPwd:{4}, p_XMLSignKey:{5}, p_XMLXchangeKey:{6}",
+                                        p_procName, tokenUri, p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey, p_XMLXchangeKey);
+
+                            if (p_SQLiteDB != null)
+                                p_SQLiteDB.updateObjEx(p_XChange);
+
+                            throw new Exception(p_XChange.TokenMessage);
                         }
-                        if (p_SQLiteDB != null)
-                            p_SQLiteDB.updateObjEx(p_XChange);
                     }
                     else
                     {
                         // Token hiba nem blokkolja a feldolgozást
-                        //      p_XChange.Status = Global.NAV_STATUS_ERROR;
-                        p_XChange.TokenFuncCode = Global.DEF_EMPTYTOKEN;
-                        p_XChange.TokenMessage = String.Format("{0} Empty token! p_uri:{1}, p_taxnum:{2}, p_techUserLogin:{3}, p_techUserPwd:{4}, p_XMLSignKey:{5}, p_XMLXchangeKey:{6}",
+                        //    p_XChange.Status = Global.NAV_STATUS_ERROR;
+                        p_XChange.TokenFuncCode = Global.DEF_NULLTOKEN;
+                        p_XChange.TokenMessage = String.Format("{0} GetToken returned null! p_uri:{1}, p_taxnum:{2}, p_techUserLogin:{3}, p_techUserPwd:{4}, p_XMLSignKey:{5}, p_XMLXchangeKey:{6}",
                                     p_procName, tokenUri, p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey, p_XMLXchangeKey);
 
                         if (p_SQLiteDB != null)
@@ -456,31 +485,18 @@ namespace bbxBE.Application.BLL
 
                         throw new Exception(p_XChange.TokenMessage);
                     }
+
+                    return bResult;
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Token hiba nem blokkolja a feldolgozást
-                    //    p_XChange.Status = Global.NAV_STATUS_ERROR;
-                    p_XChange.TokenFuncCode = Global.DEF_NULLTOKEN;
-                    p_XChange.TokenMessage = String.Format("{0} GetToken returned null! p_uri:{1}, p_taxnum:{2}, p_techUserLogin:{3}, p_techUserPwd:{4}, p_XMLSignKey:{5}, p_XMLXchangeKey:{6}",
-                                p_procName, tokenUri, p_taxnum, p_techUserLogin, p_techUserPwd, p_XMLSignKey, p_XMLXchangeKey);
-
-                    if (p_SQLiteDB != null)
-                        p_SQLiteDB.updateObjEx(p_XChange);
-
-                    throw new Exception(p_XChange.TokenMessage);
+                    ExceptionDispatchInfo.Capture(ex).Throw();
                 }
+                return false;
+            }
 
-                return bResult;
+                */
             }
-            catch (Exception ex)
-            {
-                ExceptionDispatchInfo.Capture(ex).Throw();
-            }
-            return false;
+
         }
-
-
-
     }
-}
