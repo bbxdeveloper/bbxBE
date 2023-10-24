@@ -48,9 +48,6 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
             var reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvCtrlICP.trdx", Assembly.GetExecutingAssembly());
             var res = await bllInvCtrl.CreateInvCtrlReportAsynch(_invCtrlRepository, reportTRDX, request, cancellationToken);
 
-
-
-
             return res;
         }
 

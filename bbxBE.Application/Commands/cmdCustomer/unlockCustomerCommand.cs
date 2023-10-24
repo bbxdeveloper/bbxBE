@@ -1,17 +1,7 @@
-﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
-using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
+﻿using bbxBE.Application.Wrappers;
 using bbxBE.Common.Consts;
 using bbxBE.Common.ExpiringData;
-using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,11 +18,9 @@ namespace bbxBE.Application.Commands.cmdCustomer
 
     public class UnlockCustomerCommandHandler : IRequestHandler<UnlockCustomerCommand, Response<string>>
     {
-        private readonly ICustomerRepositoryAsync _customerRepository;
         private readonly IExpiringData<ExpiringDataObject> _expiringData;
-        public UnlockCustomerCommandHandler(ICustomerRepositoryAsync customerRepository, IExpiringData<ExpiringDataObject> expiringData)
+        public UnlockCustomerCommandHandler(IExpiringData<ExpiringDataObject> expiringData)
         {
-            _customerRepository = customerRepository;
             _expiringData = expiringData;
         }
 
