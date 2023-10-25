@@ -310,7 +310,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return item;
         }
-        public async Task<Invoice> GetInvoiceRecordByInvoiceNumberAsync(string invoiceNumner, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
+        public async Task<Invoice> GetInvoiceRecordByInvoiceNumberAsync(string invoiceNumber, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
         {
 
             Invoice item = null;
@@ -318,15 +318,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 case (invoiceQueryTypes.small):
                     item = await getSmallInvoiceQuery()
-                                .Where(x => x.InvoiceNumber == invoiceNumner && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                                .Where(x => x.InvoiceNumber == invoiceNumber && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
                     break;
                 case (invoiceQueryTypes.full):
                     item = await getFullInvoiceQuery()
-                            .Where(x => x.InvoiceNumber == invoiceNumner && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                            .Where(x => x.InvoiceNumber == invoiceNumber && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
                     break;
                 case (invoiceQueryTypes.NAV):
                     item = await getNAVInvoiceQuery()
-                        .Where(x => x.InvoiceNumber == invoiceNumner && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                        .Where(x => x.InvoiceNumber == invoiceNumber && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
                     break;
             }
             return item;
@@ -948,7 +948,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             request.InvoiceLines.Select(s => s.RelDeliveryNoteInvoiceLineID.Value).ToList());
                     }
 
-                    int RealLineNumber = 1;
+                    int LineNumberReference = 1;
 
                     //Javítószámla
 
@@ -981,21 +981,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, request.OriginalInvoiceID.Value));
                         }
 
-                        // Javító bizonylat linenumber meghatározás
+                        // Javító bizonylat ReferenceLineNumber indulóérték meghatározás
                         //      - az eredeti bizonylat linenumber utáni tétel
                         //        + engedmény esetén áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve) sor készül a  NAV-hoz felküldött adatokban
                         //      - már elkészült javítószámlák tétel összesen
                         //        + engedmény esetén már elkészült javítószámlák áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve)
 
                         // eredeti számla
-                        RealLineNumber += OriginalInvoice.InvoiceLines.Count()
+                        LineNumberReference += OriginalInvoice.InvoiceLines.Count()
                                          + (OriginalInvoice.InvoiceLines.Where(a => a.LineDiscountPercent != 0).GroupBy(g => g.VatRateID).Count());
 
                         // már elkészült javítószámlák (láncolt javítás)
                         ModificationInvoices = await this.GetCorrectionInvoiceRecordsByInvoiceID(request.OriginalInvoiceID.Value);
                         ModificationInvoices.ForEach(oi =>
                         {
-                            RealLineNumber += oi.InvoiceLines.Count()
+                            LineNumberReference += oi.InvoiceLines.Count()
                                          + (oi.InvoiceLines.Where(a => a.LineDiscountPercent != 0).GroupBy(g => g.VatRateID).Count());
                         });
 
@@ -1192,10 +1192,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 }
                             }
 
-                            // linenumber véglegesítés javítószámla esetén
-                            ln.LineNumber = (short)(RealLineNumber++);
-                            ln.LineNumberReference = ln.LineNumber;          //Mivel a javítószámlán a CREATE operációt használjuk csak, ezért a LineNumberReference megyegyezik a LineNumber-el
-                                                                             //NAV doc:Az eredeti számla módosítással érintett tételének sorszáma, (lineNumber).Új tétel létrehozása esetén az új tétel sorszáma, az eredeti számla folytatásaként
+                            ln.LineNumberReference = (short)(LineNumberReference++);          //NAV doc:Az eredeti számla módosítással (CREATE) érintett tételének sorszáma, (lineNumber).Új tétel létrehozása esetén az új tétel sorszáma, az eredeti számla folytatásaként
                         }
 
                         //termékdíj

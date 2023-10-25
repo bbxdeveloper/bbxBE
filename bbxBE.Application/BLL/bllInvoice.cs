@@ -539,7 +539,8 @@ namespace bbxBE.Application.BLL
                              p_netaDeclarationSpecified: false);
 
                     invoiceLinesNAV.Add(discountLineNAV);
-                    discountLineNAV.lineNumber = (invoiceLinesNAV.Max(m => m.lineNumber) + 1).ToString();
+                    var maxLineNumber = Int32.Parse(invoiceLinesNAV.Max(m => m.lineNumber)) + 1;
+                    discountLineNAV.lineNumber = maxLineNumber.ToString();
 
 
                     discountLineNAV.lineDescription = discountValue > 0 ? bbxBEConsts.DEF_CHARGE : bbxBEConsts.DEF_DISCOUNT;

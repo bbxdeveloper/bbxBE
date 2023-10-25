@@ -55,8 +55,6 @@ namespace bbxBE.Application.Commands.cmdNAV
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, (request.InvoiceNumber)));
             }
 
-
-
             var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
 
             var resNAVXChange = bllNavObj.SendManageInvoice(invoice);
