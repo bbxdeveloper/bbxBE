@@ -41,7 +41,7 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
 
-        [HttpPost("getxml")]
+        [HttpPost("manageinvoice")]
         public async Task<IActionResult> SendInvoiceToNAV([FromQuery] sendInvoiceToNAVCommand request)
         {
             return Ok(await Mediator.Send(request));

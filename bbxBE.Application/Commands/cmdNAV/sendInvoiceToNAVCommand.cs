@@ -2,25 +2,23 @@ using AutoMapper;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
-using bbxBE.Common;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
-using bbxBE.Common.NAV;
+using bbxBE.Domain.Entities;
 using bbxBE.Domain.Settings;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.ComponentModel;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 
 namespace bbxBE.Application.Commands.cmdNAV
 {
-    public class sendInvoiceToNAVCommand : IRequest<Response<long>>
+    public class sendInvoiceToNAVCommand : IRequest<Response<NAVXChange>>
     {
 
         [ColumnLabel("Bizonylatszám")]
@@ -29,27 +27,26 @@ namespace bbxBE.Application.Commands.cmdNAV
 
     }
 
-    public class sendInvoiceToNAVCommandHandler : IRequestHandler<sendInvoiceToNAVCommand, Response<long>>
+    public class sendInvoiceToNAVCommandHandler : IRequestHandler<sendInvoiceToNAVCommand, Response<NAVXChange>>
     {
         private readonly IInvoiceRepositoryAsync _invoiceRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
+        private readonly ILoggerFactory _loggerFactory;
         private readonly NAVSettings _NAVSettings;
-        private readonly ILogger<sendInvoiceToNAVCommand> _logger;
 
-
-        public sendInvoiceToNAVCommandHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILogger<sendInvoiceToNAVCommand> logger, IConfiguration configuration)
+        public sendInvoiceToNAVCommandHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             _invoiceRepository = invoiceRepository;
             _mapper = mapper;
             _NAVSettings = NAVSettings.Value;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
             _configuration = configuration;
 
         }
 
-        public async Task<Response<long>> Handle(sendInvoiceToNAVCommand request, CancellationToken cancellationToken)
+        public async Task<Response<NAVXChange>> Handle(sendInvoiceToNAVCommand request, CancellationToken cancellationToken)
         {
 
             var invoice = await _invoiceRepository.GetInvoiceRecordByInvoiceNumberAsync(request.InvoiceNumber, invoiceQueryTypes.full);
@@ -57,15 +54,15 @@ namespace bbxBE.Application.Commands.cmdNAV
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, (request.InvoiceNumber)));
             }
-            var invoiceNAVXML = await _invoiceRepository.GetInvoiceNAVXMLAsynch(invoice, cancellationToken);
-            var xmlStr = XMLUtil.Object2XMLString<InvoiceData>(invoiceNAVXML, Encoding.UTF8, NAVGlobal.XMLNamespaces);
-
-            var bllNavObj = new bllNAV(_NAVSettings, _logger);
-
-            //            var xml = bllNavObj.get
 
 
-            return new Response<long>(1);
+
+            var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
+
+            var resNAVXChange = bllNavObj.SendManageInvoice(invoice);
+
+
+            return new Response<NAVXChange>(resNAVXChange);
         }
 
 

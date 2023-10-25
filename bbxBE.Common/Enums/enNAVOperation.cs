@@ -4,9 +4,11 @@ namespace bbxBE.Common.Enums
 {
     public enum enNAVOperation
     {
-        [Description("Létrehozás")]
-        CREATE,
-        [Description("Módosítás")]
-        MODIFY
+        [Description("Nincs művelet")]
+        NOOPERATION,
+        [Description("Bizonylat beküldés")]
+        MANAGEINVOICE,
+        [Description("Bizonylat küldés visszavonása")]
+        MANAGEANNULMENT
     }
 }

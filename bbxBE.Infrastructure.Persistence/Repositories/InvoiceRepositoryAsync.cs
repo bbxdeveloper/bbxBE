@@ -1,8 +1,28 @@
-﻿using System;
+﻿using AutoMapper;
+using bbxBE.Application.BLL;
+using bbxBE.Application.Helpers;
+using bbxBE.Application.Interfaces;
+using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qInvoice;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
+using bbxBE.Common.NAV;
+using bbxBE.Domain.Entities;
+using bbxBE.Infrastructure.Persistence.Repository;
+using bxBE.Application.Commands.cmdInvoice;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
+using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -205,7 +225,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Entity> GetInvoiceAsync(long ID, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
         {
 
-            Invoice item = await GetInvoiceRecordAsync(ID, FullData);
+            Invoice item = await GetInvoiceRecordAsync(ID, invoiceQueryType);
 
             if (item == null)
             {
@@ -955,7 +975,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                                 && (request.InvoiceCorrection.HasValue && request.InvoiceCorrection.Value);
                     if (isInvoiceCorrection)
                     {
-                        OriginalInvoice = await this.GetInvoiceRecordAsync(request.OriginalInvoiceID.Value, true);
+                        OriginalInvoice = await this.GetInvoiceRecordAsync(request.OriginalInvoiceID.Value);
                         if (OriginalInvoice == null)
                         {
                             throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, request.OriginalInvoiceID.Value));
@@ -1264,7 +1284,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 try
                 {
-                    var invoice = await this.GetInvoiceRecordAsync(request.ID, true);
+                    var invoice = await this.GetInvoiceRecordAsync(request.ID);
                     if (invoice == null)
                     {
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));

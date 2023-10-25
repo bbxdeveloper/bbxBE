@@ -58,7 +58,7 @@ namespace bbxBE.Domain.Entities
                 if (value != null)
                     operation = (enNAVOperation)Enum.Parse(typeof(enNAVOperation), value);
                 else
-                    operation = enNAVOperation.CREATE;
+                    operation = enNAVOperation.NOOPERATION;
 
             }
         }

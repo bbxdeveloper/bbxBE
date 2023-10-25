@@ -72,13 +72,13 @@ namespace bbxBE.Application.Queries.qInvoice
             Invoice originalInvoice = null;
             if (invoice.InvoiceCorrection)
             {
-                originalInvoice = await _invoiceRepository.GetInvoiceRecordAsync(invoice.OriginalInvoiceID.Value, true);
+                originalInvoice = await _invoiceRepository.GetInvoiceRecordAsync(invoice.OriginalInvoiceID.Value);
                 if (originalInvoice == null)
                 {
                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, invoice.OriginalInvoiceID.Value));
                 }
             }
-            var invoiceNAVXML = bllInvoice.GetInvoiceNAVXML(invoice, cancellationToken);
+            var invoiceNAVXML = bllInvoice.GetInvoiceNAVXML(invoice);
             var xmlStr = XMLUtil.Object2XMLString<InvoiceData>(invoiceNAVXML, Encoding.UTF8, NAVGlobal.XMLNamespaces);
 
             // response wrapper

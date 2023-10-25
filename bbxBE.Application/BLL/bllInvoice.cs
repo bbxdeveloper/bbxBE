@@ -5,7 +5,6 @@ using bbxBE.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace bbxBE.Application.BLL
 {
@@ -166,7 +165,7 @@ namespace bbxBE.Application.BLL
         }
 
 
-        public static InvoiceData GetInvoiceNAVXML(Invoice invoice, CancellationToken cancellationToken)
+        public static InvoiceData GetInvoiceNAVXML(Invoice invoice)
         {
 
             try
@@ -422,7 +421,15 @@ namespace bbxBE.Application.BLL
                         if (Enum.TryParse<UnitOfMeasureType>(ili.UnitOfMeasure, out um))
                         {
                             invlineNAV.unitOfMeasure = um;
-                            invlineNAV.unitOfMeasureOwn = null;
+                            if (um != UnitOfMeasureType.OWN)
+                            {
+                                invlineNAV.unitOfMeasureOwn = null;
+                            }
+                            else
+                            {
+                                invlineNAV.unitOfMeasureOwn = ili.UnitOfMeasure;    //OWN kód esetén tölteni kell a unitOfMeasureOwn-t is!
+
+                            }
                         }
                         else
                         {
@@ -532,7 +539,7 @@ namespace bbxBE.Application.BLL
                              p_netaDeclarationSpecified: false);
 
                     invoiceLinesNAV.Add(discountLineNAV);
-                    discountLineNAV.lineNumber = (invoiceLinesNAV.Count).ToString();
+                    discountLineNAV.lineNumber = (invoiceLinesNAV.Max(m => m.lineNumber) + 1).ToString();
 
 
                     discountLineNAV.lineDescription = discountValue > 0 ? bbxBEConsts.DEF_CHARGE : bbxBEConsts.DEF_DISCOUNT;
