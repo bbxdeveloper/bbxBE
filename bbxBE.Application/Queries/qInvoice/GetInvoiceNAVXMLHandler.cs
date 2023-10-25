@@ -2,6 +2,7 @@
 using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common;
+using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.ExpiringData;
@@ -11,6 +12,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -20,7 +22,9 @@ namespace bbxBE.Application.Queries.qInvoice
 {
     public class GetInvoiceNAVXML : IRequest<FileStreamResult>
     {
-        public long ID { get; set; }
+        [ColumnLabel("Bizonylatszám")]
+        [Description("Bizonylatszám")]
+        public string InvoiceNumber { get; set; }
 
     }
 
@@ -63,22 +67,22 @@ namespace bbxBE.Application.Queries.qInvoice
         public async Task<FileStreamResult> Handle(GetInvoiceNAVXML request, CancellationToken cancellationToken)
         {
 
-            var invoice = await _invoiceRepository.GetInvoiceRecordAsync(request.ID, true);
+            var invoice = await _invoiceRepository.GetInvoiceRecordByInvoiceNumberAsync(request.InvoiceNumber, invoiceQueryTypes.full);
             if (invoice == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, (request.InvoiceNumber)));
             }
 
             Invoice originalInvoice = null;
             if (invoice.InvoiceCorrection)
             {
-                originalInvoice = await _invoiceRepository.GetInvoiceRecordAsync(invoice.OriginalInvoiceID.Value, true);
+                originalInvoice = await _invoiceRepository.GetInvoiceRecordAsync(invoice.OriginalInvoiceID.Value);
                 if (originalInvoice == null)
                 {
                     throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, invoice.OriginalInvoiceID.Value));
                 }
             }
-            var invoiceNAVXML = bllInvoice.GetInvoiceNAVXML(invoice, cancellationToken);
+            var invoiceNAVXML = bllInvoice.GetInvoiceNAVXML(invoice);
             var xmlStr = XMLUtil.Object2XMLString<InvoiceData>(invoiceNAVXML, Encoding.UTF8, NAVGlobal.XMLNamespaces);
 
             // response wrapper

@@ -1,5 +1,4 @@
-﻿using bbxBE.Common.NAV;
-using System;
+﻿using System;
 using System.Reflection;
 using System.Xml.Serialization;
 
@@ -418,7 +417,7 @@ namespace bbxBE.Common.NAV
                 cserekulcsával végezték, aki a tokent korábban igényelte.
             */
 
-            exchangeToken = p_token.AES_128_ECBDecrypt( p_NAVExchangeKey);
+            exchangeToken = p_token.AES_128_ECBDecrypt(p_NAVExchangeKey);
         }
     }
 
@@ -486,7 +485,7 @@ namespace bbxBE.Common.NAV
         }
     }
 
-   
+
     public partial class QueryInvoiceDigestRequestType : BasicOnlineInvoiceRequestType
     {
         public QueryInvoiceDigestRequestType() { }
@@ -547,7 +546,7 @@ namespace bbxBE.Common.NAV
             this.invoiceNumberQuery = new InvoiceNumberQueryType() { invoiceNumber = p_invoiceNumber, invoiceDirection = p_invoiceDirection };
         }
     }
-   public partial class QueryTaxpayerRequestType : BasicOnlineInvoiceRequestType
+    public partial class QueryTaxpayerRequestType : BasicOnlineInvoiceRequestType
     {
         public QueryTaxpayerRequestType() { }
         public QueryTaxpayerRequestType(string p_taxnum, string p_techUserLogin, string p_techUserPwd, string p_XMLSignKey,

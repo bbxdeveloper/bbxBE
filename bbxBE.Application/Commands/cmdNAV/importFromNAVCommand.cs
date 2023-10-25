@@ -41,23 +41,23 @@ namespace bbxBE.Application.Commands.cmdNAV
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
+        private readonly ILoggerFactory _loggerFactory;
         private readonly NAVSettings _NAVSettings;
-        private readonly ILogger<importFromNAVCommand> _logger;
 
 
-        public getIncomingInvoicesNAVCommandHandler(IInvoiceRepositoryAsync InvoiceRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILogger<importFromNAVCommand> logger, IConfiguration configuration)
+        public getIncomingInvoicesNAVCommandHandler(IInvoiceRepositoryAsync InvoiceRepository, IMapper mapper, ILoggerFactory loggerFactory, IOptions<NAVSettings> NAVSettings, IConfiguration configuration)
         {
             _InvoiceRepository = InvoiceRepository;
             _mapper = mapper;
             _NAVSettings = NAVSettings.Value;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
             _configuration = configuration;
 
         }
 
         public async Task<Response<long>> Handle(importFromNAVCommand request, CancellationToken cancellationToken)
         {
-            var bllNavObj = new bllNAV(_NAVSettings, _logger);
+            var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
             var invoicesFromNav = bllNavObj.QueryInvoiceDigest(request);
             if (invoicesFromNav != null)
             {

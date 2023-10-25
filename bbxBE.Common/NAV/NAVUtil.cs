@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace bbxBE.Common.NAV
 {
@@ -53,10 +48,13 @@ namespace bbxBE.Common.NAV
                 return Convert.ToBase64String(encryptedStr);
             }
 
-            public static string DecryptString(string rawCryptedString, string key, string IV = null)
+            public static string DecryptFromBase64String(string rawBase64CryptedString, string key, string IV = null)
+            {
+                return Decrypt(Convert.FromBase64String(rawBase64CryptedString), key, IV);
+            }
+            public static string Decrypt(byte[] cryptedStringBytes, string key, string IV = null)
             {
                 string decryptedString = null;
-                var cryptedString = Convert.FromBase64String(rawCryptedString);
 
 
                 using (Aes aes = Aes.Create())
@@ -74,7 +72,7 @@ namespace bbxBE.Common.NAV
                         aes.IV = Encoding.ASCII.GetBytes(IV);
                     ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-                    using (MemoryStream msDecrypt = new MemoryStream(cryptedString))
+                    using (MemoryStream msDecrypt = new MemoryStream(cryptedStringBytes))
                     {
                         using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                         {
@@ -89,9 +87,12 @@ namespace bbxBE.Common.NAV
                 return decryptedString;
             }
 
+
+
+
         }
 
-      
+
         #endregion AES_128_ECB
 
         #region SHA3_512
@@ -154,7 +155,7 @@ namespace bbxBE.Common.NAV
         #region Comm
         public static string GetRequestID(DateTime src)
         {
-                return "BBX" + src.Ticks.ToString();
+            return "BBX" + src.Ticks.ToString();
         }
         #endregion Comm
 

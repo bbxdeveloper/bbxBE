@@ -12,9 +12,12 @@ namespace bbxBE.Common.NAV
         public const string DEF_softwareDevName = "bbx";
         public const string DEF_softwareDevContact = "bbxdeveloper@gmail.com";
 
-        public const string DEF_annulmentReason = "";
 
-        public const string originalInvoiceNumber = "";
+        public const string DEF_annulmentReason = "Hibás adatszolgáltatás";
+        public const string DEF_withdrawal = "visszavonás";
+        public const string originalInvoiceNumber = "originalInvoiceNumber";
+        public const string DEF_XMLInvoiceAnnulment = "<InvoiceAnnulment";
+
 
 
         public const string NAV_HU = "HU";

@@ -30,16 +30,16 @@ namespace bbxBE.Application.Queries.qCustomer
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
+        private readonly ILoggerFactory _loggerFactory;
         private readonly NAVSettings _NAVSettings;
-        private readonly ILogger<QueryTaxPayer> _logger;
 
 
-        public QueryTaxPayerFromNAVHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILogger<QueryTaxPayer> logger, IConfiguration configuration)
+        public QueryTaxPayerFromNAVHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             _CustomerRepository = customerRepository;
             _mapper = mapper;
             _NAVSettings = NAVSettings.Value;
-            _logger = logger;
+            _loggerFactory = _loggerFactory;
             _configuration = configuration;
 
         }
@@ -47,7 +47,7 @@ namespace bbxBE.Application.Queries.qCustomer
         public async Task<Response<Customer>> Handle(QueryTaxPayer request, CancellationToken cancellationToken)
         {
 
-            var bllNavObj = new bllNAV(_NAVSettings, _logger);
+            var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
             var resTaxpayer = bllNavObj.QueryTaxPayer(request);
             var res = new Customer();
             if (resTaxpayer != null)
