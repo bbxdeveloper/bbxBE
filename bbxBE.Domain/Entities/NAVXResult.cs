@@ -30,7 +30,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Érték")]
         [Description("Érték")]
-        public string Érték { get; set; }
+        public string Value { get; set; }
 
         [ColumnLabel("Sor")]
         [Description("Sor")]

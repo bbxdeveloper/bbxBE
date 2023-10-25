@@ -39,7 +39,6 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<(IList<GetCustomerInvoiceSummary> data, RecordsCount recordsCount)> QueryPagedCustomerInvoiceSummaryAsync(QueryCustomerInvoiceSummary requestParameters);
         Task<IList<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter);
 
-
         Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand request, CancellationToken cancellationToken);
         Task<Invoice> UpdatePricePreviewAsynch(UpdatePricePreviewCommand request, CancellationToken cancellationToken);
 

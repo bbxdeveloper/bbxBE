@@ -162,6 +162,7 @@
 
 
         public const string NAV_TOKENEXCHANGE_ERR = "{0} NAV tokenExchange error result:{1}";
+        public const string NAV_MANAGEINVOICE_ERR = "{0} NAV manageInvoice error result:{1}";
 
         public const string NAV_QINVDIGEST_OK = "{0} NAV queryInvoiceDigest OK, invoiceDirection:{1}, issue:{2}, dateFromUTC:{3}, dateToUTC:{4}";
         public const string NAV_QINVDIGEST_FIRSTPG_ERR = "{0} NAV queryInvoiceDigest firstpage error result:{1}";
@@ -187,8 +188,6 @@
 
         public const string DEF_NAVEMPTYTOKEN = "EMPTYTOKEN";
         public const string DEF_NAVNULLTOKEN = "NULLTOKEN";
-
-
 
         public const string ERR_CITYNOTFOUND = "Város nem található, IRSZ:{0} ";
         public const string ERR_ZIPNOTFOUND = "IRSZ nem található, város:{0} ";

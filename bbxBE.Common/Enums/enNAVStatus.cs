@@ -14,6 +14,8 @@ namespace bbxBE.Common.Enums
         DONE,
         [Description("Hiba")]
         ERROR,
+        [Description("NAV hiba")]
+        NAV_ERROR,
         [Description("Megszakítva")]
         ABORTED,
         [Description("Ismeretlen állapot")]
