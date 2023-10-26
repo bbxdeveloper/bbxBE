@@ -117,12 +117,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         if (invoice.Incoming)
                         {
                             stock.RealQty += invoiceLine.Quantity;
-                            stock.LatestIn = (stock.LatestIn < invoice.InvoiceDeliveryDate ? invoice.InvoiceDeliveryDate : stock.LatestIn);
+                            stock.LatestIn = (stock.LatestIn == null || stock.LatestIn < invoice.InvoiceDeliveryDate ? invoice.InvoiceDeliveryDate : stock.LatestIn);
                         }
                         else
                         {
                             stock.RealQty -= invoiceLine.Quantity;
-                            stock.LatestOut = (stock.LatestOut < invoice.InvoiceDeliveryDate ? invoice.InvoiceDeliveryDate : stock.LatestOut);
+                            stock.LatestOut = (stock.LatestOut == null || stock.LatestOut < invoice.InvoiceDeliveryDate ? invoice.InvoiceDeliveryDate : stock.LatestOut);
                         }
                     }
                     stock.AvgCost = latestStockCard.NAvgCost;
