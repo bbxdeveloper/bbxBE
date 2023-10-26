@@ -4,6 +4,7 @@ using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using bbxBE.Domain.Settings;
@@ -53,6 +54,10 @@ namespace bbxBE.Application.Commands.cmdNAV
             if (invoice == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, (request.InvoiceNumber)));
+            }
+            if (invoice.Incoming || invoice.InvoiceType != enInvoiceType.INV.ToString())
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_NAVINV, (request.InvoiceNumber)));
             }
 
             var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);

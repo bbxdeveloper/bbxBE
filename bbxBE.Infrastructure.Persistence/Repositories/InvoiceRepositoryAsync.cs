@@ -981,6 +981,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, request.OriginalInvoiceID.Value));
                         }
 
+                        //API lerírás: a lineNumberReference(a számla és összes módosításaiban) sorfolytonosan új tételsorszámra mutat és lineOperation értéke „CREATE”.
+                        //
+
                         // Javító bizonylat ReferenceLineNumber indulóérték meghatározás
                         //      - az eredeti bizonylat linenumber utáni tétel
                         //        + engedmény esetén áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve) sor készül a  NAV-hoz felküldött adatokban

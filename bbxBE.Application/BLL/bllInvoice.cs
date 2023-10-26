@@ -330,6 +330,9 @@ namespace bbxBE.Application.BLL
                 ///////////////
                 // S O R O K //
                 ///////////////
+
+                int latestLineNumberReference = 0;
+
                 var invoiceLinesNAV = new List<LineType>();
                 foreach (InvoiceLine ili in invoice.InvoiceLines)
                 {
@@ -387,7 +390,8 @@ namespace bbxBE.Application.BLL
 
                         //API lerírás: a lineNumberReference(a számla és összes módosításaiban) sorfolytonosan új tételsorszámra mutat és lineOperation értéke „CREATE”.
                         //
-                        invlineNAV.lineModificationReference.lineNumberReference = invlineNAV.lineNumber;
+                        invlineNAV.lineModificationReference.lineNumberReference = ili.LineNumberReference.ToString();
+                        latestLineNumberReference = ili.LineNumberReference;
                     }
 
                     //invlineNAV.referencesToOtherLines               //BBX: nem kezeljük
@@ -582,7 +586,8 @@ namespace bbxBE.Application.BLL
 
                         //API lerírás: a lineNumberReference(a számla és összes módosításaiban) sorfolytonosan új tételsorszámra mutat és lineOperation értéke „CREATE”.
                         //
-                        discountLineNAV.lineModificationReference.lineNumberReference = discountLineNAV.lineNumber;
+                        latestLineNumberReference++;
+                        discountLineNAV.lineModificationReference.lineNumberReference = latestLineNumberReference.ToString();
                     }
                 }
                 ///////////////////////

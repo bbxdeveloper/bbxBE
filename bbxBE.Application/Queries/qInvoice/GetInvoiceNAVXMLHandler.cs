@@ -4,10 +4,10 @@ using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.ExpiringData;
 using bbxBE.Common.NAV;
-using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -73,15 +73,12 @@ namespace bbxBE.Application.Queries.qInvoice
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, (request.InvoiceNumber)));
             }
 
-            Invoice originalInvoice = null;
-            if (invoice.InvoiceCorrection)
+            if (invoice.Incoming || invoice.InvoiceType != enInvoiceType.INV.ToString())
             {
-                originalInvoice = await _invoiceRepository.GetInvoiceRecordAsync(invoice.OriginalInvoiceID.Value);
-                if (originalInvoice == null)
-                {
-                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, invoice.OriginalInvoiceID.Value));
-                }
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_NAVINV, (request.InvoiceNumber)));
             }
+
+
             var invoiceNAVXML = bllInvoice.GetInvoiceNAVXML(invoice);
             var xmlStr = XMLUtil.Object2XMLString<InvoiceData>(invoiceNAVXML, Encoding.UTF8, NAVGlobal.XMLNamespaces);
 
