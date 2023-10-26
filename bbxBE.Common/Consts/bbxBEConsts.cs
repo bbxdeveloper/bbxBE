@@ -179,6 +179,7 @@
         public const string ERR_NAV_TAXPAYER = "A lekérdezéshez használt adószámnak 8 jegyűnek kell lennie!";
         public const string ERR_NAVXML_NOINV = "Csak kimenő számláról készíthető NAV beküldő XML, ID:{0}, bizonylatszám:{1} ";
         public const string ERR_NAVXML_VATRATEMISSING = "Hiányzó áfa a kedvezmény XML meghatározásánál, bizonylatszám:{1} ";
+        public const string ERR_NAVINV = "Csak kimenő számlabizonylat köldhető a NAV felé, bizonylatszám:{1} ";
 
 
         public const string DEF_NAVAnnulmentReason = "Hibás adatszolgáltatás";
