@@ -435,6 +435,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     query = query.OrderBy(o => o.Product != null ? o.Product.Description : string.Empty);
                 }
+
                 else
                 {
                     query = query.OrderBy(orderBy);
