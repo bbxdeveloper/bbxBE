@@ -263,6 +263,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     query = query.OrderBy(o => o.Product != null ? o.Product.Description : string.Empty);
                 }
+                else if (orderBy.ToUpper() == bbxBEConsts.FIELD_STOCKCARDDATE)
+                {
+                    query = query.OrderBy(o => o.StockCardDate).ThenBy(o => o.ID);
+
+
+                }
                 else
                 {
                     query = query.OrderBy(orderBy);
@@ -271,7 +277,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             else
             {
                 // ha nincs rendezettség, akkor alapból ey legyen:
-                query = query.OrderBy(o => o.StockCardDate).OrderBy(o => o.ID);
+                query = query.OrderBy(o => o.StockCardDate).ThenBy(o => o.ID);
 
             }
 

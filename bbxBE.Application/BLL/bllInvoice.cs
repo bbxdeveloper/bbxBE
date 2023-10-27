@@ -5,7 +5,6 @@ using bbxBE.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace bbxBE.Application.BLL
 {
@@ -166,7 +165,7 @@ namespace bbxBE.Application.BLL
         }
 
 
-        public static InvoiceData GetInvoiceNAVXML(Invoice invoice, CancellationToken cancellationToken)
+        public static InvoiceData GetInvoiceNAVXML(Invoice invoice)
         {
 
             try
@@ -331,6 +330,9 @@ namespace bbxBE.Application.BLL
                 ///////////////
                 // S O R O K //
                 ///////////////
+
+                int latestLineNumberReference = 0;
+
                 var invoiceLinesNAV = new List<LineType>();
                 foreach (InvoiceLine ili in invoice.InvoiceLines)
                 {
@@ -388,7 +390,8 @@ namespace bbxBE.Application.BLL
 
                         //API lerírás: a lineNumberReference(a számla és összes módosításaiban) sorfolytonosan új tételsorszámra mutat és lineOperation értéke „CREATE”.
                         //
-                        invlineNAV.lineModificationReference.lineNumberReference = invlineNAV.lineNumber;
+                        invlineNAV.lineModificationReference.lineNumberReference = ili.LineNumberReference.ToString();
+                        latestLineNumberReference = ili.LineNumberReference;
                     }
 
                     //invlineNAV.referencesToOtherLines               //BBX: nem kezeljük
@@ -422,7 +425,15 @@ namespace bbxBE.Application.BLL
                         if (Enum.TryParse<UnitOfMeasureType>(ili.UnitOfMeasure, out um))
                         {
                             invlineNAV.unitOfMeasure = um;
-                            invlineNAV.unitOfMeasureOwn = null;
+                            if (um != UnitOfMeasureType.OWN)
+                            {
+                                invlineNAV.unitOfMeasureOwn = null;
+                            }
+                            else
+                            {
+                                invlineNAV.unitOfMeasureOwn = ili.UnitOfMeasure;    //OWN kód esetén tölteni kell a unitOfMeasureOwn-t is!
+
+                            }
                         }
                         else
                         {
@@ -532,7 +543,8 @@ namespace bbxBE.Application.BLL
                              p_netaDeclarationSpecified: false);
 
                     invoiceLinesNAV.Add(discountLineNAV);
-                    discountLineNAV.lineNumber = (invoiceLinesNAV.Count).ToString();
+                    var maxLineNumber = Int32.Parse(invoiceLinesNAV.Max(m => m.lineNumber)) + 1;
+                    discountLineNAV.lineNumber = maxLineNumber.ToString();
 
 
                     discountLineNAV.lineDescription = discountValue > 0 ? bbxBEConsts.DEF_CHARGE : bbxBEConsts.DEF_DISCOUNT;
@@ -574,7 +586,8 @@ namespace bbxBE.Application.BLL
 
                         //API lerírás: a lineNumberReference(a számla és összes módosításaiban) sorfolytonosan új tételsorszámra mutat és lineOperation értéke „CREATE”.
                         //
-                        discountLineNAV.lineModificationReference.lineNumberReference = discountLineNAV.lineNumber;
+                        latestLineNumberReference++;
+                        discountLineNAV.lineModificationReference.lineNumberReference = latestLineNumberReference.ToString();
                     }
                 }
                 ///////////////////////

@@ -1,5 +1,4 @@
-﻿using AngleSharp.Common;
-using AutoMapper;
+﻿using AutoMapper;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
@@ -223,10 +222,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         }
 
-        public async Task<Entity> GetInvoiceAsync(long ID, bool FullData)
+        public async Task<Entity> GetInvoiceAsync(long ID, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
         {
 
-            Invoice item = await this.GetInvoiceRecordAsync(ID, FullData);
+            Invoice item = await GetInvoiceRecordAsync(ID, invoiceQueryType);
 
             if (item == null)
             {
@@ -235,7 +234,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);
 
-            if (!FullData)
+            if (invoiceQueryType == invoiceQueryTypes.small)
             {
                 itemModel.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
                 itemModel.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
@@ -250,7 +249,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Entity> GetAggregateInvoiceAsync(long ID)
         {
 
-            Invoice item = await GetInvoiceRecordAsync(ID, true);
+            Invoice item = await GetInvoiceRecordAsync(ID, invoiceQueryTypes.full);
 
             if (item == null)
             {
@@ -290,37 +289,45 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
-        public async Task<Invoice> GetInvoiceRecordAsync(long ID, bool FullData = true)
+        public async Task<Invoice> GetInvoiceRecordAsync(long ID, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
         {
 
-            Invoice item;
-
-            if (FullData)
+            Invoice item = null;
+            switch (invoiceQueryType)
             {
-                item = await getFullInvoiceQuery()
-                  .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
-            }
-            else
-            {
-                item = await getSmallInvoiceQuery()
-                  .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+                case (invoiceQueryTypes.small):
+                    item = await getSmallInvoiceQuery()
+                      .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+                    break;
+                case (invoiceQueryTypes.full):
+                    item = await getFullInvoiceQuery()
+                      .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+                    break;
+                case (invoiceQueryTypes.NAV):
+                    item = await getNAVInvoiceQuery()
+                      .Where(x => x.ID == ID).AsNoTracking().FirstOrDefaultAsync();
+                    break;
             }
             return item;
         }
-        public async Task<Invoice> GetInvoiceRecordByInvoiceNumberAsync(string invoiceNumner, bool FullData = true)
+        public async Task<Invoice> GetInvoiceRecordByInvoiceNumberAsync(string invoiceNumber, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
         {
 
-            Invoice item;
-
-            if (FullData)
+            Invoice item = null;
+            switch (invoiceQueryType)
             {
-                item = await getFullInvoiceQuery()
-                  .Where(x => x.InvoiceNumber == invoiceNumner && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
-            }
-            else
-            {
-                item = await getSmallInvoiceQuery()
-                  .Where(x => x.InvoiceNumber == invoiceNumner && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                case (invoiceQueryTypes.small):
+                    item = await getSmallInvoiceQuery()
+                                .Where(x => x.InvoiceNumber == invoiceNumber && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                    break;
+                case (invoiceQueryTypes.full):
+                    item = await getFullInvoiceQuery()
+                            .Where(x => x.InvoiceNumber == invoiceNumber && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                    break;
+                case (invoiceQueryTypes.NAV):
+                    item = await getNAVInvoiceQuery()
+                        .Where(x => x.InvoiceNumber == invoiceNumber && !x.Deleted).AsNoTracking().FirstOrDefaultAsync();
+                    break;
             }
             return item;
         }
@@ -363,11 +370,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         private IQueryable<Invoice> getFullInvoiceQuery()
         {
-            return _dbContext.Invoice.AsNoTracking()
-                 .Include(w => w.Warehouse).AsNoTracking()
-                 .Include(s => s.Supplier).AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking()
-                 .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+            return getSmallInvoiceQuery()
                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote).AsNoTracking()
@@ -375,6 +378,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(u => u.User).AsNoTracking();
         }
 
+        private IQueryable<Invoice> getNAVInvoiceQuery()
+        {
+            return getFullInvoiceQuery()
+                 .Include(i => i.NAVXChanges).ThenInclude(x => x.NAVXResults).AsNoTracking();
+        }
         public async Task<decimal> GetUnPaidAmountAsyn(long customerID)
         {
             //1. kimenő szállítólevélen lévő rendezetlen összeg
@@ -940,7 +948,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             request.InvoiceLines.Select(s => s.RelDeliveryNoteInvoiceLineID.Value).ToList());
                     }
 
-                    int RealLineNumber = 1;
+                    int LineNumberReference = 1;
 
                     //Javítószámla
 
@@ -967,27 +975,30 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                                 && (request.InvoiceCorrection.HasValue && request.InvoiceCorrection.Value);
                     if (isInvoiceCorrection)
                     {
-                        OriginalInvoice = await this.GetInvoiceRecordAsync(request.OriginalInvoiceID.Value, true);
+                        OriginalInvoice = await this.GetInvoiceRecordAsync(request.OriginalInvoiceID.Value);
                         if (OriginalInvoice == null)
                         {
                             throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_ORIGINALINVOICENOTFOUND, request.OriginalInvoiceID.Value));
                         }
 
-                        // Javító bizonylat linenumber meghatározás
+                        //API lerírás: a lineNumberReference(a számla és összes módosításaiban) sorfolytonosan új tételsorszámra mutat és lineOperation értéke „CREATE”.
+                        //
+
+                        // Javító bizonylat ReferenceLineNumber indulóérték meghatározás
                         //      - az eredeti bizonylat linenumber utáni tétel
                         //        + engedmény esetén áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve) sor készül a  NAV-hoz felküldött adatokban
                         //      - már elkészült javítószámlák tétel összesen
                         //        + engedmény esetén már elkészült javítószámlák áfakódonként 1 (az engedmény a NAV-hoz áfánként, tételsorokban van felküldve)
 
                         // eredeti számla
-                        RealLineNumber += OriginalInvoice.InvoiceLines.Count()
+                        LineNumberReference += OriginalInvoice.InvoiceLines.Count()
                                          + (OriginalInvoice.InvoiceLines.Where(a => a.LineDiscountPercent != 0).GroupBy(g => g.VatRateID).Count());
 
                         // már elkészült javítószámlák (láncolt javítás)
                         ModificationInvoices = await this.GetCorrectionInvoiceRecordsByInvoiceID(request.OriginalInvoiceID.Value);
                         ModificationInvoices.ForEach(oi =>
                         {
-                            RealLineNumber += oi.InvoiceLines.Count()
+                            LineNumberReference += oi.InvoiceLines.Count()
                                          + (oi.InvoiceLines.Where(a => a.LineDiscountPercent != 0).GroupBy(g => g.VatRateID).Count());
                         });
 
@@ -1184,10 +1195,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 }
                             }
 
-                            // linenumber véglegesítés javítószámla esetén
-                            ln.LineNumber = (short)(RealLineNumber++);
-                            ln.LineNumberReference = ln.LineNumber;          //Mivel a javítószámlán a CREATE operációt használjuk csak, ezért a LineNumberReference megyegyezik a LineNumber-el
-                                                                             //NAV doc:Az eredeti számla módosítással érintett tételének sorszáma, (lineNumber).Új tétel létrehozása esetén az új tétel sorszáma, az eredeti számla folytatásaként
+                            ln.LineNumberReference = (short)(LineNumberReference++);          //NAV doc:Az eredeti számla módosítással (CREATE) érintett tételének sorszáma, (lineNumber).Új tétel létrehozása esetén az új tétel sorszáma, az eredeti számla folytatásaként
                         }
 
                         //termékdíj
@@ -1276,7 +1284,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 try
                 {
-                    var invoice = await this.GetInvoiceRecordAsync(request.ID, true);
+                    var invoice = await this.GetInvoiceRecordAsync(request.ID);
                     if (invoice == null)
                     {
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));

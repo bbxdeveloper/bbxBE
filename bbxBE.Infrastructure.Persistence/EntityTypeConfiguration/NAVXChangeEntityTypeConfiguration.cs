@@ -12,8 +12,7 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
         public void Configure(EntityTypeBuilder<NAVXChange> builder)
         {
 
-            builder.HasMany<NAVXResult>(r => r.Results).WithOne(r => r.XChange).IsRequired(false);
-
+            builder.HasMany<NAVXResult>(r => r.NAVXResults).WithOne(r => r.XChange).IsRequired(false);
 
         }
     }

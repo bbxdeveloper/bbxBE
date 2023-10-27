@@ -30,12 +30,13 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Érték")]
         [Description("Érték")]
-        public string Érték { get; set; }
+        public string Value { get; set; }
 
         [ColumnLabel("Sor")]
         [Description("Sor")]
         public string Line { get; set; }
 
+        //navigációs komponens
         [ColumnLabel("NAV adatcsere")]
         [Description("NAV adatcsere")]
         public virtual NAVXChange XChange { get; set; }

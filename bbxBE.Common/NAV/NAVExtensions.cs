@@ -1,8 +1,4 @@
-﻿using bbxBE.Common.NAV;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
+﻿using System;
 using System.Text;
 
 namespace bbxBE.Common.NAV
@@ -14,8 +10,10 @@ namespace bbxBE.Common.NAV
         public static string AES_128_ECBEncryptString(this string strToEncrypt, string key, string IV = null)
             => NAVUtil.AES_128_ECB.EncryptString(strToEncrypt, key, IV);
 
-        public static string AES_128_ECBDecrypt(this byte[] rawCryptedString, string key, string IV = null)
-            => NAVUtil.AES_128_ECB.DecryptString(rawCryptedString.ToString(), key, IV);
+        public static string AES_128_ECBDecrypt(this byte[] cryptedStringBytes, string key, string IV = null)
+            => NAVUtil.AES_128_ECB.Decrypt(cryptedStringBytes, key, IV);
+        public static string AES_128_ECBDecryptFromBase64String(this string rawCryptedString, string key, string IV = null)
+            => NAVUtil.AES_128_ECB.DecryptFromBase64String(rawCryptedString, key, IV);
 
 
         #endregion AES_128_ECB

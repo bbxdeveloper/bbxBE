@@ -36,6 +36,7 @@
         public const string DEF_CUSTLOCK = "custlock";
 
         public const int NAVLockExpoirationSec = 60; //1 perc
+        public const int CustomerLockExpoirationSec = 900; //15 perc
 
         public const string ERR_REQUIRED = "{PropertyName}: mező kitöltése kötelező.";
         public const string TOKEN_PROPERTYNAME = "{PropertyName}";
@@ -161,6 +162,7 @@
 
 
         public const string NAV_TOKENEXCHANGE_ERR = "{0} NAV tokenExchange error result:{1}";
+        public const string NAV_MANAGEINVOICE_ERR = "{0} NAV manageInvoice error result:{1}";
 
         public const string NAV_QINVDIGEST_OK = "{0} NAV queryInvoiceDigest OK, invoiceDirection:{1}, issue:{2}, dateFromUTC:{3}, dateToUTC:{4}";
         public const string NAV_QINVDIGEST_FIRSTPG_ERR = "{0} NAV queryInvoiceDigest firstpage error result:{1}";
@@ -177,6 +179,16 @@
         public const string ERR_NAV_TAXPAYER = "A lekérdezéshez használt adószámnak 8 jegyűnek kell lennie!";
         public const string ERR_NAVXML_NOINV = "Csak kimenő számláról készíthető NAV beküldő XML, ID:{0}, bizonylatszám:{1} ";
         public const string ERR_NAVXML_VATRATEMISSING = "Hiányzó áfa a kedvezmény XML meghatározásánál, bizonylatszám:{1} ";
+        public const string ERR_NAVINV = "Csak kimenő számlabizonylat köldhető a NAV felé, bizonylatszám:{1} ";
+
+
+        public const string DEF_NAVAnnulmentReason = "Hibás adatszolgáltatás";
+
+        public const string DEF_NAVGeneralExceptionResponse = "GeneralExceptionResponse";
+        public const string DEF_NAVGeneralErrorResponse = "GeneralErrorResponse";
+
+        public const string DEF_NAVEMPTYTOKEN = "EMPTYTOKEN";
+        public const string DEF_NAVNULLTOKEN = "NULLTOKEN";
 
         public const string ERR_CITYNOTFOUND = "Város nem található, IRSZ:{0} ";
         public const string ERR_ZIPNOTFOUND = "IRSZ nem található, város:{0} ";
@@ -209,6 +221,8 @@
         public const string FIELD_ORIGIN = "ORIGIN";
         public const string FIELD_UNITOFMEASUREX = "UNITOFMEASUREX";
         public const string FIELD_PRODUCT = "PRODUCT";
+        public const string FIELD_STOCKCARDDATE = "STOCKCARDDATE";
+
         public const string DEF_WAREHOUSE = "001";
         public const long DEF_WAREHOUSE_ID = 1;
         public const string DEF_OFFERCOUNTER = "AJ";
