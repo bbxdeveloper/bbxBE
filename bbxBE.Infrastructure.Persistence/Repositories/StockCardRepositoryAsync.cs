@@ -67,52 +67,50 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 WhsTransferLineID = p_WhsTransferLineID,
                 CustomerID = p_CustomerID,
                 ScType = p_ScType.ToString(),
-                XRealQty = p_XRealQty,
                 UnitPrice = p_UnitPrice,
                 XRel = p_XRel
             };
             latestStockCard = sc;
 
-            if (p_ScType != enStockCardType.ICP && p_ScType != enStockCardType.ICC)
+            var prevItem = await _dbContext.StockCard.AsNoTracking()
+                    .Where(w => w.WarehouseID == p_WarehouseID && w.ProductID == p_ProductID &&
+                            w.StockCardDate <= p_StockCardDate)
+                     .OrderByDescending(o1 => o1.StockCardDate)
+                     .ThenByDescending(o2 => o2.ID)
+                     .FirstOrDefaultAsync();
+
+            //Ha van előző elem, akkor azt vesszük a számítás alapjának
+            if (prevItem != null)
             {
-                //nem leltári tétel
-                var prevItem = await _dbContext.StockCard.AsNoTracking()
-                        .Where(w => w.WarehouseID == p_WarehouseID && w.ProductID == p_ProductID &&
-                                w.StockCardDate <= p_StockCardDate)
-                         .OrderByDescending(o1 => o1.StockCardDate)
-                         .ThenByDescending(o2 => o2.ID)
-                         .FirstOrDefaultAsync();
-
-                //Ha van előző elem, akkor azt vesszük a számítás alapjának
-                if (prevItem != null)
-                {
-                    ORealQty = prevItem.NRealQty;
-                    OAvgCost = prevItem.NAvgCost;
-
-                }
-                else
-                {
-                    //Ha nincs előző elem, elég spec helyzet, legyenek a készletek 0-ák
-                    /*
-                    ORealQty = p_Stock.RealQty;
-                    */
-
-                    ORealQty = 0;
-                    OAvgCost = p_Stock.AvgCost;
-                }
+                ORealQty = prevItem.NRealQty;
+                OAvgCost = prevItem.NAvgCost;
             }
             else
             {
-                //leltári tétel
-
+                //Ha nincs előző elem, elég spec helyzet, legyenek a készletek 0-ák
+                /*
                 ORealQty = p_Stock.RealQty;
-                OAvgCost = p_Stock.AvgCost;
+                */
+
+                ORealQty = 0;
+                OAvgCost = p_UnitPrice;         //ha nincs elŐző elem, akkor az átadott árral inicializálunk
             }
+
             //és ez alapján beupdate-eljük a currStockCard -ot
             sc.ORealQty = ORealQty;
             sc.OAvgCost = OAvgCost;
 
-            sc.NRealQty = ORealQty + p_XRealQty;
+            if (p_ScType != enStockCardType.ICP && p_ScType != enStockCardType.ICC)
+            {
+                sc.XRealQty = p_XRealQty;
+                sc.NRealQty = ORealQty + p_XRealQty;
+            }
+            else
+            {
+                //leltár esetében a p_XRealQty-ban a leltári készlet van, másképp kell számolni
+                sc.XRealQty = p_XRealQty - ORealQty;
+                sc.NRealQty = p_XRealQty;
+            }
 
             sc.NAvgCost = (p_XRealQty > 0 ?
                             bllStock.GetNewAvgCost(OAvgCost, ORealQty, p_XRealQty, p_UnitPrice) :   //csak bevételezés esetén változik az ELÁBÉ
