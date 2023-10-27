@@ -221,6 +221,8 @@
         public const string FIELD_ORIGIN = "ORIGIN";
         public const string FIELD_UNITOFMEASUREX = "UNITOFMEASUREX";
         public const string FIELD_PRODUCT = "PRODUCT";
+        public const string FIELD_STOCKCARDDATE = "STOCKCARDDATE";
+
         public const string DEF_WAREHOUSE = "001";
         public const long DEF_WAREHOUSE_ID = 1;
         public const string DEF_OFFERCOUNTER = "AJ";
