@@ -22,13 +22,13 @@ namespace bbxBE.Application.Queries.qUser
 
     public class GetUserHandler : IRequestHandler<GetUser, Entity>
     {
-        private readonly IUserRepositoryAsync _positionRepository;
+        private readonly IUserRepositoryAsync _userRepository;
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
         public GetUserHandler(IUserRepositoryAsync positionRepository, IMapper mapper, IModelHelper modelHelper)
         {
-            _positionRepository = positionRepository;
+            _userRepository = positionRepository;
             _mapper = mapper;
             _modelHelper = modelHelper;
         }
@@ -52,8 +52,7 @@ namespace bbxBE.Application.Queries.qUser
             }
 */
             // query based on filter
-            var entity = await _positionRepository.GetUserAsync(validFilter.ID, validFilter.Fields);
-
+            var entity = await _userRepository.GetUserAsync(validFilter.ID, validFilter.Fields);
 
             var data = entity.MapItemFieldsByMapToAnnotation<GetUsersViewModel>();
 

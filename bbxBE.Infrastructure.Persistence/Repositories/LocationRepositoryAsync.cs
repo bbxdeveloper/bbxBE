@@ -1,43 +1,39 @@
-using LinqKit;
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qLocation;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qLocation;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using bbxBE.Infrastructure.Persistence.Caches;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class LocationRepositoryAsync : GenericRepositoryAsync<Location>, ILocationRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Location> _dataShaperLocation;
         private IDataShapeHelper<GetLocationViewModel> _dataShaperGetLocationViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
 
-        public LocationRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Location> dataShaperLocation,
-            IDataShapeHelper<GetLocationViewModel> dataShaperGetLocationViewModel,
+        public LocationRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperLocation = dataShaperLocation;
-            _dataShaperGetLocationViewModel = dataShaperGetLocationViewModel;
+            _dataShaperLocation = new DataShapeHelper<Location>();
+            _dataShaperGetLocationViewModel = new DataShapeHelper<GetLocationViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
@@ -68,7 +64,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             Location Location = null;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 Location = _dbContext.Location.Where(x => x.ID == ID).FirstOrDefault();
 
@@ -184,7 +180,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<Location>();
 
             var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.LocationDescription.ToUpper().Contains(srcFor));
+            predicate = predicate.And(p => p.LocationCode.ToUpper().Contains(srcFor) || p.LocationDescription.ToUpper().Contains(srcFor));
 
             p_item = p_item.Where(predicate);
         }

@@ -1,27 +1,23 @@
 ﻿using AutoMapper;
-using MediatR;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Parameters;
-using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Domain.Extensions;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Attributes;
+using bbxBE.Domain.Entities;
+using bbxBE.Domain.Extensions;
+using MediatR;
 using System.ComponentModel;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
-    public class GetInvoice:  IRequest<Entity>
+    public class GetInvoice : IRequest<Entity>
     {
         public long ID { get; set; }
 
         [ColumnLabel("Teljes?")]
-        [Description("Teljes reációs szerkezet kell? I/N")]
+        [Description("Teljes relációs szerkezet kell? I/N")]
         public bool FullData { get; set; } = true;
         //      public string Fields { get; set; }
     }
@@ -32,7 +28,7 @@ namespace bbxBE.Application.Queries.qInvoice
         private readonly IMapper _mapper;
         private readonly IModelHelper _modelHelper;
 
-        public   GetInvoiceHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IModelHelper modelHelper)
+        public GetInvoiceHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IModelHelper modelHelper)
         {
             _invoiceRepository = invoiceRepository;
             _mapper = mapper;
@@ -42,7 +38,7 @@ namespace bbxBE.Application.Queries.qInvoice
         public async Task<Entity> Handle(GetInvoice request, CancellationToken cancellationToken)
         {
 
-            var entity = await _invoiceRepository.GetInvoiceAsync(request.ID, request.FullData);
+            var entity = await _invoiceRepository.GetInvoiceAsync(request.ID, (request.FullData ? invoiceQueryTypes.full : invoiceQueryTypes.small));
             var data = entity.MapItemFieldsByMapToAnnotation<GetInvoiceViewModel>();
 
             // response wrapper

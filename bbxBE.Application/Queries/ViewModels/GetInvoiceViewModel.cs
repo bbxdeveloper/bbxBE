@@ -209,6 +209,11 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Szállító megjegyzés")]
         public string SupplierComment { get; set; }
 
+        [ColumnLabel("Szállító ügyféltípus")]
+        [Description("Szállító ügyféltípus: Mo., külföldi áfaalany, magánszemély")]
+        public string SupplierVatStatus { get; set; }
+
+
         #endregion
 
         #region Customer
@@ -255,6 +260,9 @@ namespace bbxBE.Application.Queries.ViewModels
         [MapToEntity("customerComment")]
         public string CustomerComment { get; set; }
 
+        [ColumnLabel("Vevő ügyféltípus")]
+        [Description("Vevő ügyféltípus: Mo., külföldi áfaalany, magánszemély")]
+        public string CustomerVatStatus { get; set; }
         #endregion
 
         #region PaymentMethod
@@ -326,7 +334,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [ColumnLabel("Módosító bizonylat?")]
         [Description("Módosító bizonylat jelölése (értéke false)")]
-        public bool Correction { get; set; }
+        public bool InvoiceCorrection { get; set; }
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]

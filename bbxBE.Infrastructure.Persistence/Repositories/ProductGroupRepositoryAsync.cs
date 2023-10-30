@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -29,14 +30,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICacheService<ProductGroup> _cacheService;
 
         public ProductGroupRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<ProductGroup> dataShaperProductGroup,
-            IDataShapeHelper<GetProductGroupViewModel> dataShaperGetProductGroupViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<ProductGroup> productGroupCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperProductGroup = dataShaperProductGroup;
-            _dataShaperGetProductGroupViewModel = dataShaperGetProductGroupViewModel;
+            _dataShaperProductGroup = new DataShapeHelper<ProductGroup>();
+            _dataShaperGetProductGroupViewModel = new DataShapeHelper<GetProductGroupViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;

@@ -1,22 +1,20 @@
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.ViewModels;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class ZipRepositoryAsync : GenericRepositoryAsync<Zip>, IZipRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Zip> _dataShaperZip;
         private IDataShapeHelper<GetZipViewModel> _dataShaperGetZipViewModel;
         private readonly IMockService _mockData;
@@ -24,14 +22,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
 
 
-        public ZipRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Zip> dataShaperZip,
-            IDataShapeHelper<GetZipViewModel> dataShaperGetZipViewModel,
+        public ZipRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperZip = dataShaperZip;
-            _dataShaperGetZipViewModel = dataShaperGetZipViewModel;
+            _dataShaperZip = new DataShapeHelper<Zip>();
+            _dataShaperGetZipViewModel = new DataShapeHelper<GetZipViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
@@ -41,6 +37,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             Zip Zip = await _dbContext.Zip
                     .Where(x => x.ZipCode == zipCode && !x.Deleted)
+                    .OrderBy(x => x.ZipCity)
                     .FirstOrDefaultAsync();
 
             return Zip;
@@ -49,6 +46,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             Zip Zip = await _dbContext.Zip
                     .Where(x => x.ZipCity.ToUpper() == zipCity.ToUpper() && !x.Deleted)
+                    .OrderBy(o => o.ZipCode)
                     .FirstOrDefaultAsync();
 
             return Zip;

@@ -20,5 +20,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Users> GetUserRecordByNameAsync(string name);
         Task<Users> GetUserRecordByLoginNameAsync(string name);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUserAsync(QueryUser requestParameters);
+        Task<Entity> GetUserByLoginNameAndPwd(string LoginName, string Password);
+
+
     }
 }

@@ -56,7 +56,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Ügyfél ID")]
         [Description("Ügyfél ID")]
-        public long? CustomerID { get; set; }
+        public long? CustomerID { get; set; }           //A blokk miatt nullable!
 
         private InvoiceCategoryType invoiceCategory;
 
@@ -209,7 +209,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Módosító bizonylat?")]
         [Description("Módosító bizonylat jelölése (értéke false)")]
-        public bool Correction { get; set; }
+        public bool InvoiceCorrection { get; set; }
 
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
@@ -243,11 +243,11 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Egyéb adat")]
         [Description("A számlára vonatkozó egyéb adat")]
-        public virtual ICollection<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
+        public virtual IList<AdditionalInvoiceData> AdditionalInvoiceData { get; set; }
 
         [ColumnLabel("Áfa összesítő")]
         [Description("Összesítés áfa-mérték szerint")]
-        public virtual ICollection<SummaryByVatRate> SummaryByVatRates { get; set; }
+        public virtual IList<SummaryByVatRate> SummaryByVatRates { get; set; }
 
 
         [ForeignKey("UserID")]
@@ -259,6 +259,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Számlasorok")]
         [Description("Számlasorok")]
         public virtual ICollection<InvoiceLine> InvoiceLines { get; set; }
+
+        [ColumnLabel("NAV adatküldések")]
+        [Description("NAV adatküldések")]
+        public virtual IList<NAVXChange> NAVXChanges { get; set; }
+
 
     }
 }

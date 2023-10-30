@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -119,6 +117,9 @@ namespace bxBE.Application.Commands.cmdOffer
             [Description("Eredeti ár")]
             public decimal OriginalUnitPrice { get; set; }
 
+            [ColumnLabel("Eredeti ár HUF")]                 //a törzsbeli ár
+            [Description("Eredeti ár forintban")]
+            public decimal OriginalUnitPriceHUF { get; set; }
 
             [ColumnLabel("E/L")]                        //Eygségár/listaár flag
             [Description("Egységár/Listaár")]
@@ -192,41 +193,18 @@ namespace bxBE.Application.Commands.cmdOffer
     public class UpdateOfferCommandHandler : IRequestHandler<UpdateOfferCommand, Response<Offer>>
     {
         private readonly IOfferRepositoryAsync _offerRepository;
-        private readonly ICounterRepositoryAsync _counterRepository;
-        private readonly ICustomerRepositoryAsync _customerRepository;
-        private readonly IProductRepositoryAsync _productRepository;
-        private readonly IVatRateRepositoryAsync _vatRateRepository;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
-        public UpdateOfferCommandHandler(IOfferRepositoryAsync offerRepository,
-                        ICounterRepositoryAsync counterRepository,
-                        ICustomerRepositoryAsync customerRepository,
-                        IProductRepositoryAsync productRepository,
-                        IVatRateRepositoryAsync vatRateRepository,
-                        IMapper mapper, IConfiguration configuration)
+        public UpdateOfferCommandHandler(IOfferRepositoryAsync offerRepository, IMapper mapper)
         {
             _offerRepository = offerRepository;
-            _counterRepository = counterRepository;
-            _customerRepository = customerRepository;
-            _productRepository = productRepository;
-            _vatRateRepository = vatRateRepository;
-
-
             _mapper = mapper;
-            _configuration = configuration;
         }
 
         public async Task<Response<Offer>> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
         {
-            var offer = await bllOffer.UpdateOffer(request,
-                                    _mapper,
-                                    _offerRepository,
-                                    _counterRepository,
-                                    _customerRepository,
-                                    _productRepository,
-                                    _vatRateRepository,
-                                    cancellationToken);
+            var offer = _mapper.Map<Offer>(request);
+            offer = await _offerRepository.UpdateOfferAsync(offer);
             return new Response<Offer>(offer);
         }
     }

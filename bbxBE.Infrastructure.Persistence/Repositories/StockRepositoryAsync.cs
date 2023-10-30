@@ -1,34 +1,29 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qStock;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qStock;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
 using static bbxBE.Common.NAV.NAV_enums;
-using bbxBE.Common.Enums;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using bbxBE.Infrastructure.Persistence.Caches;
-using System.Collections;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class StockRepositoryAsync : GenericRepositoryAsync<Stock>, IStockRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Stock> _dataShaperStock;
         private IDataShapeHelper<GetStockViewModel> _dataShaperGetStockViewModel;
         private readonly IMockService _mockData;
@@ -37,28 +32,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IStockCardRepositoryAsync _stockCardRepository;
         private readonly IProductRepositoryAsync _productRepository;
         private readonly ILocationRepositoryAsync _locationRepository;
-        private readonly ICacheService<Product> _productcacheService;
 
-        public StockRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Stock> dataShaperStock,
-            IDataShapeHelper<GetStockViewModel> dataShaperGetStockViewModel,
+        private readonly ICacheService<Product> _productCacheService;
+
+        public StockRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            IStockCardRepositoryAsync stockCardRepository,
-            IProductRepositoryAsync productRepository,
-            ILocationRepositoryAsync locationRepository,
-            ICacheService<Product> productcacheService
-          ) : base(dbContext)
+            ICacheService<Product> productCacheService,
+            ICacheService<ProductGroup> productGroupCacheService,
+            ICacheService<Origin> originCacheService,
+            ICacheService<VatRate> vatRateCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperStock = dataShaperStock;
-            _dataShaperGetStockViewModel = dataShaperGetStockViewModel;
+            _dataShaperStock = new DataShapeHelper<Stock>();
+            _dataShaperGetStockViewModel = new DataShapeHelper<GetStockViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _stockCardRepository = stockCardRepository;
-            _productRepository = productRepository;
-            _productcacheService = productcacheService;
-            _locationRepository = locationRepository;
+
+            _productCacheService = productCacheService;
+
+            _stockCardRepository = new StockCardRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService);
+
+            _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+
+            _locationRepository = new LocationRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+
         }
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
@@ -100,32 +98,42 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     }
 
                     var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invoice.InvoiceDeliveryDate,
-                                invoice.WarehouseID, invoiceLine.ProductID, invoice.UserID, invoiceLine.ID,
+                                invoice.WarehouseID, invoiceLine.ProductID, invoice.UserID, invoiceLine.ID, null, null,
                                 (invoice.Incoming ? invoice.SupplierID : invoice.CustomerID),
                                 Common.Enums.enStockCardType.INV_DLV,
                                 invoiceLine.Quantity * (invoice.Incoming ? 1 : -1),
                                 realInvoiceUnitPriceHUF,
                                 invoice.InvoiceNumber + (invoice.Incoming ? ";" + invoice.CustomerInvoiceNumber : ""));
 
+                    //Időben későbbi leltár van-e. Ha igen, akkor nincs készletváltozatás, mert a leltár lefixálta a készletet.
+                    var nextInvCtrlExist = await _dbContext.StockCard
+                            .AnyAsync(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID.Value
+                                && x.StockCardDate > invoice.InvoiceDeliveryDate
+                                && (x.ScType == enStockCardType.ICC.ToString() || x.ScType == enStockCardType.ICP.ToString())
+                                && !x.Deleted);
 
-                    if (invoice.Incoming)
+                    if (!nextInvCtrlExist)
                     {
-
-                        stock.RealQty += invoiceLine.Quantity;
-                        stock.LatestIn = DateTime.UtcNow;
-
-                    }
-                    else
-                    {
-                        stock.RealQty -= invoiceLine.Quantity;
-                        stock.LatestOut = DateTime.UtcNow;
+                        if (invoice.Incoming)
+                        {
+                            stock.RealQty += invoiceLine.Quantity;
+                            stock.LatestIn = (stock.LatestIn == null || stock.LatestIn < invoice.InvoiceDeliveryDate ? invoice.InvoiceDeliveryDate : stock.LatestIn);
+                        }
+                        else
+                        {
+                            stock.RealQty -= invoiceLine.Quantity;
+                            stock.LatestOut = (stock.LatestOut == null || stock.LatestOut < invoice.InvoiceDeliveryDate ? invoice.InvoiceDeliveryDate : stock.LatestOut);
+                        }
                     }
                     stock.AvgCost = latestStockCard.NAvgCost;
 
-
-                    lstStock.Add(stock);
+                    if (!lstStock.Contains(stock))
+                    {
+                        lstStock.Add(stock);
+                    }
                 }
             }
+
             await UpdateRangeAsync(lstStock);
             return lstStock;
         }
@@ -160,26 +168,135 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 //beaktualizáljuk az InvCtrl-be az aktuális raktárkészletet
                 invCtrl.ORealQty = stock.RealQty;
+                invCtrl.AvgCost = stock.AvgCost;
 
                 var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invCtrl.InvCtrlDate,
-                            invCtrl.WarehouseID, invCtrl.ProductID, invCtrl.UserID, 0, p_ownData.ID,
+                            invCtrl.WarehouseID, invCtrl.ProductID, invCtrl.UserID, null, invCtrl.ID, null, p_ownData.ID,
                             invCtrl.InvCtrlType == enInvCtrlType.ICP.ToString() ? enStockCardType.ICP : enStockCardType.ICC,
-                            invCtrl.NRealQty - invCtrl.ORealQty,        //csak a különbséget kell átadni!!!
+                            //invCtrl.NRealQty - invCtrl.ORealQty,        //csak a különbséget kell átadni!!!
+                            invCtrl.NRealQty,           //Leltár esetén a leltározott készletet adjuk át, a többit kiszámolja a CreateStockCard
                             stock.AvgCost,
                             XRel);
 
 
+                /*
+                                stock.RealQty = invCtrl.NRealQty;
+                                stock.AvgCost = invCtrl.AvgCost;
+                */
 
-                stock.RealQty = invCtrl.NRealQty;
-                stock.AvgCost = invCtrl.AvgCost;
+                stock.RealQty = latestStockCard.NRealQty;       //Ha egy leltár 'mögé'
+                stock.AvgCost = latestStockCard.NAvgCost;
 
 
                 invCtrl.StockID = stock.ID;
 
-                lstStock.Add(stock);
+                if (!lstStock.Contains(stock))
+                {
+                    lstStock.Add(stock);
+                }
             }
 
             await UpdateRangeAsync(lstStock);
+
+            return lstStock;
+        }
+
+        public async Task<List<Stock>> MaintainStockByWhsTransferAsync(WhsTransfer whsTransfer, Customer ownData)
+        {
+            var lstStock = new List<Stock>();       //updatelendő készlet gyűjtő
+            foreach (var whsTransferLine in whsTransfer.WhsTransferLines)
+            {
+
+                var stockFrom = lstStock.FirstOrDefault(x => x.WarehouseID == whsTransfer.FromWarehouseID
+                            && x.ProductID == whsTransferLine.ProductID); //már foglalkoztunk a készlettel ?
+                if (stockFrom == null)
+                {
+
+                    stockFrom = await _dbContext.Stock
+                             .Where(x => x.WarehouseID == whsTransfer.FromWarehouseID
+                                    && x.ProductID == whsTransferLine.ProductID && !x.Deleted)
+                             .FirstOrDefaultAsync();
+                }
+
+                if (stockFrom == null)
+                {
+                    stockFrom = new Stock()
+                    {
+                        WarehouseID = whsTransfer.FromWarehouseID,
+                        //Warehouse = 
+                        ProductID = whsTransferLine.ProductID,
+                        //Product = whsTransferLine.Product,
+                        AvgCost = whsTransferLine.CurrAvgCost             //ez nem változik
+                    };
+                    await AddAsync(stockFrom);
+                    await _dbContext.SaveChangesAsync();
+                }
+                if (!lstStock.Contains(stockFrom))
+                {
+                    lstStock.Add(stockFrom);
+                }
+
+
+
+                var stockTo = lstStock.FirstOrDefault(x => x.WarehouseID == whsTransfer.ToWarehouseID
+                            && x.ProductID == whsTransferLine.ProductID); //már foglalkoztunk a készlettel ?
+                if (stockTo == null)
+                {
+
+                    stockTo = await _dbContext.Stock
+                             .Where(x => x.WarehouseID == whsTransfer.ToWarehouseID
+                                    && x.ProductID == whsTransferLine.ProductID && !x.Deleted)
+                             .FirstOrDefaultAsync();
+                }
+
+                if (stockTo == null)
+                {
+                    stockTo = new Stock()
+                    {
+                        WarehouseID = whsTransfer.ToWarehouseID,
+                        //Warehouse = 
+                        ProductID = whsTransferLine.ProductID,
+                        //Product = whsTransferLine.Product,
+                        AvgCost = whsTransferLine.CurrAvgCost             //ez nem változik
+                    };
+                    await AddAsync(stockTo);
+                    await _dbContext.SaveChangesAsync();
+                }
+                if (!lstStock.Contains(stockTo))
+                {
+                    lstStock.Add(stockTo);
+                }
+
+
+                //kiadás láb
+                var stockCardFrom = await _stockCardRepository.CreateStockCard(stockFrom, whsTransfer.TransferDate.Date,
+                            whsTransfer.FromWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, null, null, whsTransferLine.ID, ownData.ID,
+                            enStockCardType.WHSTRANSFER,
+                            -whsTransferLine.Quantity,
+                            whsTransferLine.CurrAvgCost,
+                            whsTransfer.WhsTransferNumber);
+
+
+                stockFrom.RealQty -= whsTransferLine.Quantity;
+                stockFrom.LatestOut = DateTime.UtcNow;
+                stockFrom.AvgCost = stockCardFrom.NAvgCost;
+
+                //bevétel láb
+                var stockCardTo = await _stockCardRepository.CreateStockCard(stockTo, whsTransfer.TransferDateIn.Value,
+                            whsTransfer.ToWarehouseID, whsTransferLine.ProductID, whsTransfer.UserID, null, null, whsTransferLine.ID, ownData.ID,
+                            enStockCardType.WHSTRANSFER,
+                            whsTransferLine.Quantity,
+                            whsTransferLine.CurrAvgCost,
+                            whsTransfer.WhsTransferNumber);
+
+
+                stockTo.RealQty += whsTransferLine.Quantity;
+                stockTo.LatestIn = DateTime.UtcNow;
+                stockTo.AvgCost = stockCardTo.NAvgCost;
+
+            }
+
+            await UpdateRangeAsync(lstStock, false);
 
             return lstStock;
         }
@@ -209,6 +326,28 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+        public async Task<IEnumerable<Entity>> GetProductStocksAsync(long productID)
+        {
+
+            var resultData = await _dbContext.Stock.AsNoTracking()
+             .Include(p => p.Product).ThenInclude(p2 => p2.ProductCodes).AsNoTracking()
+             .Include(w => w.Warehouse).AsNoTracking()
+             .Include(l => l.Location).AsNoTracking()
+             .Where(w => w.Product.ProductCodes.Any(pc => pc.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())
+                        && w.ProductID == productID && !w.Deleted).ToListAsync();
+
+
+            var resultDataModel = new List<GetStockViewModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+               _mapper.Map<Stock, GetStockViewModel>(i))
+            );
+
+
+            var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
+
+            var shapeData = await _dataShaperGetStockViewModel.ShapeDataAsync(resultDataModel, String.Join(",", listFieldsModel));
+            return shapeData;
+        }
 
         public async Task<Stock> GetStockRecordAsync(long warehouseID, long productID)
         {
@@ -221,6 +360,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 item = new Stock();
             }
             return item;
+        }
+        public async Task<IEnumerable<Stock>> GetProductStocksRecordAsync(long productID)
+        {
+            var items = await _dbContext.Stock.AsNoTracking()
+             .Include(l => l.Location).AsNoTracking()
+             .Where(w => w.ProductID == productID && !w.Deleted).ToListAsync();
+            return items;
         }
 
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameter)
@@ -250,7 +396,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultList = await preQuery.ToListAsync();
 
             //Ezután feltöltjük a cache-ből a productot
-            var prodCachedList = _productcacheService.ListCache();
+            var prodCachedList = _productCacheService.ListCache();
             resultList.ForEach(i =>
                 i.Product = prodCachedList.FirstOrDefault(f => f.ID == i.ProductID)
                 );
@@ -277,13 +423,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 //Kis heka...
                 if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
                 {
-                    query = query.OrderBy(o => o.Product.ProductCodes.Single(s =>
-                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                    query = query.OrderBy(o =>
+                        o.Product != null &&
+                        o.Product.ProductCodes != null &&
+                        o.Product.ProductCodes.Any(s =>
+                                s.ProductCodeValue != null && s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()) ?
+                        o.Product.ProductCodes.SingleOrDefault(s =>
+                                s.ProductCodeValue != null && s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue :
+                       String.Empty
+                    );
                 }
                 else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCT)
                 {
-                    query = query.OrderBy(o => o.Product.Description);
+                    query = query.OrderBy(o => o.Product != null ? o.Product.Description : string.Empty);
                 }
+
                 else
                 {
                     query = query.OrderBy(orderBy);
@@ -330,7 +484,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!string.IsNullOrWhiteSpace(p_searchString))
             {
                 p_searchString = p_searchString.ToUpper();
-                predicate = predicate.And(p => p.Product.Description.ToUpper().Contains(p_searchString) ||
+                predicate = predicate.And(p => p.Product == null || p.Product.Description.ToUpper().Contains(p_searchString) ||
                         p.Product.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
                         a.ProductCodeValue.ToUpper().Contains(p_searchString)));
             }

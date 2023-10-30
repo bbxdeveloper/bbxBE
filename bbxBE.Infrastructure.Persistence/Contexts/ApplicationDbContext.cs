@@ -66,9 +66,12 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<InvCtrlPeriod> InvCtrlPeriod { get; set; }
         public DbSet<InvCtrl> InvCtrl { get; set; }
         public DbSet<CustDiscount> CustDiscount { get; set; }
+        public DbSet<WhsTransfer> WhsTransfer { get; set; }
+        public DbSet<WhsTransferLine> WhsTransferLine { get; set; }
         public DbSet<Zip> Zip { get; set; }
-
         public DbSet<Location> Location { get; set; }
+        public DbSet<NAVXChange> NAVXChange { get; set; }
+        public DbSet<NAVXResult> NAVXResult { get; set; }
 
         public DbContext Instance => this;
 

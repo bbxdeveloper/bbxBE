@@ -1,6 +1,4 @@
-﻿using AutoMapper.Configuration.Conventions;
-using bbxBE.Common.Attributes;
-using System;
+﻿using bbxBE.Common.Attributes;
 using System.ComponentModel;
 
 namespace bbxBE.Application.Queries.ViewModels
@@ -27,7 +25,7 @@ namespace bbxBE.Application.Queries.ViewModels
         [MapToEntity("TaxpayerNumber")]
         [NotDBFieldAttribute]
         public string TaxpayerNumber { get; set; }
- 
+
         [MapToEntity("FullAddress")]
         [NotDBFieldAttribute]
         public string FullAddress { get; set; }
@@ -85,6 +83,30 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Eladási ártípus megnevezés")]
         [Description("Eladási ártípus megnevezés")]
         public string UnitPriceTypeX { get; set; }
+
+        [ColumnLabel("Fizetési határidő")]
+        [Description("Fizetési határidő (napban)")]
+        public short PaymentDays { get; set; }
+
+        [ColumnLabel("Figyelmeztetés limit")]
+        [Description("Figyelmeztetés limit")]
+        public decimal? WarningLimit { get; set; }
+
+        [ColumnLabel("Maximális limit")]
+        [Description("Maximális limit")]
+        public decimal? MaxLimit { get; set; }
+
+        [ColumnLabel("Alap.fiz.mód")]
+        [Description("Alapértelmezett fizetési mód")]
+        public string DefPaymentMethod { get; set; }
+
+        [ColumnLabel("Alap.fiz.mód megnev.")]
+        [Description("Alapértelmezett fizetési mód megnevezése")]
+        public string DefPaymentMethodX { get; set; }
+
+        [ColumnLabel("Legutoljára megadott kedvezmény %")]
+        [Description("Legutoljára megadott bizonylatkedvezmény %")]
+        public short? LatestDiscountPercent { get; set; }
 
 
         [MapToEntity("isOwnData")]

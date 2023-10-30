@@ -1,21 +1,10 @@
-﻿using bbxBE.Application.Commands.cmdImport;
-using bbxBE.Common.Consts;
+﻿using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
+using bbxBE.Common;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdCustomer;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using bbxBE.Common;
-using bbxBE.Common.Enums;
-using bbxBE.Application.BLL;
 
 namespace bbxBE.Application.Commands.cmdCustomer
 {
@@ -69,12 +58,12 @@ namespace bbxBE.Application.Commands.cmdCustomer
                             var res = CheckBankAccount(customerBankAccountNumber);
                             if (res == enValidateBankAccountResult.ERR_FORMAT)
                             {
-                                context.AddFailure(bbxBEConsts.ERR_INVALIDFORMAT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.PropertyName));
+                                context.AddFailure(bbxBEConsts.ERR_INVALIDFORMAT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.DisplayName));
 
                             }
                             if (res == enValidateBankAccountResult.ERR_CHECKSUM)
                             {
-                                context.AddFailure(bbxBEConsts.ERR_INVALIDCONTENT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.PropertyName));
+                                context.AddFailure(bbxBEConsts.ERR_INVALIDCONTENT.Replace(bbxBEConsts.TOKEN_PROPERTYNAME, context.DisplayName));
 
                             }
                         });
@@ -106,6 +95,26 @@ namespace bbxBE.Application.Commands.cmdCustomer
             RuleFor(p => p.Email)
                .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
                .MustAsync(Utils.IsValidEmailAsync).WithMessage(bbxBEConsts.ERR_INVALIDEMAIL);
+
+
+            RuleFor(p => p.DefPaymentMethod)
+           .Must(
+               (model, defPaymentMethod) =>
+               {
+                   return bllCustomer.ValidatePaymentMethod(defPaymentMethod);
+               }
+             ).WithMessage(bbxBEConsts.ERR_CST_WRONGDEFPAYMENTTYPE)
+            .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
+
+            RuleFor(x => x.LatestDiscountPercent)
+                    .Must(
+                       (model, latestDiscountPercent) =>
+                       {
+                           return latestDiscountPercent == null || (latestDiscountPercent.Value >= 0 && latestDiscountPercent.Value <= 100);
+                       }
+                     )
+                    .WithMessage(bbxBEConsts.ERR_CUSTOMERLATESTDISCOUNTPERCENT);
+
 
         }
 

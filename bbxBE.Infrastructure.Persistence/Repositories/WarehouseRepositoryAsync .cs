@@ -1,42 +1,39 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qWarehouse;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qWarehouse;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class WarehouseRepositoryAsync : GenericRepositoryAsync<Warehouse>, IWarehouseRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<Warehouse> _dataShaperWarehouse;
         private IDataShapeHelper<GetWarehouseViewModel> _dataShaperGetWarehouseViewModel;
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
 
-        public WarehouseRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Warehouse> dataShaperWarehouse,
-            IDataShapeHelper<GetWarehouseViewModel> dataShaperGetWarehouseViewModel,
+        public WarehouseRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperWarehouse = dataShaperWarehouse;
-            _dataShaperGetWarehouseViewModel = dataShaperGetWarehouseViewModel;
+            _dataShaperWarehouse = new DataShapeHelper<Warehouse>();
+            _dataShaperGetWarehouseViewModel = new DataShapeHelper<GetWarehouseViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
@@ -61,7 +58,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             Warehouse Warehouse = null;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 Warehouse = _dbContext.Warehouse.Where(x => x.ID == ID).FirstOrDefault();
 
@@ -85,21 +82,26 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<Warehouse> GetWarehouseByCodeAsync(string WarehouseCode)
         {
-            return await _dbContext.Warehouse.AsNoTracking().FirstOrDefaultAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted );
+            return await _dbContext.Warehouse.AsNoTracking().FirstOrDefaultAsync(p => p.WarehouseCode == WarehouseCode && !p.Deleted);
         }
 
 
-        public async Task<Entity> GetWarehouseAsync(long ID)
+        public async Task<Warehouse> GetWarehouseRecordAsync(long ID)
         {
 
             var item = await GetByIdAsync(ID);
-
-            //            var fields = requestParameter.Fields;
 
             if (item == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, ID));
             }
+            return item;
+        }
+
+        public async Task<Entity> GetWarehouseAsync(long ID)
+        {
+
+            var item = await GetWarehouseRecordAsync(ID);
 
             var itemModel = _mapper.Map<Warehouse, GetWarehouseViewModel>(item);
             var listFieldsModel = _modelHelper.GetModelFields<GetWarehouseViewModel>();
@@ -109,6 +111,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapeData;
         }
+
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedWarehouseAsync(QueryWarehouse requestParameter)
         {
 
@@ -186,11 +189,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             p_item = p_item.Where(predicate);
         }
 
+
+
         public Task<bool> SeedDataAsync(int rowCount)
         {
             throw new System.NotImplementedException();
         }
 
-   
+
     }
 }

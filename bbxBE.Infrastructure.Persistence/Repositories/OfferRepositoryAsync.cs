@@ -1,25 +1,26 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qOffer;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
+using bbxBE.Common.Exceptions;
+using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using bxBE.Application.Commands.cmdOffer;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qOffer;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
-using static Dapper.SqlMapper;
-using bbxBE.Common.Enums;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
@@ -48,7 +49,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
      */
     public class OfferRepositoryAsync : GenericRepositoryAsync<Offer>, IOfferRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
 
         private IDataShapeHelper<Offer> _dataShaperOffer;
         private IDataShapeHelper<GetOfferViewModel> _dataShaperGetOfferViewModel;
@@ -56,31 +57,39 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
         private readonly IOfferLineRepositoryAsync _offerLineRepository;
+        private readonly ICounterRepositoryAsync _counterRepository;
+        private readonly IProductRepositoryAsync _productRepository;
+        private readonly IVatRateRepositoryAsync _vatRateRepository;
+
         private readonly ICacheService<Product> _productCacheService;
 
-        public OfferRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<Offer> dataShaperOffer,
-            IDataShapeHelper<GetOfferViewModel> dataShaperGetOfferViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData, 
-            IOfferLineRepositoryAsync offerLineRepository,
-            ICacheService<Product> productCacheService) : base(dbContext)
+        public OfferRepositoryAsync(IApplicationDbContext dbContext,
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            ICacheService<Product> productCacheService,
+            ICacheService<Customer> customerCacheService,
+            ICacheService<ProductGroup> productGroupCacheService,
+            ICacheService<Origin> originCacheService,
+            ICacheService<VatRate> vatRateCacheService,
+            IExpiringData<ExpiringDataObject> expiringData
+            ) : base(dbContext)
         {
             _dbContext = dbContext;
-    
-            _dataShaperOffer = dataShaperOffer;
-            _dataShaperGetOfferViewModel = dataShaperGetOfferViewModel;
+
+            _dataShaperOffer = new DataShapeHelper<Offer>();
+            _dataShaperGetOfferViewModel = new DataShapeHelper<GetOfferViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _offerLineRepository = offerLineRepository;
+            _offerLineRepository = new OfferLineRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _counterRepository = new CounterRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _vatRateRepository = new VatRateRepositoryAsync(dbContext, modelHelper, mapper, mockData, vatRateCacheService);
             _productCacheService = productCacheService;
         }
-
-
         public async Task<Offer> AddOfferAsync(Offer p_Offer)
         {
 
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 try
                 {
@@ -91,7 +100,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     prevVerisons.ForEach(i =>
                     {
                         i.LatestVersion = false;
-                        _dbContext.Entry(i).State = EntityState.Modified;
+                        _dbContext.Instance.Entry(i).State = EntityState.Modified;
                     });
 
                     //Az aktuális minden esetben Latest!
@@ -103,10 +112,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     p_Offer.OfferLines.ToList().ForEach(e =>
                     {
                         if (e.Product != null)
-                            _dbContext.Entry(e.Product).State = EntityState.Unchanged;
+                            _dbContext.Instance.Entry(e.Product).State = EntityState.Unchanged;
                         if (e.VatRate != null)
-                            _dbContext.Entry(e.VatRate).State = EntityState.Unchanged;
-                        _dbContext.Entry(e).State = EntityState.Added;
+                            _dbContext.Instance.Entry(e.VatRate).State = EntityState.Unchanged;
+                        _dbContext.Instance.Entry(e).State = EntityState.Added;
 
                         e.OfferID = 0;
                         e.ID = 0;
@@ -119,7 +128,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await dbContextTransaction.CommitAsync();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -131,8 +140,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<Offer> UpdateOfferAsync(Offer p_Offer)
         {
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
-                {
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
+            {
                 try
                 {
                     //Az előző verziók érvénytelenítése
@@ -142,7 +151,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     prevVerisons.ForEach(i =>
                     {
                         i.LatestVersion = false;
-                        _dbContext.Entry(i).State = EntityState.Modified;
+                        _dbContext.Instance.Entry(i).State = EntityState.Modified;
                     });
 
                     //Az aktuális minden esetben Latest!
@@ -153,12 +162,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await _offerLineRepository.RemoveRangeAsync(oriLines.Where(w => !p_Offer.OfferLines.Any(a => a.ID == w.ID)).ToList(), true);
 
 
-                    p_Offer.OfferLines.ToList().ForEach(e => {
-                        if(e.Product != null)
-                            _dbContext.Entry(e.Product).State = EntityState.Unchanged;
+                    p_Offer.OfferLines.ToList().ForEach(e =>
+                    {
+                        if (e.Product != null)
+                            _dbContext.Instance.Entry(e.Product).State = EntityState.Unchanged;
                         if (e.VatRate != null)
-                            _dbContext.Entry(e.VatRate).State = EntityState.Unchanged;
-                        _dbContext.Entry(e).State = (e.ID == 0  ? EntityState.Added : EntityState.Modified);
+                            _dbContext.Instance.Entry(e.VatRate).State = EntityState.Unchanged;
+                        _dbContext.Instance.Entry(e).State = (e.ID == 0 ? EntityState.Added : EntityState.Modified);
                     });
 
 
@@ -168,7 +178,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await dbContextTransaction.CommitAsync();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -178,11 +188,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<Offer> UpdateOfferRecordAsync(Offer p_Offer)
         {
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    p_Offer.OfferLines.ToList().ForEach(e => {
+                    p_Offer.OfferLines.ToList().ForEach(e =>
+                    {
                         e.Product = null;
                         e.VatRate = null;
                     });
@@ -191,7 +202,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await dbContextTransaction.CommitAsync();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     await dbContextTransaction.RollbackAsync();
                     throw;
@@ -204,20 +215,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             Offer offer = null;
-            using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 offer = await _dbContext.Offer.AsNoTracking()
-                        .Include(o=>o.OfferLines).AsNoTracking()
+                        .Include(o => o.OfferLines).AsNoTracking()
                         .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
 
                 if (offer != null)
                 {
-                    offer.OfferLines.ToList().ForEach(e => {
+                    offer.OfferLines.ToList().ForEach(e =>
+                    {
                         e.Product = null;
                         e.VatRate = null;
                         e.Deleted = true;
                     });
-                    
+
                     offer.Deleted = true;
 
                     await UpdateAsync(offer);
@@ -238,7 +250,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var item = await GetOfferRecordAsync(ID);
 
-            if ( item == null)
+            if (item == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OFFERNOTFOUND, ID));
             }
@@ -260,17 +272,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         if (prod != null)
                         {
                             ol.UnitPrice1 = prod.UnitPrice1;
-                            ol.UnitPrice2 = prod.UnitPrice2 ;
+                            ol.UnitPrice2 = prod.UnitPrice2;
                         }
                     }
                 });
-            }   
+            }
             else
             {
                 //itemModel.OfferLines = new List<GetOfferViewModel.OfferLine>();
                 itemModel.OfferLines = null;
             }
-            
+
 
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
 
@@ -306,19 +318,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             IQueryable<Offer> query;
-                   query = _dbContext.Offer.AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking()
-                 .Include(u => u.User).AsNoTracking()
-                 .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking();
+            query = _dbContext.Offer.AsNoTracking()
+          .Include(c => c.Customer).AsNoTracking()
+          .Include(u => u.User).AsNoTracking()
+          .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking();
 
 
             // Count records total
             recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterBy(ref query,requestParameter.CustomerID, requestParameter.OfferNumber, 
+            FilterBy(ref query, requestParameter.CustomerID, requestParameter.OfferNumber,
                     requestParameter.OfferIssueDateFrom, requestParameter.OfferIssueDateTo,
-                    requestParameter.OfferVaidityDateForm, requestParameter.OfferVaidityDateTo );
+                    requestParameter.OfferVaidityDateForm, requestParameter.OfferVaidityDateTo);
 
             // Count records after filter
             recordsFiltered = await query.CountAsync();
@@ -369,8 +381,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             _productCacheService.TryGetValue(ol.ProductID.Value, out prod);
                             if (prod != null)
                             {
-                                ol.UnitPrice1 = prod.UnitPrice1  ;
-                                ol.UnitPrice2 =  prod.UnitPrice2;
+                                ol.UnitPrice1 = prod.UnitPrice1;
+                                ol.UnitPrice2 = prod.UnitPrice2;
                             }
                         }
                     });
@@ -391,8 +403,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBy(ref IQueryable<Offer> p_items, long CustomerID, string OfferNumber, 
-                                DateTime? OfferIssueDateFrom, DateTime? OfferIssueDateTo, 
+        private void FilterBy(ref IQueryable<Offer> p_items, long CustomerID, string OfferNumber,
+                                DateTime? OfferIssueDateFrom, DateTime? OfferIssueDateTo,
                                 DateTime? OfferVaidityDateFrom, DateTime? OfferVaidityDateTo)
         {
             if (!p_items.Any())
@@ -406,13 +418,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             */
             var predicate = PredicateBuilder.New<Offer>();
 
-           predicate = predicate.And(p => !p.Deleted && (CustomerID == 0 || CustomerID == p.CustomerID)
-                           && (string.IsNullOrWhiteSpace(OfferNumber) || (p.OfferNumber.ToUpper() + "/" + p.OfferVersion).Contains(OfferNumber.ToUpper()))
-                           && (!OfferIssueDateFrom.HasValue || p.OfferIssueDate >= OfferIssueDateFrom.Value)
-                           && (!OfferIssueDateTo.HasValue || p.OfferIssueDate <= OfferIssueDateTo.Value)
-                           && (!OfferVaidityDateFrom.HasValue || p.OfferVaidityDate >= OfferVaidityDateFrom.Value)
-                           && (!OfferVaidityDateTo.HasValue || p.OfferVaidityDate <= OfferVaidityDateTo.Value)
-                           );
+            predicate = predicate.And(p => !p.Deleted && (CustomerID == 0 || CustomerID == p.CustomerID)
+                            && (string.IsNullOrWhiteSpace(OfferNumber) || (p.OfferNumber.ToUpper() + "/" + p.OfferVersion).Contains(OfferNumber.ToUpper()))
+                            && (!OfferIssueDateFrom.HasValue || p.OfferIssueDate >= OfferIssueDateFrom.Value)
+                            && (!OfferIssueDateTo.HasValue || p.OfferIssueDate <= OfferIssueDateTo.Value)
+                            && (!OfferVaidityDateFrom.HasValue || p.OfferVaidityDate >= OfferVaidityDateFrom.Value)
+                            && (!OfferVaidityDateTo.HasValue || p.OfferVaidityDate <= OfferVaidityDateTo.Value)
+                            );
 
             p_items = p_items.Where(predicate);
         }
@@ -420,6 +432,128 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Task<bool> SeedDataAsync(int rowCount)
         {
             throw new System.NotImplementedException();
+        }
+        public async Task<Offer> CreateOfferAsync(CreateOfferCommand request, CancellationToken cancellationToken)
+        {
+            var offer = _mapper.Map<Offer>(request);
+            offer.OfferVersion = 0;
+            offer.Notice = Utils.TidyHtml(offer.Notice);
+
+
+            if (string.IsNullOrWhiteSpace(offer.CurrencyCode))
+            {
+                offer.CurrencyCode = enCurrencyCodes.HUF.ToString();    // Forintos a default
+                offer.ExchangeRate = 1;
+            }
+
+            var counterCode = "";
+            try
+            {
+
+                offer.LatestVersion = true;
+                //Árajánlatszám megállapítása
+                counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
+                offer.OfferNumber = await _counterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);
+                offer.Copies = 1;
+
+                //Tételsorok
+                foreach (var ln in offer.OfferLines)
+                {
+                    var rln = request.OfferLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
+
+
+                    var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
+                    if (prod == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
+                    }
+                    var vatRate = _vatRateRepository.GetVatRateByCode(rln.VatRateCode);
+                    if (vatRate == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
+                    }
+
+                    //	ln.Product = prod;
+                    ln.ProductID = prod.ID;
+                    ln.ProductCode = rln.ProductCode;
+                    ln.NoDiscount = prod.NoDiscount;
+                    //Ez modelből jön: ln.LineDescription = prod.Description;
+
+                    //	ln.VatRate = vatRate;
+                    ln.VatRateID = vatRate.ID;
+                    ln.VatPercentage = vatRate.VatPercentage;
+
+                }
+
+                await this.AddOfferAsync(offer);
+
+                await _counterRepository.FinalizeValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, offer.OfferNumber);
+
+                return offer;
+            }
+            catch (Exception)
+            {
+                if (!string.IsNullOrWhiteSpace(offer.OfferNumber) && !string.IsNullOrWhiteSpace(counterCode))
+                {
+                    await _counterRepository.RollbackValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID, offer.OfferNumber);
+                }
+                throw;
+            }
+        }
+
+        public async Task<Offer> ModifyOfferAsync(UpdateOfferCommand request, CancellationToken cancellationToken)
+        {
+            var offer = _mapper.Map<Offer>(request);
+
+            offer.Notice = Utils.TidyHtml(offer.Notice);
+
+            try
+            {
+                //Tételsorok
+                foreach (var ln in offer.OfferLines)
+                {
+                    var rln = request.OfferLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
+
+                    var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
+                    if (prod == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
+                    }
+                    var vatRate = _vatRateRepository.GetVatRateByCode(rln.VatRateCode);
+                    if (vatRate == null)
+                    {
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
+                    }
+
+                    //	ln.Product = prod;
+                    ln.ProductID = prod.ID;
+                    ln.ProductCode = rln.ProductCode;
+                    ln.NoDiscount = prod.NoDiscount;
+                    //Ez modelből jön: ln.LineDescription = prod.Description;
+
+                    //	ln.VatRate = vatRate;
+                    ln.VatRateID = vatRate.ID;
+                    ln.VatPercentage = vatRate.VatPercentage;
+
+                }
+                if (request.NewOfferVersion)
+                {
+                    offer.OfferVersion++;
+                    offer.ID = 0;
+                    await UpdateOfferAsync(offer);
+                }
+                else
+                {
+                    await this.UpdateOfferAsync(offer);
+                }
+
+
+                return offer;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

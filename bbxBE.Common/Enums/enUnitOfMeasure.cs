@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 
 namespace bbxBE.Common.Enums
 {
@@ -9,32 +6,32 @@ namespace bbxBE.Common.Enums
     {
         [Description("DB")]
         PIECE,
-        [Description("Kilogram")]
+        [Description("Kg")]
         KILOGRAM,
-//        [Description("Tonna")]
-//        TON,
-//        [Description("KWH")]
-//        KWH,
-//        [Description("Nap")]
-//        DAY,
-//        [Description("Óra")]
-//        HOUR,
-//        [Description("Perc")]
-//        MINUTE,
-//        [Description("Hónap")]
-//        MONTH,
+        //        [Description("Tonna")]
+        //        TON,
+        //        [Description("KWH")]
+        //        KWH,
+        //        [Description("Nap")]
+        //        DAY,
+        //        [Description("Óra")]
+        //        HOUR,
+        //        [Description("Perc")]
+        //        MINUTE,
+        //        [Description("Hónap")]
+        //        MONTH,
         [Description("Liter")]
         LITER,
-//        [Description("Kilométer")]
-//        KILOMETER,
-//        [Description("Köbméter")]
-//        CUBIC_METER,
-        [Description("Méter")]
+        //        [Description("Kilométer")]
+        //        KILOMETER,
+        //        [Description("Köbméter")]
+        //        CUBIC_METER,
+        [Description("m")]
         METER,
-        [Description("Folyóméter")]
+        [Description("FM")]
         LINEAR_METER,
-//        [Description("Karton")]
-//        CARTON,
+        //        [Description("Karton")]
+        //        CARTON,
         [Description("Doboz")]
         PACK,
         [Description("Egyéb")]

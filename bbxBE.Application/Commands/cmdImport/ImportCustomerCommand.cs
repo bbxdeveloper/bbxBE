@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using bbxBE.Application.BLL;
 using bbxBE.Application.Commands.ResultModels;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
+using bbxBE.Common.NAV;
+using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdCustomer;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -43,6 +44,9 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string CustomerBankAccountNumberFieldName = "CustomerBankAccountNumber";
         private const string TaxpayerIdFieldName = "TaxpayerId";
         private const string CustomerUnitPriceTypeFieldName = "V_FIZM";
+        private const string CustomerPaymentDaysFieldName = "V_FIZH";
+        private const string CustomerLatestDiscountPercentFieldName = "V_ENG";
+        private const string CustomerMaxLimitFieldName = "LIMIT";
 
         private readonly ICustomerRepositoryAsync _customerRepository;
         //private readonly IUnitOfMEasure
@@ -67,7 +71,15 @@ namespace bbxBE.Application.Commands.cmdImport
             var customerItemsFromCSV = await GetCustomerItemsAsync(request, mappedCustomerColumns.customerMap);
             var importCustomerResponse = new ImportedItemsStatistics { AllItemsCount = customerItemsFromCSV.Count };
 
-            await bllCustomer.CreateRangeAsynch(customerItemsFromCSV, _customerRepository, _mapper, cancellationToken);
+            var customerList = new List<Customer>();
+            foreach (var customer in customerItemsFromCSV)
+            {
+                var cust = _mapper.Map<Customer>(customer);
+                customerList.Add(cust);
+            }
+
+            await _customerRepository.AddCustomerRangeAsync(customerList);
+
             return new Response<ImportedItemsStatistics>(importCustomerResponse);
         }
 
@@ -129,6 +141,39 @@ namespace bbxBE.Application.Commands.cmdImport
 
                 var unitPriceType = customerMapping.ContainsKey(CustomerUnitPriceTypeFieldName) ? currentFieldsArray[customerMapping[CustomerUnitPriceTypeFieldName]].Replace("\"", "").Trim() : null;
                 createCustomerCommand.UnitPriceType = unitPriceType.Equals("1") ? "UNIT" : "LIST";
+
+                createCustomerCommand.DefPaymentMethod = unitPriceType.Equals("1") ? PaymentMethodType.CASH.ToString()
+                    : unitPriceType.Equals("2") ? PaymentMethodType.TRANSFER.ToString() : PaymentMethodType.CASH.ToString();
+
+                if (customerMapping.ContainsKey(CustomerLatestDiscountPercentFieldName)
+                    && Decimal.TryParse(currentFieldsArray[customerMapping[CustomerLatestDiscountPercentFieldName]], out decimal latestDiscountPercent))
+                {
+                    createCustomerCommand.LatestDiscountPercent = latestDiscountPercent;
+                }
+                else
+                {
+                    createCustomerCommand.LatestDiscountPercent = (decimal?)null;
+                }
+
+                if (customerMapping.ContainsKey(CustomerPaymentDaysFieldName)
+                    && Int16.TryParse(currentFieldsArray[customerMapping[CustomerPaymentDaysFieldName]], out short paymentDays))
+                {
+                    createCustomerCommand.PaymentDays = paymentDays;
+                }
+                else
+                {
+                    createCustomerCommand.PaymentDays = 0;
+                }
+
+                if (customerMapping.ContainsKey(CustomerMaxLimitFieldName)
+                    && Decimal.TryParse(currentFieldsArray[customerMapping[CustomerMaxLimitFieldName]], out decimal maxLimit))
+                {
+                    createCustomerCommand.MaxLimit = maxLimit;
+                }
+                else
+                {
+                    createCustomerCommand.MaxLimit = (decimal?)null;
+                }
 
                 return createCustomerCommand;
             }

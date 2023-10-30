@@ -1,10 +1,10 @@
-﻿using AutoMapper;
-using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
+using bbxBE.Common.NAV;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PdfSharp.Pdf;
@@ -40,18 +40,16 @@ namespace bbxBE.Application.Commands.cmdInvoice
     public class PrintInvoiceCommandHandler : IRequestHandler<PrintInvoiceCommand, FileStreamResult>
     {
         private readonly IInvoiceRepositoryAsync _invoiceRepository;
-        private readonly IMapper _mapper;
 
-        public PrintInvoiceCommandHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper)
+        public PrintInvoiceCommandHandler(IInvoiceRepositoryAsync invoiceRepository)
         {
             _invoiceRepository = invoiceRepository;
-            _mapper = mapper;
         }
 
         public async Task<FileStreamResult> Handle(PrintInvoiceCommand request, CancellationToken cancellationToken)
         {
 
-            var invoice = await _invoiceRepository.GetInvoiceRecordAsync(request.ID, true);
+            var invoice = await _invoiceRepository.GetInvoiceRecordAsync(request.ID, invoiceQueryTypes.full);
             if (invoice == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, request.ID));
@@ -64,12 +62,27 @@ namespace bbxBE.Application.Commands.cmdInvoice
             string reportTRDX = String.Empty;
 
             Enum.TryParse(invoice.InvoiceType, out enInvoiceType invoiceType);
+            Enum.TryParse(invoice.InvoiceCategory, out InvoiceCategoryType invoiceCategory);
 
             switch (invoiceType)
             {
                 case enInvoiceType.INC:
                     {
-                        reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceINC.trdx", Assembly.GetExecutingAssembly());
+                        if (invoiceCategory == InvoiceCategoryType.NORMAL)
+                        {
+                            if (!invoice.InvoiceCorrection)
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceINC.trdx", Assembly.GetExecutingAssembly());
+                            }
+                            else
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSB.trdx", Assembly.GetExecutingAssembly());
+                            }
+                        }
+                        else
+                        {
+                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.AggregateINC.trdx", Assembly.GetExecutingAssembly());
+                        }
                         break;
                     }
                 case enInvoiceType.DNI:
@@ -90,7 +103,21 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 case enInvoiceType.INV:
                 default:
                     {
-                        reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
+                        if (invoiceCategory == InvoiceCategoryType.NORMAL)
+                        {
+                            if (!invoice.InvoiceCorrection)
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Invoice.trdx", Assembly.GetExecutingAssembly());
+                            }
+                            else
+                            {
+                                reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.InvoiceJSK.trdx", Assembly.GetExecutingAssembly());
+                            }
+                        }
+                        else
+                        {
+                            reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.AggregateINV.trdx", Assembly.GetExecutingAssembly());
+                        }
                         break;
                     }
             }
@@ -110,6 +137,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
                     reportSource.ReportDocument = rep;
                 }
 
+                reportSource.Parameters.Add(new Telerik.Reporting.Parameter("JWT", ""));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvoiceID", request.ID));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
 
@@ -120,13 +148,20 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 Telerik.Reporting.Processing.RenderingResult result = reportProcessor.RenderReport("PDF", reportSource, deviceInfo);
 
                 if (result == null)
-                    throw new Exception("Invoice report result is null!");
+                    throw new Exception(bbxBEConsts.ERR_INVOICEREPORT_NULL);
                 if (result.Errors.Length > 0)
-                    throw new Exception("Invoice report finished with error:" + result.Errors[0].Message);
+                    throw new Exception(string.Format(bbxBEConsts.ERR_INVOICEREPORT, result.Errors[0].Message));
+
 
                 //Példányszám beállítása
                 //
                 invoice.Copies++;
+
+                //Nullra vesszük a detail táblákat, csak az Invoice táblát kell menteni
+                invoice.InvoiceLines = null;
+                invoice.SummaryByVatRates = null;
+                invoice.AdditionalInvoiceData = null;
+
                 await _invoiceRepository.UpdateInvoiceAsync(invoice, null);
 
                 //TODO : Az eredeti példány folderbe el kell rakni ay első a PDF-et

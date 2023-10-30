@@ -1,6 +1,4 @@
-﻿using bbxBE.Application.Interfaces;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Parameters;
+﻿using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qWarehouse;
 using bbxBE.Domain.Entities;
 using System.Collections.Generic;
@@ -20,6 +18,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Warehouse> GetWarehouseByCodeAsync(string WarehouseCode);
 
         Task<Entity> GetWarehouseAsync(long ID);
+        Task<Warehouse> GetWarehouseRecordAsync(long ID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedWarehouseAsync(QueryWarehouse requestParameters);
     }
 }

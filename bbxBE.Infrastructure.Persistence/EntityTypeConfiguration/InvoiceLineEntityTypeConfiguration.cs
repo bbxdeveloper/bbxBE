@@ -1,10 +1,6 @@
 ﻿using bbxBE.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
 {
@@ -23,12 +19,18 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .IsRequired(true);
 
             builder
-            .HasOne<Invoice>(i => i.DeliveryNote)
+            .HasOne<InvoiceLine>(i => i.DeliveryNote)
             .WithMany(c => c.InvoiceLines)
             .HasForeignKey(s => s.RelDeliveryNoteInvoiceID)
             .IsRequired(false);
+
             */
 
+            builder
+            .HasMany<AdditionalInvoiceLineData>(i => i.AdditionalInvoiceLineData)
+            .WithOne(c => c.InvoiceLine)
+            .HasForeignKey(s => s.InvoiceLineID)
+            .IsRequired(false);
 
         }
     }

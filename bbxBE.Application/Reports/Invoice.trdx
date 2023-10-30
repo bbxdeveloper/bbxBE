@@ -507,19 +507,43 @@
               </Style>
             </TextBox>
             <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="1.468cm" Value="Végösszeg kerekítése" Name="textBox57">
-              <Style VerticalAlign="Middle">
+              <Style Visible="True" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Style Visible="False" />
+                  <Filters>
+                    <Filter Expression="= (Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount)" Operator="Equal" Value="= 0" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
             </TextBox>
             <TextBox Width="0.553cm" Height="0.35cm" Left="6.147cm" Top="1.468cm" Value=":" Name="textBox58">
-              <Style TextAlign="Center" VerticalAlign="Middle">
+              <Style Visible="True" TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" Bold="False" />
               </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Style Visible="False" />
+                  <Filters>
+                    <Filter Expression="= (Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount)" Operator="Equal" Value="= 0" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
             </TextBox>
             <TextBox Width="2.976cm" Height="0.35cm" Left="6.7cm" Top="1.468cm" Value="= Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount&#xD;&#xA;&#xD;&#xA;" Format="{0:N2}" Name="textBox56">
-              <Style TextAlign="Right" VerticalAlign="Middle">
+              <Style Visible="True" TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
+              <ConditionalFormatting>
+                <FormattingRule>
+                  <Style Visible="False" />
+                  <Filters>
+                    <Filter Expression="= (Fields.invoiceGrossAmount - Fields.invoiceNetAmount - Fields.invoiceVatAmount)" Operator="Equal" Value="= 0" />
+                  </Filters>
+                </FormattingRule>
+              </ConditionalFormatting>
             </TextBox>
             <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="1.818cm" Value="Végösszeg" Name="textBox71">
               <Style VerticalAlign="Middle">
@@ -547,79 +571,79 @@
               </Style>
             </TextBox>
             <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="0.352cm" Value="Kedvezmény" Name="textBox82">
-              <Style VerticalAlign="Middle">
+              <Style Visible="True" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
               <ConditionalFormatting>
                 <FormattingRule>
                   <Style Visible="False" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
             </TextBox>
             <TextBox Width="0.553cm" Height="0.35cm" Left="6.144cm" Top="0.352cm" Value=":" Name="textBox81">
-              <Style TextAlign="Center" VerticalAlign="Middle">
+              <Style Visible="True" TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
               <ConditionalFormatting>
                 <FormattingRule>
                   <Style Visible="False" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
             </TextBox>
             <TextBox Width="2.976cm" Height="0.35cm" Left="6.697cm" Top="0.352cm" Value="= Fields.invoiceDiscount" Format="{0:N2}" Name="textBox80">
-              <Style TextAlign="Right" VerticalAlign="Middle">
+              <Style Visible="True" TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
               <ConditionalFormatting>
                 <FormattingRule>
                   <Style Visible="False" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
             </TextBox>
             <TextBox Width="6.131cm" Height="0.35cm" Left="0.013cm" Top="0.702cm" Value="Kedvezménnyel csökkentett nettó" Name="textBox65">
-              <Style VerticalAlign="Middle">
+              <Style Visible="True" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
               <ConditionalFormatting>
                 <FormattingRule>
                   <Style Visible="False" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
             </TextBox>
             <TextBox Width="0.553cm" Height="0.35cm" Left="6.144cm" Top="0.702cm" Value=":" Name="textBox62">
-              <Style TextAlign="Center" VerticalAlign="Middle">
+              <Style Visible="True" TextAlign="Center" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
               <ConditionalFormatting>
                 <FormattingRule>
                   <Style Visible="False" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
             </TextBox>
             <TextBox Width="2.976cm" Height="0.35cm" Left="6.697cm" Top="0.702cm" Value="= Fields.invoiceNetAmount" Format="{0:N2}" Name="textBox61">
-              <Style TextAlign="Right" VerticalAlign="Middle">
+              <Style Visible="True" TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
               <ConditionalFormatting>
                 <FormattingRule>
                   <Style Visible="False" />
                   <Filters>
-                    <Filter Expression="= Fields.invoiceDiscount" Operator="LessThan" Value="1" />
+                    <Filter Expression="= Fields.invoiceDiscount" Operator="Equal" Value="0" />
                   </Filters>
                 </FormattingRule>
               </ConditionalFormatting>
@@ -924,7 +948,7 @@
   <ReportParameters>
     <ReportParameter Name="InvoiceID" Type="Integer" Text="InvoiceID" Visible="True">
       <Value>
-        <String>265</String>
+        <String>968</String>
       </Value>
     </ReportParameter>
     <ReportParameter Name="BaseURL" Visible="True">

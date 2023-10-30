@@ -1,30 +1,23 @@
 ﻿using bbxBE.Application.Commands.cmdInvoice;
-using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
+using bbxBE.Application.Commands.cmdNAV;
+using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qInvoice;
-using bbxBE.Application.Wrappers;
 using bbxBE.Common;
-using bbxBE.Common.Enums;
 using bbxBE.Common.NAV;
-using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdInvoice;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using static bbxBE.Common.NAV.NAV_enums;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+    //   [Authorize]
     public class InvoiceController : BaseApiController
     {
 
@@ -34,7 +27,7 @@ namespace bbxBE.WebApi.Controllers.v1
         public InvoiceController(
            IWebHostEnvironment env,
            IConfiguration conf,
-            IHttpContextAccessor context)
+           IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
@@ -47,9 +40,9 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetInvoice filter)
+        public async Task<IActionResult> Get([FromQuery] GetInvoice request)
         {
-             return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
@@ -58,9 +51,9 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("aggregateinvoice")]
-        public async Task<IActionResult> GetAggregateInvoice([FromQuery] GetAggregateInvoice filter)
+        public async Task<IActionResult> GetAggregateInvoice([FromQuery] GetAggregateInvoice request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
@@ -69,9 +62,9 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("aggregateinvoicedeliverynote")]
-        public async Task<IActionResult> GetAggregateInvoiceDeliveryNote([FromQuery] GetAggregateInvoiceDeliveryNote filter)
+        public async Task<IActionResult> GetAggregateInvoiceDeliveryNote([FromQuery] GetAggregateInvoiceDeliveryNote request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
@@ -105,7 +98,7 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpGet("paymentmethod")]
         public async Task<IActionResult> GetPaymentMethod()
         {
-            var req = new GetEnum() { type = typeof(PaymentMethodType), FilteredItems = new List<string>() { PaymentMethodType.VOUCHER.ToString(), PaymentMethodType.OTHER.ToString()}};
+            var req = new GetEnum() { type = typeof(PaymentMethodType), FilteredItems = new List<string>() { PaymentMethodType.VOUCHER.ToString(), PaymentMethodType.OTHER.ToString() } };
 
             return Ok(await Mediator.Send(req));
         }
@@ -142,6 +135,16 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(filter));
         }
 
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet("querycustomerinvoicesummary")]
+        public async Task<IActionResult> QueryCustomerInvoiceSummary([FromQuery] QueryCustomerInvoiceSummary req)
+        {
+            return Ok(await Mediator.Send(req));
+        }
 
         /// <summary>
         /// POST api/controller
@@ -151,7 +154,7 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPost("importfromnav")]
         public async Task<IActionResult> ImportFromNAV(importFromNAVCommand command)
         {
-                return Ok(await Mediator.Send(command));
+            return Ok(await Mediator.Send(command));
         }
 
         /// <summary>
@@ -172,16 +175,10 @@ namespace bbxBE.WebApi.Controllers.v1
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
-        /// <summary>
-        /// POST api/controller
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [HttpPost("printaggregate")]
-        public async Task<IActionResult> PrintAggregate(PrintAggregateInvoiceCommand command)
-        {
 
-            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+        [HttpGet("csv")]
+        public async Task<IActionResult> CSV([FromQuery] CSVInvoice command)
+        {
             var result = await Mediator.Send(command);
 
             if (result == null)
@@ -190,9 +187,23 @@ namespace bbxBE.WebApi.Controllers.v1
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
         }
 
-        [HttpGet("csv")]
-        public async Task<IActionResult> Print([FromQuery] CSVInvoice command)
+        [HttpGet("customerunpaidamount")]
+        public async Task<IActionResult> GetCustomerUnpaidAmount([FromQuery] GetCustomerUnpaidAmount req)
         {
+            return Ok(await Mediator.Send(req));
+        }
+
+
+        /// <summary>
+        /// POST api/controller
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("printcustomerinvoicesummary")]
+        public async Task<IActionResult> PrintCustomerInvoiceSummary(PrintCustomerInvoiceSummaryCommand command)
+        {
+
+            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
             var result = await Mediator.Send(command);
 
             if (result == null)

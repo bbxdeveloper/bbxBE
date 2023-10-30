@@ -1,4 +1,5 @@
 using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -9,6 +10,7 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
 using bbxBE.Queries.Mappings;
+using bxBE.Application.Commands.cmdProduct;
 using EFCore.BulkExtensions;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Threading;
 using System.Threading.Tasks;
 using static bbxBE.Common.NAV.NAV_enums;
 
@@ -56,19 +59,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 "vatRateCode" : "27%"
         */
         public ProductRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Product> dataShaperProduct,
-            IDataShapeHelper<GetProductViewModel> dataShaperGetProductViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<Product> productCacheService,
             ICacheService<ProductGroup> productGroupCacheService,
             ICacheService<Origin> originCacheService,
-            ICacheService<VatRate> vatRateCacheService,
-            IProductCodeRepositoryAsync productCodeRepository
+            ICacheService<VatRate> vatRateCacheService
             ) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperProduct = dataShaperProduct;
-            _dataShaperGetProductViewModel = dataShaperGetProductViewModel;
+            _dataShaperProduct = new DataShapeHelper<Product>();
+            _dataShaperGetProductViewModel = new DataShapeHelper<GetProductViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
@@ -76,7 +76,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productGroupCacheService = productGroupCacheService;
             _originCacheService = originCacheService;
             _vatRateCacheService = vatRateCacheService;
-            _productCodeRepository = productCodeRepository;
+            _productCodeRepository = new ProductCodeRepositoryAsync(dbContext, modelHelper, mapper, mockData);
         }
 
 
@@ -541,7 +541,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = query.Count();
 
             // filter query
-            FilterBySearchString(ref query, requestParameter.SearchString, requestParameter.FilterByCode, requestParameter.FilterByName);
+            FilterBySearchString(ref query, requestParameter.SearchString, requestParameter.FilterByCode, requestParameter.FilterByName, requestParameter.IDList);
 
             // Count records after filter
             recordsFiltered = query.Count();
@@ -565,8 +565,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTCODE)
                 {
                     //Kis heka...
-                    query = query.OrderBy(o => o.ProductCodes.Single(s =>
-                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                    query = query.OrderBy(o =>
+                            o.ProductCodes != null &&
+                            o.ProductCodes.Any(s =>
+                                    s.ProductCodeValue != null && s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()) ?
+                            o.ProductCodes.SingleOrDefault(s =>
+                                    s.ProductCodeValue != null && s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue :
+                           String.Empty
+                        );
+
                 }
                 else if (orderBy.ToUpper() == bbxBEConsts.FIELD_PRODUCTGROUP)
                 {
@@ -622,46 +629,72 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapeData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool? p_filterByCode, bool? p_filterByName)
+        private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool? p_filterByCode, bool? p_filterByName, IList<long> p_IDList)
         {
             if (!p_items.Any())
                 return;
 
-            if (string.IsNullOrWhiteSpace(p_searchString))
-                return;
 
-            var predicate = PredicateBuilder.New<Product>();
+            var predicate = PredicateBuilder.New<Product>(i => true);
 
-            var srcFor = p_searchString.ToUpper().Trim();
+            var srcFor = p_searchString?.ToUpper().Trim();
 
 
 
 
             //Ha kódban és névben egyszerre kerseünk akkor kód/név részletre keresünk
             if (p_filterByName.HasValue && p_filterByCode.HasValue &&
-                p_filterByName.Value && p_filterByCode.Value)
+            p_filterByName.Value && p_filterByCode.Value)
             {
-                predicate = predicate.And(p => (!p_filterByName.Value || p.Description.ToUpper().Contains(srcFor))
-                    ||
-                    (!p_filterByCode.Value || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
-                    a.ProductCodeValue.ToUpper().Contains(srcFor)))
-                    );
+                if (srcFor != null)
+                {
+                    predicate = predicate.And(p => (!p_filterByName.Value || p.Description.ToUpper().StartsWith(srcFor))
+                        ||
+                        (!p_filterByCode.Value || p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                        a.ProductCodeValue.ToUpper().StartsWith(srcFor)))
+                        );
+                }
+                else
+                {
+                    predicate = predicate.And(p => true);
+                }
+
             }
 
             //csak kódra keresés, kódkezdetre keresünk
             else if (p_filterByCode.HasValue && p_filterByCode.Value)
             {
-                predicate = predicate.And(p => (p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
+                if (srcFor != null)
+                {
+                    predicate = predicate.And(p => (p.ProductCodes.Any(a => a.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() &&
                                     a.ProductCodeValue.ToUpper().StartsWith(srcFor)))
                     );
+                }
+                else
+                {
+                    predicate = predicate.And(p => true);
+                }
             }
 
             //csak névre keresés, névezdetre keresünk
             else if (p_filterByName.HasValue && p_filterByName.Value)
             {
-                predicate = predicate.And(p => (p.Description.ToUpper().StartsWith(srcFor))
-                    );
+                if (srcFor != null)
+                {
+                    predicate = predicate.And(p => (p.Description.ToUpper().StartsWith(srcFor)));
+                }
+                else
+                {
+                    predicate = predicate.And(p => true);
+                }
             }
+
+
+            if (p_IDList != null && p_IDList.Count > 0)
+            {
+                predicate = predicate.And(p => p_IDList.Contains(p.ID));
+            }
+
             p_items = p_items.Where(predicate);
 
         }
@@ -701,5 +734,113 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             await _productcacheService.RefreshCache();
         }
 
+        public async Task<Product> CreateAsynch(CreateProductCommand request, CancellationToken cancellationToken)
+        {
+            var prod = _mapper.Map<Product>(request);
+
+            prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
+
+            prod.ProductCodes = new List<ProductCode>();
+
+            var pcCode = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+            prod.ProductCodes.Add(pcCode);
+            var pcVTSZ = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+            prod.ProductCodes.Add(pcVTSZ);
+            ProductCode pcEAN = null;
+            if (!string.IsNullOrWhiteSpace(request.EAN))
+            {
+                pcEAN = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+                prod.ProductCodes.Add(pcEAN);
+            }
+
+            prod = await this.AddProductAsync(prod, request.ProductGroupCode, request.OriginCode, request.VatRateCode);
+            return prod;
+        }
+
+        public async Task<int> CreateRangeAsynch(List<CreateProductCommand> requestList, CancellationToken cancellationToken)
+        {
+            var prodList = new List<Product>();
+            var productGroupCodeList = new List<string>();
+            var originCodeList = new List<string>();
+            var vatRateCodeList = new List<string>();
+            foreach (var request in requestList)
+            {
+                var prod = _mapper.Map<Product>(request);
+
+                prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
+
+                prod.ProductCodes = new List<ProductCode>();
+
+                var pcCode = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+                prod.ProductCodes.Add(pcCode);
+                var pcVTSZ = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+                prod.ProductCodes.Add(pcVTSZ);
+                ProductCode pcEAN = null;
+                if (!string.IsNullOrWhiteSpace(request.EAN))
+                {
+                    pcEAN = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+                    prod.ProductCodes.Add(pcEAN);
+                };
+                prodList.Add(prod);
+                productGroupCodeList.Add(request.ProductGroupCode);
+                originCodeList.Add(request.OriginCode);
+                vatRateCodeList.Add(request.VatRateCode);
+            }
+            return await this.AddProductRangeAsync(prodList, productGroupCodeList, originCodeList, vatRateCodeList);
+
+        }
+
+        public async Task<Product> UpdateAsynch(UpdateProductCommand request, CancellationToken cancellationToken)
+        {
+
+
+            var prod = _mapper.Map<Product>(request);
+            prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
+            var pcCode = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+            prod.ProductCodes = new List<ProductCode>();
+            prod.ProductCodes.Add(pcCode);
+            var pcVTSZ = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+            prod.ProductCodes.Add(pcVTSZ);
+
+            ProductCode pcEAN = null;
+            if (!string.IsNullOrWhiteSpace(request.EAN))
+            {
+                pcEAN = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+                prod.ProductCodes.Add(pcEAN);
+            }
+            return await this.UpdateProductAsync(prod, request.ProductGroupCode, request.OriginCode, request.VatRateCode);
+        }
+
+
+        public async Task<int> UpdateRangeAsynch(List<UpdateProductCommand> requestList, CancellationToken cancellationToken)
+        {
+            var prodList = new List<Product>();
+            var productGroupCodeList = new List<string>();
+            var originCodeList = new List<string>();
+            var vatRateCodeList = new List<string>();
+            foreach (var request in requestList)
+            {
+                var prod = _mapper.Map<Product>(request);
+                prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
+                var pcCode = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
+                prod.ProductCodes = new List<ProductCode>();
+                prod.ProductCodes.Add(pcCode);
+                var pcVTSZ = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.VTSZ.ToString(), ProductCodeValue = request.VTSZ };
+                prod.ProductCodes.Add(pcVTSZ);
+
+                ProductCode pcEAN = null;
+                if (!string.IsNullOrWhiteSpace(request.EAN))
+                {
+                    pcEAN = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
+                    prod.ProductCodes.Add(pcEAN);
+                }
+
+                prodList.Add(prod);
+                productGroupCodeList.Add(request.ProductGroupCode);
+                originCodeList.Add(request.OriginCode);
+                vatRateCodeList.Add(request.VatRateCode);
+            }
+            return await this.UpdateProductRangeAsync(prodList, productGroupCodeList, originCodeList, vatRateCodeList);
+        }
     }
 }

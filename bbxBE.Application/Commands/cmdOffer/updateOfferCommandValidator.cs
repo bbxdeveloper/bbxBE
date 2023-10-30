@@ -1,18 +1,9 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdOffer;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdOffer
 {
@@ -37,7 +28,7 @@ namespace bbxBE.Application.Commands.cmdOffer
             RuleFor(r => r.OfferVaidityDate)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
-            RuleFor(r => new { r.OfferIssueDate, r.OfferVaidityDate}).Must(m => m.OfferIssueDate <= m.OfferVaidityDate)
+            RuleFor(r => new { r.OfferIssueDate, r.OfferVaidityDate }).Must(m => m.OfferIssueDate <= m.OfferVaidityDate)
                 .WithMessage(bbxBEConsts.ERR_OFFER_DATE1);
 
             RuleFor(r => r.CurrencyCode)
@@ -58,7 +49,7 @@ namespace bbxBE.Application.Commands.cmdOffer
             var valid = Enum.TryParse(Currency, out enCurrencyCodes curr);
             return valid;
         }
-    
+
     }
 
     public class UpdateOfferLinesCommandValidatror : AbstractValidator<UpdateOfferCommand.OfferLine>
@@ -67,15 +58,15 @@ namespace bbxBE.Application.Commands.cmdOffer
         {
 
             RuleFor(p => p.Quantity)
-               .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED);
+               .GreaterThan(0).WithMessage(bbxBEConsts.ERR_GREATGHERTHANZERO);
 
             RuleFor(p => p.UnitOfMeasure)
                  .Must(CheckUnitOfMEasure).
                  WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.LineNumber, model.ProductCode, model.UnitOfMeasure));
 
             RuleFor(p => p.Discount)
-               .InclusiveBetween( -1000, 100)
-               .WithMessage((model, field) => string.Format(bbxBEConsts.ERR_DETAIL_PREF, model.LineNumber, model.ProductCode) +bbxBEConsts.ERR_DISCOUNT);
+               .InclusiveBetween(-1000, 100)
+               .WithMessage((model, field) => string.Format(bbxBEConsts.ERR_DETAIL_PREF, model.LineNumber, model.ProductCode) + bbxBEConsts.ERR_DISCOUNT);
         }
 
         public bool CheckUnitOfMEasure(string unitOfMeasure)

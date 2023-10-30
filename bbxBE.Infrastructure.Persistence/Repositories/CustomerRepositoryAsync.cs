@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using bbxBE.Application.BLL;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -30,20 +31,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private readonly IExpiringData<ExpiringDataObject> _expiringData;
         private readonly ICacheService<Customer> _cacheService;
 
         public CustomerRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Customer> dataShaperCustomer,
-            IDataShapeHelper<GetCustomerViewModel> dataShaperGetCustomerViewModel,
-            IModelHelper modelHelper, IMapper mapper, IMockService mockData,
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData, IExpiringData<ExpiringDataObject> expiringData,
             ICacheService<Customer> customerCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperCustomer = dataShaperCustomer;
-            _dataShaperGetCustomerViewModel = dataShaperGetCustomerViewModel;
+            _dataShaperCustomer = new DataShapeHelper<Customer>();
+            _dataShaperGetCustomerViewModel = new DataShapeHelper<GetCustomerViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _expiringData = expiringData;
             _cacheService = customerCacheService;
         }
 
@@ -112,16 +113,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         }
 
-        public async Task<Customer> UpdateCustomerAsync(Customer p_customer, IExpiringData<ExpiringDataObject> expiringData)
+        public async Task<Customer> UpdateCustomerAsync(Customer p_customer)
         {
             _cacheService.AddOrUpdate(p_customer);
             await UpdateAsync(p_customer);
 
             //szemafr kiütések
             var key = bbxBEConsts.DEF_CUSTOMERLOCK_KEY + p_customer.ID.ToString();
-            await expiringData.DeleteItemAsync(key);
+            await _expiringData.DeleteItemAsync(key);
 
             return p_customer;
+        }
+
+        public async Task<Customer> UpdateCustomerLatestDiscountPercentAsync(long ID, decimal LatestDiscountPercent)
+        {
+
+            Customer cust = null;
+            if (!_cacheService.TryGetValue(ID, out cust))
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTNOTFOUND, ID));
+
+            cust.LatestDiscountPercent = LatestDiscountPercent;
+            _cacheService.AddOrUpdate(cust);
+            await UpdateAsync(cust);
+            return cust;
         }
 
         public async Task<Customer> DeleteCustomerAsync(long ID)
@@ -250,7 +264,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (!string.IsNullOrWhiteSpace(p_searchString))
                 {
                     srcFor = p_searchString.ToUpper().Trim();
-                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))));
+                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().StartsWith(srcFor) || p.TaxpayerId.ToUpper().StartsWith(srcFor))));
                 }
                 predicate = predicate.And(p => p.IsOwnData == IsOwnData.Value);
 
@@ -260,7 +274,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (!string.IsNullOrWhiteSpace(p_searchString))
                 {
                     srcFor = p_searchString.ToUpper().Trim();
-                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().Contains(srcFor) || p.TaxpayerId.ToUpper().Contains(srcFor))));
+                    predicate = predicate.And(p => (p.CustomerName != null && p.TaxpayerId != null && (p.CustomerName.ToUpper().StartsWith(srcFor) || p.TaxpayerId.ToUpper().StartsWith(srcFor))));
                 }
                 else
                 {

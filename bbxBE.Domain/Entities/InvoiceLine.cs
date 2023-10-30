@@ -1,6 +1,7 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -45,7 +46,6 @@ namespace bbxBE.Domain.Entities
         [Description("Az alkalmazott adó mértéke - Áfa tv. 169. § j)")]
         public decimal VatPercentage { get; set; }
 
-
         [ColumnLabel("Megnevezés")]
         [Description("A termék vagy szolgáltatás megnevezése")]
         public string LineDescription { get; set; }
@@ -58,10 +58,11 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Ár")]
         [Description("Ár")]
         public decimal UnitPrice { get; set; }
+
+        #region Nyomtatványon megjelenő mezők
         [ColumnLabel("Ár HUF")]
         [Description("Ár forintban")]
 
-        #region Nyomtatványon megjelenő mezők
         public decimal UnitPriceHUF { get; set; }
         [ColumnLabel("Nettó érték")]
         [Description("Ár a számla pénznemében")]
@@ -146,8 +147,8 @@ namespace bbxBE.Domain.Entities
         [Description("Az átvállalt termékdíj összege forintban, ha a vevő vállalja át az eladó termékdíjkötelezettségét")]
         public decimal TakeoverAmount { get; set; }
 
-        //Termékdíj tartalom
 
+        //Termékdíj tartalom
         [ColumnLabel("Termékdíj kat.")]
         [Description("Termékdíj kategória (Kt vagy Csk)")]
         public string ProductFeeProductCodeCategory { get; set; }
@@ -181,7 +182,7 @@ namespace bbxBE.Domain.Entities
         public decimal LineDiscountPercent { get; set; }        //NoDiscount esetén értéke 0!
 
 
-        //Relációk
+        //Relációk, navigációs komponensek
         [JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez
         [ForeignKey("InvoiceID")]
         [ColumnLabel("Számla")]
@@ -203,6 +204,10 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Áfakulcs")]
         [Description("Áfakulcs")]
         public virtual VatRate VatRate { get; set; }
+
+        [ColumnLabel("Egyéb tételadat")]
+        [Description("A bizonylattételre vonatkozó egyéb adat")]
+        public virtual ICollection<AdditionalInvoiceLineData> AdditionalInvoiceLineData { get; set; }
 
     }
 }

@@ -1,18 +1,9 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdOffer;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdOffer
 {
@@ -35,7 +26,7 @@ namespace bbxBE.Application.Commands.cmdOffer
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);
 
 
-            RuleFor(r => new { r.OfferIssueDate, r.OfferVaidityDate}).Must(m => m.OfferIssueDate <= m.OfferVaidityDate)
+            RuleFor(r => new { r.OfferIssueDate, r.OfferVaidityDate }).Must(m => m.OfferIssueDate <= m.OfferVaidityDate)
                 .WithMessage(bbxBEConsts.ERR_OFFER_DATE1);
 
             RuleFor(r => r.CurrencyCode)
@@ -48,7 +39,7 @@ namespace bbxBE.Application.Commands.cmdOffer
 
         private bool CheckCurrency(string Currency)
         {
-            if( string.IsNullOrWhiteSpace(Currency))
+            if (string.IsNullOrWhiteSpace(Currency))
             {
                 return true;
             }
@@ -61,7 +52,7 @@ namespace bbxBE.Application.Commands.cmdOffer
         public CreateOfferLinesCommandValidatror()
         {
             RuleFor(p => p.Quantity)
-                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_REQUIRED);
+                .GreaterThan(0).WithMessage(bbxBEConsts.ERR_GREATGHERTHANZERO);
             RuleFor(p => p.UnitOfMeasure)
                  .Must(CheckUnitOfMEasure).WithMessage((model, field) => string.Format(bbxBEConsts.ERR_INVUNITOFMEASURE2, model.LineNumber, model.ProductCode, model.UnitOfMeasure));
             RuleFor(p => p.Discount)

@@ -1,4 +1,5 @@
 using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
@@ -31,15 +32,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
         public OriginRepositoryAsync(IApplicationDbContext dbContext,
-            IDataShapeHelper<Origin> dataShaperOrigin,
-            IDataShapeHelper<GetOriginViewModel> dataShaperGetOriginViewModel,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<Origin> originGroupCacheService,
             ICacheService<Product> productCacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperOrigin = dataShaperOrigin;
-            _dataShaperGetOriginViewModel = dataShaperGetOriginViewModel;
+            _dataShaperOrigin = new DataShapeHelper<Origin>();
+            _dataShaperGetOriginViewModel = new DataShapeHelper<GetOriginViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;

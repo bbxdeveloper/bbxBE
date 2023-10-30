@@ -1,9 +1,9 @@
-﻿using bbxBE.Application.Interfaces;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Parameters;
+﻿using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qOffer;
 using bbxBE.Domain.Entities;
+using bxBE.Application.Commands.cmdOffer;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace bbxBE.Application.Interfaces.Repositories
@@ -19,6 +19,12 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Entity> GetOfferAsync(long ID, bool FullData = true);
         Task<Offer> GetOfferRecordAsync(long ID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOfferAsync(QueryOffer requestParameters);
-        
+
+        Task<Offer> CreateOfferAsync(CreateOfferCommand request, CancellationToken cancellationToken);
+        Task<Offer> ModifyOfferAsync(UpdateOfferCommand request, CancellationToken cancellationToken);
+
+
+
+
     }
 }

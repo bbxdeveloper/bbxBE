@@ -29,6 +29,8 @@ namespace bbxBE.Application.Interfaces
         DbSet<Users> Users { get; set; }
         DbSet<VatRate> VatRate { get; set; }
         DbSet<Warehouse> Warehouse { get; set; }
+        DbSet<WhsTransfer> WhsTransfer { get; set; }
+        DbSet<WhsTransferLine> WhsTransferLine { get; set; }
         DbSet<Zip> Zip { get; set; }
 
 

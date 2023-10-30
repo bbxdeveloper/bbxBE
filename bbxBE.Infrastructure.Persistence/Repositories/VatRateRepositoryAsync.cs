@@ -1,29 +1,27 @@
-﻿using LinqKit;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qVatRate;
+using bbxBE.Application.Queries.ViewModels;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.BLL;
-using System;
-using AutoMapper;
-using bbxBE.Application.Queries.qVatRate;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Exceptions;
-using bbxBE.Common.Consts;
 
 namespace bbxBE.Infrastructure.Persistence.Repositories
 {
     public class VatRateRepositoryAsync : GenericRepositoryAsync<VatRate>, IVatRateRepositoryAsync
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
         private IDataShapeHelper<VatRate> _dataShaperVatRate;
         private IDataShapeHelper<GetVatRateViewModel> _dataShaperGetVatRateViewModel;
         private readonly IMockService _mockData;
@@ -31,20 +29,17 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private readonly ICacheService<VatRate> _cacheService;
 
-        public VatRateRepositoryAsync(ApplicationDbContext dbContext,
-            IDataShapeHelper<VatRate> dataShaperVatRate,
-            IDataShapeHelper<GetVatRateViewModel> dataShaperGetVatRateViewModel,
+        public VatRateRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<VatRate> cacheService) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaperVatRate = dataShaperVatRate;
-            _dataShaperGetVatRateViewModel = dataShaperGetVatRateViewModel;
+            _dataShaperVatRate = new DataShapeHelper<VatRate>();
+            _dataShaperGetVatRateViewModel = new DataShapeHelper<GetVatRateViewModel>();
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
             _cacheService = cacheService;
-
 
             var t = RefreshVatRateCache();
             t.GetAwaiter().GetResult();
@@ -65,7 +60,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Entity GetVatRate(long ID)
         {
             var query = _cacheService.QueryCache();
-            var item = query.Where(x => x.ID== ID).FirstOrDefault();
+            var item = query.Where(x => x.ID == ID).FirstOrDefault();
 
             if (item == null)
             {

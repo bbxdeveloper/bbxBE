@@ -20,6 +20,7 @@
     <None Remove="Reports\AggregateINV.trdx" />
     <None Remove="Reports\AggregateSubINC.trdx" />
     <None Remove="Reports\AggregateSubINV.trdx" />
+    <None Remove="Reports\CustomerInvoiceSummary.trdx" />
     <None Remove="Reports\InvCtrlICP.trdx" />
     <None Remove="Reports\InvCtrlICPReport.trdx" />
     <None Remove="Reports\Invoice.trdx" />
@@ -27,7 +28,10 @@
     <None Remove="Reports\InvoiceDNI.trdx" />
     <None Remove="Reports\InvoiceDNO.trdx" />
     <None Remove="Reports\InvoiceINC.trdx" />
+    <None Remove="Reports\InvoiceJSB.trdx" />
+    <None Remove="Reports\InvoiceJSK.trdx" />
     <None Remove="Reports\Offer.trdx" />
+    <None Remove="Reports\WarehouseTransfer.trdx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,7 +68,16 @@
     <EmbeddedResource Include="Reports\Invoice.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Reports\InvoiceJSB.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\InvoiceJSK.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Reports\Offer.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\WarehouseTransfer.trdx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -112,6 +125,12 @@
       <HintPath>lib\Telerik.Reporting.WebServiceDataSource.dll</HintPath>
       <Private>True</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Reports\CustomerInvoiceSummary.trdx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

@@ -91,6 +91,9 @@ namespace bbxBE.Application.Queries.ViewModels
             [Description("Eredeti ár")]
             public decimal OriginalUnitPrice { get; set; }
 
+            [ColumnLabel("Eredeti ár HUF")]                 //a törzsbeli ár
+            [Description("Eredeti ár forintban")]
+            public decimal OriginalUnitPriceHUF { get; set; }
 
             [ColumnLabel("E/L")]                        //Eygségár/listaár flag
             [Description("Listaár/Egységár")]
@@ -129,6 +132,10 @@ namespace bbxBE.Application.Queries.ViewModels
             [DataMember]
             [NotDBField]
             public bool ShowBrtAmount { get; set; }
+
+            [ColumnLabel("Eng.tilt")]
+            [Description("Engedmény adás tiltása")]
+            public bool NoDiscount { get; set; }
 
         }
 

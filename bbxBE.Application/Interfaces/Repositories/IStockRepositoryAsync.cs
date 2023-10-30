@@ -10,12 +10,13 @@ namespace bbxBE.Application.Interfaces.Repositories
     {
         Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice);
         Task<List<Stock>> MaintainStockByInvCtrlAsync(List<InvCtrl> invCtrlList, Customer p_ownData, string XRel);
-
+        Task<List<Stock>> MaintainStockByWhsTransferAsync(WhsTransfer whsTransfer, Customer ownData);
         Task<Entity> GetStockAsync(long ID);
+        Task<IEnumerable<Entity>> GetProductStocksAsync(long productID);
         Task<Stock> GetStockRecordAsync(long warehouseID, long productID);
+        Task<IEnumerable<Stock>> GetProductStocksRecordAsync(long productID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedStockAsync(QueryStock requestParameters);
-   
-        Task<Stock> UpdateStockLocationAsync( long ID, long? LocationID);
+        Task<Stock> UpdateStockLocationAsync(long ID, long? LocationID);
 
     }
 }
