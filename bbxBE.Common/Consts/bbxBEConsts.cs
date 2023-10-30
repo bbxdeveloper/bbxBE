@@ -163,6 +163,8 @@
 
         public const string NAV_TOKENEXCHANGE_ERR = "{0} NAV tokenExchange error result:{1}";
         public const string NAV_MANAGEINVOICE_ERR = "{0} NAV manageInvoice error result:{1}";
+        public const string NAV_QUERYTRANSACTION_ERR = "{0} NAV queryTransaction error (1) result:{1}";
+        public const string NAV_QUERYTRANSACTION_ERR2 = "{0} NAV queryTransaction error (2) result:{1}";
 
         public const string NAV_QINVDIGEST_OK = "{0} NAV queryInvoiceDigest OK, invoiceDirection:{1}, issue:{2}, dateFromUTC:{3}, dateToUTC:{4}";
         public const string NAV_QINVDIGEST_FIRSTPG_ERR = "{0} NAV queryInvoiceDigest firstpage error result:{1}";
