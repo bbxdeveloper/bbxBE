@@ -138,30 +138,24 @@ namespace bbxBE.Application.BLL
         {
             if (p_num == 0)
                 return p_num;
+            p_num = Math.Round(p_num);
 
             var lastDigit = (p_num % 10);
-            var roundNum = 5;
+            decimal roundedNum = 0;
             if (lastDigit >= 8)
             {
-                roundNum = 10;
+                roundedNum = Math.Floor(p_num / 10) * 10 + 10;
             }
             else if (lastDigit <= 2)
             {
-                roundNum = 10;
+                roundedNum = Math.Floor(p_num / 10) * 10;
             }
             else
             {
-                roundNum = 5;
+                roundedNum = Math.Floor(p_num / 10) * 10 + 5;
             }
 
-            if (p_num > 0)
-            {
-                return p_num - lastDigit + roundNum;
-            }
-            else
-            {
-                return p_num + lastDigit - roundNum;
-            }
+            return roundedNum;
         }
 
 
