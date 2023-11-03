@@ -48,10 +48,15 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
         [HttpGet("querytransactionstatus")]
-        public async Task<IActionResult> SendInvoiceToNAVNAV([FromQuery] queryTransactionStatusNAVCommand request)
+        public async Task<IActionResult> queryTransactionStatus([FromQuery] queryTransactionStatusNAVCommand request)
         {
             return Ok(await Mediator.Send(request));
         }
 
+        [HttpGet("manageannulment")]
+        public async Task<IActionResult> manageAnnulment([FromQuery] manageAnnulmentNAVCommand request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
     }
 }
