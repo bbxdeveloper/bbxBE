@@ -168,11 +168,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 //beaktualizáljuk az InvCtrl-be az aktuális raktárkészletet
                 invCtrl.ORealQty = stock.RealQty;
+                invCtrl.AvgCost = stock.AvgCost;
 
                 var latestStockCard = await _stockCardRepository.CreateStockCard(stock, invCtrl.InvCtrlDate,
                             invCtrl.WarehouseID, invCtrl.ProductID, invCtrl.UserID, null, invCtrl.ID, null, p_ownData.ID,
                             invCtrl.InvCtrlType == enInvCtrlType.ICP.ToString() ? enStockCardType.ICP : enStockCardType.ICC,
-                            invCtrl.NRealQty - invCtrl.ORealQty,        //csak a különbséget kell átadni!!!
+                            //invCtrl.NRealQty - invCtrl.ORealQty,        //csak a különbséget kell átadni!!!
+                            invCtrl.NRealQty,           //Leltár esetén a leltározott készletet adjuk át, a többit kiszámolja a CreateStockCard
                             stock.AvgCost,
                             XRel);
 

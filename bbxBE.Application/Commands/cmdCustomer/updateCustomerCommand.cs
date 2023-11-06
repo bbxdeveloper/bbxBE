@@ -28,8 +28,8 @@ namespace bxBE.Application.Commands.cmdCustomer
         [Description("Magánszemély?")]
         public bool PrivatePerson { get; set; } = false;
 
-        [ColumnLabel("Adóalany adószám")]
-        [Description("Adóalany adószám")]
+        [ColumnLabel("Adóalany belföldi adószám")]
+        [Description("Adóalany belföldi adószám")]
         public string TaxpayerNumber { get; set; }          //9999999-9-99
 
         [ColumnLabel("Külföldi adószám")]

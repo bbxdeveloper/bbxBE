@@ -7,7 +7,7 @@ namespace bbxBE.Common.Enums
         [Description("Létrehozva")]
         CREATED,
         [Description("Token elküldve")]
-        TOKEN_SENT,
+        TOKEN,
         [Description("Bizonylat/visszavonás elküldve")]
         DATA_SENT,
         [Description("Rendben")]
