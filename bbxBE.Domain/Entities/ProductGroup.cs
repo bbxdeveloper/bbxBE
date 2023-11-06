@@ -1,9 +1,6 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -16,5 +13,9 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Leírás")]
         [Description("Leírás")]
         public string ProductGroupDescription { get; set; }
+
+        [ColumnLabel("Mimimum árrés")]
+        [Description("Mimimum árrés")]
+        public decimal? MinMargin { get; set; }
     }
 }

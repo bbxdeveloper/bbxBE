@@ -21,6 +21,9 @@ namespace bxBE.Application.Commands.cmdProductGroup
         [Description("Temékcsoport megnevezés")]
         public string ProductGroupDescription { get; set; }
 
+        [ColumnLabel("Mimimum árrés")]
+        [Description("Mimimum árrés")]
+        public decimal MinMargin { get; set; }
     }
 
     public class CreateProductGroupCommandHandler : IRequestHandler<CreateProductGroupCommand, Response<ProductGroup>>
