@@ -1,6 +1,4 @@
-﻿using AutoMapper.Configuration.Conventions;
-using bbxBE.Common.Attributes;
-using System;
+﻿using bbxBE.Common.Attributes;
 
 
 namespace bbxBE.Application.Queries.ViewModels
@@ -18,5 +16,7 @@ namespace bbxBE.Application.Queries.ViewModels
         public string ProductGroupCode { get; set; }
 
         public string ProductGroupDescription { get; set; }
+
+        public decimal MinMargin { get; set; }
     }
 }
