@@ -89,6 +89,8 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
 
                     case EntityState.Modified:
                         entry.Entity.UpdateTime = _dateTime.NowUtc;
+                        entry.Property(p => p.CreateTime).IsModified = false;
+
                         break;
                 }
             }
