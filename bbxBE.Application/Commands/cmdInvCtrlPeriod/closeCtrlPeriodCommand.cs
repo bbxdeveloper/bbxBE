@@ -15,6 +15,9 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
         [Description("ID")]
         public long ID { get; set; }
 
+        [ColumnLabel("Felhasználó ID")]
+        [Description("Felhasználó ID")]
+        public long UserID { get; set; }
     }
 
     public class CloseInvCtrlPeriodCommandHandler : IRequestHandler<CloseInvCtrlPeriodCommand, Response<bool>>
@@ -30,7 +33,7 @@ namespace bbxBE.Application.Commands.cmdInvCtrlPeriod
 
         public async Task<Response<bool>> Handle(CloseInvCtrlPeriodCommand request, CancellationToken cancellationToken)
         {
-            var res = await _invCtrlPeriodRepository.CloseAsync(request.ID);
+            var res = await _invCtrlPeriodRepository.CloseAsync(request.ID, request.UserID);
             return new Response<bool>(res);
         }
 
