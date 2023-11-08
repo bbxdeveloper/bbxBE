@@ -20,7 +20,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<bool> IsOverLappedPeriodAsync(DateTime DateFrom, DateTime DateTo, long? ID, long WarehouseID);
         Task<bool> SeedDataAsync(int rowCount);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvCtrlPeriodAsync(QueryInvCtrlPeriod requestParameters);
-        Task<bool> CloseAsync(long ID);
+        Task<bool> CloseAsync(long ID, long userID);
 
     }
 }

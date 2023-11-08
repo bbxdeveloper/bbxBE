@@ -232,7 +232,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return !result;
         }
 
-        public async Task<bool> CloseAsync(long ID)
+        public async Task<bool> CloseAsync(long ID, long userID)
         {
             var invCtrlPeriod = await _dbContext.InvCtrlPeriod.AsNoTracking()
                       .Include(w => w.Warehouse).AsNoTracking()
@@ -258,6 +258,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
                     invCtrlPeriod.Closed = true;
+                    invCtrlPeriod.UserID = userID;
                     await UpdateAsync(invCtrlPeriod);
                     await _invCtrlRepository.UpdateRangeAsync(invCtrlItems);
 

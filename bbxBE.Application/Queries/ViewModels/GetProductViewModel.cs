@@ -30,6 +30,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Termékcsoport")]
         public string ProductGroup { get; set; }
 
+        [ColumnLabel("Árrés minimum%")]
+        [Description("Árrés minimum%")]
+        public decimal MinMargin { get; set; }
+
         [ColumnLabel("Származási hely")]
         [Description("Származási hely")]
         public string Origin { get; set; }
