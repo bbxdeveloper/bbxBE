@@ -41,6 +41,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string VTSZFieldName = "VTSZ";
         private const string NODISCOUNTFieldName = "NODISCOUNT";
         private const string ImportLockKey = "PRODIMPORT";
+        private const string BESZARFieldName = "BESZAR";
 
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IProductGroupRepositoryAsync _productGroupRepository;
@@ -417,6 +418,7 @@ namespace bbxBE.Application.Commands.cmdImport
                 //createPRoductCommand.LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]]) : 0;
                 createPRoductCommand.NoDiscount = (productMapper.ContainsKey(NODISCOUNTFieldName)) && (currentFieldsArray[productMapper[NODISCOUNTFieldName]].Equals("IGAZ"))
                         ? true : false;
+                createPRoductCommand.LatestSupplyPrice = productMapper.ContainsKey(BESZARFieldName) ? decimal.Parse(currentFieldsArray[productMapper[BESZARFieldName]]) : 0;
 
                 return new Dictionary<string, CreateProductCommand> {
                     {
