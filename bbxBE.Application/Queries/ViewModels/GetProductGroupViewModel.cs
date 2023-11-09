@@ -1,7 +1,5 @@
-﻿using AutoMapper.Configuration.Conventions;
-using bbxBE.Common.Attributes;
-using System;
-
+﻿using bbxBE.Common.Attributes;
+using System.ComponentModel;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -15,8 +13,16 @@ namespace bbxBE.Application.Queries.ViewModels
         [MapToEntityAttribute("ID")]
         public long ID { get; set; }
 
+        [ColumnLabel("Kód")]
+        [Description("Termékcsoport-kód")]
         public string ProductGroupCode { get; set; }
 
+        [ColumnLabel("Megnevezés")]
+        [Description("Termékcsoport megnevezés, leírás")]
         public string ProductGroupDescription { get; set; }
+
+        [ColumnLabel("Árrés minimum%")]
+        [Description("Árrés minimum%")]
+        public decimal MinMargin { get; set; }
     }
 }

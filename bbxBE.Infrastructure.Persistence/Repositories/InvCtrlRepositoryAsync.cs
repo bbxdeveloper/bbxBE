@@ -132,6 +132,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         if (stock != null)
                         {
                             InvCtrl.AvgCost = stock.AvgCost;
+                            InvCtrl.ORealQty = stock.RealQty;
                         }
 
                         // 2. raktárkészlet alapján nem sikerült, cikktörzs alapján
