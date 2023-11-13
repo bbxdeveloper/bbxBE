@@ -27,11 +27,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
-        private readonly ICacheService<ProductGroup> _cacheService;
+        private readonly ICacheService<ProductGroup> _cacheProductGroup;
+        private readonly ICacheService<Product> _cacheProduct;
 
         public ProductGroupRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
-            ICacheService<ProductGroup> productGroupCacheService) : base(dbContext)
+            ICacheService<ProductGroup> cacheProductGroup,
+            ICacheService<Product> cacheProduct) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperProductGroup = new DataShapeHelper<ProductGroup>();
@@ -39,20 +41,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _cacheService = productGroupCacheService;
+            _cacheProductGroup = cacheProductGroup;
+            _cacheProduct = cacheProduct;
         }
 
 
         public bool IsUniqueProductGroupCode(string ProductGroupCode, long? ID = null)
         {
 
-            if (_cacheService.IsCacheNull())
+            if (_cacheProductGroup.IsCacheNull())
             {
                 return !_dbContext.ProductGroup.AsNoTracking().Any(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted && (ID == null || p.ID != ID.Value)); ;
             }
             else
             {
-                var query = _cacheService.QueryCache();
+                var query = _cacheProductGroup.QueryCache();
                 return !query.ToList().Any(p => p.ProductGroupCode == ProductGroupCode && !p.Deleted && (ID == null || p.ID != ID.Value));
             }
 
@@ -63,7 +66,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             await AddAsync(p_productGroup);
-            _cacheService.AddOrUpdate(p_productGroup);
+            _cacheProductGroup.AddOrUpdate(p_productGroup);
             return p_productGroup;
         }
 
@@ -78,7 +81,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<ProductGroup> UpdateProductGroupAsync(ProductGroup p_productGroup)
         {
-            _cacheService.AddOrUpdate(p_productGroup);
+            _cacheProductGroup.AddOrUpdate(p_productGroup);
+
+            //Product cache befrissítése
+            var pq = _cacheProduct.QueryCache();
+            var products = pq.Where(w => w.ProductGroupID == p_productGroup.ID).ToList();
+            products.ForEach(i => i.ProductGroup = p_productGroup);
+
+
+
             await UpdateAsync(p_productGroup);
             return p_productGroup;
         }
@@ -87,6 +98,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
             await UpdateRangeAsync(p_productGroupList);
             await RefreshProductGroupCache();
+
+            //Product cache befrissítése
+            var pq = _cacheProduct.QueryCache();
+            var products = pq.Where(w => p_productGroupList.Any(a => a.ID == w.ProductGroupID)).ToList();
+            products.ForEach(i => i.ProductGroup = p_productGroupList.FirstOrDefault(f => f.ID == i.ProductGroupID));
+
             return p_productGroupList.Count;
         }
 
@@ -101,7 +118,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (pg != null)
                 {
 
-                    _cacheService.TryRemove(pg);
+                    _cacheProductGroup.TryRemove(pg);
 
                     await RemoveAsync(pg);
                     await dbContextTransaction.CommitAsync();
@@ -118,7 +135,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public Entity GetProductGroup(long ID)
         {
             ProductGroup productGroup = null;
-            if (!_cacheService.TryGetValue(ID, out productGroup))
+            if (!_cacheProductGroup.TryGetValue(ID, out productGroup))
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODUCTGROUPNOTFOUND, ID));
 
             //            var fields = requestParameter.Fields;
@@ -143,7 +160,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var query = _cacheService.QueryCache();
+            var query = _cacheProductGroup.QueryCache();
 
 
             // Count records total
@@ -215,7 +232,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task RefreshProductGroupCache()
         {
-            await _cacheService.RefreshCache();
+            await _cacheProductGroup.RefreshCache();
         }
 
 
