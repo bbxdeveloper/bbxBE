@@ -43,9 +43,9 @@ namespace bbxBE.Infrastructure.Persistence.Extensions
             : default;
 
         public void Rollback()
-            => Transaction.Rollback();
+            => _manager.RollbackTransaction();
 
         public Task RollbackAsync(CancellationToken cancellationToken = default)
-            => Transaction.RollbackAsync(cancellationToken);
+            => _manager.RollbackTransactionAsync(cancellationToken);
     }
 }
