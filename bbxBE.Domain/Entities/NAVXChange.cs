@@ -173,7 +173,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Eredmény-sorok")]
         [Description("Eredmény-sorok")]
-        public virtual ICollection<NAVXResult> NAVXResults { get; set; }
+        public virtual IList<NAVXResult> NAVXResults { get; set; }
 
         [JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez
         [ForeignKey("InvoiceID")]

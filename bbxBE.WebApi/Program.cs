@@ -1,18 +1,12 @@
 using bbxBE.Application.Interfaces;
-using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
-using LinqKit;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi
@@ -56,6 +50,7 @@ namespace bbxBE.WebApi
                 }
 
                 refreshCaches(services);
+
             }
 
             host.Run();
@@ -76,7 +71,6 @@ namespace bbxBE.WebApi
             //***********
             var vatCache = services.GetService<ICacheService<VatRate>>();
             Task.Run(() => vatCache.RefreshCache()).Wait();
-        
 
             //************
             //* Customer *

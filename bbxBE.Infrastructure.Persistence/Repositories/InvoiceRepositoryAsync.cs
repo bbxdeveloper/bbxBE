@@ -1344,6 +1344,5 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return null;
         }
-
     }
 }

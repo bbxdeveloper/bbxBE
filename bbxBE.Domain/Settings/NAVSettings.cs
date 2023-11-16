@@ -17,6 +17,6 @@ namespace bbxBE.Domain.Settings
         public string QueryInvoiceDigest { get; set; }
         public string QueryInvoiceData { get; set; }
         public string QueryTaxPayer { get; set; }
-
+        public int BatchRecordCnt { get; set; }
     }
 }
