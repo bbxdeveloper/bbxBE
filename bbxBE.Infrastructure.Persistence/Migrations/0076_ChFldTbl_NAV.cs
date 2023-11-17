@@ -24,7 +24,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("InvoiceNumber").AsString()
                     .WithColumn("InvoiceXml").AsString(int.MaxValue)
                     .WithColumn("Status").AsString().NotNullable()                               //CREATED-SENT-DONE/ABORTED
-                    .WithColumn("Notice").AsString(int.MaxValue).Nullable()
+                    .WithColumn("Notice").AsString(int.MaxValue)
                     .WithColumn("Operation").AsString().NotNullable()                            //CREATE/MODIFY
 
                     .WithColumn("TokenTime").AsDateTime2()
