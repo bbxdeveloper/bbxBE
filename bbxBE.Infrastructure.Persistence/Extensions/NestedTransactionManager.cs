@@ -41,20 +41,51 @@ namespace bbxBE.Infrastructure.Persistence.Extensions
         }
 
         public Task CommitTransactionAsync(CancellationToken cancellationToken = default)
-            => Layer-- <= 1
-            ? _sqlServerConnection.CurrentTransaction.CommitAsync(cancellationToken)
-            : Task.CompletedTask;
+        {
+            if (Layer-- <= 1)
+            {
+                return _sqlServerConnection.CurrentTransaction.CommitAsync(cancellationToken);
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
+        }
 
         public void ResetState()
             => _sqlServerConnection.ResetState();
 
         public Task ResetStateAsync(CancellationToken cancellationToken = default)
-            => _sqlServerConnection.ResetStateAsync(cancellationToken);
+        {
+            if (Layer-- <= 1)
+            {
+                return _sqlServerConnection.ResetStateAsync(cancellationToken);
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
+        }
+
 
         public void RollbackTransaction()
-            => _sqlServerConnection.RollbackTransaction();
+        {
+            if (Layer-- <= 1)
+            {
+                _sqlServerConnection.RollbackTransaction();
+            }
+        }
 
         public Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
-            => _sqlServerConnection.RollbackTransactionAsync(cancellationToken);
+        {
+            if (Layer-- <= 1)
+            {
+                return _sqlServerConnection.RollbackTransactionAsync(cancellationToken);
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
+        }
     }
 }

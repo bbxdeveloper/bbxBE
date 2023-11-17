@@ -1230,10 +1230,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                     await this.AddInvoiceAsync(invoice, RelDeliveryNoteLines);
                     await _counterRepository.FinalizeValueAsync(counterCode, wh.ID, invoice.InvoiceNumber);
-                    if (updatingProducts.Count > 0)
-                    {
-                        await _productRepository.UpdateProductRangeAsync(updatingProducts, true);
-                    }
 
                     if (!request.Incoming
                          && !isInvoiceCorrection && !hasRelDeliveryNotes
@@ -1243,6 +1239,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         cust.LatestDiscountPercent = request.InvoiceDiscountPercent;
                         await _customerRepository.UpdateAsync(cust);
 
+                    }
+
+                    if (updatingProducts.Count > 0)
+                    {
+                        await _productRepository.UpdateProductRangeAsync(updatingProducts, true);
                     }
 
                     //szemafr kiütések
