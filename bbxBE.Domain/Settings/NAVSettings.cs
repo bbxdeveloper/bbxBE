@@ -18,5 +18,6 @@ namespace bbxBE.Domain.Settings
         public string QueryInvoiceData { get; set; }
         public string QueryTaxPayer { get; set; }
         public int BatchRecordCnt { get; set; }
+        public int ServiceRunIntervalMin { get; set; }
     }
 }

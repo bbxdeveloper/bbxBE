@@ -58,5 +58,13 @@ namespace bbxBE.WebApi.Controllers.v1
         {
             return Ok(await Mediator.Send(request));
         }
+
+
+        [HttpGet("sendinvoicetonav")]
+        public async Task<IActionResult> sendinvoicetonav([FromQuery] sendInvoiceToNAVCommand request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
+
     }
 }

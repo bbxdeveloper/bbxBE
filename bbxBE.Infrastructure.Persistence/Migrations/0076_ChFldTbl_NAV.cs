@@ -4,75 +4,54 @@
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00067, "v00.02.23-NAV táblák")]
-    public class InitialTables_00067 : Migration
+    [Migration(00076, "v00.02.37-NAVXChange Notice is nullable")]
+    public class InitialTables_00076 : Migration
     {
         public override void Down()
         {
-            Delete.Table("NAVXChange");
-            Delete.Table("NAVXChange");
         }
         public override void Up()
         {
-            Create.Table("NAVXChange")
-                    .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
-                    .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-                    .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-                    .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
-
-                    .WithColumn("InvoiceID").AsInt64()
-                    .WithColumn("InvoiceNumber").AsString()
-                    .WithColumn("InvoiceXml").AsString(int.MaxValue)
-                    .WithColumn("Status").AsString().NotNullable()                               //CREATED-SENT-DONE/ABORTED
-                    .WithColumn("Notice").AsString(int.MaxValue)
-                    .WithColumn("Operation").AsString().NotNullable()                            //CREATE/MODIFY
-
-                    .WithColumn("TokenTime").AsDateTime2()
-                    .WithColumn("TokenRequest").AsString(int.MaxValue)
-                    .WithColumn("Token").AsString()
-                    .WithColumn("TokenResponse").AsString(int.MaxValue)
-                    .WithColumn("TokenFuncCode").AsString()                                     //OK,WARN,NULLTOKEN,EMPTYTOKEN
-                    .WithColumn("TokenMessage").AsString(int.MaxValue)
+            Alter.Table("NAVXChange")
+                    .AlterColumn("Notice").AsString(int.MaxValue).Nullable()
+                    .AlterColumn("TokenTime").AsDateTime2().Nullable()
+                    .AlterColumn("TokenRequest").AsString(int.MaxValue).Nullable()
+                    .AlterColumn("Token").AsString().Nullable()
+                    .AlterColumn("TokenResponse").AsString(int.MaxValue).Nullable()
+                    .AlterColumn("TokenFuncCode").AsString().Nullable()                                     //OK,WARN,NULLTOKEN,EMPTYTOKEN
+                    .AlterColumn("TokenMessage").AsString(int.MaxValue).Nullable()
 
 
-                    .WithColumn("SendTime").AsDateTime2()
-                    .WithColumn("SendRequest").AsString(int.MaxValue)
-                    .WithColumn("SendResponse").AsString(int.MaxValue)
-                    .WithColumn("SendFuncCode").AsString()                                     //OK,ERROR,POSTERROR
-                    .WithColumn("SendMessage").AsString(int.MaxValue)
+                    .AlterColumn("SendTime").AsDateTime2().Nullable()
+                    .AlterColumn("SendRequest").AsString(int.MaxValue).Nullable()
+                    .AlterColumn("SendResponse").AsString(int.MaxValue).Nullable()
+                    .AlterColumn("SendFuncCode").AsString().Nullable()                                     //OK,ERROR,POSTERROR
+                    .AlterColumn("SendMessage").AsString(int.MaxValue).Nullable()
 
-                    .WithColumn("QueryTime").AsDateTime2()
-                    .WithColumn("QueryRequest").AsString(int.MaxValue)
-                    .WithColumn("QueryResponse").AsString(int.MaxValue)
-                    .WithColumn("QueryFuncCode").AsString()                                     //OK,ERROR,POSTERROR
-                    .WithColumn("QueryMessage").AsString(int.MaxValue)
+                    .AlterColumn("QueryTime").AsDateTime2().Nullable()
+                    .AlterColumn("QueryRequest").AsString(int.MaxValue).Nullable()
+                    .AlterColumn("QueryResponse").AsString(int.MaxValue).Nullable()
+                    .AlterColumn("QueryFuncCode").AsString().Nullable()                                     //OK,ERROR,POSTERROR
+                    .AlterColumn("QueryMessage").AsString(int.MaxValue).Nullable()
+                    .AlterColumn("TransactionID").AsString().Nullable();
 
-                    .WithColumn("TransactionID").AsString();
+            Alter.Table("NAVXResult")
+                    .AlterColumn("ResultCode").AsString().Nullable()
+                    .AlterColumn("ErrorCode").AsString().Nullable()
+                    .AlterColumn("Message").AsString().Nullable()
+                    .AlterColumn("Tag").AsString().Nullable()
+                    .AlterColumn("Value").AsString().Nullable()
+                    .AlterColumn("Line").AsString().Nullable();
+            Create.Index("INX_NAVXChangeStatus")
+                        .OnTable("NAVXChange")
+                        .OnColumn("Status").Ascending()
+                        .OnColumn("ID").Ascending()
+                        .WithOptions().NonClustered();
 
-            Create.Index("INX_NAVXChangeTransactionID")
-                         .OnTable("NAVXChange")
-                         .OnColumn("TransactionID").Ascending()
-                         .WithOptions().NonClustered();
-
-            Create.Table("NAVXResult")
-                           .WithColumn("ID").AsInt64().NotNullable().PrimaryKey().Identity()
-                           .WithColumn("CreateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-                           .WithColumn("UpdateTime").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentDateTime)
-                           .WithColumn("Deleted").AsBoolean().WithDefaultValue(false)
-
-                    .WithColumn("NAVXChangeID").AsInt64().NotNullable()
-                    .WithColumn("ResultCode").AsString()
-                    .WithColumn("ErrorCode").AsString()
-                    .WithColumn("Message").AsString()
-                    .WithColumn("Tag").AsString()
-                    .WithColumn("Value").AsString()
-                    .WithColumn("Line").AsString();
-
-            Create.Index("INX_NAVXResultXChangeID")
-                          .OnTable("NAVXResult")
-                          .OnColumn("NAVXChangeID").Ascending()
-                          .WithOptions().NonClustered();
-
+            Create.Index("INX_NAVXChangeInvoiceID")
+                        .OnTable("NAVXChange")
+                        .OnColumn("InvoiceID").Ascending()
+                        .WithOptions().NonClustered();
         }
     }
 }

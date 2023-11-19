@@ -63,7 +63,7 @@ namespace bbxBE.Application.Commands.cmdNAV
 
             var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
 
-            var resNAVXChange = bllNavObj.ManageAnnulment(invoice);
+            var resNAVXChange = bllNavObj.SendManageAnnulmentFull(invoice);
 
 
             return new Response<NAVXChange>(resNAVXChange);

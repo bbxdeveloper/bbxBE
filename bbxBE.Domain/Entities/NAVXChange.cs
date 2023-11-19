@@ -81,16 +81,18 @@ namespace bbxBE.Domain.Entities
         [Description("Token válasz")]
         public string TokenResponse { get; set; }
 
-        private FunctionCodeType tokenFuncCode;
+        private FunctionCodeType? tokenFuncCode;
         [ColumnLabel("Token funkciókód")]
         [Description("Token funkciókód")]
         public string TokenFuncCode
         {
-            get { return Enum.GetName(typeof(FunctionCodeType), tokenFuncCode); }
+            get { return tokenFuncCode != null ? Enum.GetName(typeof(FunctionCodeType), tokenFuncCode) : null; }
             set
             {
                 if (value != null)
                     tokenFuncCode = (FunctionCodeType)Enum.Parse(typeof(FunctionCodeType), value);
+                else
+                    tokenFuncCode = null;
             }
         }
 
@@ -114,16 +116,18 @@ namespace bbxBE.Domain.Entities
         [Description("Küldés válasz")]
         public string SendResponse { get; set; }
 
-        private FunctionCodeType sendFuncCode;
+        private FunctionCodeType? sendFuncCode;
         [ColumnLabel("Küldés funkciókód")]
         [Description("Küldés funkciókód")]
         public string SendFuncCode
         {
-            get { return Enum.GetName(typeof(FunctionCodeType), sendFuncCode); }
+            get { return sendFuncCode != null ? Enum.GetName(typeof(FunctionCodeType), sendFuncCode) : null; }
             set
             {
                 if (value != null)
                     sendFuncCode = (FunctionCodeType)Enum.Parse(typeof(FunctionCodeType), value);
+                else
+                    sendFuncCode = null;
             }
         }
 
@@ -147,16 +151,18 @@ namespace bbxBE.Domain.Entities
         [Description("Lekérdezés válasz")]
         public string QueryResponse { get; set; }
 
-        private FunctionCodeType queryFuncCode;
+        private FunctionCodeType? queryFuncCode;
         [ColumnLabel("Lekérdezés funkciókód")]
         [Description("Lekérdezés funkciókód")]
         public string QueryFuncCode
         {
-            get { return Enum.GetName(typeof(FunctionCodeType), queryFuncCode); }
+            get { return queryFuncCode != null ? Enum.GetName(typeof(FunctionCodeType), queryFuncCode) : null; }
             set
             {
                 if (value != null)
                     queryFuncCode = (FunctionCodeType)Enum.Parse(typeof(FunctionCodeType), value);
+                else
+                    queryFuncCode = null;
             }
         }
 

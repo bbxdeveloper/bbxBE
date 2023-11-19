@@ -51,11 +51,13 @@ namespace bbxBE.Application.Commands.cmdNAV
 
             var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
 
-            var resNAVXChange = new NAVXChange();
-            bllNavObj.QueryTransactionStatus(request.TransactionID, resNAVXChange);
+            var NAVXChange = new NAVXChange();
+            NAVXChange.TransactionID = request.TransactionID;
+
+            bllNavObj.QueryTransactionStatus(NAVXChange);
 
 
-            return new Response<NAVXChange>(resNAVXChange);
+            return new Response<NAVXChange>(NAVXChange);
         }
 
 

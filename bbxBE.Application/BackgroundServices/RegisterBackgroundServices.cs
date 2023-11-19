@@ -9,17 +9,6 @@ namespace bbxBE.Application.BackgroundServices
 
     public static class RegisterBackgroundServices
     {
-        /*     public static void AddHostedServices(this IServiceCollection services, IConfiguration configuration)
-             {
-
-
-                 Assembly.GetExecutingAssembly().GetTypes().Where(w => w.Name.EndsWith("BackgroundService")).ToList().ForEach((t) =>
-                 {
-                     services.AddHostedService(t.GetTypeInfo().ImplementedInterfaces.First(), t);
-                 });
-             }
-        */
-
 
         /// <summary>
         /// Adds the background services under specific namespace.

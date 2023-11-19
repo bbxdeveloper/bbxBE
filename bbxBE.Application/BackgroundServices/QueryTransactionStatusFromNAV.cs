@@ -1,4 +1,6 @@
-﻿using bbxBE.Application.Interfaces.Repositories;
+﻿using bbxBE.Application.BLL;
+using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bbxBE.Domain.Settings;
 using Microsoft.Extensions.Configuration;
@@ -6,21 +8,22 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace bbxBE.Application.BackgroundServices
 {
-    public sealed class NAVBackgroundService : BackgroundService
+    public sealed class QueryTransactionStatusFromNAV : BackgroundService
     {
         private readonly NAVSettings _NAVSettings;
-        private readonly ILogger<NAVBackgroundService> _logger;
+        private readonly ILogger<SendInvoiceOperationsToNAV> _logger;
         private readonly IInvoiceRepositoryAsync _invoiceRepository;
         private readonly INAVXChangeRepositoryAsync _NAVXChangeRepository;
 
-        public NAVBackgroundService(IOptions<NAVSettings> NAVSettings, IInvoiceRepositoryAsync invoiceRepository, INAVXChangeRepositoryAsync NAVXChangeRepository,
+        public QueryTransactionStatusFromNAV(IOptions<NAVSettings> NAVSettings, IInvoiceRepositoryAsync invoiceRepository, INAVXChangeRepositoryAsync NAVXChangeRepository,
                 IConfiguration configuration,
-                ILogger<NAVBackgroundService> logger)
+                ILogger<SendInvoiceOperationsToNAV> logger)
 
         {
             _NAVSettings = NAVSettings.Value;
@@ -36,10 +39,23 @@ namespace bbxBE.Application.BackgroundServices
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    var createdXChanges = await _NAVXChangeRepository.GetXChangeRecordsByStatus(enNAVStatus.CREATED, _NAVSettings.BatchRecordCnt);
-                    _logger.LogWarning("{Jokex}");
+                    var createdXChanges = await _NAVXChangeRepository.GetXChangeRecordsByStatus(enNAVStatus.DATA_SENT, _NAVSettings.BatchRecordCnt);
 
-                    await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                    var bllNavObj = new bllNAV(_NAVSettings, _logger);
+
+
+                    createdXChanges.ToList().ForEach(async item =>
+                    {
+                        _logger.LogInformation(string.Format(bbxBEConsts.NAV_QUERYINFO1, item.InvoiceNumber, item.Operation, item.TransactionID));
+                        item = bllNavObj.QueryTransactionStatus(item);
+                        _logger.LogInformation(string.Format(bbxBEConsts.NAV_QUERYINFO2, item.InvoiceNumber, item.Operation, item.Status, item.TransactionID));
+                        await _NAVXChangeRepository.UpdateNAVXChangeAsync(item);
+                    });
+
+
+
+
+                    await Task.Delay(TimeSpan.FromMinutes(_NAVSettings.ServiceRunIntervalMin), stoppingToken);
                 }
             }
             catch (OperationCanceledException)
