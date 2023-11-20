@@ -15,5 +15,6 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<IList<NAVXChange>> GetXChangeRecordsByStatus(enNAVStatus NAVStatus, int itemCnt);
         Task<IList<NAVXChange>> GetXChangeRecordByInvoiceID(long invoiceID);
         Task<NAVXChange> CreateNAVXChangeForManageInvoiceAsynch(Invoice invoice, CancellationToken cancellationToken);
+        Task<NAVXChange> CreateNAVXChangeForManageAnnulmentAsynch(Invoice invoice, CancellationToken cancellationToken);
     }
 }

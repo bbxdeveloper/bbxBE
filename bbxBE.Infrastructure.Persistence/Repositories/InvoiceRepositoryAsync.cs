@@ -47,6 +47,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IWarehouseRepositoryAsync _warehouseRepository;
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IVatRateRepositoryAsync _vatRateRepository;
+        private readonly INAVXChangeRepositoryAsync _NAVXChangeRepository;
+
         public InvoiceRepositoryAsync(IApplicationDbContext dbContext,
                 IModelHelper modelHelper, IMapper mapper, IMockService mockData,
                 IExpiringData<ExpiringDataObject> expiringData,
@@ -76,7 +78,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _warehouseRepository = new WarehouseRepositoryAsync(dbContext, modelHelper, mapper, mockData);
             _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
             _vatRateRepository = new VatRateRepositoryAsync(dbContext, modelHelper, mapper, mockData, vatRateCacheService);
-
+            _NAVXChangeRepository = new NAVXChangeRepositoryAsync(dbContext, modelHelper, mapper, mockData);
             _expiringData = expiringData;
         }
         public async Task<bool> IsUniqueInvoiceNumberAsync(string InvoiceNumber, long? ID = null)
@@ -1254,14 +1256,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
 
+                    await dbContextTransaction.CommitAsync();
+
+                    if (!invoice.Incoming && invoice.InvoiceType == enInvoiceType.INV.ToString())
+                    {
+                        var invForSend = await this.GetInvoiceRecordAsync(invoice.ID, invoiceQueryTypes.full);  //Újraolvasás teljes adatkészlettel
+                        await _NAVXChangeRepository.CreateNAVXChangeForManageInvoiceAsynch(invoice, cancellationToken);
+                    }
+
+
+
                     invoice.InvoiceLines.Clear();
                     invoice.SummaryByVatRates.Clear();
                     if (invoice.AdditionalInvoiceData != null)
                         invoice.AdditionalInvoiceData.Clear();
-
-
-                    await dbContextTransaction.CommitAsync();
-
 
                     return invoice;
                 }

@@ -47,7 +47,7 @@ namespace bbxBE.Application.BackgroundServices
                     createdXChanges.ToList().ForEach(async item =>
                     {
                         _logger.LogInformation(string.Format(bbxBEConsts.NAV_QUERYINFO1, item.InvoiceNumber, item.Operation, item.TransactionID));
-                        item = bllNavObj.QueryTransactionStatus(item);
+                        item = bllNavObj.QueryTransactionStatusByXChange(item);
                         _logger.LogInformation(string.Format(bbxBEConsts.NAV_QUERYINFO2, item.InvoiceNumber, item.Operation, item.Status, item.TransactionID));
                         await _NAVXChangeRepository.UpdateNAVXChangeAsync(item);
                     });

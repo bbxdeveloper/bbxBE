@@ -4,10 +4,10 @@ using FluentValidation;
 namespace bbxBE.Application.Commands.cmdNAV
 {
 
-    public class manageAnnulmentNAVValidator : AbstractValidator<manageAnnulmentNAVCommand>
+    public class sendAnnulmentNAVCommandValidator : AbstractValidator<sendAnnulmentNAVCommand>
     {
 
-        public manageAnnulmentNAVValidator()
+        public sendAnnulmentNAVCommandValidator()
         {
             RuleFor(p => p.InvoiceNumber)
                    .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED);

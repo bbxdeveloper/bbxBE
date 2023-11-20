@@ -47,7 +47,7 @@ namespace bbxBE.Application.BackgroundServices
                     createdXChanges.Where(w => w.Operation == enNAVOperation.MANAGEINVOICE.ToString()).ToList().ForEach(async item =>
                     {
                         _logger.LogInformation(string.Format(bbxBEConsts.NAV_SENDINFO1, item.InvoiceNumber, item.Operation));
-                        item = bllNavObj.ManageInvoice(item);
+                        item = bllNavObj.ManageInvoiceByXChange(item);
                         _logger.LogInformation(string.Format(bbxBEConsts.NAV_SENDINFO2, item.InvoiceNumber, item.Operation, item.Status));
                         await _NAVXChangeRepository.UpdateNAVXChangeAsync(item);
                     });
@@ -56,7 +56,7 @@ namespace bbxBE.Application.BackgroundServices
                     {
 
                         _logger.LogInformation(string.Format(bbxBEConsts.NAV_SENDINFO1, item.InvoiceNumber, item.Operation));
-                        item = bllNavObj.ManageAnnulment(item);
+                        item = bllNavObj.ManageAnnulmentByXChange(item);
                         _logger.LogInformation(string.Format(bbxBEConsts.NAV_SENDINFO2, item.InvoiceNumber, item.Operation, item.Status));
                         await _NAVXChangeRepository.UpdateNAVXChangeAsync(item);
                     });

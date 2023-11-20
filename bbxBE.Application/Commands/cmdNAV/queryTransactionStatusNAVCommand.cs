@@ -54,7 +54,7 @@ namespace bbxBE.Application.Commands.cmdNAV
             var NAVXChange = new NAVXChange();
             NAVXChange.TransactionID = request.TransactionID;
 
-            bllNavObj.QueryTransactionStatus(NAVXChange);
+            bllNavObj.QueryTransactionStatusByXChange(NAVXChange);
 
 
             return new Response<NAVXChange>(NAVXChange);

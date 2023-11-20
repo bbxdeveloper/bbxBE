@@ -29,24 +29,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<NAVXChange> AddNAVXChangeAsync(NAVXChange NAVXChange)
         {
             _dbContext.Instance.Entry(NAVXChange).State = EntityState.Added;
-            NAVXChange.NAVXResults.ToList().ForEach(
+            if (NAVXChange.NAVXResults != null)
+            {
+                NAVXChange.NAVXResults.ToList().ForEach(
                 res =>
                 _dbContext.Instance.Entry(res).State = EntityState.Added
                 );
-
+            }
             await AddAsync(NAVXChange);
             return NAVXChange;
         }
         public async Task<NAVXChange> UpdateNAVXChangeAsync(NAVXChange NAVXChange)
         {
             _dbContext.Instance.Entry(NAVXChange).State = EntityState.Modified;
-            NAVXChange.NAVXResults.ToList().ForEach(
-                res =>
-                {
-                    res.NAVXChangeID = NAVXChange.ID;
-                    _dbContext.Instance.Entry(res).State = res.ID > 0 ? EntityState.Modified : EntityState.Added;
-                }
-                );
+            if (NAVXChange.NAVXResults != null)
+            {
+                NAVXChange.NAVXResults.ToList().ForEach(
+                    res =>
+                    {
+                        res.NAVXChangeID = NAVXChange.ID;
+                        _dbContext.Instance.Entry(res).State = res.ID > 0 ? EntityState.Modified : EntityState.Added;
+                    }
+                    );
+            }
             await UpdateAsync(NAVXChange);
             return NAVXChange;
         }
