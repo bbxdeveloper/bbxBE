@@ -116,7 +116,7 @@
                           </TextBox>
                           <TextBox Width="1.788cm" Height="0.4cm" Left="2.987cm" Top="0.509cm" Value="= Fields.quantity" Format="{0:N2}" Name="textBox35">
                             <Style TextAlign="Right" VerticalAlign="Middle">
-                              <Font Size="8pt" />
+                              <Font Size="8pt" Bold="False" />
                             </Style>
                           </TextBox>
                         </Items>
@@ -587,7 +587,7 @@
             <Font Name="Courier New" Size="16pt" Bold="True" />
           </Style>
         </TextBox>
-        <TextBox Width="11.145cm" Height="0.6cm" Left="0.055cm" Top="0cm" Value="Eladó" Name="textBox3">
+        <TextBox Width="7.453cm" Height="0.6cm" Left="3.747cm" Top="0cm" Value="Eladó" Name="textBox3">
           <Style Visible="True" TextAlign="Left" VerticalAlign="Middle">
             <Font Name="Courier New" Size="16pt" Bold="True" />
           </Style>
