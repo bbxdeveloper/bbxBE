@@ -1261,7 +1261,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     if (!invoice.Incoming && invoice.InvoiceType == enInvoiceType.INV.ToString())
                     {
                         var invForSend = await this.GetInvoiceRecordAsync(invoice.ID, invoiceQueryTypes.full);  //Újraolvasás teljes adatkészlettel
-                        await _NAVXChangeRepository.CreateNAVXChangeForManageInvoiceAsynch(invoice, cancellationToken);
+                        await _NAVXChangeRepository.CreateNAVXChangeForManageInvoiceAsynch(invForSend, cancellationToken);
                     }
 
 

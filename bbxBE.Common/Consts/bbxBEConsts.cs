@@ -243,7 +243,7 @@
         public const string DEF_BLCCOUNTER = "BLC";
         public const string DEF_JSCOUNTER = "JS";
 
-        public const string DEF_NOTICE = "Notice";
+        public const string DEF_NOTICE = "X00001_NOTICE";
         public const string DEF_NOTICEDESC = "Megjegyzés";
 
 
