@@ -66,7 +66,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             Location Location = null;
             using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
-                Location = _dbContext.Location.Where(x => x.ID == ID).FirstOrDefault();
+                Location = await _dbContext.Location.Where(x => x.ID == ID).SingleOrDefaultAsync();
 
                 if (Location != null)
                 {

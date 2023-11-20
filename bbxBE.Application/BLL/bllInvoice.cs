@@ -399,13 +399,15 @@ namespace bbxBE.Application.BLL
                     };
                     productCodes.Add(productCode);
 
-                    var VTSZCode = new ProductCodeType()
+                    if (!string.IsNullOrWhiteSpace(ili.VTSZ))
                     {
-                        productCodeCategory = ProductCodeCategoryType.VTSZ,
-                        Item = ili.VTSZ
-                    };
-                    productCodes.Add(VTSZCode);
-
+                        var VTSZCode = new ProductCodeType()
+                        {
+                            productCodeCategory = ProductCodeCategoryType.VTSZ,
+                            Item = ili.VTSZ
+                        };
+                        productCodes.Add(VTSZCode);
+                    }
                     invlineNAV.productCodes = productCodes.ToArray();
 
                     invlineNAV.lineDescription = ili.LineDescription;
