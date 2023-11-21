@@ -1,6 +1,5 @@
-﻿using AutoMapper.Configuration.Conventions;
-using AutoMapper;
-using bbxBE.Common.Attributes;
+﻿using bbxBE.Common.Attributes;
+using System.ComponentModel;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -28,5 +27,14 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [MapToEntity("Active")]
         public bool Active { get; set; }
+
+        [ColumnLabel("Raktár ID")]
+        [Description("Raktár ID")]
+        public long WarehouseID { get; set; }
+
+        [ColumnLabel("Raktár")]
+        [Description("Raktár")]
+        public string Warehouse { get; set; }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -39,6 +40,17 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Aktív?")]
         [Description("Aktív?")]
         public bool Active { get; set; }
+
+        [ColumnLabel("Raktár ID")]
+        [Description("Alapértelmezett raktár ID")]
+        public long? WarehouseID { get; set; }
+
+
+        //relációk
+        [ForeignKey("WarehouseID")]
+        [ColumnLabel("Raktár")]
+        [Description("Alapértelmezett raktár")]
+        public virtual Warehouse Warehouse { get; set; }
 
         /*
         [ColumnLabel("Számlák/Szállítólevelek")]
