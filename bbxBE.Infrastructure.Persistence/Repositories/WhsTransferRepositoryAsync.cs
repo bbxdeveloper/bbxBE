@@ -345,9 +345,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
 
 
-                var prefix = "WHT";
                 var whs = whsTransfer.FromWarehouseID.ToString().PadLeft(3, '0');
-                counterCode = String.Format($"{prefix}_{whs}");
+                counterCode = String.Format($"{bbxBEConsts.DEF_WHTCOUNTER}_{whs}");
                 whsTransfer.WhsTransferNumber = await _counterRepository.GetNextValueAsync(counterCode, whsTransfer.FromWarehouseID);
                 whsTransfer.Copies = 1;
                 whsTransfer.WhsTransferStatus = enWhsTransferStatus.READY.ToString();
