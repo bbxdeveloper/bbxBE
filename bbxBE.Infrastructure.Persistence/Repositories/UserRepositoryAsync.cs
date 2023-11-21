@@ -72,15 +72,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
         public async Task<Users> GetUserRecordByNameAsync(string name)
         {
-            return await _dbContext.Users.FirstOrDefaultAsync(p => p.Name.ToUpper() == name.ToUpper());
+            return await _dbContext.Users
+                .Include(w => w.Warehouse)
+                .FirstOrDefaultAsync(p => p.Name.ToUpper() == name.ToUpper());
         }
         public async Task<Users> GetUserRecordByIDAsync(long ID)
         {
-            return await _dbContext.Users.FirstOrDefaultAsync(p => p.ID == ID);
+            return await _dbContext.Users
+                    .Include(w => w.Warehouse)
+                    .FirstOrDefaultAsync(p => p.ID == ID);
         }
         public async Task<Users> GetUserRecordByLoginNameAsync(string loginName)
         {
-            return await _dbContext.Users.FirstOrDefaultAsync(p => p.LoginName.ToUpper() == loginName.ToUpper());
+            return await _dbContext.Users
+                .Include(w => w.Warehouse)
+                .FirstOrDefaultAsync(p => p.LoginName.ToUpper() == loginName.ToUpper());
+
         }
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUserAsync(QueryUser requestParameter)
         {
@@ -92,9 +99,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
             // Setup IQueryable
-            var query = _dbContext.Users
-                .AsNoTracking()
-                .AsExpandable();
+            var query = _dbContext.Users.AsNoTracking()
+                        .Include(w => w.Warehouse).AsNoTracking()
+                        .AsExpandable();
 
             // Count records total
             recordsTotal = await query.CountAsync();
