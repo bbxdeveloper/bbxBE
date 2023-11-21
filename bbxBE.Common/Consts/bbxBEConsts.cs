@@ -238,10 +238,19 @@
 
         public const string DEF_WAREHOUSE = "001";
         public const long DEF_WAREHOUSE_ID = 1;
-        public const string DEF_OFFERCOUNTER = "AJ";
-        public const string DEF_BLKCOUNTER = "BLK";
-        public const string DEF_BLCCOUNTER = "BLC";
-        public const string DEF_JSCOUNTER = "JS";
+        public const string DEF_OFFERCOUNTER = "AJ";        //Ajánlat
+        public const string DEF_BEVCOUNTER = "BEV";         //Bevételezés számlán
+        public const string DEF_BESCOUNTER = "BES";         //Bevételezés szállítólevélen
+        public const string DEF_BEJCOUNTER = "BEJ";         //Bevétel javítószámla
+        public const string DEF_BLKCOUNTER = "BLK";         //Blokk KP
+        public const string DEF_BLCCOUNTER = "BLC";         //Blokk Kártya      
+        public const string DEF_ACOUNTER = "A";             //Átutalás eladás számla
+        public const string DEF_CCOUNTER = "C";             //Kártya eladás számla
+        public const string DEF_KCOUNTER = "K";             //KP eladás számla
+        public const string DEF_SCOUNTER = "S";             //Kimenő szállítólevél           
+        public const string DEF_JAVCOUNTER = "JAV";         //Kimenő javítószámla
+        public const string DEF_WHTCOUNTER = "WHT";         //Raktárközi bizonylat
+
 
         public const string DEF_NOTICE = "X00001_NOTICE";
         public const string DEF_NOTICEDESC = "Megjegyzés";
