@@ -16,14 +16,13 @@ namespace bbxBE.Application.BLL
         {
 
 
+            var prefix = "";
             if (p_invoiceType == enInvoiceType.BLK)
             {
                 //Blokk
                 //
 
-                var prefix = (p_paymentMethod == PaymentMethodType.CASH ? bbxBEConsts.DEF_BLKCOUNTER : bbxBEConsts.DEF_BLCCOUNTER);
-                var whs = WarehouseID.ToString().PadLeft(3, '0');
-                return String.Format($"{prefix}_{whs}");
+                prefix = (p_paymentMethod == PaymentMethodType.CASH ? bbxBEConsts.DEF_BLKCOUNTER : bbxBEConsts.DEF_BLCCOUNTER);
             }
             else
             {
@@ -31,24 +30,59 @@ namespace bbxBE.Application.BLL
                 {
                     //NORMÁL számla, szállítólevél
                     //
-                    var first = (Incoming ? "B" : "K");
-                    var second = p_invoiceType.ToString();
-                    var third = WarehouseID.ToString().PadLeft(3, '0');
-                    return String.Format($"{first}{second}_{third}");
+                    if (Incoming)
+                    {
+                        if (p_invoiceType == enInvoiceType.DNI)
+                        {
+                            prefix = bbxBEConsts.DEF_BESCOUNTER;
+
+                        }
+                        else
+                        {
+                            prefix = bbxBEConsts.DEF_BEVCOUNTER;
+                        }
+
+                    }
+                    else
+                    {
+                        switch (p_paymentMethod)
+                        {
+                            case PaymentMethodType.TRANSFER:
+                                prefix = bbxBEConsts.DEF_ACOUNTER;
+                                break;
+                            case PaymentMethodType.CASH:
+                                prefix = bbxBEConsts.DEF_KCOUNTER;
+                                break;
+                            case PaymentMethodType.CARD:
+                                prefix = bbxBEConsts.DEF_CCOUNTER;
+                                break;
+                            case PaymentMethodType.VOUCHER:
+                                prefix = bbxBEConsts.DEF_KCOUNTER;
+                                break;
+                            case PaymentMethodType.OTHER:
+                                prefix = bbxBEConsts.DEF_KCOUNTER;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
                 else
                 {
-                    //Javítószámla
-                    //
-                    var first = bbxBEConsts.DEF_JSCOUNTER;
-                    var second = (Incoming ? "B" : "K");
-                    var third = WarehouseID.ToString().PadLeft(3, '0');
-                    return String.Format($"{first}{second}_{third}");
+                    if (Incoming)
+                    {
+                        prefix = bbxBEConsts.DEF_BEJCOUNTER;
 
+                    }
+                    else
+                    {
+                        prefix = bbxBEConsts.DEF_JAVCOUNTER;
+                    }
                 }
+
             }
+            var whs = WarehouseID.ToString().PadLeft(3, '0');
+            return String.Format($"{prefix}_{whs}");
         }
-
-
     }
 }

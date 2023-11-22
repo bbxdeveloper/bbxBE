@@ -289,9 +289,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetInvCtrlViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
         public async Task<Entity> GetLastestInvCtrlICC(GetLastestInvCtrlICC requestParameter)
         {
@@ -314,9 +314,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // shape data
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
-            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetInvCtrlViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
 
         public Task<InvCtrl> GetInvCtrlICPRecordAsync(long InvCtlPeriodID, long ProductID)
@@ -460,9 +460,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             );
             var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
 
-            var shapeData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
 
@@ -579,9 +579,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var pagedData = await QueryPagedInvCtrlViewModelAsync(requestParameter);
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
 
-            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(pagedData.data, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetInvCtrlViewModel.ShapeData(pagedData.data, String.Join(",", listFieldsModel));
 
-            return (shapeData, pagedData.recordsCount);
+            return (shapedData, pagedData.recordsCount);
         }
         private void FilterBySeachString(ref IQueryable<InvCtrl> p_item, string p_searchString)
         {

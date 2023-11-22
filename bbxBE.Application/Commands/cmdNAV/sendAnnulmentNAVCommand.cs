@@ -1,5 +1,4 @@
 using AutoMapper;
-using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
@@ -19,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace bbxBE.Application.Commands.cmdNAV
 {
-    public class manageAnnulmentNAVCommand : IRequest<Response<NAVXChange>>
+    public class sendAnnulmentNAVCommand : IRequest<Response<NAVXChange>>
     {
 
         [ColumnLabel("Bizonylatszám")]
@@ -28,16 +27,17 @@ namespace bbxBE.Application.Commands.cmdNAV
 
     }
 
-    public class manageAnnulmentNAVCommandHandler : IRequestHandler<manageAnnulmentNAVCommand, Response<NAVXChange>>
+    public class sendAnnulmentNAVCommandHandler : IRequestHandler<sendAnnulmentNAVCommand, Response<NAVXChange>>
     {
         private readonly IInvoiceRepositoryAsync _invoiceRepository;
+        private readonly INAVXChangeRepositoryAsync _NAVXChangeRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly NAVSettings _NAVSettings;
 
-        public manageAnnulmentNAVCommandHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILoggerFactory loggerFactory, IConfiguration configuration)
+        public sendAnnulmentNAVCommandHandler(IInvoiceRepositoryAsync invoiceRepository, INAVXChangeRepositoryAsync NAVXChangeRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             _invoiceRepository = invoiceRepository;
             _mapper = mapper;
@@ -47,7 +47,7 @@ namespace bbxBE.Application.Commands.cmdNAV
 
         }
 
-        public async Task<Response<NAVXChange>> Handle(manageAnnulmentNAVCommand request, CancellationToken cancellationToken)
+        public async Task<Response<NAVXChange>> Handle(sendAnnulmentNAVCommand request, CancellationToken cancellationToken)
         {
 
 
@@ -61,10 +61,7 @@ namespace bbxBE.Application.Commands.cmdNAV
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_NAVINV, (request.InvoiceNumber)));
             }
 
-            var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
-
-            var resNAVXChange = bllNavObj.ManageAnnulment(invoice);
-
+            var resNAVXChange = await _NAVXChangeRepository.CreateNAVXChangeForManageAnnulmentAsynch(invoice, cancellationToken);
 
             return new Response<NAVXChange>(resNAVXChange);
         }

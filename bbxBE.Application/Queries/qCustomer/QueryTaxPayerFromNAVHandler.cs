@@ -39,7 +39,7 @@ namespace bbxBE.Application.Queries.qCustomer
             _CustomerRepository = customerRepository;
             _mapper = mapper;
             _NAVSettings = NAVSettings.Value;
-            _loggerFactory = _loggerFactory;
+            _loggerFactory = loggerFactory;
             _configuration = configuration;
 
         }

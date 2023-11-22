@@ -258,7 +258,7 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Számlasorok")]
         [Description("Számlasorok")]
-        public virtual ICollection<InvoiceLine> InvoiceLines { get; set; }
+        public virtual IList<InvoiceLine> InvoiceLines { get; set; }
 
         [ColumnLabel("NAV adatküldések")]
         [Description("NAV adatküldések")]

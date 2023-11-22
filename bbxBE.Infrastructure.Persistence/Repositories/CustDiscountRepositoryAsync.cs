@@ -112,16 +112,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                        .OrderBy(o => o.ProductGroup.ProductGroupCode);
 
             var listFieldsModel = _modelHelper.GetModelFields<GetCustDiscountViewModel>();
-            List<Entity> shapeData = new List<Entity>();
+            List<Entity> shapedData = new List<Entity>();
 
             await query.ForEachAsync(i =>
                {
                    var itemModel = _mapper.Map<CustDiscount, GetCustDiscountViewModel>(i);
-                   shapeData.Add(_dataShaperGetCustDiscountViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel)));
+                   shapedData.Add(_dataShaperGetCustDiscountViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel)));
 
                });
 
-            return shapeData;
+            return shapedData;
         }
 
         public Task<bool> SeedDataAsync(int rowCount)

@@ -1,4 +1,5 @@
 using bbxBE.Application;
+using bbxBE.Application.BackgroundServices;
 using bbxBE.Application.Commands;
 using bbxBE.Application.Queries;
 using bbxBE.Infrastructure.Persistence;
@@ -37,6 +38,9 @@ namespace bbxBE.WebApi
 
             services.AddSwaggerExtension();
             services.AddControllersExtension();
+
+            services.AddHostedServices(_config, "bbxBE.Application.BackgroundServices");
+
 
             // CORS
             services.AddCorsExtension();

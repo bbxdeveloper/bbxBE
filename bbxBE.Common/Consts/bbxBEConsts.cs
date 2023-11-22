@@ -78,6 +78,7 @@
         public const string ERR_OFFERNOTFOUND = "Árajánlat nem található, ID:{0} ";
         public const string ERR_INVOICENOTFOUND = "Számla/szállítólevél nem található, ID:{0} ";
         public const string ERR_INVOICENOTFOUND2 = "Számla nem található, bizonylatszám:{0} ";
+        public const string ERR_INVOICEISNULL = "Számla adat nincs megadva (null)!";
         public const string ERR_VATRATENOTFOUND = "Áfakód nem található, ID:{0} ";
         public const string ERR_USERNOTFOUND = "Felhasználó nem található, ID:{0} ";
         public const string ERR_USERNOTFOUND2 = "Felhasználó nem található, név:{0} ";
@@ -86,6 +87,7 @@
         public const string ERR_STOCKNOTFOUND = "Raktárkészlet nem található, ID:{0} ";
         public const string ERR_STOCKCARDNOTFOUND = "Készletkarton nem található, ID:{0} ";
         public const string ERR_LOCATIONOTFOUND = "Helyiség nem található, ID:{0} ";
+        public const string ERR_XCHANGEOTFOUND = "NAV adatcsere nem található, ID:{0} ";
         public const string ERR_INVOICELINENOTFOUND = "Bizonylatsor nem található, ID:{0}, bizonylat:{1}, sor ID:{2}";
         public const string ERR_ORIGINALINVOICENOTFOUND = "Eredeti bizonylat nem található, ID:{0}";
         public const string ERR_WRONGCORRECTIONQTY = "Eredeti bizonylaton lévőnél nagyobb mennyiség levonása! Termékkód:{0}, eredeti mennyiség:{1:#,#0.00}, előzőleg lejavítva:{2:#,#0.00}, javítószámlán:{3:#,#0.00}";
@@ -178,10 +180,19 @@
         public const string NAV_QTAXPAYER_TOKEN_ERR = "{0} NAV QueryTaxpayer token, taxnumber:{1} error result:{2}";
         public const string NAV_QTAXPAYERT_OK = "{0} NAV QueryTaxpayer OK, taxnumber:{1}";
 
+        public const string NAV_SENDINFO1 = "NAV küldés elindult, bizonylat:{0}, művelet:{1}";
+        public const string NAV_SENDINFO2 = "NAV küldés eredmény, bizonylat:{0}, művelet:{1}, eredmény:{2}";
+
+        public const string NAV_QUERYINFO1 = "NAV lekérdezés elindult, bizonylat:{0}, művelet:{1}, tranzakció ID:{2}";
+        public const string NAV_QUERYINFO2 = "NAV lekérdezés eredmény, bizonylat:{0}, művelet:{1}, eredmény:{2}, tranzakció ID:{3}";
+
         public const string ERR_NAV_TAXPAYER = "A lekérdezéshez használt adószámnak 8 jegyűnek kell lennie!";
-        public const string ERR_NAVXML_NOINV = "Csak kimenő számláról készíthető NAV beküldő XML, ID:{0}, bizonylatszám:{1} ";
-        public const string ERR_NAVXML_VATRATEMISSING = "Hiányzó áfa a kedvezmény XML meghatározásánál, bizonylatszám:{1} ";
-        public const string ERR_NAVINV = "Csak kimenő számlabizonylat köldhető a NAV felé, bizonylatszám:{1} ";
+        public const string ERR_NAVXML_NOINV = "Csak kimenő számláról készíthető NAV beküldő XML, ID:{0}, bizonylatszám:{1}";
+        public const string ERR_NAVXML_VATRATEMISSING = "Hiányzó áfa a kedvezmény XML meghatározásánál, bizonylatszám:{0}";
+        public const string ERR_NAVINV = "Csak kimenő számlabizonylat küldhető a NAV felé, bizonylatszám:{0}";
+        public const string ERR_NAVINV_ANULMENT = "Csak kimenő számlabizonylat küldése vonható vissza a NAV-tól, bizonylatszám:{0}";
+        public const string ERR_INVOICEALREADYSETSEND = "A számlabizonylat már küldésre kijelölve, bizonylatszám:{0}";
+        public const string NAV_SENDINVOICETONAV_ERR = "NAV adatküldés hiba:{0}";
 
 
         public const string DEF_NAVAnnulmentReason = "Hibás adatszolgáltatás";
@@ -227,12 +238,21 @@
 
         public const string DEF_WAREHOUSE = "001";
         public const long DEF_WAREHOUSE_ID = 1;
-        public const string DEF_OFFERCOUNTER = "AJ";
-        public const string DEF_BLKCOUNTER = "BLK";
-        public const string DEF_BLCCOUNTER = "BLC";
-        public const string DEF_JSCOUNTER = "JS";
+        public const string DEF_OFFERCOUNTER = "AJ";        //Ajánlat
+        public const string DEF_BEVCOUNTER = "BEV";         //Bevételezés számlán
+        public const string DEF_BESCOUNTER = "BES";         //Bevételezés szállítólevélen
+        public const string DEF_BEJCOUNTER = "BEJ";         //Bevétel javítószámla
+        public const string DEF_BLKCOUNTER = "BLK";         //Blokk KP
+        public const string DEF_BLCCOUNTER = "BLC";         //Blokk Kártya      
+        public const string DEF_ACOUNTER = "A";             //Átutalás eladás számla
+        public const string DEF_CCOUNTER = "C";             //Kártya eladás számla
+        public const string DEF_KCOUNTER = "K";             //KP eladás számla
+        public const string DEF_SCOUNTER = "S";             //Kimenő szállítólevél           
+        public const string DEF_JAVCOUNTER = "JAV";         //Kimenő javítószámla
+        public const string DEF_WHTCOUNTER = "WHT";         //Raktárközi bizonylat
 
-        public const string DEF_NOTICE = "Notice";
+
+        public const string DEF_NOTICE = "X00001_NOTICE";
         public const string DEF_NOTICEDESC = "Megjegyzés";
 
 

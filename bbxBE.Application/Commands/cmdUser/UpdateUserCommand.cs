@@ -40,6 +40,10 @@ namespace bbxBE.Application.Commands.cmdUser
         [Description("Aktív?")]
         public bool Active { get; set; }
 
+        [ColumnLabel("Raktár ID")]
+        [Description("Alapértelmezett raktár ID")]
+        public long? WarehouseID { get; set; }
+
     }
 
     public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Response<Users>>

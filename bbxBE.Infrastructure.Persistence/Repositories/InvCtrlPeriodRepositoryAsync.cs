@@ -202,9 +202,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlPeriodViewModel>();
 
-            var shapeData = _dataShaperGetInvCtrlPeriodViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetInvCtrlPeriodViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
         private void FilterBySearchString(ref IQueryable<InvCtrlPeriod> p_item, string p_searchString)

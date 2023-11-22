@@ -322,9 +322,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetStockViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetStockViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
         public async Task<IEnumerable<Entity>> GetProductStocksAsync(long productID)
         {
@@ -345,8 +345,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
 
-            var shapeData = await _dataShaperGetStockViewModel.ShapeDataAsync(resultDataModel, String.Join(",", listFieldsModel));
-            return shapeData;
+            var shapedData = await _dataShaperGetStockViewModel.ShapeDataAsync(resultDataModel, String.Join(",", listFieldsModel));
+            return shapedData;
         }
 
         public async Task<Stock> GetStockRecordAsync(long warehouseID, long productID)
@@ -463,9 +463,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
 
-            var shapeData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
         private void FilterByParameters(ref IQueryable<Stock> p_item, long p_warehouseID, string p_searchString)

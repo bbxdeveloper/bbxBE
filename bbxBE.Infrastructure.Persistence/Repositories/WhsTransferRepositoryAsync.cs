@@ -163,9 +163,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetWhsTransferViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetWhsTransferViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetWhsTransferViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
         public async Task<WhsTransfer> GetWhsTransferRecordAsync(long ID, bool fulldata)
         {
@@ -252,9 +252,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var listFieldsModel = _modelHelper.GetModelFields<GetWhsTransferViewModel>();
 
-            var shapeData = _dataShaperGetWhsTransferViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetWhsTransferViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
         private void FilterBy(ref IQueryable<WhsTransfer> p_items, string WhsTransferStatus, string FromWarehouseCode, string ToWarehouseCode,
@@ -345,9 +345,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
 
 
-                var prefix = "WHT";
                 var whs = whsTransfer.FromWarehouseID.ToString().PadLeft(3, '0');
-                counterCode = String.Format($"{prefix}_{whs}");
+                counterCode = String.Format($"{bbxBEConsts.DEF_WHTCOUNTER}_{whs}");
                 whsTransfer.WhsTransferNumber = await _counterRepository.GetNextValueAsync(counterCode, whsTransfer.FromWarehouseID);
                 whsTransfer.Copies = 1;
                 whsTransfer.WhsTransferStatus = enWhsTransferStatus.READY.ToString();

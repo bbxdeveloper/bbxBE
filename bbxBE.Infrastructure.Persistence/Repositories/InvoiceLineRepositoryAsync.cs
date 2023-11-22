@@ -81,9 +81,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }).FirstOrDefault();        //a RelDeliveryNoteInvoiceID-vel csak egy deliveryNote-t kérdezünk ki
 
             // shape data
-            var shapeData = _dataShaperGetAggregateInvoiceDeliveryNoteModel.ShapeData(deliveryNote, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetAggregateInvoiceDeliveryNoteModel.ShapeData(deliveryNote, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
 
 
