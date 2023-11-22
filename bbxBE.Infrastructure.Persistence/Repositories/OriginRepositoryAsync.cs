@@ -164,9 +164,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetOriginViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetOriginViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetOriginViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
 
         public List<Entity> GetOriginList()
@@ -177,15 +177,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFields = _modelHelper.GetDBFields<Origin>();
 
             // shape data
-            List<Entity> shapeData = new List<Entity>();
+            List<Entity> shapedData = new List<Entity>();
             query.ForEachAsync(i =>
             {
-                shapeData.Add(_dataShaperOrigin.ShapeData(i, String.Join(",", listFields)));
+                shapedData.Add(_dataShaperOrigin.ShapeData(i, String.Join(",", listFields)));
 
             });
 
 
-            return shapeData;
+            return shapedData;
         }
 
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedOriginAsync(QueryOrigin requestParameter)

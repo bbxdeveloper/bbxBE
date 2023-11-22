@@ -244,9 +244,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
         public async Task<Entity> GetAggregateInvoiceAsync(long ID)
         {
@@ -287,9 +287,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetAggregateInvoiceViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetAggregateInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetAggregateInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
         public async Task<Invoice> GetInvoiceRecordAsync(long ID, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
         {
@@ -537,9 +537,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             lstEntities = await q2.ToListAsync();
             lstEntities.ForEach(i => i.SumNetAmount = Math.Round(i.SumNetAmount, 1));
 
-            var shapeData = _dataShaperGetPendigDeliveryNotesSummaryModel.ShapeData(lstEntities, "");
+            var shapedData = _dataShaperGetPendigDeliveryNotesSummaryModel.ShapeData(lstEntities, "");
 
-            return shapeData;
+            return shapedData;
         }
 
         public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesAsync(bool incoming, long warehouseID, string currencyCode)
@@ -553,9 +553,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             lstEntities = await q1.ToListAsync();
             lstEntities.ForEach(i => i.SumNetAmount = Math.Round(i.SumNetAmount, 1));
 
-            var shapeData = _dataShaperGetPendigDeliveryNotesModel.ShapeData(lstEntities, "");
+            var shapedData = _dataShaperGetPendigDeliveryNotesModel.ShapeData(lstEntities, "");
 
-            return shapeData;
+            return shapedData;
         }
         public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesItemsAsync(bool incoming, long warehouseID, long customerID, string currencyCode)
         {
@@ -585,9 +585,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var listFieldsModel = _modelHelper.GetModelFields<GetPendigDeliveryNotesItemModel>();
 
-            var shapeData = _dataShaperGetPendigDeliveryNotesItemModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetPendigDeliveryNotesItemModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
         {
@@ -681,9 +681,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 
-            var shapeData = _dataShaperGetInvoiceViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetInvoiceViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
         public async Task<IList<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter)
         {
