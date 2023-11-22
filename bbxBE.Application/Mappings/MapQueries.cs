@@ -17,7 +17,6 @@ namespace bbxBE.Queries.Mappings
         {
             CreateMap<Users, GetUsersViewModel>()
                 .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse != null ? src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription : "")); ;
-            CreateMap<GetUsersViewModel, Users>().ReverseMap();
 
 
             CreateMap<GetCustomerViewModel, Customer>().ReverseMap();

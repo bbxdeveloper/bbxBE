@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.BLL;
+﻿using AutoMapper;
+using bbxBE.Application.BLL;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -23,18 +24,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
     public class UserRepositoryAsync : GenericRepositoryAsync<Users>, IUserRepositoryAsync
     {
         private readonly IApplicationDbContext _dbContext;
-        private IDataShapeHelper<Users> _dataShaper;
+        private IDataShapeHelper<GetUsersViewModel> _dataShaper;
         private readonly IModelHelper _modelHelper;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
         private readonly IMockService _mockData;
 
-        public UserRepositoryAsync(IApplicationDbContext dbContext,
-            IConfiguration configuration, IModelHelper modelHelper, IMockService mockData) : base(dbContext)
+        public UserRepositoryAsync(IApplicationDbContext dbContext, IConfiguration configuration,
+            IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
-            _dataShaper = new DataShapeHelper<Users>();
+            _dataShaper = new DataShapeHelper<GetUsersViewModel>();
             _configuration = configuration;
             _modelHelper = modelHelper;
+            _mapper = mapper;
             _mockData = mockData;
         }
 
@@ -56,19 +59,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return true;
         }
 
-        public async Task<Entity> GetUserAsync(long ID, string fields)
+        public async Task<Entity> GetUserAsync(long ID)
         {
 
-            var user = await GetByIdAsync(ID);
+            var user = await GetUserRecordByIDAsync(ID);
             if (user == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_USERNOTFOUND, ID));
             }
 
-            // shape data
-            var shapeData = _dataShaper.ShapeData(user, fields);
+            var itemModel = _mapper.Map<Users, GetUsersViewModel>(user);
+            var listFieldsModel = _modelHelper.GetModelFields<GetUsersViewModel>();
 
-            return shapeData;
+            // shape data
+            var shapedData = _dataShaper.ShapeData(itemModel, String.Join(",", listFieldsModel));
+
+            return shapedData;
         }
         public async Task<Users> GetUserRecordByNameAsync(string name)
         {
@@ -134,11 +140,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // retrieve data to list
             var resultData = await GetPagedData(query, requestParameter);
 
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetUsersViewModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+               _mapper.Map<Users, GetUsersViewModel>(i))
+            );
 
-            // shape data
-            var shapeData = _dataShaper.ShapeData(resultData, fields);
 
-            return (shapeData, recordsCount);
+            var listFieldsModel = _modelHelper.GetModelFields<GetUsersViewModel>();
+
+            var shapedData = _dataShaper.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+
+            return (shapedData, recordsCount);
         }
 
         private void FilterByColumns(ref IQueryable<Users> p_USR, string SearchString)
@@ -172,10 +185,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 throw new UnauthorizedAccessException();
             }
 
-            // shape data
-            var shapeData = _dataShaper.ShapeData(usr, "");
+            var itemModel = _mapper.Map<Users, GetUsersViewModel>(usr);
+            var listFieldsModel = _modelHelper.GetModelFields<GetUsersViewModel>();
 
-            return shapeData;
+            // shape data
+            var shapedData = _dataShaper.ShapeData(itemModel, String.Join(",", listFieldsModel));
+
+            return shapedData;
         }
     }
 }

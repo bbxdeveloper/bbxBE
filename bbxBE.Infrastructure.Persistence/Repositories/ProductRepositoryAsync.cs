@@ -494,9 +494,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
 
         public Product GetProductByProductCode(string productCode)
@@ -519,9 +519,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
                 // shape data
-                var shapeData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+                var shapedData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-                return shapeData;
+                return shapedData;
             }
             else
             {
@@ -624,9 +624,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             );
 
 
-            var shapeData = _dataShaperGetProductViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetProductViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
         private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool? p_filterByCode, bool? p_filterByName, IList<long> p_IDList)
