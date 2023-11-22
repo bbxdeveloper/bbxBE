@@ -18,29 +18,29 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
             ")                                                                                                                                      \n" +
             "as begin                                                                                                                               \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'AJ_001', 'Ajánlat', 'AJ', @currentNumber, 5, '/')                                                              \n" +
+            "VALUES ( @warehouseID, 'AJ_00'+ cast( @warehouseID as char), 'Ajánlat', 'AJ', @currentNumber, 5, '/')                                                              \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'BEV_001', 'Bevételezés számlán', 'BEV', @currentNumber, 5, '/')                                                \n" +
+            "VALUES ( @warehouseID, 'BEV_00'+ cast( @warehouseID as char), 'Bevételezés számlán', 'BEV', @currentNumber, 5, '/')                                                \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'BES_001', 'Bevételezés szállítólevélen', 'BES', @currentNumber, 5, '/')                                        \n" +
+            "VALUES ( @warehouseID, 'BES_00'+ cast( @warehouseID as char), 'Bevételezés szállítólevélen', 'BES', @currentNumber, 5, '/')                                        \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'BEJ_001', 'Bevételezés javítószámla', 'BEJ', @currentNumber, 5, '/')                                           \n" +
+            "VALUES ( @warehouseID, 'BEJ_00'+ cast( @warehouseID as char), 'Bevételezés javítószámla', 'BEJ', @currentNumber, 5, '/')                                           \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'BLK_001', 'Blokk KP', 'BLK', @currentNumber, 5, '/')                                                           \n" +
+            "VALUES ( @warehouseID, 'BLK_00'+ cast( @warehouseID as char), 'Blokk KP', 'BLK', @currentNumber, 5, '/')                                                           \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'BLC_001', 'Blokk kártya', 'BLC', @currentNumber, 5, '/')                                                       \n" +
+            "VALUES ( @warehouseID, 'BLC_00'+ cast( @warehouseID as char), 'Blokk kártya', 'BLC', @currentNumber, 5, '/')                                                       \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'K_001', 'KP eladás számla', 'K', @currentNumber*10, 6, '/')                                                    \n" +
+            "VALUES ( @warehouseID, 'K_00'+ cast( @warehouseID as char), 'KP eladás számla', 'K-', (@currentNumber-1)*10+1, 6, '/')                                                    \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'A_001', 'Átutalás eladás számla', 'A', @currentNumber*10, 6, '/')                                              \n" +
+            "VALUES ( @warehouseID, 'A_00'+ cast( @warehouseID as char), 'Átutalás eladás számla', 'A-', (@currentNumber-1)*10+1, 6, '/')                                              \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'C_001', 'Bankkártya eladás számla', 'C', @currentNumber*10, 6, '/')                                            \n" +
+            "VALUES ( @warehouseID, 'C_00'+ cast( @warehouseID as char), 'Bankkártya eladás számla', 'C-', (@currentNumber-1)*10+1, 6, '/')                                            \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'S_001', 'Kimenő szállítólevél', 'S', @currentNumber*10, 6, '/')                                                \n" +
+            "VALUES ( @warehouseID, 'S_00'+ cast( @warehouseID as char), 'Kimenő szállítólevél', 'S-', (@currentNumber-1)*10+1, 6, '/')                                                \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'JAV_001', 'Kimenő javítószámla', 'JAV', @currentNumber, 5, '/')                                                \n" +
+            "VALUES ( @warehouseID, 'JAV_00'+ cast( @warehouseID as char), 'Kimenő javítószámla', 'JAV', @currentNumber, 5, '/')                                                \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'WHT_001', 'Raktárközi bizonylat', 'WHT', @currentNumber, 5, '/')                                               \n" +
+            "VALUES ( @warehouseID, 'WHT_00'+ cast( @warehouseID as char), 'Raktárközi bizonylat', 'WHT', @currentNumber, 5, '/')                                               \n" +
             "end                                                                                                                                    ";
 
             Execute.Sql(sql);
@@ -68,11 +68,11 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
             sql = "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('001', 'Szolnok')		\n" +
                     "execute SetCounter 1, 1                                                                                \n" +
                     "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('002', 'Kecskemét')             \n" +
-                    "execute SetCounter 2, 5000                                                                             \n" +
+                    "execute SetCounter 2, 50001                                                                            \n" +
                     "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('003', 'Nagykőrös')             \n" +
-                    "execute SetCounter 3, 8000                                                                             \n" +
+                    "execute SetCounter 3, 80001                                                                            \n" +
                     "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('004', 'Cukorgyár')             \n" +
-                    "execute SetCounter 4, 9000                                                                             \n" +
+                    "execute SetCounter 4, 90001                                                                            \n" +
                     "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('005', 'Kecskemét külső raktár')\n" +
                     "execute SetCounter 5, 9500                                                                             ";
 
