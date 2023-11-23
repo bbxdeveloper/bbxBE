@@ -30,13 +30,13 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
             "VALUES ( @warehouseID, 'BLC_00'+ cast( @warehouseID as char), 'Blokk kártya', 'BLC', @currentNumber, 5, '/')                                                       \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'K_00'+ cast( @warehouseID as char), 'KP eladás számla', 'K-', (@currentNumber-1)*10+1, 6, '/')                                                    \n" +
+            "VALUES ( @warehouseID, 'K_00'+ cast( @warehouseID as char), 'KP eladás számla', 'K-', @currentNumber*10, 6, '/')                                                    \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'A_00'+ cast( @warehouseID as char), 'Átutalás eladás számla', 'A-', (@currentNumber-1)*10+1, 6, '/')                                              \n" +
+            "VALUES ( @warehouseID, 'A_00'+ cast( @warehouseID as char), 'Átutalás eladás számla', 'A-', @currentNumber, 6, '/')                                              \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'C_00'+ cast( @warehouseID as char), 'Bankkártya eladás számla', 'C-', (@currentNumber-1)*10+1, 6, '/')                                            \n" +
+            "VALUES ( @warehouseID, 'C_00'+ cast( @warehouseID as char), 'Bankkártya eladás számla', 'C-', @currentNumber, 6, '/')                                            \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
-            "VALUES ( @warehouseID, 'S_00'+ cast( @warehouseID as char), 'Kimenő szállítólevél', 'S-', (@currentNumber-1)*10+1, 6, '/')                                                \n" +
+            "VALUES ( @warehouseID, 'S_00'+ cast( @warehouseID as char), 'Kimenő szállítólevél', 'S-', @currentNumber, 6, '/')                                                \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
             "VALUES ( @warehouseID, 'JAV_00'+ cast( @warehouseID as char), 'Kimenő javítószámla', 'JAV', @currentNumber, 5, '/')                                                \n" +
             "INSERT INTO [dbo].[Counter] ([WarehouseID], [CounterCode] ,[CounterDescription] ,[Prefix] ,[CurrentNumber],[NumbepartLength] ,[Suffix])\n" +
@@ -66,13 +66,13 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
             Execute.Sql(sql);
 
             sql = "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('001', 'Szolnok')		\n" +
-                    "execute SetCounter 1, 1                                                                                \n" +
+                    "execute SetCounter 1, 0                                                                                \n" +
                     "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('002', 'Kecskemét')             \n" +
-                    "execute SetCounter 2, 50001                                                                            \n" +
+                    "execute SetCounter 2, 50000                                                                            \n" +
                     "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('003', 'Nagykőrös')             \n" +
-                    "execute SetCounter 3, 80001                                                                            \n" +
+                    "execute SetCounter 3, 80000                                                                            \n" +
                     "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('004', 'Cukorgyár')             \n" +
-                    "execute SetCounter 4, 90001                                                                            \n";
+                    "execute SetCounter 4, 90000                                                                            \n";
 
             Execute.Sql(sql);
 
