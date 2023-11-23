@@ -72,9 +72,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('003', 'Nagykőrös')             \n" +
                     "execute SetCounter 3, 80001                                                                            \n" +
                     "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('004', 'Cukorgyár')             \n" +
-                    "execute SetCounter 4, 90001                                                                            \n" +
-                    "insert into Warehouse ([WarehouseCode],[WarehouseDescription]) values ('005', 'Kecskemét külső raktár')\n" +
-                    "execute SetCounter 5, 9500                                                                             ";
+                    "execute SetCounter 4, 90001                                                                            \n";
 
             Execute.Sql(sql);
 
