@@ -21,6 +21,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [MapToEntity("customerVatStatus")]
         public string CustomerVatStatus { get; set; }
 
+        [ColumnLabel("Magánszemély?")]
+        [Description("Magánszemély?")]
+        public bool PrivatePerson { get; set; } = false;
+
         //     [NotDBField]
         [MapToEntity("TaxpayerNumber")]
         [NotDBFieldAttribute]
