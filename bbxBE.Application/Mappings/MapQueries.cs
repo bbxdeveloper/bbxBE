@@ -25,6 +25,7 @@ namespace bbxBE.Queries.Mappings
             CreateMap<Customer, GetCustomerViewModel>()
                    .ForMember(dst => dst.TaxpayerNumber, opt => opt.MapFrom(src => String.Format("{0,7}-{1,1}-{2,2}", src.TaxpayerId, src.VatCode, src.CountyCode)))
                    .ForMember(dst => dst.FullAddress, opt => opt.MapFrom(src => String.Format("{0} {1} {2}", src.PostalCode, src.City, src.AdditionalAddressDetail).Trim()))
+                   .ForMember(dst => dst.PrivatePerson, opt => opt.MapFrom(src => src.CustomerVatStatus == CustomerVatStatusType.PRIVATE_PERSON.ToString()))
                    .ForMember(dst => dst.CountryCodeX, opt => opt.MapFrom(src => CountryCodeResolver(src.CountryCode)))
                    .ForMember(dst => dst.UnitPriceTypeX, opt => opt.MapFrom(src => UnitPriceTypeResolver(src.UnitPriceType)))
                    .ForMember(dst => dst.DefPaymentMethodX, opt => opt.MapFrom(src => PaymentMethodNameResolver(src.DefPaymentMethod)));
@@ -51,11 +52,9 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Origin, opt => opt.MapFrom(src => (src.Origin != null ? src.Origin.OriginCode + "-" + src.Origin.OriginDescription : "")))
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode))
              .ForMember(dst => dst.VatPercentage, opt => opt.MapFrom(src => src.VatRate.VatPercentage))
-             .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue))
-             .ForMember(dst => dst.VTSZ, opt => opt.MapFrom(src => src.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ProductCodeValue))
-             .ForMember(dst => dst.EAN, opt => opt.MapFrom(src => src.ProductCodes.Any(w => w.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString()) ?
-                                                    src.ProductCodes.SingleOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString()).ProductCodeValue
-                                                   : ""));
+             .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.ProductCodes.FirstOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() && !w.Deleted).ProductCodeValue))
+             .ForMember(dst => dst.VTSZ, opt => opt.MapFrom(src => src.ProductCodes.FirstOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString() && !w.Deleted).ProductCodeValue))
+             .ForMember(dst => dst.EAN, opt => opt.MapFrom(src => src.ProductCodes.FirstOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString() && !w.Deleted).ProductCodeValue));
 
             CreateMap<Counter, GetCounterViewModel>()
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription));
