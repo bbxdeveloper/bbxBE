@@ -117,6 +117,10 @@ namespace bbxBE.Domain.Entities
         [Description("Legutoljára megadott bizonylatkedvezmény %")]
         public decimal? LatestDiscountPercent { get; set; }
 
+        [ColumnLabel("Fordtott áfás?")]
+        [Description("Fordtott áfás ?")]
+        public bool IsFA { get; set; }
+
 
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
