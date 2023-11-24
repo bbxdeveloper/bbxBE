@@ -214,6 +214,7 @@
 
         public const string DEF_RELDELIVERYNOTE = "Kapcsolt szállítólevél";
         public const string DEF_RELDELIVERYDISCOUNTPERCENT = "Szállítólevél engedmény/felár";
+        public const string DEF_NOTICEDESC = "Megjegyzés";
         public const string VATCODE_27 = "27%";
         public const string VATCODE_KBAET = "KBAET";
         public const string VATCODE_FA = "FA";
@@ -227,6 +228,10 @@
 
         public const string DEF_CHARGE = "felár";
         public const string DEF_DISCOUNT = "engedmény";
+
+        public const string DEF_NOTICE = "X00001_NOTICE";
+        public const string DEF_RELDELIVERYNOTENAME = "X00001_RELDELIVERYNOTE";
+        public const string DEF_RELDELIVERYDISCOUNTPERCENTNAME = "X00001_RELDELIVERYDISCOUNTPERCENT";
 
 
         public const string FIELD_PRODUCTCODE = "PRODUCTCODE";
@@ -252,8 +257,6 @@
         public const string DEF_WHTCOUNTER = "WHT";         //Raktárközi bizonylat
 
 
-        public const string DEF_NOTICE = "X00001_NOTICE";
-        public const string DEF_NOTICEDESC = "Megjegyzés";
 
 
         public const string EMAIL_FORMAT_ERROR = "{PropertyName}: Hibás email cím!";
