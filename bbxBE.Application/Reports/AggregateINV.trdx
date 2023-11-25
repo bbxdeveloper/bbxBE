@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" Zoom="1.5" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
+<Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" Zoom="2" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;777&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoice" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;38&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoice" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Query" Name="ID">
           <Value>
@@ -131,14 +131,14 @@
         </Table>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="3.1cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="3.655cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
         <BorderWidth Top="1pt" />
       </Style>
       <Items>
-        <TextBox Width="18.839cm" Height="0.5cm" Left="0.144cm" Top="2.541cm" Value="Köszönjük a vásárlást!" Name="textBox59">
+        <TextBox Width="18.839cm" Height="0.5cm" Left="0.144cm" Top="2.541cm" Value="= &quot;Köszönjük a vásárlást! &quot; + &quot;Bizonylatot kiállította: &quot; + Fields.userName" Name="textBox59">
           <Style VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -356,6 +356,19 @@
             </TextBox>
           </Items>
         </Panel>
+        <TextBox Width="18.839cm" Height="0.5cm" Left="0.144cm" Top="3.155cm" Value="= &quot;A tulajdonjogot a számla kiegyenlítéséig fenntartjuk! Késedelmi kamat évi 20%!&quot;" Name="textBox33">
+          <Style Visible="True" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.paymentMethod" Operator="NotEqual" Value="= &quot;TRANSFER&quot;" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
+        </TextBox>
       </Items>
     </ReportFooterSection>
     <ReportHeaderSection Height="4.1cm" Name="reportHeaderSection1">
