@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -52,13 +51,17 @@ namespace bbxBE.Domain.Entities
         [Description("Termékértékesítés vagy szolgáltatásnyújtás jelölése (egyelőre csak PRODUCT)")]
         public string NatureIndicator { get; set; }
 
-        [ColumnLabel("Aktív?")]
-        [Description("Aktív?")]
-        public bool Active { get; set; }
+        [ColumnLabel("Súly")]
+        [Description("Súly")]
+        public Decimal UnitWeight { get; set; }
 
         [ColumnLabel("Eng.tilt")]
         [Description("Engedmény adás tiltása")]
         public bool NoDiscount { get; set; }
+
+        [ColumnLabel("Aktív?")]
+        [Description("Aktív?")]
+        public bool Active { get; set; }
 
         //relációk
         [ForeignKey("ProductGroupID")]
