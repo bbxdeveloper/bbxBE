@@ -47,6 +47,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string CustomerPaymentDaysFieldName = "V_FIZH";
         private const string CustomerLatestDiscountPercentFieldName = "V_ENG";
         private const string CustomerMaxLimitFieldName = "LIMIT";
+        private const string CustomerIsFAFieldName = "FAFA";
 
         private readonly ICustomerRepositoryAsync _customerRepository;
         //private readonly IUnitOfMEasure
@@ -173,6 +174,16 @@ namespace bbxBE.Application.Commands.cmdImport
                 else
                 {
                     createCustomerCommand.MaxLimit = (decimal?)null;
+                }
+
+                if (customerMapping.ContainsKey(CustomerIsFAFieldName)
+                    && Boolean.TryParse(currentFieldsArray[customerMapping[CustomerIsFAFieldName]], out bool isFA))
+                {
+                    createCustomerCommand.IsFA = isFA;
+                }
+                else
+                {
+                    createCustomerCommand.IsFA = false;
                 }
 
                 return createCustomerCommand;
