@@ -1073,6 +1073,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                         ln.VTSZ = prod.ProductCodes.FirstOrDefault(c => c.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ProductCodeValue;
                         ln.LineDescription = prod.Description;
+                        ln.UnitWeight = prod.UnitWeight;
 
                         ln.VatRate = vatRate;
                         ln.VatRateID = vatRate.ID;
@@ -1128,14 +1129,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             ln.AdditionalInvoiceLineData = new List<AdditionalInvoiceLineData>();
                             ln.AdditionalInvoiceLineData.Add(new AdditionalInvoiceLineData()   //a kapcsolt szállítólevél számát külön is letároljuk, hogy menjen fel a NAV-hoz
                             {
-                                DataName = "X001_RELDELIVERYNOTE",
+                                DataName = bbxBEConsts.DEF_RELDELIVERYNOTENAME,
                                 DataDescription = bbxBEConsts.DEF_RELDELIVERYNOTE,
                                 DataValue = relDeliveryNote.InvoiceNumber
                             });
 
                             ln.AdditionalInvoiceLineData.Add(new AdditionalInvoiceLineData()   //a kapcsolt szállítólevél engedményt is letároljuk, hogy menjen fel a NAV-hoz
                             {
-                                DataName = "X001_RELDELIVERYDISCOUNTPERCENT",
+                                DataName = bbxBEConsts.DEF_RELDELIVERYDISCOUNTPERCENTNAME,
                                 DataDescription = bbxBEConsts.DEF_RELDELIVERYDISCOUNTPERCENT,
                                 DataValue = ln.LineDiscountPercent.ToString()
                             });

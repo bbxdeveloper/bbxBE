@@ -112,6 +112,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Legutoljára megadott bizonylatkedvezmény %")]
         public short? LatestDiscountPercent { get; set; }
 
+        [MapToEntity("isFA")]
+        [ColumnLabel("Fordtott áfás?")]
+        [Description("Fordtott áfás ?")]
+        public bool IsFA { get; set; }
 
         [MapToEntity("isOwnData")]
         [ColumnLabel("Saját adat?")]

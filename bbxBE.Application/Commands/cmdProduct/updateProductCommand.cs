@@ -3,6 +3,7 @@ using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using MediatR;
+using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,6 +54,9 @@ namespace bxBE.Application.Commands.cmdProduct
         [ColumnLabel("Termékdíj")]
         [Description("Termékdíj")]
         public decimal ProductFee { get; set; }
+        [ColumnLabel("Súly")]
+        [Description("Súly")]
+        public Decimal UnitWeight { get; set; }
         [ColumnLabel("Aktív?")]
         [Description("Aktív?")]
         public bool Active { get; set; }
