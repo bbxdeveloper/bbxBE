@@ -452,7 +452,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 offer.LatestVersion = true;
                 //Árajánlatszám megállapítása
-                counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
+                var whs = bbxBEConsts.DEF_WAREHOUSE_ID.ToString().PadLeft(3, '0');
+                counterCode = String.Format($"{bbxBEConsts.DEF_WHTCOUNTER}_{whs}");
+
                 offer.OfferNumber = await _counterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);
                 offer.Copies = 1;
 
