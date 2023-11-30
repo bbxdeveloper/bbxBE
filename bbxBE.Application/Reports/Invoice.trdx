@@ -350,7 +350,7 @@
         </Panel>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="2.968cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="3.468cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
@@ -575,6 +575,19 @@
             </TextBox>
           </Items>
         </Panel>
+        <TextBox Width="18.75cm" Height="0.5cm" Left="0.042cm" Top="2.936cm" Value="= &quot;A tulajdonjogot a számla kiegyenlítéséig fenntartjuk! Késedelmi kamat évi 20%!&quot;" Name="textBox9">
+          <Style Visible="True" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.paymentMethod" Operator="NotEqual" Value="= &quot;TRANSFER&quot;" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
+        </TextBox>
       </Items>
     </ReportFooterSection>
     <ReportHeaderSection Height="4.1cm" Name="reportHeaderSection1">
