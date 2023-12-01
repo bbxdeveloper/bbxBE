@@ -121,7 +121,7 @@
 
         public const string ERR_EXPIRINGDATA_FULL = "Az ExpiringData tároló megtelt! Max. elemszám:{0}";
 
-        public const string ERR_INV_DATE1 = "{PropertyName}: A számla dátuma nem lehet korábi, mint a teljesítés dátuma";
+        public const string ERR_INV_DATE1 = "{PropertyName}: A számla dátuma nem lehet korábbi, mint a teljesítés dátuma";
         public const string ERR_INV_DATE2 = "{PropertyName}: A számla dátuma nem lehet későbbi, mint a fizetési határidő";
         public const string ERR_INV_LINES = "{PropertyName}: A számlán nincs tételsor";
         public const string ERR_INV_VATSUMS = "{PropertyName}: A számlán nincs áfánkénti összesítő";
