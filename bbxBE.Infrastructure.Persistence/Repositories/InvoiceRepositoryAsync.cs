@@ -1022,6 +1022,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
                     {
                         invoice.PaymentMethod = PaymentMethodType.OTHER.ToString();
+                        paymentMethod = PaymentMethodType.OTHER;    //FE hiba miatt
                     }
 
 

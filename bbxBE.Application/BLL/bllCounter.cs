@@ -45,25 +45,33 @@ namespace bbxBE.Application.BLL
                     }
                     else
                     {
-                        switch (p_paymentMethod)
+                        if (p_invoiceType == enInvoiceType.DNO)
                         {
-                            case PaymentMethodType.TRANSFER:
-                                prefix = bbxBEConsts.DEF_ACOUNTER;
-                                break;
-                            case PaymentMethodType.CASH:
-                                prefix = bbxBEConsts.DEF_KCOUNTER;
-                                break;
-                            case PaymentMethodType.CARD:
-                                prefix = bbxBEConsts.DEF_CCOUNTER;
-                                break;
-                            case PaymentMethodType.VOUCHER:
-                                prefix = bbxBEConsts.DEF_KCOUNTER;
-                                break;
-                            case PaymentMethodType.OTHER:
-                                prefix = bbxBEConsts.DEF_KCOUNTER;
-                                break;
-                            default:
-                                break;
+                            prefix = bbxBEConsts.DEF_SCOUNTER;
+
+                        }
+                        else
+                        {
+                            switch (p_paymentMethod)
+                            {
+                                case PaymentMethodType.TRANSFER:
+                                    prefix = bbxBEConsts.DEF_ACOUNTER;
+                                    break;
+                                case PaymentMethodType.CASH:
+                                    prefix = bbxBEConsts.DEF_KCOUNTER;
+                                    break;
+                                case PaymentMethodType.CARD:
+                                    prefix = bbxBEConsts.DEF_CCOUNTER;
+                                    break;
+                                case PaymentMethodType.VOUCHER:
+                                    prefix = bbxBEConsts.DEF_KCOUNTER;
+                                    break;
+                                case PaymentMethodType.OTHER:
+                                    prefix = bbxBEConsts.DEF_KCOUNTER;
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                 }
