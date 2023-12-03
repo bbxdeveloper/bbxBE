@@ -1,4 +1,5 @@
 ﻿using bbxBE.Common.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
@@ -90,7 +91,9 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Eng.tilt")]
         [Description("Engedmény adás tiltása")]
         public bool NoDiscount { get; set; }
-
+        [ColumnLabel("Súly")]
+        [Description("Súly")]
+        public Decimal UnitWeight { get; set; }
 
         [ColumnLabel("Készletek raktáranként")]
         [Description("Készletek raktáranként")]

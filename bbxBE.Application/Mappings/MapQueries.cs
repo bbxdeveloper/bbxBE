@@ -291,8 +291,18 @@ namespace bbxBE.Queries.Mappings
         {
             if (!string.IsNullOrWhiteSpace(countryCode))
             {
-                var _countryCode = (enCountries)Enum.Parse(typeof(enCountries), countryCode);
-                return Common.Utils.GetEnumDescription(_countryCode);
+                var _countryCodeX = "";
+                try
+                {
+                    var _countryCode = (enCountries)Enum.Parse(typeof(enCountries), countryCode);
+                    _countryCodeX = Common.Utils.GetEnumDescription(_countryCode);
+                }
+                catch (Exception)
+                {
+                    // ha nem sikerült kiparsolni 
+                    _countryCodeX = "???";
+                }
+                return _countryCodeX;
             }
             return "";
         }

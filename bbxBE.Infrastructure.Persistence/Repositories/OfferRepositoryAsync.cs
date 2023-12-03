@@ -465,20 +465,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
                     var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
-                    if (prod == null)
-                    {
-                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
-                    }
+
                     var vatRate = _vatRateRepository.GetVatRateByCode(rln.VatRateCode);
                     if (vatRate == null)
                     {
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
                     }
+                    else
+                    {
+                        vatRate = _vatRateRepository.GetVatRateByCode(bbxBEConsts.VATCODE_27);
+                    }
 
                     //	ln.Product = prod;
-                    ln.ProductID = prod.ID;
+                    ln.ProductID = prod?.ID;
                     ln.ProductCode = rln.ProductCode;
-                    ln.NoDiscount = prod.NoDiscount;
+                    ln.NoDiscount = (prod != null ? prod.NoDiscount : false);
                     //Ez modelből jön: ln.LineDescription = prod.Description;
 
                     //	ln.VatRate = vatRate;
