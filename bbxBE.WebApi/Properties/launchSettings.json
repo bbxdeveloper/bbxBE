@@ -1,20 +1,12 @@
 {
-  "$schema": "http://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:12345",
-      "sslPort": 44378
-    }
-  },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SENDGRID_API_KEY": "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"
       },
       "nativeDebugging": false,
       "sqlDebugging": false
@@ -23,19 +15,28 @@
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:9001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:9001;http://localhost:5000"
     },
     "DapperMigrations": {
       "commandName": "Project",
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:9001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
+      "applicationUrl": "https://localhost:9001;http://localhost:5000",
       "dotnetRunMessages": "true"
+    }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:12345",
+      "sslPort": 44378
     }
   }
 }

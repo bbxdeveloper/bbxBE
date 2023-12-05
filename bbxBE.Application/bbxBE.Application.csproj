@@ -9,10 +9,13 @@
   <ItemGroup>
     <Compile Remove="Commands\cmdSystem\**" />
     <Compile Remove="Common\**" />
+    <Compile Remove="HostedServices\**" />
     <EmbeddedResource Remove="Commands\cmdSystem\**" />
     <EmbeddedResource Remove="Common\**" />
+    <EmbeddedResource Remove="HostedServices\**" />
     <None Remove="Commands\cmdSystem\**" />
     <None Remove="Common\**" />
+    <None Remove="HostedServices\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -110,7 +113,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="HostedServices\" />
     <Folder Include="lib\" />
   </ItemGroup>
 
