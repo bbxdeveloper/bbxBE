@@ -565,8 +565,9 @@ namespace bbxBE.Application.BLL
                     discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount = discountLineNAV.unitPrice * discountLineNAV.quantity;
                     discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF = discountLineNAV.unitPriceHUF * discountLineNAV.quantity;
 
-                    discountLineAmountsNormalNAV.lineVatData.lineVatAmount = Math.Round(vatRateDiscount.VatPercentage * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount, 0);
-                    discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF = Math.Round(vatRateDiscount.VatPercentage * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF, 0); ;
+                    //Az engedmény-tétel esetén két tizedesre kerekítés, hogy jobban kijöjjön a matek
+                    discountLineAmountsNormalNAV.lineVatData.lineVatAmount = Math.Round(vatRateDiscount.VatPercentage * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount, 2);
+                    discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF = Math.Round(vatRateDiscount.VatPercentage * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF, 2);
 
                     discountLineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormal = discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount + discountLineAmountsNormalNAV.lineVatData.lineVatAmount;
                     discountLineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormalHUF = discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF + discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF;
