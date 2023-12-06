@@ -632,7 +632,7 @@ namespace bbxBE.Application.BLL
 
                 var parser = new HtmlParser();
                 var document = parser.ParseDocument(mailBodyHtml);
-                var mailBodyText = document.TextContent;
+                var mailBodyText = document.Body.TextContent;
 
                 string[] addr = _NAVSettings.NotificationEmailTo.Replace(",", ";").Split(';');
 

@@ -17,6 +17,7 @@ namespace bbxBE.Domain.Settings
         public string QueryInvoiceDigest { get; set; }
         public string QueryInvoiceData { get; set; }
         public string QueryTaxPayer { get; set; }
+        public bool SendInvoicesToNAV { get; set; }
         public int BatchRecordCnt { get; set; }
         public int ServiceRunIntervalMin { get; set; }
         public string NotificationEmailSubject { get; set; }
