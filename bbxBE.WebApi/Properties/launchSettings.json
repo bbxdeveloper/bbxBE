@@ -6,7 +6,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "SENDGRID_API_KEY": "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"
+        "SENDGRID_API_KEY": "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"
       },
       "nativeDebugging": false,
       "sqlDebugging": false
