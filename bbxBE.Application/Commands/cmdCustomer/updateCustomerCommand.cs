@@ -82,6 +82,11 @@ namespace bxBE.Application.Commands.cmdCustomer
         [Description("Megjegyzés")]
         public string Comment { get; set; }
 
+        [ColumnLabel("Fordtott áfás?")]
+        [Description("Fordtott áfás ?")]
+        public bool IsFA { get; set; }
+
+
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
         public bool IsOwnData { get; set; }
