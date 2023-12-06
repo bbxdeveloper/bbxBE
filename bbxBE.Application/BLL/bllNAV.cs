@@ -653,7 +653,7 @@ namespace bbxBE.Application.BLL
                         To = new _EmailAddress() { Name = toEmail, Email = toEmail },
                         Body_plain_text = mailBodyText,
                         Body_html_text = mailBodyHtml,
-                        Subject = string.Format(bbxBEConsts.NAV_SENDINVOICETONAV_ERR, NAVXChange.InvoiceNumber),
+                        Subject = string.Format(_NAVSettings.NotificationEmailSubject, NAVXChange.InvoiceNumber),
                         Attachments = new System.Collections.Generic.List<SendGrid.Helpers.Mail.Attachment>() { att }
                     };
 
