@@ -12,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using System;
 using System.Text.Json;
 
@@ -114,21 +113,10 @@ namespace bbxBE.WebApi
             //dbContext.Database.EnsureCreated();
 
             // Add this line; you'll need `using Serilog;` up the top, too
-            app.UseSerilogRequestLogging();
-            loggerFactory.AddSerilog();
             app.UseRouting();
 
             app.UseSession();
 
-
-            var _logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(_config)
-                .WriteTo.Console()
-                .CreateLogger();
-            //    var loggerMiddleWare = loggerFactory.AddSerilog(_logger);
-
-
-            //        _logger.Error(new ResourceNotFoundException("Teszt"), "teszt msg");
 
             //Enable CORS
             app.UseCors(x => x

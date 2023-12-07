@@ -35,6 +35,10 @@ namespace bbxBE.Application.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation("LogInformation1");
+            _logger.LogError("LogError1");
+            _logger.LogCritical("LogCritical1", new Exception("CriticalX"));
+
             if (!_NAVSettings.SendInvoicesToNAV)
                 return;
 
