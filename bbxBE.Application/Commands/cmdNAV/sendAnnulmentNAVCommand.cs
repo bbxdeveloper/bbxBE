@@ -45,7 +45,6 @@ namespace bbxBE.Application.Commands.cmdNAV
             _NAVSettings = NAVSettings.Value;
             _loggerFactory = loggerFactory;
             _configuration = configuration;
-
         }
 
         public async Task<Response<NAVXChange>> Handle(sendAnnulmentNAVCommand request, CancellationToken cancellationToken)
