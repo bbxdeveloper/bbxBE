@@ -40,6 +40,7 @@ namespace bbxBE.Application.Commands.cmdNAV
         public sendAnnulmentNAVCommandHandler(IInvoiceRepositoryAsync invoiceRepository, INAVXChangeRepositoryAsync NAVXChangeRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             _invoiceRepository = invoiceRepository;
+            _NAVXChangeRepository = NAVXChangeRepository;
             _mapper = mapper;
             _NAVSettings = NAVSettings.Value;
             _loggerFactory = loggerFactory;
