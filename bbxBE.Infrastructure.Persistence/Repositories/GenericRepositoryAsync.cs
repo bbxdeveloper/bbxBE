@@ -105,7 +105,7 @@ namespace bbxBE.Infrastructure.Persistence.Repository
 
 
 
-        public async Task RemoveRangeAsync(IEnumerable<T> entities, bool savechenges = true)
+        public async Task RemoveRangeAsync(IEnumerable<T> entities, bool savechanges = true)
         {
             //            _dbContext.AttachRange(entities);
             foreach (var entity in entities)
@@ -113,7 +113,7 @@ namespace bbxBE.Infrastructure.Persistence.Repository
                 _dbContext.Instance.Set<T>().Remove(entity);
             }
             //_dbContext.RemoveRange(entities);
-            if (savechenges)
+            if (savechanges)
                 await _dbContext.SaveChangesAsync();
         }
 

@@ -35,6 +35,9 @@ namespace bbxBE.Application.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            if (!_NAVSettings.SendInvoicesToNAV)
+                return;
+
             try
             {
                 while (!stoppingToken.IsCancellationRequested)

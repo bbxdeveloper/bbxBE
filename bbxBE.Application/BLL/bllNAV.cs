@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Commands.cmdNAV;
+﻿using AngleSharp.Html.Parser;
+using bbxBE.Application.Commands.cmdNAV;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Common;
 using bbxBE.Common.Consts;
@@ -7,7 +8,9 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bbxBE.Domain.Settings;
+using bxBE.Application.Commands.cmdEmail;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +18,8 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace bbxBE.Application.BLL
 {
@@ -587,6 +592,10 @@ namespace bbxBE.Application.BLL
                             {
                                 NAVXChange.Status = prr.invoiceStatus.ToString();
                                 ProcessTransactionResult(NAVXChange, qresp);
+                                if (prr.invoiceStatus == InvoiceStatusType.ABORTED && !string.IsNullOrWhiteSpace(_NAVSettings.NotificationEmailTo))
+                                {
+                                    SendNAVErrorMessageMailAsync(NAVXChange).GetAwaiter().GetResult();
+                                }
                             }
                         }
                     }
@@ -613,7 +622,147 @@ namespace bbxBE.Application.BLL
             }
             return NAVXChange;
         }
+        public async Task SendNAVErrorMessageMailAsync(NAVXChange NAVXChange)
+        {
+            try
+            {
+                // convert string to stream
 
+                var mailBodyHtml = CreateNAVNotificationMailBodyHtml(NAVXChange);
+
+                var parser = new HtmlParser();
+                var document = parser.ParseDocument(mailBodyHtml);
+                var mailBodyText = document.Body.TextContent;
+
+                string[] addr = _NAVSettings.NotificationEmailTo.Replace(",", ";").Split(';');
+
+                foreach (var toEmail in addr)
+                {
+                    /**********/
+
+                    var att = new SendGrid.Helpers.Mail.Attachment()
+                    {
+                        Filename = NAVXChange.InvoiceNumber + ".xml",
+                        Content = Utils.ConvertToBase64String(NAVXChange.InvoiceXml),
+                        Type = "application/xml",
+                        ContentId = "ContentId"
+                    };
+                    var emailCommand = new sendEmailCommand()
+                    {
+                        From = new _EmailAddress() { Name = _NAVSettings.NotificationEmailFrom, Email = _NAVSettings.NotificationEmailFrom },
+                        To = new _EmailAddress() { Name = toEmail, Email = toEmail },
+                        Body_plain_text = mailBodyText,
+                        Body_html_text = mailBodyHtml,
+                        Subject = string.Format(_NAVSettings.NotificationEmailSubject, NAVXChange.InvoiceNumber),
+                        Attachments = new System.Collections.Generic.List<SendGrid.Helpers.Mail.Attachment>() { att }
+                    };
+
+                    var emailResult = await bllSendgrid.SendEmailAsync(emailCommand, default(CancellationToken));
+                    if (emailResult.Succeeded)
+                    {
+                        var msg = String.Format(bbxBEConsts.NAV_NOTIFICATIONEMAIL_SENT, toEmail, NAVXChange.InvoiceNumber);
+                        _logger.LogInformation(msg);
+                    }
+                    else
+                    {
+                        var msg = String.Format(bbxBEConsts.NAV_NOTIFICATIONEMAIL_SENT_ERR, toEmail, NAVXChange.InvoiceNumber, JsonConvert.SerializeObject(emailResult));
+                        _logger.LogInformation(msg);
+
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
+        public static string CreateNAVNotificationMailBodyHtml(NAVXChange NAVXChange)
+        {
+
+
+            var line = "<tr>" + Environment.NewLine +
+                        "<td>%%ResultCode</td>" + Environment.NewLine +
+                        "<td>%%ErrorCode</td>" + Environment.NewLine +
+                        "<td>%%Message</td>" + Environment.NewLine +
+                        "<td>%%Line</td> " + Environment.NewLine +
+                        "<td>%%Tag</td>" + Environment.NewLine +
+                        "<td>%%Value</td>" + Environment.NewLine +
+                        "</tr>" + Environment.NewLine;
+            var mailBody = "<!DOCTYPE html>" + Environment.NewLine +
+                        "<html>" + Environment.NewLine +
+                        "<head>" + Environment.NewLine +
+                        "<style>" + Environment.NewLine +
+                        "	table {" + Environment.NewLine +
+                        "	  width:100%;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "	table, th, td {" + Environment.NewLine +
+                        "	  border: 1px solid black;" + Environment.NewLine +
+                        "	  border-collapse: collapse;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "	th, td {" + Environment.NewLine +
+                        "	  padding: 15px;" + Environment.NewLine +
+                        "	  text-align: left;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "	#t01 tr:nth-child(even) {" + Environment.NewLine +
+                        "	  background-color: #eee;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "	#t01 tr:nth-child(odd) {" + Environment.NewLine +
+                        "	 background-color: azure;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "	#t01 th {" + Environment.NewLine +
+                        "	  background-color: cyan;" + Environment.NewLine +
+                        "	  color: black;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "</style>" + Environment.NewLine +
+                        "</head>" + Environment.NewLine +
+                        "<body>" + Environment.NewLine +
+                        "<p>Sz&aacute;mla:<strong>%%INVOICE</strong></p>" + Environment.NewLine +
+                        "<p>Transaction ID:<strong>%%TRANSACTIONID</strong></p>" + Environment.NewLine +
+                        "<table id=\"t01\">" + Environment.NewLine +
+                        "<tr>" + Environment.NewLine +
+                        "<th>ResultCode</th>" + Environment.NewLine +
+                        "<th>ErrorCode</th>" + Environment.NewLine +
+                        "<th>Message</th>" + Environment.NewLine +
+                        "<th>Line</th>" + Environment.NewLine +
+                        "<th>Tag</th>" + Environment.NewLine +
+                        "<th>Value</th>" + Environment.NewLine +
+                        "</tr>" + Environment.NewLine +
+                        "%%LINES" + Environment.NewLine +
+                        "</table>" + Environment.NewLine +
+                        "</body>" + Environment.NewLine +
+            "<html>";
+
+
+            var lines = "";
+            foreach (var xr in NAVXChange.NAVXResults)
+            {
+                /*
+                                lines += line.Replace("%%ResultCode", xr.ResultCode)
+                                             .Replace("%%ErrorCode", Util.ConvertEncoding(xr.ErrorCode, Encoding.UTF8, Encoding.GetEncoding("ISO-8859-1")))
+                                             .Replace("%%Message", Util.ConvertEncoding(xr.Message, Encoding.UTF8, Encoding.GetEncoding("ISO-8859-1")))
+                                             .Replace("%%Line", xr.Line)
+                                             .Replace("%%Tag", xr.Tag)
+                                             .Replace("%%Value", Util.ConvertEncoding(xr.Value, Encoding.UTF8, Encoding.GetEncoding("ISO-8859-1"))) + "árvíztűrő tükörfúrógép";
+                */
+                lines += line.Replace("%%ResultCode", xr.ResultCode)
+                             .Replace("%%ErrorCode", xr.ErrorCode)
+                             .Replace("%%Message", xr.Message)
+                             .Replace("%%Line", xr.Line)
+                             .Replace("%%Tag", xr.Tag)
+                             .Replace("%%Value", xr.Value);
+            }
+
+            var body = mailBody.Replace("%%INVOICE", NAVXChange.InvoiceNumber)
+                                .Replace("%%TRANSACTIONID", NAVXChange.TransactionID)
+                               .Replace("%%LINES", lines);
+
+            return body;
+        }
+
+
+        /******************/
 
     }
 }

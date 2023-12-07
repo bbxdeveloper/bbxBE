@@ -240,7 +240,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultDataModel = new List<GetCustomerViewModel>();
             resultData.ForEach(i => resultDataModel.Add(
                _mapper.Map<Customer, GetCustomerViewModel>(i))
-            );
+            ); ;
 
 
             var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();

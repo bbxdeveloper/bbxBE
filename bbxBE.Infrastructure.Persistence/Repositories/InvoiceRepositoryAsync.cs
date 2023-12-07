@@ -1022,6 +1022,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     if (invoiceType == enInvoiceType.DNI || invoiceType == enInvoiceType.DNO)
                     {
                         invoice.PaymentMethod = PaymentMethodType.OTHER.ToString();
+                        paymentMethod = PaymentMethodType.OTHER;    //FE hiba miatt
                     }
 
 
@@ -1105,7 +1106,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             ln.RelDeliveryNoteInvoiceID = relDeliveryNote.ID;
                             ln.RelDeliveryNoteInvoiceLineID = ln.RelDeliveryNoteInvoiceLineID.Value;
 
-                            ln.LineExchangeRate = relDeliveryNote.ExchangeRate;
+                            ln.LineExchangeRate = invoice.ExchangeRate; //Gyűjtőszámla esetén minden LineExchangeRate a bizonylat árfolyamával kell megegyeznie! Ez nem jó: relDeliveryNote.ExchangeRate;
                             ln.LineDeliveryDate = relDeliveryNote.InvoiceDeliveryDate;
 
                             //Bizonylatkedvezmény a kapcsolt szállítólevél alapján
