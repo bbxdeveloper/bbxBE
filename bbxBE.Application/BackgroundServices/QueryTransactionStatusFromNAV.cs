@@ -5,8 +5,8 @@ using bbxBE.Common.Enums;
 using bbxBE.Domain.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System;
 using System.Linq;
 using System.Threading;
@@ -17,13 +17,13 @@ namespace bbxBE.Application.BackgroundServices
     public sealed class QueryTransactionStatusFromNAV : BackgroundService
     {
         private readonly NAVSettings _NAVSettings;
-        private readonly ILogger<SendInvoiceOperationsToNAV> _logger;
+        private readonly ILogger _logger;
         private readonly IInvoiceRepositoryAsync _invoiceRepository;
         private readonly INAVXChangeRepositoryAsync _NAVXChangeRepository;
 
         public QueryTransactionStatusFromNAV(IOptions<NAVSettings> NAVSettings, IInvoiceRepositoryAsync invoiceRepository, INAVXChangeRepositoryAsync NAVXChangeRepository,
                 IConfiguration configuration,
-                ILogger<SendInvoiceOperationsToNAV> logger)
+                ILogger logger)
 
         {
             _NAVSettings = NAVSettings.Value;
@@ -49,9 +49,9 @@ namespace bbxBE.Application.BackgroundServices
 
                     createdXChanges.ToList().ForEach(async item =>
                     {
-                        _logger.LogInformation(string.Format(bbxBEConsts.NAV_QUERYINFO1, item.InvoiceNumber, item.Operation, item.TransactionID));
+                        _logger.Information(string.Format(bbxBEConsts.NAV_QUERYINFO1, item.InvoiceNumber, item.Operation, item.TransactionID));
                         item = bllNavObj.QueryTransactionStatusByXChange(item);
-                        _logger.LogInformation(string.Format(bbxBEConsts.NAV_QUERYINFO2, item.InvoiceNumber, item.Operation, item.Status, item.TransactionID));
+                        _logger.Information(string.Format(bbxBEConsts.NAV_QUERYINFO2, item.InvoiceNumber, item.Operation, item.Status, item.TransactionID));
                         await _NAVXChangeRepository.UpdateNAVXChangeAsync(item);
                     });
 
@@ -68,7 +68,7 @@ namespace bbxBE.Application.BackgroundServices
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{Message}", ex.Message);
+                _logger.Error(ex, "{Message}", ex.Message);
 
                 // Terminates this process and returns an exit code to the operating system.
                 // This is required to avoid the 'BackgroundServiceExceptionBehavior', which

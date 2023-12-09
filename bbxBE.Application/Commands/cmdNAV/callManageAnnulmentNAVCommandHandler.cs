@@ -10,8 +10,8 @@ using bbxBE.Domain.Entities;
 using bbxBE.Domain.Settings;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,15 +34,15 @@ namespace bbxBE.Application.Commands.cmdNAV
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger _logger;
         private readonly NAVSettings _NAVSettings;
 
-        public callManageAnnulmentNAVCommandHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILoggerFactory loggerFactory, IConfiguration configuration)
+        public callManageAnnulmentNAVCommandHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILogger logger, IConfiguration configuration)
         {
             _invoiceRepository = invoiceRepository;
             _mapper = mapper;
             _NAVSettings = NAVSettings.Value;
-            _loggerFactory = loggerFactory;
+            _logger = logger;
             _configuration = configuration;
 
         }
@@ -61,7 +61,7 @@ namespace bbxBE.Application.Commands.cmdNAV
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_NAVINV, (request.InvoiceNumber)));
             }
 
-            var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
+            var bllNavObj = new bllNAV(_NAVSettings, _logger);
 
             var resNAVXChange = bllNavObj.CallManageAnnulmentFull(invoice);
 

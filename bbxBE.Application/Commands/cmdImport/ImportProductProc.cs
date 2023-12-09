@@ -9,7 +9,7 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.ExpiringData;
 using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdProduct;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -70,7 +70,7 @@ namespace bbxBE.Application.Commands.cmdImport
                             IProductGroupRepositoryAsync productGroupCodeGlobalRepository,
                             IOriginRepositoryAsync originGlobalRepository,
                             IMapper mapper,
-                            ILogger<ImportProductCommandHandler> logger,
+                            ILogger logger,
                             ICacheService<Product> productCacheService,
                             ICacheService<ProductGroup> productGroupCacheService,
                             ICacheService<Origin> originCacheService,
@@ -164,7 +164,7 @@ namespace bbxBE.Application.Commands.cmdImport
                 importProductResponse.CreatedItemsCount = createProductCommands.Count;
                 importProductResponse.UpdatedItemsCount = updateProductCommands.Count;
 
-                _logger.LogInformation(String.Format(bbxBEConsts.PROD_IMPORT_RESULT,
+                _logger.Information(String.Format(bbxBEConsts.PROD_IMPORT_RESULT,
                     importProductResponse.AllItemsCount,
                     importProductResponse.CreatedItemsCount,
                     importProductResponse.UpdatedItemsCount,
@@ -183,7 +183,7 @@ namespace bbxBE.Application.Commands.cmdImport
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message, null);
+                _logger.Error(ex, ex.Message, null);
                 throw;
             }
             finally
@@ -241,7 +241,7 @@ namespace bbxBE.Application.Commands.cmdImport
         {
             importProductResponse.HasErrorDuringImport = true;
             importProductResponse.ErroredItemsCount = +1;
-            _logger.LogError(ex.Message);
+            _logger.Error(ex.Message);
         }
 
         private async Task CreateOrUpdateProductionAsync(object item, CancellationToken cancellationToken)
@@ -348,7 +348,7 @@ namespace bbxBE.Application.Commands.cmdImport
         {
             foreach (var failure in result.Errors)
             {
-                _logger.LogError("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
+                _logger.Error("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
             }
         }
 

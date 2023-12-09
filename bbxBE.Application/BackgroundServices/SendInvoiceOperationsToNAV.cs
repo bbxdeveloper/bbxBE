@@ -5,8 +5,8 @@ using bbxBE.Common.Enums;
 using bbxBE.Domain.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System;
 using System.Linq;
 using System.Threading;
@@ -17,13 +17,13 @@ namespace bbxBE.Application.BackgroundServices
     public sealed class SendInvoiceOperationsToNAV : BackgroundService
     {
         private readonly NAVSettings _NAVSettings;
-        private readonly ILogger<SendInvoiceOperationsToNAV> _logger;
+        private readonly ILogger _logger;
         private readonly IInvoiceRepositoryAsync _invoiceRepository;
         private readonly INAVXChangeRepositoryAsync _NAVXChangeRepository;
 
         public SendInvoiceOperationsToNAV(IOptions<NAVSettings> NAVSettings, IInvoiceRepositoryAsync invoiceRepository, INAVXChangeRepositoryAsync NAVXChangeRepository,
                 IConfiguration configuration,
-                ILogger<SendInvoiceOperationsToNAV> logger)
+                ILogger logger)
 
         {
             _NAVSettings = NAVSettings.Value;
@@ -35,9 +35,9 @@ namespace bbxBE.Application.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("LogInformation1");
-            _logger.LogError("LogError1");
-            _logger.LogCritical("LogCritical1", new Exception("CriticalX"));
+            _logger.Information("Information1");
+            _logger.Error("Error1");
+            _logger.Fatal("Critical1", new Exception("CriticalX"));
 
             if (!_NAVSettings.SendInvoicesToNAV)
                 return;
@@ -53,18 +53,18 @@ namespace bbxBE.Application.BackgroundServices
 
                     createdXChanges.Where(w => w.Operation == enNAVOperation.MANAGEINVOICE.ToString()).ToList().ForEach(async item =>
                     {
-                        _logger.LogInformation(string.Format(bbxBEConsts.NAV_SENDINFO1, item.InvoiceNumber, item.Operation));
+                        _logger.Information(string.Format(bbxBEConsts.NAV_SENDINFO1, item.InvoiceNumber, item.Operation));
                         item = bllNavObj.ManageInvoiceByXChange(item);
-                        _logger.LogInformation(string.Format(bbxBEConsts.NAV_SENDINFO2, item.InvoiceNumber, item.Operation, item.Status));
+                        _logger.Information(string.Format(bbxBEConsts.NAV_SENDINFO2, item.InvoiceNumber, item.Operation, item.Status));
                         await _NAVXChangeRepository.UpdateNAVXChangeAsync(item);
                     });
 
                     createdXChanges.Where(w => w.Operation == enNAVOperation.MANAGEANNULMENT.ToString()).ToList().ForEach(async item =>
                     {
 
-                        _logger.LogInformation(string.Format(bbxBEConsts.NAV_SENDINFO1, item.InvoiceNumber, item.Operation));
+                        _logger.Information(string.Format(bbxBEConsts.NAV_SENDINFO1, item.InvoiceNumber, item.Operation));
                         item = bllNavObj.ManageAnnulmentByXChange(item);
-                        _logger.LogInformation(string.Format(bbxBEConsts.NAV_SENDINFO2, item.InvoiceNumber, item.Operation, item.Status));
+                        _logger.Information(string.Format(bbxBEConsts.NAV_SENDINFO2, item.InvoiceNumber, item.Operation, item.Status));
                         await _NAVXChangeRepository.UpdateNAVXChangeAsync(item);
                     });
                     await Task.Delay(TimeSpan.FromMinutes(_NAVSettings.ServiceRunIntervalMin), stoppingToken);
@@ -77,7 +77,7 @@ namespace bbxBE.Application.BackgroundServices
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, String.Format(bbxBEConsts.NAV_SENDINVOICETONAV_ERR, ex.Message), ex.Message);
+                _logger.Error(ex, String.Format(bbxBEConsts.NAV_SENDINVOICETONAV_ERR, ex.Message), ex.Message);
             }
         }
     }

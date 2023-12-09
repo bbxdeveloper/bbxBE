@@ -6,11 +6,24 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi
 {
+    internal static class SerilogExt
+    {
+        public static IHostBuilder UseSerilogLogger(this IHostBuilder hostBuilder, Serilog.ILogger logger = null, bool dispose = false)
+        {
+            hostBuilder.ConfigureServices((context, collection) =>
+            {
+                collection.AddSingleton<ILoggerFactory>(services => new SerilogLoggerFactory(logger, dispose));
+            });
+            return hostBuilder;
+        }
+    }
+
     public static class Program
     {
         public static void Main(string[] args)
@@ -26,7 +39,9 @@ namespace bbxBE.WebApi
                 .WriteTo.Console()
                 .CreateLogger();
 
-            var host = CreateHostBuilder(args).Build();
+            var host = CreateHostBuilder(args)
+                .UseSerilog() // using Microsoft...ILogger<type> interface in DI, but with Serilog
+                .Build();
 
             host.MigrateDatabase();
 
@@ -43,10 +58,6 @@ namespace bbxBE.WebApi
                 catch (Exception ex)
                 {
                     Log.Warning(ex, "An error occurred starting the application");
-                }
-                finally
-                {
-                    Log.CloseAndFlush();
                 }
 
                 refreshCaches(services);
