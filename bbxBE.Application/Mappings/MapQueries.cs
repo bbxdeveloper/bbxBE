@@ -95,7 +95,9 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<InvoiceLine, GetInvoiceViewModel.InvoiceLine>()
              .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)))
-             .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
+             .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode))
+             .ForMember(dst => dst.ProductGroupID, opt => opt.MapFrom(src => src.Product != null ? src.Product.ProductGroupID : 0))
+             .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.Product != null ? src.Product.ProductGroup.ProductGroupDescription : ""));
 
             CreateMap<SummaryByVatRate, GetInvoiceViewModel.SummaryByVatRate>()
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));

@@ -36,6 +36,17 @@ namespace bbxBE.Application.Queries.ViewModels
             [Description("Termékkód")]
             public string ProductCode { get; set; }
 
+
+            [ColumnLabel("Termékcsoport ID")]
+            [Description("Termékcsoport ID")]
+            public long ProductGroupID { get; set; }
+
+
+            [ColumnLabel("Termékcsoport")]
+            [Description("Termékcsoport")]
+            public string ProductGroup { get; set; }
+
+
             [ColumnLabel("VTSZ")]
             [Description("Vámtarifa szám")]
             public string VTSZ { get; set; }
