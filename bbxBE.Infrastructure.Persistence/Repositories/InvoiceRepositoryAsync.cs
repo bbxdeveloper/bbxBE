@@ -376,6 +376,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote).AsNoTracking()
+                 .Include(i => i.InvoiceLines).ThenInclude(x => x.Product).ThenInclude(x => x.ProductGroup).AsNoTracking()
                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
                  .Include(u => u.User).AsNoTracking();
         }
@@ -606,23 +607,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IQueryable<Invoice> query;
             if (requestParameter.FullData)
             {
-                query = _dbContext.Invoice.AsNoTracking()
-                 .Include(w => w.Warehouse).AsNoTracking()
-                 .Include(s => s.Supplier).AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking()
-                 .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-                 .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
-                 .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                query = getFullInvoiceQuery()
                  .Include(u => u.User).AsNoTracking();
             }
             else
             {
-                query = _dbContext.Invoice.AsNoTracking()
-                 .Include(w => w.Warehouse).AsNoTracking()
-                 .Include(s => s.Supplier).AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking()
-                 .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-                 .Include(i => i.InvoiceLines).AsNoTracking()                   //nem full data esetén is szüség van az invoiceLines-re
+                query = getSmallInvoiceQuery()
                  .Include(u => u.User).AsNoTracking();
             }
 
