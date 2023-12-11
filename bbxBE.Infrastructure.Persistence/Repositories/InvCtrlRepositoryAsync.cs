@@ -370,15 +370,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             var absenedItems = stockItems.Where(s =>
-                        s.Product == null || !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
-                        (!requestParameter.IsInStock || s.RealQty != 0)).ToList();
+                        s.Product == null || !invCtrlItems.Any(i => i.ProductID == s.ProductID)).ToList();
 
             if (!requestParameter.IsInStock)
             {
                 //Hozzácsapjuk a nonStockedProducts-ből azokat a termékeket, amelyeknek nincs készletrekordja
                 //és nincs leltárban
                 var nonStockedProducts = prodItems.Where(p => !stockItems.Any(s => s.ProductID == p.ID) &&
-                                                              !absenedItems.Any(s => s.ProductID == p.ID)).ToList();
+                                                              !absenedItems.Any(s => s.ProductID == p.ID) &&
+                                                              !invCtrlItems.Any(i => i.ProductID == p.ID)).ToList();
                 nonStockedProducts.ForEach(p =>
                 {
                     absenedItems.Add(new Stock()
