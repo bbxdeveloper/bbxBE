@@ -234,6 +234,13 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description))
              .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)));
 
+            CreateMap<InvPayment, GetInvPaymentViewModel>()
+             .ForMember(dst => dst.InvoiceNumber, opt => opt.MapFrom(src => src.Invoice.InvoiceNumber))
+             .ForMember(dst => dst.InvPaymentDate, opt => opt.MapFrom(src => src.Invoice.PaymentDate))
+             .ForMember(dst => dst.CustomerID, opt => opt.MapFrom(src => (src.Invoice.Incoming ? src.Invoice.SupplierID : src.Invoice.CustomerID)))
+             .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => (src.Invoice.Incoming ? src.Invoice.Supplier.CustomerName : src.Invoice.Customer.CustomerName)));
+
+            ;
         }
 
         private static string enStockCardTypeNameResolver(string ScType)

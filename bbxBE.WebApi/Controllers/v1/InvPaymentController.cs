@@ -1,4 +1,5 @@
-﻿using bxBE.Application.Commands.cmdLocation;
+﻿using bbxBE.Application.Queries.qLocation;
+using bxBE.Application.Commands.cmdLocation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,18 @@ namespace bbxBE.WebApi.Controllers.v1
         {
             return Ok(await Mediator.Send(command));
         }
+
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet("query")]
+        public async Task<IActionResult> Query([FromQuery] QueryInvPayment request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
+
 
         /*
          * 

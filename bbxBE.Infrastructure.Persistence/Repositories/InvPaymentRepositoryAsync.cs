@@ -1,15 +1,22 @@
 ﻿using AutoMapper;
+using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.qLocation;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Threading;
 using System.Threading.Tasks;
 using static bxBE.Application.Commands.cmdLocation.CreateInvPaymentCommand;
 
@@ -21,6 +28,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IMockService _mockData;
         private readonly IModelHelper _modelHelper;
         private readonly IMapper _mapper;
+        private IDataShapeHelper<GetInvPaymentViewModel> _dataShaperGetInvPaymentViewModel;
 
         public InvPaymentRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
@@ -29,6 +37,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
+            _dataShaperGetInvPaymentViewModel = new DataShapeHelper<GetInvPaymentViewModel>();
         }
 
         public async Task<List<InvPayment>> MaintainRangeAsync(List<InvPaymentItem> InvPaymentItems)
@@ -143,5 +152,93 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 return invPayments;
             }
         }
+
+
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvPaymentAsync(QueryInvPayment requestParameter, CancellationToken cancellationToken)
+        {
+
+            var searchString = requestParameter.SearchString;
+            var orderBy = requestParameter.OrderBy;
+            //      var fields = requestParameter.Fields;
+            var fields = _modelHelper.GetQueryableFields<GetInvPaymentViewModel, Location>();
+
+
+            int recordsTotal, recordsFiltered;
+
+            // Setup IQueryable
+            var query = _dbContext.InvPayment.AsNoTracking()
+                        .Include(i => i.Invoice).AsNoTracking()
+                        .Include(i => i.Invoice).ThenInclude(c => c.Customer).AsNoTracking()
+                        .Include(i => i.Invoice).ThenInclude(s => s.Supplier).AsNoTracking()
+                        .Where(w => !w.Deleted);
+
+            ;
+
+            // Count records total
+            recordsTotal = await query.CountAsync();
+
+            // filter data
+            FilterBySearchString(ref query, searchString);
+
+            // Count records after filter
+            recordsFiltered = await query.CountAsync();
+
+            //set Record counts
+            var recordsCount = new RecordsCount
+            {
+                RecordsFiltered = recordsFiltered,
+                RecordsTotal = recordsTotal
+            };
+
+            // set order by
+            if (!string.IsNullOrWhiteSpace(orderBy))
+            {
+                query = query.OrderBy(orderBy);
+            }
+
+            // select columns
+            if (!string.IsNullOrWhiteSpace(fields))
+            {
+                query = query.Select<InvPayment>("new(" + fields + ")");
+            }
+
+            // retrieve data to list
+            var resultData = await GetPagedData(query, requestParameter);
+
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetInvPaymentViewModel>();
+            resultData.ForEach(i => resultDataModel.Add(
+               _mapper.Map<InvPayment, GetInvPaymentViewModel>(i))
+            );
+
+
+            var listFieldsModel = _modelHelper.GetModelFields<GetInvPaymentViewModel>();
+
+            var shapedData = _dataShaperGetInvPaymentViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+
+            return (shapedData, recordsCount);
+        }
+
+        private void FilterBySearchString(ref IQueryable<InvPayment> p_item, string p_searchString)
+        {
+            if (!p_item.Any())
+                return;
+
+            if (string.IsNullOrWhiteSpace(p_searchString))
+                return;
+
+            var predicate = PredicateBuilder.New<InvPayment>();
+
+            var srcFor = p_searchString.ToUpper().Trim();
+            predicate = predicate.And(p => p.Invoice.InvoiceNumber.ToUpper().Contains(srcFor) || p.BankTransaction.ToUpper().Contains(srcFor));
+
+            p_item = p_item.Where(predicate);
+        }
+
+        public Task<bool> SeedDataAsync(int rowCount)
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
 }

@@ -17,11 +17,19 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [ColumnLabel("Számlaszám")]
         [Description("Számla száma")]
-        public long InvoiceNumber { get; set; }
+        public string InvoiceNumber { get; set; }
 
         [ColumnLabel("Fiz.hat")]
         [Description("Fizetési határidő dátuma")]
         public DateTime PaymentDate { get; set; }
+
+        [ColumnLabel("Ügyfél ID")]
+        [Description("Ügyfél ID")]
+        public long CustomerID { get; set; }
+
+        [ColumnLabel("Ügyfélnév")]
+        [Description("Ügyfélnév")]
+        public string CustomerName { get; set; }
 
         [ColumnLabel("Banki tranzakció")]
         [Description("Banki tranzakció azonosító")]
