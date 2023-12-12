@@ -155,6 +155,8 @@
         public const string ERR_INVCTRLNOTFOUND = "Leltári tétel nem található, ID:{0} ";
         public const string ERR_INVCTRL_DATE = "{PropertyName}:Helytelen leltárdátum!";
 
+        public const string ERR_INVPAYMENT_INVNOTFND = "Bizonylatszámok nem találhatóak:{0}";
+        public const string ERR_INVPAYMENT_WRONGTYPE = "Nem átutalásos:{0}";
 
         public const string PROD_IMPORT_RESULT = "***Product import***\n" +
                                                     "Összes elem    :{0}\n" +

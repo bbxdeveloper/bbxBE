@@ -264,6 +264,9 @@ namespace bbxBE.Domain.Entities
         [Description("NAV adatküldések")]
         public virtual IList<NAVXChange> NAVXChanges { get; set; }
 
+        [ColumnLabel("Pénzügyi kiegyenlítések")]
+        [Description("Pénzügyi kiegyenlítések")]
+        public virtual IList<InvPayment> InvPayments { get; set; }
 
     }
 }

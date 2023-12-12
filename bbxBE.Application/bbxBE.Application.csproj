@@ -114,6 +114,7 @@
 
   <ItemGroup>
     <Folder Include="lib\" />
+    <Folder Include="Queries\qInvPayment\" />
   </ItemGroup>
 
   <ItemGroup>
