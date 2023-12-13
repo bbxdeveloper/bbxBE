@@ -1,28 +1,33 @@
 ﻿using AutoMapper;
-using MediatR;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
+using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
+using bbxBE.Domain.Extensions;
+using MediatR;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Domain.Extensions;
-using bbxBE.Application.Queries.ViewModels;
-using bbxBE.Common.Attributes;
-using System.ComponentModel;
-using System;
 
 namespace bbxBE.Application.Queries.qStock
 {
     public class QueryInvCtrlStockAbsent : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
 
+        [ColumnLabel("Leltáridőszak ID")]
+        [Description("Leltáridőszak ID")]
         public long InvCtrlPeriodID { get; set; }
+
+        [ColumnLabel("Csak készletes?")]
+        [Description("Csak készletes?")]
         public bool IsInStock { get; set; }
 
+        [ColumnLabel("Keresés")]
+        [Description("Keresés")]
         public string SearchString { get; set; }
 
     }
