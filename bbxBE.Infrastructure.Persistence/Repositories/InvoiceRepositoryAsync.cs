@@ -240,6 +240,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 itemModel.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
                 itemModel.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.InvPayments.Clear();         //itt már nem kellenek a sorok. 
             }
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 
@@ -378,6 +379,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.Product).ThenInclude(x => x.ProductGroup).AsNoTracking()
                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                 .Include(a => a.InvPayments).AsNoTracking()
                  .Include(u => u.User).AsNoTracking();
         }
 
@@ -607,8 +609,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IQueryable<Invoice> query;
             if (requestParameter.FullData)
             {
-                query = getFullInvoiceQuery()
-                 .Include(u => u.User).AsNoTracking();
+                query = getFullInvoiceQuery();
             }
             else
             {
@@ -664,6 +665,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     im.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
                     im.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                    im.InvPayments.Clear();         //itt már nem kellenek a sorok. 
                 }
                 resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
             }

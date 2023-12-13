@@ -91,6 +91,10 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null && src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
                                     src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataValue : "")))
               .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any(il => il.PriceReview.HasValue && il.PriceReview.Value)))
+
+             .ForMember(dst => dst.InvoicePayedAmount, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmount)))
+             .ForMember(dst => dst.InvoicePayedAmountHUF, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmountHUF)))
+
              ;
 
             CreateMap<InvoiceLine, GetInvoiceViewModel.InvoiceLine>()
@@ -101,6 +105,10 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<SummaryByVatRate, GetInvoiceViewModel.SummaryByVatRate>()
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
+
+
+            CreateMap<InvPayment, GetInvoiceViewModel.InvPayment>()
+             .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.CurrencyCode)));
 
             /********/
             CreateMap<Invoice, GetAggregateInvoiceViewModel>()
@@ -236,6 +244,14 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Product, opt => opt.MapFrom(src => src.Product.Description))
              .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)));
 
+            CreateMap<InvPayment, GetInvPaymentViewModel>()
+             .ForMember(dst => dst.InvoiceNumber, opt => opt.MapFrom(src => src.Invoice.InvoiceNumber))
+             .ForMember(dst => dst.InvPaymentDate, opt => opt.MapFrom(src => src.Invoice.PaymentDate))
+             .ForMember(dst => dst.CustomerID, opt => opt.MapFrom(src => (src.Invoice.Incoming ? src.Invoice.SupplierID : src.Invoice.CustomerID)))
+             .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => (src.Invoice.Incoming ? src.Invoice.Supplier.CustomerName : src.Invoice.Customer.CustomerName)))
+             .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.CurrencyCode)));
+
+            ;
         }
 
         private static string enStockCardTypeNameResolver(string ScType)
