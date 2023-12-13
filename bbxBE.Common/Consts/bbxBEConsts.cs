@@ -261,6 +261,7 @@
         public const string DEF_WHTCOUNTER = "WHT";         //Raktárközi bizonylat
 
 
+        public const decimal DEF_HUFEXCHANGERATE = 1;
 
 
         public const string EMAIL_FORMAT_ERROR = "{PropertyName}: Hibás email cím!";

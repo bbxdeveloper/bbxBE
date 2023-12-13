@@ -1,6 +1,8 @@
 ﻿using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdLocation;
 using FluentValidation;
+using System;
 
 namespace bbxBE.Application.Commands.cmdLocation
 {
@@ -26,7 +28,21 @@ namespace bbxBE.Application.Commands.cmdLocation
                 RuleFor(r => r.BankTransaction)
                   .NotEmpty()
                   .WithMessage(bbxBEConsts.ERR_REQUIRED);
+
+
+                RuleFor(r => r.CurrencyCode)
+                    .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                    .Must(CheckCurrency).WithMessage(bbxBEConsts.ERR_INVCURRENCY);
+
+
+            }
+            private bool CheckCurrency(string Currency)
+            {
+                var valid = Enum.TryParse(Currency, out enCurrencyCodes curr);
+                return valid;
             }
         }
+
+
     }
 }

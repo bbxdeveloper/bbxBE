@@ -1,4 +1,5 @@
-﻿using FluentMigrator;
+﻿using bbxBE.Common.Enums;
+using FluentMigrator;
 
 //https://code-maze.com/dapper-migrations-fluentmigrator-aspnetcore/
 
@@ -22,7 +23,11 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("InvoiceID").AsInt64()
                     .WithColumn("BankTransaction").AsString().NotNullable()
                     .WithColumn("InvPaymentDate").AsDateTime2().NotNullable()
-                    .WithColumn("InvPaymentAmount").AsDecimal().NotNullable();
+                    .WithColumn("InvPaymentAmount").AsDecimal().NotNullable()
+                    .WithColumn("CurrencyCode").AsString().NotNullable().WithDefaultValue(enCurrencyCodes.HUF.ToString())
+                    .WithColumn("ExchangeRate").AsDecimal().NotNullable()
+                    .WithColumn("InvPaymentAmountHUF").AsDecimal().NotNullable()
+                    .WithColumn("UserID").AsInt64().NotNullable().WithDefaultValue(0);
 
             Create.Index("INX_InvPaymentInvoiceID")
                          .OnTable("InvPayment")

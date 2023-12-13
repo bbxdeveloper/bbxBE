@@ -29,9 +29,21 @@ namespace bxBE.Application.Commands.cmdLocation
             [Description("Banki tranzakció dátuma")]
             public DateTime InvPaymentDate { get; set; }
 
+            [ColumnLabel("Pénznem")]
+            [Description("Pénznem")]
+            public string CurrencyCode { get; set; }
+
+            [ColumnLabel("Árfolyam")]
+            [Description("Árfolyam")]
+            public decimal ExchangeRate { get; set; }
+
             [ColumnLabel("Összeg")]
             [Description("Banki tranzakció összege")]
             public decimal InvPaymentAmount { get; set; }
+
+            [ColumnLabel("Felhasználó ID")]
+            [Description("Felhasználó ID")]
+            public long UserID { get; set; } = 0;
         }
 
         public List<InvPaymentItem> InvPaymentItems { get; set; } = new List<InvPaymentItem>();

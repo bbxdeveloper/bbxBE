@@ -39,10 +39,27 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Banki tranzakció dátuma")]
         public DateTime InvPaymentDate { get; set; }
 
+        [ColumnLabel("Pénznem kód")]
+        [Description("Pénznem kód")]
+        public string CurrencyCode { get; set; }
 
+        [ColumnLabel("Pénznem")]
+        [Description("Pénznem")]
+        public string CurrencyCodeX { get; set; }
+
+        [ColumnLabel("Árfolyam")]
+        [Description("Árfolyam")]
+        public decimal ExchangeRate { get; set; }
 
         [ColumnLabel("Összeg")]
         [Description("Banki tranzakció összege")]
         public decimal InvPaymentAmount { get; set; }
+
+        [ColumnLabel("Összeg HUF")]
+        [Description("Banki tranzakció összege forintban")]
+        public decimal InvPaymentAmountHUF { get; set; }
+
+
+
     }
 }

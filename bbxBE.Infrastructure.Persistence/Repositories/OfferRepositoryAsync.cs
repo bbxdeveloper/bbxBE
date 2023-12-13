@@ -443,7 +443,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (string.IsNullOrWhiteSpace(offer.CurrencyCode))
             {
                 offer.CurrencyCode = enCurrencyCodes.HUF.ToString();    // Forintos a default
-                offer.ExchangeRate = 1;
+                offer.ExchangeRate = bbxBEConsts.DEF_HUFEXCHANGERATE;
             }
 
             var counterCode = "";

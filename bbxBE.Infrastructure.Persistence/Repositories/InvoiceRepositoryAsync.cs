@@ -379,6 +379,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.Product).ThenInclude(x => x.ProductGroup).AsNoTracking()
                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                 .Include(a => a.InvPayments).AsNoTracking()
                  .Include(u => u.User).AsNoTracking();
         }
 
@@ -608,8 +609,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IQueryable<Invoice> query;
             if (requestParameter.FullData)
             {
-                query = getFullInvoiceQuery()
-                 .Include(u => u.User).AsNoTracking();
+                query = getFullInvoiceQuery();
             }
             else
             {

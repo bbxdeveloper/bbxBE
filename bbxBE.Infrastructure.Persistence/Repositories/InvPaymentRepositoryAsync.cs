@@ -111,18 +111,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 existing.InvPaymentDate = invPayment.InvPaymentDate;
                                 existing.InvPaymentDate = invPayment.InvPaymentDate.Date;
                                 existing.InvPaymentAmount = invPayment.InvPaymentAmount;
+
+                                existing.InvPaymentAmountHUF = Math.Round(invPayment.InvPaymentAmount * existing.ExchangeRate, 1);
+
                                 _dbContext.Instance.Entry(existing).State = EntityState.Modified;
                                 UpdInvCtrlItems.Add(existing);
                             }
                             else
                             {
                                 _dbContext.Instance.Entry(existing).State = EntityState.Deleted;
+
                                 RemoveInvCtrlItems.Add(existing);
                             }
                         }
                         else
                         {
                             invPayment.InvPaymentDate = invPayment.InvPaymentDate.Date.Date;        //csak a dátum kell ide
+                            invPayment.InvPaymentAmountHUF = Math.Round(invPayment.InvPaymentAmount * invPayment.ExchangeRate, 1);
+
                             _dbContext.Instance.Entry(invPayment).State = EntityState.Added;
                             AddInvCtrlItems.Add(invPayment);
                         }
