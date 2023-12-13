@@ -139,6 +139,25 @@ namespace bbxBE.Application.Queries.ViewModels
 
         }
 
+        [Description("Kiegyenlkjtések")]
+        public class InvPayment
+        {
+            [ColumnLabel("Számla ID")]
+            [Description("Számla ID")]
+            public long InvoiceID { get; set; }
+
+            [ColumnLabel("Banki tranzakció")]
+            [Description("Banki tranzakció azonosító")]
+            public string BankTransaction { get; set; }
+
+            [ColumnLabel("Dátum")]
+            [Description("Banki tranzakció dátuma")]
+            public DateTime InvPaymentDate { get; set; }
+
+            [ColumnLabel("Összeg")]
+            [Description("Banki tranzakció összege")]
+            public decimal InvPaymentAmount { get; set; }
+        }
 
         [MapToEntity("ID")]
         public long ID { get; set; }
@@ -368,6 +387,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [MapToEntity("summaryByVatRates")]
         public List<GetInvoiceViewModel.SummaryByVatRate> SummaryByVatRates { get; set; } = new List<GetInvoiceViewModel.SummaryByVatRate>();
 
+        [ColumnLabel("Kiegyenlítések")]
+        [Description("Kiegyenlítések")]
+        [MapToEntity("invPayments")]
+        public List<GetInvoiceViewModel.InvPayment> InvPayments { get; set; } = new List<GetInvoiceViewModel.InvPayment>();
 
 
     }

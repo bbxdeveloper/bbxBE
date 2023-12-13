@@ -240,6 +240,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 itemModel.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
                 itemModel.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.InvPayments.Clear();         //itt már nem kellenek a sorok. 
             }
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 
@@ -674,6 +675,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     im.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
                     im.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                    im.InvPayments.Clear();         //itt már nem kellenek a sorok. 
                 }
                 resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
             }
