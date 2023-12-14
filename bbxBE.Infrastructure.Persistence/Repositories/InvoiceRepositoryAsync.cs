@@ -249,6 +249,31 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapedData;
         }
+        public async Task<Entity> GetInvoiceByInvoiceNumberAsync(string invoiceNumber, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
+        {
+
+            Invoice item = await GetInvoiceRecordByInvoiceNumberAsync(invoiceNumber);
+
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND2, invoiceNumber));
+            }
+
+            var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);
+
+            if (invoiceQueryType == invoiceQueryTypes.small)
+            {
+                itemModel.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.InvPayments.Clear();         //itt már nem kellenek a sorok. 
+            }
+            var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
+
+            // shape data
+            var shapedData = _dataShaperGetInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+
+            return shapedData;
+        }
         public async Task<Entity> GetAggregateInvoiceAsync(long ID)
         {
 

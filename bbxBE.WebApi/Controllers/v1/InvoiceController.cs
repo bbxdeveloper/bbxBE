@@ -45,6 +45,13 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(request));
         }
 
+        [HttpGet("byinvoicenumber")]
+        public async Task<IActionResult> GetInvoiceByInvoiceNumber([FromQuery] GetInvoiceByInvoiceNumber request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
+
+
         /// <summary>
         /// GET: api/controller
         /// </summary>
