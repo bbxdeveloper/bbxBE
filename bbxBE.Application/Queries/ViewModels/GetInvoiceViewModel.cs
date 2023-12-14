@@ -150,7 +150,7 @@ namespace bbxBE.Application.Queries.ViewModels
 
         }
 
-        [Description("Kiegyenlkjtések")]
+        [Description("Kiegyenlítések")]
         public class InvPayment
         {
             [ColumnLabel("Számla ID")]

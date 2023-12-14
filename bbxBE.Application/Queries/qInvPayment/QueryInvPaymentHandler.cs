@@ -4,10 +4,13 @@ using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using bbxBE.Domain.Entities;
 using bbxBE.Domain.Extensions;
 using MediatR;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +18,17 @@ namespace bbxBE.Application.Queries.qLocation
 {
     public class QueryInvPayment : QueryParameter, IRequest<PagedResponse<IEnumerable<Entity>>>
     {
+        [ColumnLabel("Számla/banki azonosító")]
+        [Description("Számla/banki azonosító")]
         public string SearchString { get; set; }
+
+        [ColumnLabel("Kezdődátum")]
+        [Description("Kezdődátum")]
+        public DateTime? DateFrom { get; set; }
+
+        [ColumnLabel("Végdátum")]
+        [Description("Végdátum")]
+        public DateTime? DateTo { get; set; }
     }
 
     public class QueryInvPaymentHandler : IRequestHandler<QueryInvPayment, PagedResponse<IEnumerable<Entity>>>

@@ -59,6 +59,14 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Banki tranzakció összege forintban")]
         public decimal InvPaymentAmountHUF { get; set; }
 
+        [ColumnLabel("Felhasználó ID")]
+        [Description("Felhasználó ID")]
+        public long UserID { get; set; }
+
+        [ColumnLabel("Felhasználó")]
+        [Description("Felhasználó")]
+        [MapToEntity("UserName")]
+        public string UserName { get; set; }
 
 
     }
