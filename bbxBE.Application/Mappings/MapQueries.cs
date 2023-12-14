@@ -246,7 +246,7 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<InvPayment, GetInvPaymentViewModel>()
              .ForMember(dst => dst.InvoiceNumber, opt => opt.MapFrom(src => src.Invoice.InvoiceNumber))
-             .ForMember(dst => dst.InvPaymentDate, opt => opt.MapFrom(src => src.Invoice.PaymentDate))
+             .ForMember(dst => dst.PaymentDate, opt => opt.MapFrom(src => src.Invoice.PaymentDate))
              .ForMember(dst => dst.CustomerID, opt => opt.MapFrom(src => (src.Invoice.Incoming ? src.Invoice.SupplierID : src.Invoice.CustomerID)))
              .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => (src.Invoice.Incoming ? src.Invoice.Supplier.CustomerName : src.Invoice.Customer.CustomerName)))
              .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.CurrencyCode)));

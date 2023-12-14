@@ -163,7 +163,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvPaymentAsync(QueryInvPayment requestParameter, CancellationToken cancellationToken)
         {
 
-            var searchString = requestParameter.SearchString;
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
             var fields = _modelHelper.GetQueryableFields<GetInvPaymentViewModel, Location>();
@@ -176,6 +175,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         .Include(i => i.Invoice).AsNoTracking()
                         .Include(i => i.Invoice).ThenInclude(c => c.Customer).AsNoTracking()
                         .Include(i => i.Invoice).ThenInclude(s => s.Supplier).AsNoTracking()
+                        .Include(u => u.User).AsNoTracking()
                         .Where(w => !w.Deleted);
 
             ;
@@ -184,7 +184,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterBySearchString(ref query, searchString);
+            PagedQueryFilter(ref query, requestParameter.SearchString, requestParameter.DateFrom, requestParameter.DateTo);
 
             // Count records after filter
             recordsFiltered = await query.CountAsync();
@@ -225,18 +225,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return (shapedData, recordsCount);
         }
 
-        private void FilterBySearchString(ref IQueryable<InvPayment> p_item, string p_searchString)
+        private void PagedQueryFilter(ref IQueryable<InvPayment> p_item, string p_searchString, DateTime? DateFrom, DateTime? DateTo)
         {
             if (!p_item.Any())
                 return;
 
-            if (string.IsNullOrWhiteSpace(p_searchString))
-                return;
-
             var predicate = PredicateBuilder.New<InvPayment>();
 
-            var srcFor = p_searchString.ToUpper().Trim();
-            predicate = predicate.And(p => p.Invoice.InvoiceNumber.ToUpper().Contains(srcFor) || p.BankTransaction.ToUpper().Contains(srcFor));
+            var srcFor = "";
+            if (p_searchString != null)
+            {
+                srcFor = p_searchString.ToUpper().Trim();
+            }
+            predicate = predicate.And(p => (string.IsNullOrWhiteSpace(srcFor) || p.Invoice.InvoiceNumber.ToUpper().Contains(srcFor) || p.BankTransaction.ToUpper().Contains(srcFor))
+                                           && (!DateFrom.HasValue || p.InvPaymentDate >= DateFrom.Value)
+                                           && (!DateTo.HasValue || p.InvPaymentDate <= DateTo.Value));
+
+
 
             p_item = p_item.Where(predicate);
         }
