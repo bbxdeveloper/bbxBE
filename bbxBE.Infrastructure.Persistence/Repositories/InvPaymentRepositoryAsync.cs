@@ -238,8 +238,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 srcFor = p_searchString.ToUpper().Trim();
             }
             predicate = predicate.And(p => (string.IsNullOrWhiteSpace(srcFor) || p.Invoice.InvoiceNumber.ToUpper().Contains(srcFor) || p.BankTransaction.ToUpper().Contains(srcFor))
-                                           && (!DateFrom.HasValue || p.InvPaymentDate.Date >= DateFrom.Value)
-                                           && (!DateTo.HasValue || p.InvPaymentDate.Date <= DateTo.Value));
+                                           && (!DateFrom.HasValue || p.InvPaymentDate >= DateFrom.Value)
+                                           && (!DateTo.HasValue || p.InvPaymentDate <= DateTo.Value));
 
 
 

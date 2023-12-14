@@ -23,12 +23,12 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Fizetési határidő dátuma")]
         public DateTime PaymentDate { get; set; }
 
-        [ColumnLabel("Ügyfél ID")]
-        [Description("Ügyfél ID")]
+        [ColumnLabel("Partner ID")]
+        [Description("Partner ID")]
         public long CustomerID { get; set; }
 
-        [ColumnLabel("Ügyfélnév")]
-        [Description("Ügyfélnév")]
+        [ColumnLabel("Partnernév")]
+        [Description("Partnernév")]
         public string CustomerName { get; set; }
 
         [ColumnLabel("Banki tranzakció")]
