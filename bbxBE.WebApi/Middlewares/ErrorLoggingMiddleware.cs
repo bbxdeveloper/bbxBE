@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Serilog;
 using System;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
@@ -13,16 +11,11 @@ namespace bbxBE.WebApi.Middlewares
     {
         private readonly RequestDelegate _next;
         private ILogger _logger;
-        private Serilog.Core.Logger _loggerX;
 
-        public ErrorLoggingMiddleware(RequestDelegate next, IConfiguration configuration)
+        public ErrorLoggingMiddleware(RequestDelegate next, IConfiguration configuration, ILogger logger)
         {
             _next = next;
-
-             _loggerX = new LoggerConfiguration()
-               .ReadFrom.Configuration(configuration)
-               .WriteTo.Console()
-               .CreateLogger();
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -33,7 +26,7 @@ namespace bbxBE.WebApi.Middlewares
             }
             catch (Exception e)
             {
-                _loggerX.Error(e, e.Message);
+                _logger.Error(e, e.Message);
                 System.Diagnostics.Debug.WriteLine($"The following error happened: {e.Message}");
                 throw;
             }

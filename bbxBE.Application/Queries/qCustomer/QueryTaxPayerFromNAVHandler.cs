@@ -9,8 +9,8 @@ using bbxBE.Domain.Entities;
 using bbxBE.Domain.Settings;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System;
 using System.Linq;
 using System.Threading;
@@ -21,7 +21,6 @@ namespace bbxBE.Application.Queries.qCustomer
     public class QueryTaxPayer : IRequest<Response<Customer>>
     {
         public string Taxnumber { get; set; }
-
     }
 
     public class QueryTaxPayerFromNAVHandler : IRequestHandler<QueryTaxPayer, Response<Customer>>
@@ -30,24 +29,22 @@ namespace bbxBE.Application.Queries.qCustomer
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger _logger;
         private readonly NAVSettings _NAVSettings;
 
-
-        public QueryTaxPayerFromNAVHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILoggerFactory loggerFactory, IConfiguration configuration)
+        public QueryTaxPayerFromNAVHandler(ICustomerRepositoryAsync customerRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILogger logger, IConfiguration configuration)
         {
             _CustomerRepository = customerRepository;
             _mapper = mapper;
             _NAVSettings = NAVSettings.Value;
-            _loggerFactory = loggerFactory;
+            _logger = logger;
             _configuration = configuration;
 
         }
 
         public async Task<Response<Customer>> Handle(QueryTaxPayer request, CancellationToken cancellationToken)
         {
-
-            var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
+            var bllNavObj = new bllNAV(_NAVSettings, _logger);
             var resTaxpayer = bllNavObj.QueryTaxPayer(request);
             var res = new Customer();
             if (resTaxpayer != null)
@@ -63,7 +60,6 @@ namespace bbxBE.Application.Queries.qCustomer
                 res.PaymentDays = 8;
                 res.DefPaymentMethod = PaymentMethodType.CASH.ToString();
                 res.UnitPriceType = enUnitPriceType.UNIT.ToString();
-
 
                 var addr = resTaxpayer.taxpayerAddressList.FirstOrDefault(f => f.taxpayerAddressType == TaxpayerAddressTypeType.HQ);
                 if (addr == null)
@@ -82,9 +78,5 @@ namespace bbxBE.Application.Queries.qCustomer
 
             return new Response<Customer>(res);
         }
-
-
-
-
     }
 }

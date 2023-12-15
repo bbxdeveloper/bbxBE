@@ -4,16 +4,14 @@ using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
+using Serilog;
 
 namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class ProductCacheService : BaseCacheService<Product>, ICacheService<Product>
     {
-        public ProductCacheService(ILoggerFactory loggerFactory, IConfiguration p_Configuration, ApplicationDbContext dbContext, AsyncKeyedLocker<string> asyncKeyedLocker) 
-            : base(loggerFactory, p_Configuration, dbContext, asyncKeyedLocker)
+        public ProductCacheService(ILogger logger, IConfiguration p_Configuration, ApplicationDbContext dbContext, AsyncKeyedLocker<string> asyncKeyedLocker)
+            : base(logger, p_Configuration, dbContext, asyncKeyedLocker)
         {
 #if !DEBUG
            _cacheQuery = _dbContext.Product.AsNoTracking()

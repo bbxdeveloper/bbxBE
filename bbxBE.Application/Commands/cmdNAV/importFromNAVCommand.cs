@@ -7,8 +7,8 @@ using bbxBE.Common.NAV;
 using bbxBE.Domain.Settings;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -41,23 +41,23 @@ namespace bbxBE.Application.Commands.cmdNAV
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger _logger;
         private readonly NAVSettings _NAVSettings;
 
 
-        public getIncomingInvoicesNAVCommandHandler(IInvoiceRepositoryAsync InvoiceRepository, IMapper mapper, ILoggerFactory loggerFactory, IOptions<NAVSettings> NAVSettings, IConfiguration configuration)
+        public getIncomingInvoicesNAVCommandHandler(IInvoiceRepositoryAsync InvoiceRepository, IMapper mapper, ILogger logger, IOptions<NAVSettings> NAVSettings, IConfiguration configuration)
         {
             _InvoiceRepository = InvoiceRepository;
             _mapper = mapper;
             _NAVSettings = NAVSettings.Value;
-            _loggerFactory = loggerFactory;
+            _logger = logger;
             _configuration = configuration;
 
         }
 
         public async Task<Response<long>> Handle(importFromNAVCommand request, CancellationToken cancellationToken)
         {
-            var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
+            var bllNavObj = new bllNAV(_NAVSettings, _logger);
             var invoicesFromNav = bllNavObj.QueryInvoiceDigest(request);
             if (invoicesFromNav != null)
             {
