@@ -72,6 +72,7 @@ namespace bbxBE.Infrastructure.Persistence.Contexts
         public DbSet<Location> Location { get; set; }
         public DbSet<NAVXChange> NAVXChange { get; set; }
         public DbSet<NAVXResult> NAVXResult { get; set; }
+        public DbSet<InvPayment> InvPayment { get; set; }
 
         public DbContext Instance => this;
 

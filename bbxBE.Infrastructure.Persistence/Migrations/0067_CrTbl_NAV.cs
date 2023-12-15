@@ -9,7 +9,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
     {
         public override void Down()
         {
-            Delete.Table("NAVXChange");
+            Delete.Table("NAVXResult");
             Delete.Table("NAVXChange");
         }
         public override void Up()

@@ -240,6 +240,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 itemModel.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
                 itemModel.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.InvPayments.Clear();         //itt már nem kellenek a sorok. 
+            }
+            var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
+
+            // shape data
+            var shapedData = _dataShaperGetInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+
+            return shapedData;
+        }
+        public async Task<Entity> GetInvoiceByInvoiceNumberAsync(string invoiceNumber, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
+        {
+
+            Invoice item = await GetInvoiceRecordByInvoiceNumberAsync(invoiceNumber);
+
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND2, invoiceNumber));
+            }
+
+            var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);
+
+            if (invoiceQueryType == invoiceQueryTypes.small)
+            {
+                itemModel.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.InvPayments.Clear();         //itt már nem kellenek a sorok. 
             }
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 
@@ -376,7 +402,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote).AsNoTracking()
+                 .Include(i => i.InvoiceLines).ThenInclude(x => x.Product).ThenInclude(x => x.ProductGroup).AsNoTracking()
                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                 .Include(a => a.InvPayments).AsNoTracking()
                  .Include(u => u.User).AsNoTracking();
         }
 
@@ -606,23 +634,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IQueryable<Invoice> query;
             if (requestParameter.FullData)
             {
-                query = _dbContext.Invoice.AsNoTracking()
-                 .Include(w => w.Warehouse).AsNoTracking()
-                 .Include(s => s.Supplier).AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking()
-                 .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-                 .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
-                 .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
-                 .Include(u => u.User).AsNoTracking();
+                query = getFullInvoiceQuery();
             }
             else
             {
-                query = _dbContext.Invoice.AsNoTracking()
-                 .Include(w => w.Warehouse).AsNoTracking()
-                 .Include(s => s.Supplier).AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking()
-                 .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-                 .Include(i => i.InvoiceLines).AsNoTracking()                   //nem full data esetén is szüség van az invoiceLines-re
+                query = getSmallInvoiceQuery()
                  .Include(u => u.User).AsNoTracking();
             }
 
@@ -674,6 +690,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     im.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
                     im.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                    im.InvPayments.Clear();         //itt már nem kellenek a sorok. 
                 }
                 resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
             }
