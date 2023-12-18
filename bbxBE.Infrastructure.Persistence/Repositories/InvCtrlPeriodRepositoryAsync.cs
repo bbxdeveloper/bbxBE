@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AsyncKeyedLock;
+using AutoMapper;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -41,7 +42,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ICacheService<ProductGroup> productGroupCacheService,
             ICacheService<Origin> originCacheService,
             ICacheService<VatRate> vatRateCacheService,
-            ICustomerRepositoryAsync customerRepository) : base(dbContext)
+            AsyncKeyedLocker<string> asyncKeyedLocker) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperInvCtrlPeriod = new DataShapeHelper<InvCtrlPeriod>();
@@ -50,8 +51,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
-            _invCtrlRepository = new InvCtrlRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, productCacheService, customerCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService, asyncKeyedLocker);
+            _invCtrlRepository = new InvCtrlRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, productCacheService, customerCacheService, productGroupCacheService, originCacheService, vatRateCacheService, asyncKeyedLocker);
             _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
         }
         public async Task<InvCtrlPeriod> AddInvCtrlPeriodAsync(InvCtrlPeriod p_invCtrlPeriod)

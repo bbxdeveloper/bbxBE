@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AsyncKeyedLock;
+using AutoMapper;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -34,13 +35,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ILocationRepositoryAsync _locationRepository;
 
         private readonly ICacheService<Product> _productCacheService;
+        private readonly AsyncKeyedLocker<string> _asyncKeyedLocker;
 
         public StockRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<Product> productCacheService,
             ICacheService<ProductGroup> productGroupCacheService,
             ICacheService<Origin> originCacheService,
-            ICacheService<VatRate> vatRateCacheService) : base(dbContext)
+            ICacheService<VatRate> vatRateCacheService,
+            AsyncKeyedLocker<string> asyncKeyedLocker) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperStock = new DataShapeHelper<Stock>();
@@ -56,6 +59,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
 
             _locationRepository = new LocationRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+
+            _asyncKeyedLocker = asyncKeyedLocker;
 
         }
 
@@ -134,6 +139,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
 
+            await RefreshStockInProductCache(lstStock);
             await UpdateRangeAsync(lstStock);
             return lstStock;
         }
@@ -196,6 +202,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
 
+            await RefreshStockInProductCache(lstStock);
             await UpdateRangeAsync(lstStock);
 
             return lstStock;
@@ -296,10 +303,46 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             }
 
+            await RefreshStockInProductCache(lstStock);
             await UpdateRangeAsync(lstStock, false);
 
             return lstStock;
         }
+
+        private async Task RefreshStockInProductCache(List<Stock> lstStock)
+        {
+
+            bool bOK = await _asyncKeyedLocker.TryLockAsync(bbxBEConsts.DEF_STOCKLOCK, async () =>
+            {
+
+                foreach (var stock in lstStock)
+                {
+                    Product prod = null;
+                    if (!_productCacheService.TryGetValue(stock.ProductID, out prod))
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, stock.ProductID));
+
+                    var stk = prod.Stocks.Where(w => w.WarehouseID == stock.WarehouseID).SingleOrDefault();
+                    if (stk == null)
+                    {
+                        stk = (Stock)stock.Clone();
+                        prod.Stocks.Add(stk);
+                    }
+                    else
+                    {
+                        stk.LatestIn = stock.LatestIn;
+                        stk.LatestOut = stock.LatestOut;
+                        stk.RealQty = stock.RealQty;
+                        stk.AvgCost = stock.AvgCost;
+
+                    }
+                }
+            }, bbxBEConsts.WaitForExpiringDataSec * 1000).ConfigureAwait(false);
+            if (!bOK)
+            {
+                throw new LockException(string.Format(bbxBEConsts.ERR_LOCK, bbxBEConsts.DEF_STOCKLOCK));
+            }
+        }
+
 
         public async Task<Entity> GetStockAsync(long ID)
         {

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AsyncKeyedLock;
+using AutoMapper;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
@@ -56,8 +57,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 ICacheService<Customer> customerCacheService,
                 ICacheService<ProductGroup> productGroupCacheService,
                 ICacheService<Origin> originCacheService,
-                ICacheService<VatRate> vatRateCacheService
-                ) : base(dbContext)
+                ICacheService<VatRate> vatRateCacheService,
+                AsyncKeyedLocker<string> asyncKeyedLocker) : base(dbContext)
         {
             _dbContext = dbContext;
 
@@ -72,7 +73,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
 
             _invoiceLineRepository = new InvoiceLineRepositoryAsync(dbContext, modelHelper, mapper, mockData);
-            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService, asyncKeyedLocker);
             _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
             _counterRepository = new CounterRepositoryAsync(dbContext, modelHelper, mapper, mockData);
             _warehouseRepository = new WarehouseRepositoryAsync(dbContext, modelHelper, mapper, mockData);

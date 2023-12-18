@@ -1,9 +1,7 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -18,6 +16,10 @@ namespace bbxBE.Domain.Entities
         [Description("Leírás")]
         public string LocationDescription { get; set; }
 
+        //relációk
+        [ColumnLabel("Készletek")]
+        [Description("Készletek")]
+        public virtual ICollection<Stock> Stocks { get; set; }
 
     }
 }
