@@ -34,6 +34,7 @@
         public const int ExpiringDataMaxCount = 5000;
         public const int CustomerLockExpirationSec = 900; //15 perc
         public const string DEF_CUSTLOCK = "custlock";
+        public const string DEF_STOCKLOCK = "stocklock";
 
         public const int NAVLockExpoirationSec = 60; //1 perc
         public const int CustomerLockExpoirationSec = 900; //15 perc

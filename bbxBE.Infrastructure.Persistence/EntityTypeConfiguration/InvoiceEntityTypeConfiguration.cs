@@ -30,6 +30,13 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .HasForeignKey(s => s.InvoiceID)
             .IsRequired(false);
 
+            builder
+            .HasMany<AdditionalInvoiceData>(i => i.AdditionalInvoiceData)
+            .WithOne(i => i.Invoice)
+            .HasForeignKey(s => s.InvoiceID)
+            .IsRequired(false);
+
+
         }
     }
 }

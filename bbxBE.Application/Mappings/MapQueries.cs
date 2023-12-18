@@ -34,6 +34,8 @@ namespace bbxBE.Queries.Mappings
             CreateMap<List<ProductGroup>, List<GetProductGroupViewModel>>();
             CreateMap<ProductGroup, GetProductGroupViewModel>();
 
+
+
             CreateMap<List<Origin>, List<GetOriginViewModel>>();
             CreateMap<Origin, GetOriginViewModel>();
 
@@ -55,6 +57,9 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.ProductCode, opt => opt.MapFrom(src => src.ProductCodes.FirstOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString() && !w.Deleted).ProductCodeValue))
              .ForMember(dst => dst.VTSZ, opt => opt.MapFrom(src => src.ProductCodes.FirstOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString() && !w.Deleted).ProductCodeValue))
              .ForMember(dst => dst.EAN, opt => opt.MapFrom(src => src.ProductCodes.FirstOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString() && !w.Deleted).ProductCodeValue));
+
+
+            CreateMap<Stock, GetProductViewModel.ProductStock>();
 
             CreateMap<Counter, GetCounterViewModel>()
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription));

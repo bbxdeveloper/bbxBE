@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AsyncKeyedLock;
+using AutoMapper;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -38,6 +39,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICounterRepositoryAsync _counterRepository;
         private readonly IWarehouseRepositoryAsync _warehouseRepository;
         private readonly IProductRepositoryAsync _productRepository;
+        private readonly AsyncKeyedLocker<string> _asyncKeyedLocker;
 
         public WhsTransferRepositoryAsync(IApplicationDbContext dbContext,
                 IExpiringData<ExpiringDataObject> expiringData,
@@ -46,6 +48,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 ICacheService<ProductGroup> productGroupCacheService,
                 ICacheService<Origin> originCacheService,
                 ICacheService<VatRate> vatRateCacheService,
+                AsyncKeyedLocker<string> asyncKeyedLocker,
                 IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -54,7 +57,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService, asyncKeyedLocker);
             _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
             _counterRepository = new CounterRepositoryAsync(dbContext, modelHelper, mapper, mockData);
             _warehouseRepository = new WarehouseRepositoryAsync(dbContext, modelHelper, mapper, mockData);

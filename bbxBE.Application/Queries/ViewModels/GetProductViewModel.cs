@@ -14,6 +14,33 @@ namespace bbxBE.Application.Queries.ViewModels
     public class GetProductViewModel
     {
 
+        public class ProductStock
+        {
+            [MapToEntity("ID")]
+            public long ID { get; set; }
+
+            [ColumnLabel("Raktár ID")]
+            [Description("Raktár ID")]
+            public long WarehouseID { get; set; }
+
+            [ColumnLabel("Valós")]
+            [Description("Valós mennyiség")]
+            public decimal RealQty { get; set; }
+
+            [ColumnLabel("ELÁBÉ")]
+            [Description("Átlagolt beszerzési egységár")]
+            public decimal AvgCost { get; set; }
+
+            [ColumnLabel("Bev.")]
+            [Description("Legutolsó bevétel dátuma")]
+            public DateTime? LatestIn { get; set; }
+
+            [ColumnLabel("Kiad.")]
+            [Description("Legutolsó kiadás dátuma")]
+            public DateTime? LatestOut { get; set; }
+
+        }
+
         [MapToEntity("ID")]
         public long ID { get; set; }
         [ColumnLabel("Termékkód")]
@@ -97,6 +124,6 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [ColumnLabel("Készletek raktáranként")]
         [Description("Készletek raktáranként")]
-        public List<GetStockViewModel> Stocks { get; set; }
+        public List<ProductStock> Stocks { get; set; }
     }
 }
