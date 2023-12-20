@@ -90,13 +90,11 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CustomerThirdStateTaxId, opt => opt.MapFrom(src => src.Customer.ThirdStateTaxId))
              .ForMember(dst => dst.CustomerComment, opt => opt.MapFrom(src => src.Customer.Comment))
              .ForMember(dst => dst.CustomerVatStatus, opt => opt.MapFrom(src => src.Customer.CustomerVatStatus))
-
+             .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.CurrencyCode)))
              .ForMember(dst => dst.PaymentMethodX, opt => opt.MapFrom(src => PaymentMethodNameResolver(src.PaymentMethod)))
-
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null && src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
                                     src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataValue : "")))
-              .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any(il => il.PriceReview.HasValue && il.PriceReview.Value)))
-
+             .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any(il => il.PriceReview.HasValue && il.PriceReview.Value)))
              .ForMember(dst => dst.InvoicePayedAmount, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmount)))
              .ForMember(dst => dst.InvoicePayedAmountHUF, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmountHUF)))
 
@@ -138,6 +136,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CustomerThirdStateTaxId, opt => opt.MapFrom(src => src.Customer.ThirdStateTaxId))
              .ForMember(dst => dst.CustomerComment, opt => opt.MapFrom(src => src.Customer.Comment))
 
+             .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.CurrencyCode)))
              .ForMember(dst => dst.PaymentMethodX, opt => opt.MapFrom(src => PaymentMethodNameResolver(src.PaymentMethod)))
 
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null && src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
@@ -225,6 +224,7 @@ namespace bbxBE.Queries.Mappings
             .ForMember(dst => dst.Quantity, opt => opt.MapFrom(src => src.PendingDNQuantity))
             .ForMember(dst => dst.WorkNumber, opt => opt.MapFrom(src => src.Invoice.WorkNumber))
             .ForMember(dst => dst.CurrencyCode, opt => opt.MapFrom(src => src.Invoice.CurrencyCode))
+            .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.Invoice.CurrencyCode)))
             .ForMember(dst => dst.ExchangeRate, opt => opt.MapFrom(src => src.Invoice.ExchangeRate))
             .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.PriceReview))
             .ForMember(dst => dst.InvoiceDiscountPercent, opt => opt.MapFrom(src => src.Invoice.InvoiceDiscountPercent))

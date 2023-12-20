@@ -130,6 +130,9 @@ namespace bbxBE.Application.Commands.cmdCustomer
         private bool IsUniqueTaxpayerId(string TaxpayerNumber)
         {
 
+            //egyelőre kikötjük: https://trello.com/c/0sTUx5w0/1366-1190-ad%C3%B3sz%C3%A1mduplik%C3%A1l%C3%A1s-ellen%C5%91rz%C3%A9st-kivenni-a-be-b%C5%91l
+            return true;
+
             if (TaxpayerNumber == null || string.IsNullOrWhiteSpace(TaxpayerNumber.Replace("-", "")))
                 return true;
 
