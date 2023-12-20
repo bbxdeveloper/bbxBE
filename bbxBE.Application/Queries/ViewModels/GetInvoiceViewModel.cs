@@ -317,6 +317,16 @@ namespace bbxBE.Application.Queries.ViewModels
         public string CustomerVatStatus { get; set; }
         #endregion
 
+
+        [ColumnLabel("Pénznem kód")]
+        [Description("Pénznem kód")]
+        public string CurrencyCode { get; set; }
+
+        [ColumnLabel("Pénznem")]
+        [Description("Pénznem")]
+        public string CurrencyCodeX { get; set; }
+
+
         #region PaymentMethod
 
         [DataMember]
