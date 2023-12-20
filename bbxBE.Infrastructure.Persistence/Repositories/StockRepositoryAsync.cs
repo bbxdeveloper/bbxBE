@@ -321,7 +321,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     if (!_productCacheService.TryGetValue(stock.ProductID, out prod))
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, stock.ProductID));
 
-                    var stk = prod.Stocks.Where(w => w.WarehouseID == stock.WarehouseID).SingleOrDefault();
+                    var stk = prod.Stocks?.Where(w => w.WarehouseID == stock.WarehouseID).SingleOrDefault();
                     if (stk == null)
                     {
                         stk = (Stock)stock.Clone();

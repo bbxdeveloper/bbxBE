@@ -86,6 +86,6 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Készletek")]
         [Description("Készletek")]
-        public virtual ICollection<Stock> Stocks { get; set; }
+        public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();
     }
 }
