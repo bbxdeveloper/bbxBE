@@ -97,14 +97,17 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any(il => il.PriceReview.HasValue && il.PriceReview.Value)))
              .ForMember(dst => dst.InvoicePayedAmount, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmount)))
              .ForMember(dst => dst.InvoicePayedAmountHUF, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmountHUF)))
-
+             .ForMember(dst => dst.InvoiceProductFeeGrossSummary, opt => opt.MapFrom(src => src.InvoiceLines.Sum(s =>
+                        Math.Round((s.ProductFeeAmount * (1 + s.VatPercentage / 100)) * src.ExchangeRate, 1)
+                        )))
              ;
 
             CreateMap<InvoiceLine, GetInvoiceViewModel.InvoiceLine>()
              .ForMember(dst => dst.UnitOfMeasureX, opt => opt.MapFrom(src => enUnitOfMeasureNameResolver(src.UnitOfMeasure)))
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode))
              .ForMember(dst => dst.ProductGroupID, opt => opt.MapFrom(src => src.Product != null ? src.Product.ProductGroupID : 0))
-             .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.Product != null ? src.Product.ProductGroup.ProductGroupDescription : ""));
+             .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.Product != null ? src.Product.ProductGroup.ProductGroupDescription : ""))
+             ;
 
             CreateMap<SummaryByVatRate, GetInvoiceViewModel.SummaryByVatRate>()
              .ForMember(dst => dst.VatRateCode, opt => opt.MapFrom(src => src.VatRate.VatRateCode));
