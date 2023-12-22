@@ -428,6 +428,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Bruttó termékdíj összege a bizonylat pénznemében")]
         public decimal InvoiceProductFeeGrossSummary { get; set; }
 
+        [ColumnLabel("Fordtott áfás tétel van?")]
+        [Description("Fordtott áfás tétel van a bizonylaton?")]
+        public bool IsFA { get; set; }
+
 
         [ColumnLabel("Számlasorok")]
         [Description("Számlasorok")]
