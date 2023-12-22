@@ -424,6 +424,11 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Ár felülvizsgálat?")]
         public bool PriceReview { get; set; } = false;
 
+        [ColumnLabel("Bruttó termékdíj")]
+        [Description("Bruttó termékdíj összege a bizonylat pénznemében")]
+        public decimal InvoiceProductFeeGrossSummary { get; set; }
+
+
         [ColumnLabel("Számlasorok")]
         [Description("Számlasorok")]
         [MapToEntity("invoiceLines")]
