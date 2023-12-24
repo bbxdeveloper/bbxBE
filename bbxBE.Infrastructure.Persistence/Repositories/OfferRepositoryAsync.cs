@@ -301,7 +301,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             item = await _dbContext.Offer.AsNoTracking()
                   .Include(c => c.Customer).AsNoTracking()
                   .Include(u => u.User).AsNoTracking()
-                  .Include(i => i.OfferLines).AsNoTracking()
                   .Include(i => i.OfferLines).ThenInclude(t => t.VatRate).AsNoTracking()
                   .Where(x => x.ID == ID && !x.Deleted).FirstOrDefaultAsync();
             return item;
@@ -468,7 +467,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
 
                     var vatRate = _vatRateRepository.GetVatRateByCode(rln.VatRateCode);
-                    if (vatRate == null)
+                    if (vatRate == null && prod != null)    //létező termék, de helytelen 
                     {
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
                     }
@@ -519,18 +518,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var rln = request.OfferLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
 
                     var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
-                    if (prod == null)
-                    {
-                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
-                    }
                     var vatRate = _vatRateRepository.GetVatRateByCode(rln.VatRateCode);
-                    if (vatRate == null)
+                    if (vatRate == null && prod != null)
                     {
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
                     }
+                    else
+                    {
+                        vatRate = _vatRateRepository.GetVatRateByCode(bbxBEConsts.VATCODE_27);
+                    }
 
                     //	ln.Product = prod;
-                    ln.ProductID = prod.ID;
+                    ln.ProductID = prod?.ID;
                     ln.ProductCode = rln.ProductCode;
                     ln.NoDiscount = prod.NoDiscount;
                     //Ez modelből jön: ln.LineDescription = prod.Description;
