@@ -83,17 +83,17 @@ namespace bbxBE.Domain.Entities
         [ForeignKey("OfferID")]
         [ColumnLabel("Árajánlat")]
         [Description("Árajánlat")]
-        public Offer Offer { get; set; }
+        public virtual Offer Offer { get; set; }
 
         [ForeignKey("ProductID")]
         [ColumnLabel("Termék")]
         [Description("Termék")]
-        public Product Product { get; set; }
+        public virtual Product Product { get; set; }
 
         [ForeignKey("VatRateID")]
         [ColumnLabel("Áfakulcs")]
         [Description("Áfakulcs")]
-        public VatRate VatRate { get; set; }
+        public virtual VatRate VatRate { get; set; }
 
     }
 }
