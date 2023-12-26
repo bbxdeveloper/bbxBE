@@ -15,6 +15,14 @@ namespace bbxBE.Domain.Entities
         [Description("Számla ID")]
         public long InvoiceID { get; set; }
 
+        [ColumnLabel("Fizetendő összeg")]
+        [Description("Fizetendő (kiegyenlítetlen) összege")]
+        public decimal PayableAmount { get; set; }
+
+        [ColumnLabel("Fizetendő összeg HUF")]
+        [Description("Fizetendő (kiegyenlítetlen) összege forintban")]
+        public decimal PayableAmountHUF { get; set; }
+
         [ColumnLabel("Banki tranzakció")]
         [Description("Banki tranzakció azonosító")]
         public string BankTransaction { get; set; }

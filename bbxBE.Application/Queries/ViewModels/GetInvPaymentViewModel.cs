@@ -51,6 +51,14 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Árfolyam")]
         public decimal ExchangeRate { get; set; }
 
+        [ColumnLabel("Fizetendő összeg")]
+        [Description("Fizetendő (kiegyenlítetlen) összege")]
+        public decimal PayableAmount { get; set; }
+
+        [ColumnLabel("Fizetendő összeg HUF")]
+        [Description("Fizetendő (kiegyenlítetlen) összege forintban")]
+        public decimal PayableAmountHUF { get; set; }
+
         [ColumnLabel("Összeg")]
         [Description("Banki tranzakció összege")]
         public decimal InvPaymentAmount { get; set; }
