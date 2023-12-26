@@ -42,6 +42,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<List<InvPayment>> MaintainRangeAsync(List<InvPaymentItem> InvPaymentItems)
         {
+            var invoices = new Dictionary<long, Invoice>();
             var invErrors = new List<string>();
             var invErrWrongType = new List<string>();
             var invPayments = new List<InvPayment>();
@@ -65,6 +66,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 else
                 {
                     invErrors.Add(i.InvoiceNumber);
+                }
+                if (!invoices.ContainsKey(inv.ID))
+                {
+                    invoices.Add(inv.ID, inv);
                 }
             }
 
@@ -111,7 +116,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 existing.InvPaymentDate = invPayment.InvPaymentDate;
                                 existing.InvPaymentDate = invPayment.InvPaymentDate.Date;
                                 existing.InvPaymentAmount = invPayment.InvPaymentAmount;
-
                                 existing.InvPaymentAmountHUF = Math.Round(invPayment.InvPaymentAmount * existing.ExchangeRate, 1);
 
                                 _dbContext.Instance.Entry(existing).State = EntityState.Modified;
@@ -128,6 +132,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         {
                             invPayment.InvPaymentDate = invPayment.InvPaymentDate.Date.Date;        //csak a dátum kell ide
                             invPayment.InvPaymentAmountHUF = Math.Round(invPayment.InvPaymentAmount * invPayment.ExchangeRate, 1);
+
+                            var payedItems = await _dbContext.InvPayment.AsNoTracking()
+                                        .Where(w => w.InvoiceID == invPayment.InvoiceID && !w.Deleted).ToListAsync();
+                            invPayment.PayableAmount = invoices[invPayment.InvoiceID].InvoiceGrossAmount - payedItems.Sum(s => s.InvPaymentAmount);
+                            invPayment.PayableAmountHUF = invoices[invPayment.InvoiceID].InvoiceGrossAmountHUF - payedItems.Sum(s => s.InvPaymentAmountHUF);
+
 
                             _dbContext.Instance.Entry(invPayment).State = EntityState.Added;
                             AddInvCtrlItems.Add(invPayment);
