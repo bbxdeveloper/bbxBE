@@ -103,29 +103,44 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     foreach (var invPayment in invPayments)
                     {
 
-                        var existing = await _dbContext.InvPayment
+                        var existingInvPayment = await _dbContext.InvPayment
                                        .Where(x => x.BankTransaction == invPayment.BankTransaction && !x.Deleted)
                                        .FirstOrDefaultAsync();
 
-                        if (existing != null)
+                        if (existingInvPayment != null)
                         {
                             if (invPayment.InvPaymentAmount != 0)
                             {
-                                invPayment.ID = existing.ID;           //A visszaadott értékhez
+                                invPayment.ID = existingInvPayment.ID;           //A visszaadott értékhez
 
-                                existing.InvPaymentDate = invPayment.InvPaymentDate;
-                                existing.InvPaymentDate = invPayment.InvPaymentDate.Date;
-                                existing.InvPaymentAmount = invPayment.InvPaymentAmount;
-                                existing.InvPaymentAmountHUF = Math.Round(invPayment.InvPaymentAmount * existing.ExchangeRate, 1);
+                                existingInvPayment.InvPaymentDate = invPayment.InvPaymentDate;
+                                existingInvPayment.InvPaymentDate = invPayment.InvPaymentDate.Date;
+                                existingInvPayment.InvPaymentAmount = invPayment.InvPaymentAmount;
+                                existingInvPayment.InvPaymentAmountHUF = Math.Round(invPayment.InvPaymentAmount * existingInvPayment.ExchangeRate, 1);
 
-                                _dbContext.Instance.Entry(existing).State = EntityState.Modified;
-                                UpdInvCtrlItems.Add(existing);
+
+                                var index = UpdInvCtrlItems.FindIndex(a => a.BankTransaction == existingInvPayment.BankTransaction);
+
+                                if (index < 0)
+                                {
+                                    UpdInvCtrlItems.Add(existingInvPayment);
+                                }
+                                else
+                                {
+                                    UpdInvCtrlItems[index] = existingInvPayment;
+                                }
                             }
                             else
                             {
-                                _dbContext.Instance.Entry(existing).State = EntityState.Deleted;
-
-                                RemoveInvCtrlItems.Add(existing);
+                                var index = RemoveInvCtrlItems.FindIndex(a => a.BankTransaction == invPayment.BankTransaction);
+                                if (index < 0)
+                                {
+                                    RemoveInvCtrlItems.Add(invPayment);
+                                }
+                                else
+                                {
+                                    RemoveInvCtrlItems[index] = invPayment;
+                                }
                             }
                         }
                         else
@@ -139,22 +154,29 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             invPayment.PayableAmountHUF = invoices[invPayment.InvoiceID].InvoiceGrossAmountHUF - payedItems.Sum(s => s.InvPaymentAmountHUF);
 
 
-                            _dbContext.Instance.Entry(invPayment).State = EntityState.Added;
-                            AddInvCtrlItems.Add(invPayment);
+                            var index = AddInvCtrlItems.FindIndex(a => a.BankTransaction == invPayment.BankTransaction);
+                            if (index < 0)
+                            {
+                                AddInvCtrlItems.Add(invPayment);
+                            }
+                            else
+                            {
+                                AddInvCtrlItems[index] = invPayment;
+                            }
                         }
                     }
 
                     if (AddInvCtrlItems.Count > 0)
                     {
-                        await AddRangeAsync(AddInvCtrlItems);
+                        await AddRangeAsync(AddInvCtrlItems, false);
                     }
                     if (UpdInvCtrlItems.Count > 0)
                     {
-                        await UpdateRangeAsync(UpdInvCtrlItems);
+                        await UpdateRangeAsync(UpdInvCtrlItems, false);
                     }
                     if (RemoveInvCtrlItems.Count > 0)
                     {
-                        await RemoveRangeAsync(RemoveInvCtrlItems);
+                        await RemoveRangeAsync(RemoveInvCtrlItems, false);
                     }
 
                     await _dbContext.SaveChangesAsync();
@@ -174,8 +196,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         {
 
             var orderBy = requestParameter.OrderBy;
-            //      var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetInvPaymentViewModel, Location>();
 
 
             int recordsTotal, recordsFiltered;
@@ -210,12 +230,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
                 query = query.OrderBy(orderBy);
-            }
-
-            // select columns
-            if (!string.IsNullOrWhiteSpace(fields))
-            {
-                query = query.Select<InvPayment>("new(" + fields + ")");
             }
 
             // retrieve data to list

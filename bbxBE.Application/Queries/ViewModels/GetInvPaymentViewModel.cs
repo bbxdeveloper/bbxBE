@@ -11,6 +11,9 @@ namespace bbxBE.Application.Queries.ViewModels
     /// </summary>
     public class GetInvPaymentViewModel
     {
+        [MapToEntity("ID")]
+        public long ID { get; set; }
+
         [ColumnLabel("Számla ID")]
         [Description("Számla ID")]
         public long InvoiceID { get; set; }
