@@ -147,6 +147,17 @@ namespace bbxBE.WebApi.Controllers.v1
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
+        [HttpGet("queryunpaid")]
+        public async Task<IActionResult> QueryUnpaid([FromQuery] QueryUnpaidInvoice filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
+
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         [HttpGet("querycustomerinvoicesummary")]
         public async Task<IActionResult> QueryCustomerInvoiceSummary([FromQuery] QueryCustomerInvoiceSummary req)
         {

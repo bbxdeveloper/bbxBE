@@ -397,11 +397,11 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [ColumnLabel("Kiegyenlített érték")]
         [Description("A számla kiegyenlítések a számla pénznemében")]
-        public decimal InvoicePayedAmount { get; set; }
+        public decimal InvoicePaidAmount { get; set; }
 
         [ColumnLabel("Kiegyenlített érték HUF")]
         [Description("A számla kiegyenlítések forintban")]
-        public decimal InvoicePayedAmountHUF { get; set; }
+        public decimal InvoicePaidAmountHUF { get; set; }
 
         [ColumnLabel("Módosító bizonylat?")]
         [Description("Módosító bizonylat jelölése (értéke false)")]

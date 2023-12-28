@@ -148,10 +148,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             invPayment.InvPaymentDate = invPayment.InvPaymentDate.Date.Date;        //csak a dátum kell ide
                             invPayment.InvPaymentAmountHUF = Math.Round(invPayment.InvPaymentAmount * invPayment.ExchangeRate, 1);
 
-                            var payedItems = await _dbContext.InvPayment.AsNoTracking()
+                            var paidItems = await _dbContext.InvPayment.AsNoTracking()
                                         .Where(w => w.InvoiceID == invPayment.InvoiceID && !w.Deleted).ToListAsync();
-                            invPayment.PayableAmount = invoices[invPayment.InvoiceID].InvoiceGrossAmount - payedItems.Sum(s => s.InvPaymentAmount);
-                            invPayment.PayableAmountHUF = invoices[invPayment.InvoiceID].InvoiceGrossAmountHUF - payedItems.Sum(s => s.InvPaymentAmountHUF);
+                            invPayment.PayableAmount = invoices[invPayment.InvoiceID].InvoiceGrossAmount - paidItems.Sum(s => s.InvPaymentAmount);
+                            invPayment.PayableAmountHUF = invoices[invPayment.InvoiceID].InvoiceGrossAmountHUF - paidItems.Sum(s => s.InvPaymentAmountHUF);
 
 
                             var index = AddInvCtrlItems.FindIndex(a => a.BankTransaction == invPayment.BankTransaction);
