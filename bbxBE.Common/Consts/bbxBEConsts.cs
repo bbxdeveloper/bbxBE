@@ -22,6 +22,7 @@
         public const string DEF_DATETIMEFORMAT = "yyyy.MM.dd HH:mm:ss";
         public const string DEF_TRUE = "true";
         public const string DEF_FALSE = "false";
+        public const string DEF_THUMBPRINT = "NoJWT!";
 
 
         public const string DEF_CUSTOMERLOCK_KEY = "CUST_";
