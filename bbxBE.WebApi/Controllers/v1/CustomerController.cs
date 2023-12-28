@@ -120,12 +120,10 @@ namespace bbxBE.WebApi.Controllers.v1
         {
 
 
-            command.SessionID = bbxBEConsts.DEF_THUMBPRINT;
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
             {
-                command.SessionID = identity.FindFirst(ClaimTypes.Thumbprint).Value;
-
+                command.SessionID = identity.FindFirst(ClaimTypes.Thumbprint)?.Value;
             }
             var resp = await Mediator.Send(command);
             if (resp.Succeeded)
@@ -140,7 +138,11 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPost("unlock")]
         public async Task<IActionResult> Unlock(UnlockCustomerCommand command)
         {
-            command.SessionID = HttpContext.Session.Id;
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                command.SessionID = identity.FindFirst(ClaimTypes.Thumbprint)?.Value;
+            }
             var resp = await Mediator.Send(command);
             if (resp.Succeeded)
             {
