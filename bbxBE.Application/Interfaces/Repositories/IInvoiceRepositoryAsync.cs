@@ -37,6 +37,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceNumber(string invoiceNumber);
         Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceID(long invoiceID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUnpaidInvoiceAsync(QueryUnpaidInvoice requestParameter);
         Task<(IList<GetCustomerInvoiceSummary> data, RecordsCount recordsCount)> QueryPagedCustomerInvoiceSummaryAsync(QueryCustomerInvoiceSummary requestParameters);
         Task<IList<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter);
 

@@ -95,8 +95,8 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null && src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
                                     src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataValue : "")))
              .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any(il => il.PriceReview.HasValue && il.PriceReview.Value)))
-             .ForMember(dst => dst.InvoicePayedAmount, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmount)))
-             .ForMember(dst => dst.InvoicePayedAmountHUF, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmountHUF)))
+             .ForMember(dst => dst.InvoicePaidAmount, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmount)))
+             .ForMember(dst => dst.InvoicePaidAmountHUF, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmountHUF)))
              .ForMember(dst => dst.InvoiceProductFeeGrossSummary, opt => opt.MapFrom(src => src.InvoiceLines.Sum(s =>
                         Math.Round((s.ProductFeeAmount * (1 + s.VatPercentage / 100)) * src.ExchangeRate, 1)
                         )))
