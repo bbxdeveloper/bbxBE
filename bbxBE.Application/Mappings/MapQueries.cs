@@ -146,7 +146,11 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.Notice, opt => opt.MapFrom(src => (src.AdditionalInvoiceData != null && src.AdditionalInvoiceData.Any(i => i.DataName == bbxBEConsts.DEF_NOTICE) ?
                                     src.AdditionalInvoiceData.Single(i => i.DataName == bbxBEConsts.DEF_NOTICE).DataValue : "")))
               .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any(il => il.PriceReview.HasValue && il.PriceReview.Value)))
-             ;
+              .ForMember(dst => dst.InvoiceProductFeeGrossSummary, opt => opt.MapFrom(src => src.InvoiceLines.Sum(s =>
+                Math.Round((s.ProductFeeAmount * (1 + s.VatPercentage / 100)) * src.ExchangeRate, 1)
+               )))
+             .ForMember(dst => dst.IsFA, opt => opt.MapFrom(src => src.InvoiceLines.Any(a => a.VatRate.VatRateCode == bbxBEConsts.VATCODE_FA)))
+            ;
 
             /*
             CreateMap<InvoiceLine, GetAggregateInvoiceViewModel.DeliveryNote>()

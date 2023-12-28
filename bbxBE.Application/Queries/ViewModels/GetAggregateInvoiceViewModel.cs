@@ -241,6 +241,15 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("A számla végösszege forintban")]
         public decimal InvoiceGrossAmountHUF { get; set; }
 
+        [ColumnLabel("Bruttó termékdíj")]
+        [Description("Bruttó termékdíj összege a bizonylat pénznemében")]
+        public decimal InvoiceProductFeeGrossSummary { get; set; }
+
+        [ColumnLabel("Fordtott áfás tétel van?")]
+        [Description("Fordtott áfás tétel van a bizonylaton?")]
+        public bool IsFA { get; set; }
+
+
         [ColumnLabel("Felhasználó ID")]
         [Description("Felhasználó ID")]
         public long UserID { get; set; }
