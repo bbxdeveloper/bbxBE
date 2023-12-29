@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" Zoom="2" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;38&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoice" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;217&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoice" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Query" Name="ID">
           <Value>
@@ -131,7 +131,7 @@
         </Table>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="3.655cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="4.526cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
@@ -356,7 +356,7 @@
             </TextBox>
           </Items>
         </Panel>
-        <TextBox Width="18.839cm" Height="0.5cm" Left="0.144cm" Top="3.155cm" Value="= &quot;A tulajdonjogot a számla kiegyenlítéséig fenntartjuk! Késedelmi kamat évi 20%!&quot;" Name="textBox33">
+        <TextBox Width="18.839cm" Height="0.5cm" Left="0.144cm" Top="3.041cm" Value="= &quot;A tulajdonjogot a számla kiegyenlítéséig fenntartjuk! Késedelmi kamat évi 20%!&quot;" Name="textBox33">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -365,6 +365,58 @@
               <Style Visible="False" />
               <Filters>
                 <Filter Expression="= Fields.paymentMethod" Operator="NotEqual" Value="= &quot;TRANSFER&quot;" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
+        </TextBox>
+        <TextBox Width="10.652cm" Height="0.5cm" Left="0.144cm" Top="3.541cm" Value="= &quot;Bizonylat termékdíj-tartalom áfával növelt összege:&quot;" Name="textBox37">
+          <Style Visible="True" TextAlign="Left" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.invoiceProductFeeGrossSummary" Operator="Equal" Value="= 0" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
+        </TextBox>
+        <TextBox Width="0.701in" Height="0.191in" Left="4.254in" Top="1.394in" Value="= Fields.invoiceProductFeeGrossSummary" Format="{0:# ##0.00}" Name="textBox36">
+          <Style Visible="True" TextAlign="Left" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.invoiceProductFeeGrossSummary" Operator="Equal" Value="= 0" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
+        </TextBox>
+        <TextBox Width="0.551in" Height="0.191in" Left="4.955in" Top="1.394in" Value="= Fields.currencyCodeX" Format="{0:# ### ##0.00}" Name="textBox35">
+          <Style Visible="True" TextAlign="Left" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.invoiceProductFeeGrossSummary" Operator="Equal" Value="= 0" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
+        </TextBox>
+        <TextBox Width="18.833cm" Height="0.484cm" Left="0.144cm" Top="4.042cm" Value="= &quot;A fordított adózás szabályai szerint az adót a vevő fizeti meg.&quot;" Name="textBox38">
+          <Style Visible="True" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.isFA" Operator="NotEqual" Value="= True" />
               </Filters>
             </FormattingRule>
           </ConditionalFormatting>
