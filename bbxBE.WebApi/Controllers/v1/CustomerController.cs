@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -118,8 +119,12 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Lock(LockCustomerCommand command)
         {
 
-            command.SessionID = HttpContext.Session.Id;
 
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                command.SessionID = identity.FindFirst(ClaimTypes.Thumbprint)?.Value;
+            }
             var resp = await Mediator.Send(command);
             if (resp.Succeeded)
             {
@@ -133,7 +138,11 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPost("unlock")]
         public async Task<IActionResult> Unlock(UnlockCustomerCommand command)
         {
-            command.SessionID = HttpContext.Session.Id;
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                command.SessionID = identity.FindFirst(ClaimTypes.Thumbprint)?.Value;
+            }
             var resp = await Mediator.Send(command);
             if (resp.Succeeded)
             {

@@ -34,6 +34,7 @@
         public const int ExpiringDataMaxCount = 5000;
         public const int CustomerLockExpirationSec = 900; //15 perc
         public const string DEF_CUSTLOCK = "custlock";
+        public const string DEF_STOCKLOCK = "stocklock";
 
         public const int NAVLockExpoirationSec = 60; //1 perc
         public const int CustomerLockExpoirationSec = 900; //15 perc
@@ -155,6 +156,8 @@
         public const string ERR_INVCTRLNOTFOUND = "Leltári tétel nem található, ID:{0} ";
         public const string ERR_INVCTRL_DATE = "{PropertyName}:Helytelen leltárdátum!";
 
+        public const string ERR_INVPAYMENT_INVNOTFND = "Bizonylatszámok nem találhatóak:{0}";
+        public const string ERR_INVPAYMENT_WRONGTYPE = "Nem átutalásos:{0}";
 
         public const string PROD_IMPORT_RESULT = "***Product import***\n" +
                                                     "Összes elem    :{0}\n" +
@@ -193,6 +196,8 @@
         public const string ERR_NAVINV_ANULMENT = "Csak kimenő számlabizonylat küldése vonható vissza a NAV-tól, bizonylatszám:{0}";
         public const string ERR_INVOICEALREADYSETSEND = "A számlabizonylat már küldésre kijelölve, bizonylatszám:{0}";
         public const string NAV_SENDINVOICETONAV_ERR = "NAV adatküldés hiba:{0}";
+        public const string NAV_NOTIFICATIONEMAIL_SENT = "NAV hibaértesítő levél kiküldve, email:{0}, számla:{1}";
+        public const string NAV_NOTIFICATIONEMAIL_SENT_ERR = "NAV hibaértesítő levél kiküldés hiba, email:{0}, számla:{1}, válasz:{2}";
 
 
         public const string DEF_NAVAnnulmentReason = "Hibás adatszolgáltatás";
@@ -257,6 +262,7 @@
         public const string DEF_WHTCOUNTER = "WHT";         //Raktárközi bizonylat
 
 
+        public const decimal DEF_HUFEXCHANGERATE = 1;
 
 
         public const string EMAIL_FORMAT_ERROR = "{PropertyName}: Hibás email cím!";

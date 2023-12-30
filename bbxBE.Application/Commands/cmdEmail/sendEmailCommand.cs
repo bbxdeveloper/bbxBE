@@ -1,14 +1,15 @@
-﻿using AutoMapper;
+﻿using bbxBE.Application.BLL;
+using bbxBE.Application.Wrappers;
+using bbxBE.Common.Attributes;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using SendGrid.Helpers.Mail;
 using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using SendGrid;
-using SendGrid.Helpers.Mail;
-using bbxBE.Application.Wrappers;
-using System.ComponentModel;
-using bbxBE.Common.Attributes;
+
+
 
 namespace bxBE.Application.Commands.cmdEmail
 {
@@ -44,8 +45,21 @@ namespace bxBE.Application.Commands.cmdEmail
         [ColumnLabel("Email - tárgya")]
         [Description("Email - tárgya")]
         public string Subject { get; set; }
+
+
+        [ColumnLabel("Email - csatolmányok")]
+        [Description("Email - csatolmányok")]
+        public System.Collections.Generic.List<Attachment> Attachments { get; set; }
     }
 
+
+    /*
+        CNAME  HOST                                        TYPE
+
+        CNAME: em238.relaxvill.hu                u27222801.wl052.sendgrid.net
+        CNAME: s1._domainkey.relaxvill.hu        s1.domainkey.u27222801.wl052.sendgrid.net
+        CNAME: s2._domainkey.relaxvill.hu        s2.domainkey.u27222801.wl052.sendgrid.net
+    */
     public class SendEmailCommandHandler : IRequestHandler<sendEmailCommand, Response<string>>
     {
         private readonly IConfiguration _configuration;
@@ -59,23 +73,7 @@ namespace bxBE.Application.Commands.cmdEmail
         {
             try
             {
-                var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
-                var client = new SendGridClient(apiKey);
-                var from = request.From;
-                var subject = request.Subject;
-                var to = request.To;
-                var plainTextContent = request.Body_plain_text;
-                var htmlContent = request.Body_html_text;
-                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-
- 
-                var response = await client.SendEmailAsync(msg).ConfigureAwait(false);
-
-                return new Response<string>
-                {
-                    Succeeded = true,
-                    Message = response.StatusCode.ToString()
-                };
+                return await bllSendgrid.SendEmailAsync(request, cancellationToken);
             }
             catch (Exception ex)
             {

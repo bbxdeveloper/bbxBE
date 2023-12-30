@@ -35,6 +35,7 @@ namespace bbxBE.Application.Interfaces
         DbSet<NAVXChange> NAVXChange { get; set; }
         DbSet<NAVXResult> NAVXResult { get; set; }
 
+        DbSet<InvPayment> InvPayment { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

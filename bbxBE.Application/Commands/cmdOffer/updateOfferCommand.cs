@@ -203,8 +203,7 @@ namespace bxBE.Application.Commands.cmdOffer
 
         public async Task<Response<Offer>> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
         {
-            var offer = _mapper.Map<Offer>(request);
-            offer = await _offerRepository.UpdateOfferAsync(offer);
+            var offer = await _offerRepository.ModifyOfferAsync(request, cancellationToken);
             return new Response<Offer>(offer);
         }
     }

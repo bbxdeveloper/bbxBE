@@ -1,10 +1,6 @@
 ﻿using bbxBE.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
 {
@@ -17,8 +13,7 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .HasMany<OfferLine>(g => g.OfferLines)
             .WithOne(c => c.Offer)
             .HasForeignKey(s => s.OfferID)
-            .IsRequired();
-
+            .IsRequired(true);
         }
     }
 }

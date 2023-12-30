@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AsyncKeyedLock;
+using AutoMapper;
 using bbxBE.Application.BLL;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
@@ -56,8 +57,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 ICacheService<Customer> customerCacheService,
                 ICacheService<ProductGroup> productGroupCacheService,
                 ICacheService<Origin> originCacheService,
-                ICacheService<VatRate> vatRateCacheService
-                ) : base(dbContext)
+                ICacheService<VatRate> vatRateCacheService,
+                AsyncKeyedLocker<string> asyncKeyedLocker) : base(dbContext)
         {
             _dbContext = dbContext;
 
@@ -72,7 +73,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mockData = mockData;
 
             _invoiceLineRepository = new InvoiceLineRepositoryAsync(dbContext, modelHelper, mapper, mockData);
-            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService, asyncKeyedLocker);
             _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
             _counterRepository = new CounterRepositoryAsync(dbContext, modelHelper, mapper, mockData);
             _warehouseRepository = new WarehouseRepositoryAsync(dbContext, modelHelper, mapper, mockData);
@@ -240,6 +241,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 itemModel.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
                 itemModel.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.InvPayments.Clear();         //itt már nem kellenek a sorok. 
+            }
+            var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
+
+            // shape data
+            var shapedData = _dataShaperGetInvoiceViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+
+            return shapedData;
+        }
+        public async Task<Entity> GetInvoiceByInvoiceNumberAsync(string invoiceNumber, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full)
+        {
+
+            Invoice item = await GetInvoiceRecordByInvoiceNumberAsync(invoiceNumber);
+
+            if (item == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND2, invoiceNumber));
+            }
+
+            var itemModel = _mapper.Map<Invoice, GetInvoiceViewModel>(item);
+
+            if (invoiceQueryType == invoiceQueryTypes.small)
+            {
+                itemModel.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                itemModel.InvPayments.Clear();         //itt már nem kellenek a sorok. 
             }
             var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
 
@@ -376,7 +403,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.AdditionalInvoiceLineData).AsNoTracking()
                  .Include(i => i.InvoiceLines).ThenInclude(x => x.DeliveryNote).AsNoTracking()
+                 .Include(i => i.InvoiceLines).ThenInclude(x => x.Product).ThenInclude(x => x.ProductGroup).AsNoTracking()
                  .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
+                 .Include(a => a.InvPayments).AsNoTracking()
                  .Include(u => u.User).AsNoTracking();
         }
 
@@ -411,7 +440,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          SumNetAmountDiscountedHUF = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPriceHUF) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
                      };
 
-            decimal pendingAmount = q1.Sum(s => s.SumNetAmountDiscountedHUF);
+            decimal pendingAmount = await q1.SumAsync(s => s.SumNetAmountDiscountedHUF);
 
             //2. kiegyenlítettlen számlák???
 
@@ -606,23 +635,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             IQueryable<Invoice> query;
             if (requestParameter.FullData)
             {
-                query = _dbContext.Invoice.AsNoTracking()
-                 .Include(w => w.Warehouse).AsNoTracking()
-                 .Include(s => s.Supplier).AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking()
-                 .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-                 .Include(i => i.InvoiceLines).ThenInclude(t => t.VatRate).AsNoTracking()
-                 .Include(a => a.SummaryByVatRates).ThenInclude(t => t.VatRate).AsNoTracking()
-                 .Include(u => u.User).AsNoTracking();
+                query = getFullInvoiceQuery();
             }
             else
             {
-                query = _dbContext.Invoice.AsNoTracking()
-                 .Include(w => w.Warehouse).AsNoTracking()
-                 .Include(s => s.Supplier).AsNoTracking()
-                 .Include(c => c.Customer).AsNoTracking()
-                 .Include(a => a.AdditionalInvoiceData).AsNoTracking()
-                 .Include(i => i.InvoiceLines).AsNoTracking()                   //nem full data esetén is szüség van az invoiceLines-re
+                query = getSmallInvoiceQuery()
                  .Include(u => u.User).AsNoTracking();
             }
 
@@ -674,6 +691,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
                     im.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
                     im.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                    im.InvPayments.Clear();         //itt már nem kellenek a sorok. 
                 }
                 resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
             }
@@ -685,6 +703,80 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return (shapedData, recordsCount);
         }
+
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUnpaidInvoiceAsync(QueryUnpaidInvoice requestParameter)
+        {
+
+            var orderBy = requestParameter.OrderBy;
+            //      var fields = requestParameter.Fields;
+            var fields = _modelHelper.GetQueryableFields<GetInvoiceViewModel, Invoice>();
+
+
+            int recordsTotal, recordsFiltered;
+
+
+            var query = getFullInvoiceQuery()
+                .Include(u => u.User).AsNoTracking();
+
+
+            // Count records total
+            recordsTotal = await query.CountAsync();
+
+            // filter data
+
+            UnpaidFilterBy(ref query, requestParameter.InvoiceNumber, requestParameter.Incoming,
+             requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
+             requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo,
+             requestParameter.PaymentDateFrom, requestParameter.PaymentDateTo,
+             requestParameter.Expired);
+
+            // Count records after filter
+            recordsFiltered = await query.CountAsync();
+
+            //set Record counts
+            var recordsCount = new RecordsCount
+            {
+                RecordsFiltered = recordsFiltered,
+                RecordsTotal = recordsTotal
+            };
+
+            // set order by
+            if (!string.IsNullOrWhiteSpace(orderBy))
+            {
+                query = query.OrderBy(orderBy);
+            }
+
+            // select columns
+            /*
+            if (!string.IsNullOrWhiteSpace(fields))
+            {
+                result = result.Select<Invoice>("new(" + fields + ")");
+            }
+            */
+
+            // retrieve data to list
+            List<Invoice> resultData = await GetPagedData(query, requestParameter);
+
+
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetInvoiceViewModel>();
+            resultData.ForEach(i =>
+            {
+                var im = _mapper.Map<Invoice, GetInvoiceViewModel>(i);
+                im.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
+                im.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                im.InvPayments.Clear();         //itt már nem kellenek a sorok. 
+                resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
+            }
+            );
+
+            var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
+
+            var shapedData = _dataShaperGetInvoiceViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+
+            return (shapedData, recordsCount);
+        }
+
         public async Task<IList<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter)
         {
 
@@ -749,6 +841,34 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             p_items = p_items.Where(predicate);
         }
+
+        private void UnpaidFilterBy(ref IQueryable<Invoice> p_items, string p_invoiceNumber, bool p_incoming,
+            DateTime? p_invoiceIssueDateFrom, DateTime? p_invoiceIssueDateTo,
+            DateTime? p_invoiceDeliveryDateFrom, DateTime? p_invoiceDeliveryDateTo,
+            DateTime? p_paymentDateFrom, DateTime? p_paymentDateTo,
+            bool? p_expired)
+        {
+            if (!p_items.Any())
+                return;
+
+
+            var predicate = PredicateBuilder.New<Invoice>();
+
+            predicate = predicate.And(p =>
+                            p.Incoming == p_incoming && p.PaymentMethod == PaymentMethodType.TRANSFER.ToString() && p.InvPayments.Sum(s => s.InvPaymentAmountHUF) < p.InvoiceGrossAmountHUF
+                            && (p_invoiceNumber == null || p.InvoiceNumber.Contains(p_invoiceNumber))
+                            && (!p_invoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= p_invoiceIssueDateFrom.Value)
+                            && (!p_invoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= p_invoiceIssueDateTo.Value)
+                            && (!p_invoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= p_invoiceDeliveryDateFrom.Value)
+                            && (!p_invoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= p_invoiceDeliveryDateTo.Value)
+                            && (!p_paymentDateFrom.HasValue || p.PaymentDate >= p_paymentDateFrom.Value)
+                            && (!p_paymentDateTo.HasValue || p.PaymentDate <= p_paymentDateTo.Value)
+                            && (!p_expired.HasValue || p.PaymentDate < DateTime.UtcNow.Date)
+                           );
+
+            p_items = p_items.Where(predicate);
+        }
+
 
         public Task<bool> SeedDataAsync(int rowCount)
         {
@@ -1106,7 +1226,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             ln.RelDeliveryNoteInvoiceID = relDeliveryNote.ID;
                             ln.RelDeliveryNoteInvoiceLineID = ln.RelDeliveryNoteInvoiceLineID.Value;
 
-                            ln.LineExchangeRate = relDeliveryNote.ExchangeRate;
+                            ln.LineExchangeRate = invoice.ExchangeRate; //Gyűjtőszámla esetén minden LineExchangeRate a bizonylat árfolyamával kell megegyeznie! Ez nem jó: relDeliveryNote.ExchangeRate;
                             ln.LineDeliveryDate = relDeliveryNote.InvoiceDeliveryDate;
 
                             //Bizonylatkedvezmény a kapcsolt szállítólevél alapján

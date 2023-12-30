@@ -1,10 +1,5 @@
-﻿using AutoMapper.Configuration.Conventions;
-using bbxBE.Common.Attributes;
-using bbxBE.Common.Enums;
-using bbxBE.Common.NAV;
-using bbxBE.Domain.Entities;
+﻿using bbxBE.Common.Attributes;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
@@ -21,16 +16,16 @@ namespace bbxBE.Application.Queries.ViewModels
     {
 
         [ColumnLabel("Raktár ID")]
-		[Description("Raktár ID")]
-		public long WarehouseID { get; set; }
+        [Description("Raktár ID")]
+        public long WarehouseID { get; set; }
 
-		[ColumnLabel("Ügyfél ID")]
-		[Description("Ügyfél ID")]
-		public long CustomerID { get; set; }
+        [ColumnLabel("Ügyfél ID")]
+        [Description("Ügyfél ID")]
+        public long CustomerID { get; set; }
 
-		[ColumnLabel("Ügyfélnév")]
-		[Description("Ügyfélnév")]
-		public string Customer { get; set; }
+        [ColumnLabel("Ügyfélnév")]
+        [Description("Ügyfélnév")]
+        public string Customer { get; set; }
 
         [ColumnLabel("Szállítólevél szám")]
         [Description("Szállítólevél szám")]
@@ -118,6 +113,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Pénznem")]
         [Description("Pénznem")]
         public string CurrencyCode;
+
+        [ColumnLabel("Pénznem")]
+        [Description("Pénznem")]
+        public string CurrencyCodeX { get; set; }
 
         [ColumnLabel("Árfolyam")]
         [Description("Árfolyam")]

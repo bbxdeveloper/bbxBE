@@ -5,16 +5,14 @@ using bbxBE.Infrastructure.Persistence.Contexts;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
+using Serilog;
 
 namespace bbxBE.Infrastructure.Persistence.Caches
 {
     public class VatRateCacheService : BaseCacheService<VatRate>, ICacheService<VatRate>
     {
-        public VatRateCacheService(ILoggerFactory loggerFactory, IConfiguration p_Configuration, ApplicationDbContext dbContext, AsyncKeyedLocker<string> asyncKeyedLocker) 
-            : base(loggerFactory, p_Configuration, dbContext, asyncKeyedLocker)
+        public VatRateCacheService(ILogger logger, IConfiguration p_Configuration, ApplicationDbContext dbContext, AsyncKeyedLocker<string> asyncKeyedLocker)
+            : base(logger, p_Configuration, dbContext, asyncKeyedLocker)
         {
 
             _cacheQuery = _dbContext.VatRate

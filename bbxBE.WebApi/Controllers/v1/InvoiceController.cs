@@ -45,6 +45,13 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(request));
         }
 
+        [HttpGet("byinvoicenumber")]
+        public async Task<IActionResult> GetInvoiceByInvoiceNumber([FromQuery] GetInvoiceByInvoiceNumber request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
+
+
         /// <summary>
         /// GET: api/controller
         /// </summary>
@@ -131,6 +138,17 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <returns></returns>
         [HttpGet("query")]
         public async Task<IActionResult> Query([FromQuery] QueryInvoice filter)
+        {
+            return Ok(await Mediator.Send(filter));
+        }
+
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [HttpGet("queryunpaid")]
+        public async Task<IActionResult> QueryUnpaid([FromQuery] QueryUnpaidInvoice filter)
         {
             return Ok(await Mediator.Send(filter));
         }

@@ -89,6 +89,7 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<IWhsTransferRepositoryAsync, WhsTransferRepositoryAsync>();
             services.AddTransient<INAVXChangeRepositoryAsync, NAVXChangeRepositoryAsync>();
             services.AddTransient<INAVXResultRepositoryAsync, NAVXResultRepositoryAsync>();
+            services.AddTransient<IInvPaymentRepositoryAsync, InvPaymentRepositoryAsync>();
 
 
             //Cache-k

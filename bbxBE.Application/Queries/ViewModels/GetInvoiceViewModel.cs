@@ -36,6 +36,17 @@ namespace bbxBE.Application.Queries.ViewModels
             [Description("Termékkód")]
             public string ProductCode { get; set; }
 
+
+            [ColumnLabel("Termékcsoport ID")]
+            [Description("Termékcsoport ID")]
+            public long ProductGroupID { get; set; }
+
+
+            [ColumnLabel("Termékcsoport")]
+            [Description("Termékcsoport")]
+            public string ProductGroup { get; set; }
+
+
             [ColumnLabel("VTSZ")]
             [Description("Vámtarifa szám")]
             public string VTSZ { get; set; }
@@ -139,6 +150,42 @@ namespace bbxBE.Application.Queries.ViewModels
 
         }
 
+        [Description("Kiegyenlítések")]
+        public class InvPayment
+        {
+            [ColumnLabel("Számla ID")]
+            [Description("Számla ID")]
+            public long InvoiceID { get; set; }
+
+            [ColumnLabel("Banki tranzakció")]
+            [Description("Banki tranzakció azonosító")]
+            public string BankTransaction { get; set; }
+
+            [ColumnLabel("Dátum")]
+            [Description("Banki tranzakció dátuma")]
+            public DateTime InvPaymentDate { get; set; }
+
+            [ColumnLabel("Pénznem kód")]
+            [Description("Pénznem kód")]
+            public string CurrencyCode { get; set; }
+
+            [ColumnLabel("Pénznem")]
+            [Description("Pénznem")]
+            public string CurrencyCodeX { get; set; }
+
+            [ColumnLabel("Árfolyam")]
+            [Description("Árfolyam")]
+            public decimal ExchangeRate { get; set; }
+
+            [ColumnLabel("Összeg")]
+            [Description("Banki tranzakció összege")]
+            public decimal InvPaymentAmount { get; set; }
+
+            [ColumnLabel("Összeg HUF")]
+            [Description("Banki tranzakció összege forintban")]
+            public decimal InvPaymentAmountHUF { get; set; }
+
+        }
 
         [MapToEntity("ID")]
         public long ID { get; set; }
@@ -270,6 +317,16 @@ namespace bbxBE.Application.Queries.ViewModels
         public string CustomerVatStatus { get; set; }
         #endregion
 
+
+        [ColumnLabel("Pénznem kód")]
+        [Description("Pénznem kód")]
+        public string CurrencyCode { get; set; }
+
+        [ColumnLabel("Pénznem")]
+        [Description("Pénznem")]
+        public string CurrencyCodeX { get; set; }
+
+
         #region PaymentMethod
 
         [DataMember]
@@ -337,6 +394,15 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("A számla végösszege forintban")]
         public decimal InvoiceGrossAmountHUF { get; set; }
 
+
+        [ColumnLabel("Kiegyenlített érték")]
+        [Description("A számla kiegyenlítések a számla pénznemében")]
+        public decimal InvoicePaidAmount { get; set; }
+
+        [ColumnLabel("Kiegyenlített érték HUF")]
+        [Description("A számla kiegyenlítések forintban")]
+        public decimal InvoicePaidAmountHUF { get; set; }
+
         [ColumnLabel("Módosító bizonylat?")]
         [Description("Módosító bizonylat jelölése (értéke false)")]
         public bool InvoiceCorrection { get; set; }
@@ -358,6 +424,15 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Ár felülvizsgálat?")]
         public bool PriceReview { get; set; } = false;
 
+        [ColumnLabel("Bruttó termékdíj")]
+        [Description("Bruttó termékdíj összege a bizonylat pénznemében")]
+        public decimal InvoiceProductFeeGrossSummary { get; set; }
+
+        [ColumnLabel("Fordtott áfás tétel van?")]
+        [Description("Fordtott áfás tétel van a bizonylaton?")]
+        public bool IsFA { get; set; }
+
+
         [ColumnLabel("Számlasorok")]
         [Description("Számlasorok")]
         [MapToEntity("invoiceLines")]
@@ -368,6 +443,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [MapToEntity("summaryByVatRates")]
         public List<GetInvoiceViewModel.SummaryByVatRate> SummaryByVatRates { get; set; } = new List<GetInvoiceViewModel.SummaryByVatRate>();
 
+        [ColumnLabel("Kiegyenlítések")]
+        [Description("Kiegyenlítések")]
+        [MapToEntity("invPayments")]
+        public List<GetInvoiceViewModel.InvPayment> InvPayments { get; set; } = new List<GetInvoiceViewModel.InvPayment>();
 
 
     }

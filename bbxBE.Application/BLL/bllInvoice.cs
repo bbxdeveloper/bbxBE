@@ -214,7 +214,8 @@ namespace bbxBE.Application.BLL
                     supplierAddressNAV.additionalAddressDetail = invoice.Supplier.AdditionalAddressDetail;
 
 
-                invHeadNAV.supplierInfo.supplierBankAccountNumber = invoice.Supplier.CustomerBankAccountNumber;
+                invHeadNAV.supplierInfo.supplierBankAccountNumber = !string.IsNullOrWhiteSpace(invoice.Supplier.CustomerBankAccountNumber)
+                                                                        ? invoice.Supplier.CustomerBankAccountNumber : null;
                 //invHead.supplierInfo.individualExemption = false;                 //BBX: nem tartjuk nyilván
                 //invHead.supplierInfo.exciseLicenceNum                             //BBX: nem tartjuk nyilván
 
@@ -261,7 +262,8 @@ namespace bbxBE.Application.BLL
                         customerAddressNAV.additionalAddressDetail = invoice.Customer.AdditionalAddressDetail;
 
 
-                    invHeadNAV.customerInfo.customerBankAccountNumber = invoice.Customer.CustomerBankAccountNumber;
+                    invHeadNAV.customerInfo.customerBankAccountNumber = (!string.IsNullOrWhiteSpace(invoice.Customer.CustomerBankAccountNumber) ?
+                                                                            invoice.Customer.CustomerBankAccountNumber : null);
                 }
                 else
                 {
@@ -563,14 +565,27 @@ namespace bbxBE.Application.BLL
                     discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount = discountLineNAV.unitPrice * discountLineNAV.quantity;
                     discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF = discountLineNAV.unitPriceHUF * discountLineNAV.quantity;
 
-                    discountLineAmountsNormalNAV.lineVatData.lineVatAmount = Math.Round(vatRateDiscount.VatPercentage / 100 * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount, 0);
-                    discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF = Math.Round(vatRateDiscount.VatPercentage / 100 * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF, 0); ;
+                    //Az engedmény-tétel esetén két tizedesre kerekítés, hogy jobban kijöjjön a matek
+                    discountLineAmountsNormalNAV.lineVatData.lineVatAmount = Math.Round(vatRateDiscount.VatPercentage * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount, 2);
+                    discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF = Math.Round(vatRateDiscount.VatPercentage * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF, 2);
 
                     discountLineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormal = discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount + discountLineAmountsNormalNAV.lineVatData.lineVatAmount;
                     discountLineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormalHUF = discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF + discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF;
 
                     //Áfa
                     discountLineAmountsNormalNAV.lineVatRate = getVatRateNAV(vatRateDiscount);
+
+                    if (invoiceDetailNAV.invoiceCategory == InvoiceCategoryType.AGGREGATE)
+                    {
+                        ////////////////////////
+                        // Gyűjtőszámla sorok //
+                        ////////////////////////
+                        discountLineNAV.aggregateInvoiceLineData = new AggregateInvoiceLineDataType(
+                                    p_lineExchangeRateSpecified: true);
+                        discountLineNAV.aggregateInvoiceLineData.lineExchangeRate = invoice.ExchangeRate;   //Gyűjtőszámla esetén minden LineExchangeRate a bizonylat árfolyamával kell megegyeznie! 
+                        discountLineNAV.aggregateInvoiceLineData.lineDeliveryDate = invoiceLinesNAV.Max(m => (m.aggregateInvoiceLineData != null ? m.aggregateInvoiceLineData.lineDeliveryDate : DateTime.Now.Date));
+
+                    }
 
                     //Módosító szála
                     if (invoice.InvoiceCorrection)
