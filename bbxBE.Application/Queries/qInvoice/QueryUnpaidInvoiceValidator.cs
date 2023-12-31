@@ -24,7 +24,7 @@ namespace bbxBE.Application.Queries.qInvoice
 
             RuleFor(f => f.InvoiceIssueDateFrom)
                  .LessThanOrEqualTo(f => f.InvoiceIssueDateTo.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)
-                 .When(f => f.InvoiceIssueDateFrom.HasValue && f.InvoiceIssueDateTo.HasValue);
+                 .When(f => f.InvoiceIssueDateTo.HasValue);
 
             RuleFor(f => f.PaymentDateFrom)
                  .LessThanOrEqualTo(f => f.PaymentDateTo.Value).WithMessage(bbxBEConsts.ERR_DATEINTERVAL)

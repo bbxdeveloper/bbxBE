@@ -23,6 +23,14 @@ namespace bbxBE.Application.Queries.qInvoice
         [Description("Bizonylat sorszáma")]
         public string InvoiceNumber { get; set; }
 
+        [ColumnLabel("Eredeti.biz")]
+        [Description("Bevételhez eredeti bizonylata")]
+        public string CustomerInvoiceNumber { get; set; }
+
+        [ColumnLabel("Ügyfél")]
+        [Description("Ügyfél ID")]
+        public long? CustomerID { get; set; }
+
         [ColumnLabel("B/K")]
         [Description("Bejővő/Kimenő")]
         public bool Incoming { get; set; }
@@ -37,12 +45,11 @@ namespace bbxBE.Application.Queries.qInvoice
 
         [ColumnLabel("Keltezés től")]
         [Description("Kiállítás dátumától")]
-        public DateTime? InvoiceIssueDateFrom { get; set; }
+        public DateTime InvoiceIssueDateFrom { get; set; }
 
         [ColumnLabel("Keltezés ig")]
         [Description("Kiállítás dátumáig")]
         public DateTime? InvoiceIssueDateTo { get; set; }
-
 
 
         [ColumnLabel("Fiz.hat.tól")]
