@@ -6,6 +6,7 @@ using bbxBE.Application.Parameters;
 using bbxBE.Application.Queries.qLocation;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
@@ -90,22 +91,34 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 throw new ResourceNotFoundException(errMsg);
             }
 
+            var AddInvCtrlItems = new List<InvPayment>();
+            var UpdInvCtrlItems = new List<InvPayment>();
+            var RemoveInvCtrlItems = new List<InvPayment>();
+
             using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
                 try
                 {
 
 
-                    var AddInvCtrlItems = new List<InvPayment>();
-                    var UpdInvCtrlItems = new List<InvPayment>();
-                    var RemoveInvCtrlItems = new List<InvPayment>();
 
                     foreach (var invPayment in invPayments)
                     {
 
-                        var existingInvPayment = await _dbContext.InvPayment
-                                       .Where(x => x.BankTransaction == invPayment.BankTransaction && !x.Deleted)
-                                       .FirstOrDefaultAsync();
+                        if (invPayment.CurrencyCode == enCurrencyCodes.HUF.ToString())
+                        {
+                            invPayment.ExchangeRate = 1;
+                        }
+
+                        InvPayment existingInvPayment = null;
+
+                        if (!string.IsNullOrWhiteSpace(invPayment.BankTransaction))
+                        {
+
+                            existingInvPayment = await _dbContext.InvPayment
+                                           .Where(x => x.BankTransaction == invPayment.BankTransaction && !x.Deleted)
+                                           .FirstOrDefaultAsync();
+                        }
 
                         if (existingInvPayment != null)
                         {
@@ -116,8 +129,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                                 existingInvPayment.InvPaymentDate = invPayment.InvPaymentDate;
                                 existingInvPayment.InvPaymentDate = invPayment.InvPaymentDate.Date;
                                 existingInvPayment.InvPaymentAmount = invPayment.InvPaymentAmount;
-                                existingInvPayment.InvPaymentAmountHUF = Math.Round(invPayment.InvPaymentAmount * existingInvPayment.ExchangeRate, 1);
-
+                                existingInvPayment.CurrencyCode = invPayment.CurrencyCode;
+                                existingInvPayment.ExchangeRate = invPayment.ExchangeRate;
+                                existingInvPayment.InvPaymentAmountHUF = Math.Round(invPayment.InvPaymentAmount * invPayment.ExchangeRate, 1);
 
                                 var index = UpdInvCtrlItems.FindIndex(a => a.BankTransaction == existingInvPayment.BankTransaction);
 
@@ -187,7 +201,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await dbContextTransaction.RollbackAsync();
                     throw;
                 }
-                return invPayments;
+                var res = new List<InvPayment>();
+
+                res.AddRange(AddInvCtrlItems);
+                res.AddRange(UpdInvCtrlItems);
+                res.AddRange(RemoveInvCtrlItems);
+
+                return res;
             }
         }
 
