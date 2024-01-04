@@ -1189,6 +1189,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
                         }
 
+                        if (vatRate.VatDomesticReverseCharge)
+                        {
+                            //Fordított adózás!
+                            if (cust == null || !cust.IsFA)
+                            {
+                                //Ha az ügyfél nem fordított adózó, akkor 27%-os adókulcsra váltunk
+                                vatRate = _vatRateRepository.GetVatRateByCode(bbxBEConsts.VATCODE_27);
+                            }
+                        }
+
                         ln.PriceReview = request.PriceReview;
 
                         //	Product
@@ -1201,6 +1211,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         ln.VTSZ = prod.ProductCodes.FirstOrDefault(c => c.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ProductCodeValue;
                         ln.LineDescription = prod.Description;
                         ln.UnitWeight = prod.UnitWeight;
+
 
                         ln.VatRate = vatRate;
                         ln.VatRateID = vatRate.ID;
