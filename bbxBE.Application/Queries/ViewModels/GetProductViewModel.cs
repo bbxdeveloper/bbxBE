@@ -23,6 +23,11 @@ namespace bbxBE.Application.Queries.ViewModels
             [Description("Raktár ID")]
             public long WarehouseID { get; set; }
 
+            [ColumnLabel("Raktárnév")]
+            [Description("Raktár megnevezése")]
+            public string WarehouseDescription { get; set; }
+
+
             [ColumnLabel("Valós")]
             [Description("Valós mennyiség")]
             public decimal RealQty { get; set; }

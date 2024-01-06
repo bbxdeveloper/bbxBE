@@ -78,6 +78,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
 
                         stock = await _dbContext.Stock
+                                .Include(w => w.Warehouse).AsNoTracking()
                                 .Where(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID && !x.Deleted)
                                 .FirstOrDefaultAsync();
                     }
@@ -87,7 +88,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         stock = new Stock()
                         {
                             WarehouseID = invoice.WarehouseID,
-                            //Warehouse = invoice.Warehouse,
+                            Warehouse = invoice.Warehouse,
                             ProductID = invoiceLine.ProductID.Value,
                             //Product = invoiceLine.Product,
                             AvgCost = invoiceLine.UnitPrice
