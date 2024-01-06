@@ -59,7 +59,8 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.EAN, opt => opt.MapFrom(src => src.ProductCodes.FirstOrDefault(w => w.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString() && !w.Deleted).ProductCodeValue));
 
 
-            CreateMap<Stock, GetProductViewModel.ProductStock>();
+            CreateMap<Stock, GetProductViewModel.ProductStock>()
+             .ForMember(dst => dst.WarehouseDescription, opt => opt.MapFrom(src => src.Warehouse.WarehouseDescription));
 
             CreateMap<Counter, GetCounterViewModel>()
              .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription));

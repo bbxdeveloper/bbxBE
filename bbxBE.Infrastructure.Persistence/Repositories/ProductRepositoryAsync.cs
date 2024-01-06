@@ -733,6 +733,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(o => o.Origin).AsNoTracking()
                  .Include(v => v.VatRate).AsNoTracking()
                  .Include(v => v.Stocks).AsNoTracking()
+                 .Include(v => v.Stocks).ThenInclude(w => w.Warehouse).AsNoTracking()
                  .ToListAsync();
         }
 
