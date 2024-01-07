@@ -89,8 +89,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         stock = new Stock()
                         {
                             WarehouseID = invoice.WarehouseID,
+                            // Warehouse =  itt nem szabad megadni
                             ProductID = invoiceLine.ProductID.Value,
-                            //Product = invoiceLine.Product,
+                            //Product = itt nem szabad megadni
                             AvgCost = invoiceLine.UnitPrice
                         };
                         await AddAsync(stock);
