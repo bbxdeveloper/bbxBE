@@ -50,6 +50,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             foreach (var i in InvPaymentItems)
             {
+                i.BankTransaction = i.BankTransaction.ToUpper().Trim();
                 var inv = _dbContext.Invoice.Where(w => w.InvoiceNumber == i.InvoiceNumber).FirstOrDefault();
                 if (inv != null)
                 {
@@ -116,7 +117,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         {
 
                             existingInvPayment = await _dbContext.InvPayment
-                                           .Where(x => x.BankTransaction == invPayment.BankTransaction && !x.Deleted)
+                                           .Where(x => x.InvoiceID == invPayment.InvoiceID && x.BankTransaction.ToUpper() == invPayment.BankTransaction && !x.Deleted)
                                            .FirstOrDefaultAsync();
                         }
 

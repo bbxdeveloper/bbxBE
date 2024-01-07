@@ -84,6 +84,7 @@
         public const string ERR_USERNOTFOUND = "Felhasználó nem található, ID:{0} ";
         public const string ERR_USERNOTFOUND2 = "Felhasználó nem található, név:{0} ";
         public const string ERR_WAREHOUSENOTFOUND = "Raktár nem található, Kód:{0}";
+        public const string ERR_WAREHOUSENOTFOUND2 = "Raktár nem található, ID:{0}";
         public const string ERR_CUSTOMERNOTFOUND = "Partner nem található, ID:{0}";
         public const string ERR_STOCKNOTFOUND = "Raktárkészlet nem található, ID:{0} ";
         public const string ERR_STOCKCARDNOTFOUND = "Készletkarton nem található, ID:{0} ";
