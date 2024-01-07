@@ -1409,7 +1409,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     invoice.SummaryByVatRates.Clear();
                     if (invoice.AdditionalInvoiceData != null)
                         invoice.AdditionalInvoiceData.Clear();
-
+                    if (invoice.NAVXChanges != null)
+                        invoice.NAVXChanges.Clear();
                     return invoice;
                 }
                 catch (Exception)
