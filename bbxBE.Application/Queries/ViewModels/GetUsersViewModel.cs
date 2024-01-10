@@ -1,5 +1,6 @@
 ﻿using bbxBE.Common.Attributes;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace bbxBE.Application.Queries.ViewModels
 {
@@ -18,6 +19,22 @@ namespace bbxBE.Application.Queries.ViewModels
 
         [MapToEntity("LoginName")]
         public string LoginName { get; set; }
+
+
+        #region UserLevel
+
+        [DataMember]
+        [ColumnLabel("Szint")]
+        [Description("Szint")]
+        public string UserLevel { get; set; }
+
+        [ColumnLabel("Szint")]
+        [Description("Szint megnevezés")]
+        [DataMember]
+        [NotDBField]
+        public string UserLevelX { get; set; }
+        #endregion
+
 
         [MapToEntity("Email")]
         public string Email { get; set; }
