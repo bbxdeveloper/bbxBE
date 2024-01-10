@@ -19,14 +19,16 @@ namespace bbxBE.Infrastructure.Persistence.Caches
                          .Include(pg => pg.ProductGroup).AsNoTracking()
                          .Include(o => o.Origin).AsNoTracking()
                          .Include(v => v.VatRate).AsNoTracking()
-                         .Include(v => v.Stocks).AsNoTracking();
+                         .Include(v => v.Stocks).AsNoTracking()
+                         .Include(v => v.Stocks).ThenInclude(w=>w.Warehouse).AsNoTracking(); 
 #else
             _cacheQuery = _dbContext.Product.AsNoTracking()
                  .Include(p => p.ProductCodes).AsNoTracking()
                  .Include(pg => pg.ProductGroup).AsNoTracking()
                  .Include(o => o.Origin).AsNoTracking()
                  .Include(v => v.VatRate).AsNoTracking()
-                 .Include(v => v.Stocks).AsNoTracking(); //.Where(w => w.ID == 1745); //.Take(1000);
+                 .Include(v => v.Stocks).AsNoTracking()
+                 .Include(v => v.Stocks).ThenInclude(w => w.Warehouse).AsNoTracking(); //.Where(w => w.ID == 1745); //.Take(1000);
 
 
 #endif

@@ -13,8 +13,8 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
         {
 
             builder
-                .HasOne(w => w.Warehouse)
-                .WithMany()
+                .HasOne<Warehouse>(w => w.Warehouse)
+                .WithMany(s => s.Stocks)
                 .HasForeignKey(s => s.WarehouseID)
                 .IsRequired(true);
 

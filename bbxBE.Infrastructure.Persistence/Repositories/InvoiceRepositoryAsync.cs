@@ -724,7 +724,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // filter data
 
-            UnpaidFilterBy(ref query, requestParameter.InvoiceNumber, requestParameter.Incoming,
+            UnpaidFilterBy(ref query, requestParameter.Incoming,
+                requestParameter.InvoiceNumber, requestParameter.CustomerInvoiceNumber, requestParameter.CustomerID,
              requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
              requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo,
              requestParameter.PaymentDateFrom, requestParameter.PaymentDateTo,
@@ -842,8 +843,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             p_items = p_items.Where(predicate);
         }
 
-        private void UnpaidFilterBy(ref IQueryable<Invoice> p_items, string p_invoiceNumber, bool p_incoming,
-            DateTime? p_invoiceIssueDateFrom, DateTime? p_invoiceIssueDateTo,
+        private void UnpaidFilterBy(ref IQueryable<Invoice> p_items, bool p_incoming,
+            string p_invoiceNumber, string p_customerInvoiceNumber, long? p_customerID,
+            DateTime p_invoiceIssueDateFrom, DateTime? p_invoiceIssueDateTo,
             DateTime? p_invoiceDeliveryDateFrom, DateTime? p_invoiceDeliveryDateTo,
             DateTime? p_paymentDateFrom, DateTime? p_paymentDateTo,
             bool? p_expired)
@@ -855,9 +857,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var predicate = PredicateBuilder.New<Invoice>();
 
             predicate = predicate.And(p =>
+                            //kötelező mezők, indexbe
                             p.Incoming == p_incoming && p.PaymentMethod == PaymentMethodType.TRANSFER.ToString() && p.InvPayments.Sum(s => s.InvPaymentAmountHUF) < p.InvoiceGrossAmountHUF
-                            && (p_invoiceNumber == null || p.InvoiceNumber.Contains(p_invoiceNumber))
-                            && (!p_invoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= p_invoiceIssueDateFrom.Value)
+                            && (p.InvoiceIssueDate >= p_invoiceIssueDateFrom)
+                            //kötelező mezők
+                            && (string.IsNullOrWhiteSpace(p_invoiceNumber) || p.InvoiceNumber.Contains(p_invoiceNumber))
+                            && (string.IsNullOrWhiteSpace(p_customerInvoiceNumber) || p.CustomerInvoiceNumber.ToUpper().Contains(p_customerInvoiceNumber.ToUpper()))
+                            && (!p_customerID.HasValue || (p.Incoming && p.SupplierID == p_customerID) || (!p.Incoming && p.CustomerID == p_customerID))
                             && (!p_invoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= p_invoiceIssueDateTo.Value)
                             && (!p_invoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= p_invoiceDeliveryDateFrom.Value)
                             && (!p_invoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= p_invoiceDeliveryDateTo.Value)
@@ -1183,6 +1189,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
                         }
 
+                        if (vatRate.VatDomesticReverseCharge)
+                        {
+                            //Fordított adózás!
+                            if (cust == null || !cust.IsFA)
+                            {
+                                //Ha az ügyfél nem fordított adózó, akkor 27%-os adókulcsra váltunk
+                                vatRate = _vatRateRepository.GetVatRateByCode(bbxBEConsts.VATCODE_27);
+                            }
+                        }
+
                         ln.PriceReview = request.PriceReview;
 
                         //	Product
@@ -1195,6 +1211,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         ln.VTSZ = prod.ProductCodes.FirstOrDefault(c => c.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString()).ProductCodeValue;
                         ln.LineDescription = prod.Description;
                         ln.UnitWeight = prod.UnitWeight;
+
 
                         ln.VatRate = vatRate;
                         ln.VatRateID = vatRate.ID;
@@ -1392,7 +1409,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     invoice.SummaryByVatRates.Clear();
                     if (invoice.AdditionalInvoiceData != null)
                         invoice.AdditionalInvoiceData.Clear();
-
+                    if (invoice.NAVXChanges != null)
+                        invoice.NAVXChanges.Clear();
                     return invoice;
                 }
                 catch (Exception)

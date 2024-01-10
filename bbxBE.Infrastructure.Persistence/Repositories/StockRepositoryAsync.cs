@@ -33,6 +33,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IStockCardRepositoryAsync _stockCardRepository;
         private readonly IProductRepositoryAsync _productRepository;
         private readonly ILocationRepositoryAsync _locationRepository;
+        private readonly IWarehouseRepositoryAsync _warehouseRepositoryAsync;
 
         private readonly ICacheService<Product> _productCacheService;
         private readonly AsyncKeyedLocker<string> _asyncKeyedLocker;
@@ -55,10 +56,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productCacheService = productCacheService;
 
             _stockCardRepository = new StockCardRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService);
-
             _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
-
             _locationRepository = new LocationRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _warehouseRepositoryAsync = new WarehouseRepositoryAsync(dbContext, modelHelper, mapper, mockData);
 
             _asyncKeyedLocker = asyncKeyedLocker;
 
@@ -67,6 +67,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
         {
             var lstStock = new List<Stock>();
+
 
             foreach (var invoiceLine in invoice.InvoiceLines)
             {
@@ -78,6 +79,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
 
                         stock = await _dbContext.Stock
+                                .Include(w => w.Warehouse).AsNoTracking()
                                 .Where(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID && !x.Deleted)
                                 .FirstOrDefaultAsync();
                     }
@@ -87,9 +89,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         stock = new Stock()
                         {
                             WarehouseID = invoice.WarehouseID,
-                            //Warehouse = invoice.Warehouse,
+                            // Warehouse =  itt nem szabad megadni
                             ProductID = invoiceLine.ProductID.Value,
-                            //Product = invoiceLine.Product,
+                            //Product = itt nem szabad megadni
                             AvgCost = invoiceLine.UnitPrice
                         };
                         await AddAsync(stock);
@@ -317,6 +319,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 foreach (var stock in lstStock)
                 {
+
                     Product prod = null;
                     if (!_productCacheService.TryGetValue(stock.ProductID, out prod))
                         throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, stock.ProductID));
@@ -324,7 +327,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var stk = prod.Stocks?.Where(w => w.WarehouseID == stock.WarehouseID).SingleOrDefault();
                     if (stk == null)
                     {
+
+                        var warehouse = await _warehouseRepositoryAsync.GetByIdAsync(stock.WarehouseID); //Az új stock létrehozásához szükésges
+                        if (warehouse == null)
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND2, stock.WarehouseID));
+                        }
+
+
                         stk = (Stock)stock.Clone();
+                        stk.Warehouse = warehouse;
                         prod.Stocks.Add(stk);
                     }
                     else
