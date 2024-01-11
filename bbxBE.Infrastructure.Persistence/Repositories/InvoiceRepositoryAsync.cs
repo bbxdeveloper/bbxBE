@@ -1171,8 +1171,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             (invoice.InvoiceType == enInvoiceType.INC.ToString() || invoice.InvoiceType == enInvoiceType.DNI.ToString()))   //szla.v.száll.
                         {
                             prod.LatestSupplyPrice = rln.UnitPrice;     //megjegzezük a legutolsó eladási árat
-                            prod.UnitPrice1 = rln.NewUnitPrice1;        //árváltozás, új listaár
-                            prod.UnitPrice2 = rln.NewUnitPrice2;        //árváltozás, új egységár
+                            prod.UnitPrice1 = rln.NewUnitPrice1HUF;        //árváltozás, új listaár
+                            prod.UnitPrice2 = rln.NewUnitPrice2HUF;        //árváltozás, új egységár
 
                             if (updatingProducts.Any(a => a.ID == prod.ID))
                             {
