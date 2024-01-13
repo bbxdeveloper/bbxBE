@@ -447,7 +447,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return pendingAmount;
         }
 
-        private IQueryable<GetPendigDeliveryNotesModel> getPendigDeliveryNotesQuery(bool incoming, long warehouseID, string currencyCode)
+        private IQueryable<GetPendigDeliveryNotesModel> getPendigDeliveryNotesQuery(bool incoming, long warehouseID)
         {
             IQueryable<GetPendigDeliveryNotesModel> q1;
 
@@ -465,7 +465,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         && Invoice.Incoming == incoming
                         && Invoice.WarehouseID == warehouseID
                         && Invoice.InvoiceType == enInvoiceType.DNI.ToString()
-                        && Invoice.CurrencyCode == currencyCode
                      group InvoiceLine by
                      new
                      {
@@ -475,7 +474,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          InvoiceID = Invoice.ID,
                          InvoiceNumber = Invoice.InvoiceNumber,
                          InvoiceDeliveryDate = Invoice.InvoiceDeliveryDate,
-                         InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
+                         InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent,
+                         CurrencyCode = Invoice.CurrencyCode
                      }
                          into grpInner
                      select new GetPendigDeliveryNotesModel()
@@ -488,6 +488,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = grpInner.Key.CustomerID,
                          Customer = grpInner.Key.CustomerName,
                          FullAddress = grpInner.Key.FullAddress,
+                         CurrencyCode = grpInner.Key.CurrencyCode,
                          PriceReview = grpInner.Where(w => w.PriceReview.HasValue && w.PriceReview.Value).Count() > 0,
                          SumNetAmount = grpInner.Sum(s => Math.Round(s.PendingDNQuantity * s.UnitPrice, 1)),
                          SumNetAmountDiscounted = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPrice) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
@@ -503,7 +504,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         && Invoice.Incoming == incoming
                         && Invoice.WarehouseID == warehouseID
                         && Invoice.InvoiceType == enInvoiceType.DNO.ToString()
-                        && Invoice.CurrencyCode == currencyCode
                      group InvoiceLine by
                      new
                      {
@@ -513,7 +513,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          InvoiceID = Invoice.ID,
                          InvoiceNumber = Invoice.InvoiceNumber,
                          InvoiceDeliveryDate = Invoice.InvoiceDeliveryDate,
-                         InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent
+                         InvoiceDiscountPercent = Invoice.InvoiceDiscountPercent,
+                         CurrencyCode = Invoice.CurrencyCode
                      }
                         into grpInner
                      select new GetPendigDeliveryNotesModel()
@@ -526,6 +527,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          CustomerID = grpInner.Key.CustomerID,
                          Customer = grpInner.Key.CustomerName,
                          FullAddress = grpInner.Key.FullAddress,
+                         CurrencyCode = grpInner.Key.CurrencyCode,
                          PriceReview = grpInner.Where(w => w.PriceReview.HasValue && w.PriceReview.Value).Count() > 0,
                          SumNetAmount = grpInner.Sum(s => Math.Round(s.PendingDNQuantity * s.UnitPrice, 1)),
                          SumNetAmountDiscounted = Math.Round(grpInner.Sum(s => s.PendingDNQuantity * s.UnitPrice) * (1 - grpInner.Key.InvoiceDiscountPercent / 100), 1)
@@ -534,14 +536,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return q1;
         }
 
-        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID, string currencyCode)
+        public async Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID)
         {
 
             var lstEntities = new List<GetPendigDeliveryNotesSummaryModel>();
 
             //1. groupolunk ügyfélre,  és PriceReview típusra és szállítóra
             //
-            var q1 = getPendigDeliveryNotesQuery(incoming, warehouseID, currencyCode);
+            var q1 = getPendigDeliveryNotesQuery(incoming, warehouseID);
 
 
             //q1-et még egyszer meggroupoljuk, a számlák alapján számított összegeket summáuuzk
@@ -549,7 +551,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //
             var q2 = from res in q1
                      group res by
-                     new { CustomerID = res.CustomerID, Customer = res.Customer, FullAddress = res.FullAddress }
+                     new { CustomerID = res.CustomerID, Customer = res.Customer, FullAddress = res.FullAddress, CurrencyCode = res.CurrencyCode }
                      into grpOuter
                      select new GetPendigDeliveryNotesSummaryModel()
                      {
@@ -559,12 +561,20 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          FullAddress = grpOuter.Key.FullAddress,
                          PriceReview = grpOuter.Count(c => c.PriceReview) > 0,          //van-e ProcePreview-es tétel  a groupban?
                          SumNetAmount = Math.Round(grpOuter.Sum(s => s.SumNetAmount)),
-                         SumNetAmountDiscounted = Math.Round(grpOuter.Sum(s => s.SumNetAmountDiscounted))
+                         SumNetAmountDiscounted = Math.Round(grpOuter.Sum(s => s.SumNetAmountDiscounted)),
+                         CurrencyCode = grpOuter.Key.CurrencyCode,
+
                      };
             q2 = q2.OrderBy(o => o.Customer);
 
             lstEntities = await q2.ToListAsync();
-            lstEntities.ForEach(i => i.SumNetAmount = Math.Round(i.SumNetAmount, 1));
+            lstEntities.ForEach(i =>
+                {
+                    i.SumNetAmount = Math.Round(i.SumNetAmount, 1);
+                    i.CurrencyCodeX = Common.Utils.GetEnumDescription(
+                            (enCurrencyCodes)Enum.Parse(typeof(enCurrencyCodes), i.CurrencyCode));
+                }
+                );
 
             var shapedData = _dataShaperGetPendigDeliveryNotesSummaryModel.ShapeData(lstEntities, "");
 
@@ -576,7 +586,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var lstEntities = new List<GetPendigDeliveryNotesModel>();
 
-            var q1 = getPendigDeliveryNotesQuery(incoming, warehouseID, currencyCode);
+            var q1 = getPendigDeliveryNotesQuery(incoming, warehouseID);
+            q1 = q1.Where(w => w.CurrencyCode == currencyCode);
             q1 = q1.OrderBy(o => o.InvoiceNumber);
 
             lstEntities = await q1.ToListAsync();

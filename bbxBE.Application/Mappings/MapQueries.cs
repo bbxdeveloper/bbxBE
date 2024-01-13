@@ -223,6 +223,7 @@ namespace bbxBE.Queries.Mappings
             .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode + "-" + src.ProductGroup.ProductGroupDescription));
 
             CreateMap<InvoiceLine, GetPendigDeliveryNotesSummaryModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
+
             CreateMap<InvoiceLine, GetPendigDeliveryNotesModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
 
             CreateMap<InvoiceLine, GetPendigDeliveryNotesItemModel>()
