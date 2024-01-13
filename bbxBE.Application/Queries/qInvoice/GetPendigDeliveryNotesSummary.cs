@@ -1,25 +1,19 @@
 ﻿using AutoMapper;
-using MediatR;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Parameters;
-using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Domain.Extensions;
-using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Common.Attributes;
-using System.ComponentModel;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
-using System.Text;
+using bbxBE.Domain.Entities;
+using MediatR;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace bbxBE.Application.Queries.qInvoice
 {
-    public class GetPendigDeliveryNotesSummary :  IRequest<IEnumerable<Entity>>
+    public class GetPendigDeliveryNotesSummary : IRequest<IEnumerable<Entity>>
     {
         [ColumnLabel("B/K")]
         [Description("Bejővő/Kimenő")]
@@ -29,9 +23,6 @@ namespace bbxBE.Application.Queries.qInvoice
         [Description("Raktár")]
         public string WarehouseCode { get; set; }
 
-        [ColumnLabel("Pénznem")]
-        [Description("Pénznem")]
-        public string CurrencyCode { get; set; }
     }
 
     public class GetPendigDeliveryNotesSummaryHandler : IRequestHandler<GetPendigDeliveryNotesSummary, IEnumerable<Entity>>
@@ -42,7 +33,7 @@ namespace bbxBE.Application.Queries.qInvoice
         private readonly IModelHelper _modelHelper;
 
         public GetPendigDeliveryNotesSummaryHandler(IInvoiceRepositoryAsync invoiceRepository,
-                IWarehouseRepositoryAsync WarehouseRepositoryAsync, 
+                IWarehouseRepositoryAsync WarehouseRepositoryAsync,
                 IMapper mapper, IModelHelper modelHelper)
         {
             _invoiceRepository = invoiceRepository;
@@ -60,7 +51,7 @@ namespace bbxBE.Application.Queries.qInvoice
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.WarehouseCode));
             }
             // query based on filter
-            var data = await _invoiceRepository.GetPendigDeliveryNotesSummaryAsync(request.Incoming, wh.ID, request.CurrencyCode);
+            var data = await _invoiceRepository.GetPendigDeliveryNotesSummaryAsync(request.Incoming, wh.ID);
 
             // response wrapper
             return data;
