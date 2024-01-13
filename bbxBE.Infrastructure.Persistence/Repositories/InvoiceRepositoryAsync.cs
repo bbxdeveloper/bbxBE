@@ -563,14 +563,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                          SumNetAmount = Math.Round(grpOuter.Sum(s => s.SumNetAmount)),
                          SumNetAmountDiscounted = Math.Round(grpOuter.Sum(s => s.SumNetAmountDiscounted)),
                          CurrencyCode = grpOuter.Key.CurrencyCode,
-                         //                      CurrencyCodeX = Common.Utils.GetEnumDescription(
-                         //                                     (enCurrencyCodes)Enum.Parse(typeof(enCurrencyCodes), grpOuter.Key.CurrencyCode))
 
                      };
             q2 = q2.OrderBy(o => o.Customer);
 
             lstEntities = await q2.ToListAsync();
-            lstEntities.ForEach(i => i.SumNetAmount = Math.Round(i.SumNetAmount, 1));
+            lstEntities.ForEach(i =>
+                {
+                    i.SumNetAmount = Math.Round(i.SumNetAmount, 1);
+                    i.CurrencyCodeX = Common.Utils.GetEnumDescription(
+                            (enCurrencyCodes)Enum.Parse(typeof(enCurrencyCodes), i.CurrencyCode));
+                }
+                );
 
             var shapedData = _dataShaperGetPendigDeliveryNotesSummaryModel.ShapeData(lstEntities, "");
 
