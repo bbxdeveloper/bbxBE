@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 
 namespace bbxBE.Common.Enums
 {
     public enum enInvoiceType
     {
-        [Description("Számla")]
+        [Description("Kimenő számla")]
         INV,
         [Description("Kimenő szállítólevél")]
         DNO,
