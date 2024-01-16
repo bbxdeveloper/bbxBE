@@ -51,11 +51,11 @@ namespace bxBE.Application.Commands.cmdInvoice
 
             [ColumnLabel("Új listaár")]
             [Description("Új listaár (csak bevételezés esetén értelmezett)")]
-            public decimal NewUnitPrice1 { get; set; }
+            public decimal NewUnitPrice1HUF { get; set; }
 
             [ColumnLabel("Új egységár")]
             [Description("Új egységár (csak bevételezés esetén értelmezett)")]
-            public decimal NewUnitPrice2 { get; set; }
+            public decimal NewUnitPrice2HUF { get; set; }
 
         }
 

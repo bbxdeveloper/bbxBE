@@ -16,7 +16,9 @@ namespace bbxBE.Queries.Mappings
         public MapQueries()
         {
             CreateMap<Users, GetUsersViewModel>()
-                .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse != null ? src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription : "")); ;
+                .ForMember(dst => dst.Warehouse, opt => opt.MapFrom(src => src.Warehouse != null ? src.Warehouse.WarehouseCode + "-" + src.Warehouse.WarehouseDescription : ""))
+                .ForMember(dst => dst.UserLevelX, opt => opt.MapFrom(src => enUserLevelResolver(src.UserLevel)));
+
 
 
             CreateMap<GetCustomerViewModel, Customer>().ReverseMap();
@@ -221,6 +223,7 @@ namespace bbxBE.Queries.Mappings
             .ForMember(dst => dst.ProductGroup, opt => opt.MapFrom(src => src.ProductGroup.ProductGroupCode + "-" + src.ProductGroup.ProductGroupDescription));
 
             CreateMap<InvoiceLine, GetPendigDeliveryNotesSummaryModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
+
             CreateMap<InvoiceLine, GetPendigDeliveryNotesModel>();   //egyelőre a lekérdezés direktbe tölti fel, nincs mappelés
 
             CreateMap<InvoiceLine, GetPendigDeliveryNotesItemModel>()
@@ -354,6 +357,16 @@ namespace bbxBE.Queries.Mappings
             {
                 var _whsTransferStatus = (enWhsTransferStatus)Enum.Parse(typeof(enWhsTransferStatus), WhsTransferStatus);
                 return Common.Utils.GetEnumDescription(_whsTransferStatus);
+            }
+            return "";
+        }
+
+        public static string enUserLevelResolver(string userLevel)
+        {
+            if (!string.IsNullOrWhiteSpace(userLevel))
+            {
+                var _userLevel = (enUserLevel)Enum.Parse(typeof(enUserLevel), userLevel);
+                return Common.Utils.GetEnumDescription(_userLevel);
             }
             return "";
         }

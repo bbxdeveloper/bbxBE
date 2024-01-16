@@ -1,17 +1,11 @@
-﻿using bbxBE.Common.Consts;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.Wrappers;
+﻿using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Common;
+using bbxBE.Common.Consts;
+using bbxBE.Common.Enums;
 using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using bbxBE.Common;
 
 namespace bbxBE.Application.Commands.cmdUser
 {
@@ -28,6 +22,10 @@ namespace bbxBE.Application.Commands.cmdUser
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
                 .MaximumLength(80).WithMessage(bbxBEConsts.ERR_MAXLEN)
                 .MustAsync(IsUniqueNameAsync).WithMessage(bbxBEConsts.ERR_EXISTS);
+
+            RuleFor(r => r.UserLevel)
+                .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
+                .Must(CheckUserLevel).WithMessage(bbxBEConsts.ERR_INVPAYMENTMETHOD);
 
             RuleFor(p => p.Email)
                 .NotEmpty().WithMessage(bbxBEConsts.ERR_REQUIRED)
@@ -50,7 +48,12 @@ namespace bbxBE.Application.Commands.cmdUser
         {
             return await _userRepository.IsUniqueNameAsync(p_UserName);
         }
-  
+
+        private bool CheckUserLevel(string userLevel)
+        {
+            var valid = Enum.TryParse(userLevel, out enUserLevel ul);
+            return valid;
+        }
     }
 
 }

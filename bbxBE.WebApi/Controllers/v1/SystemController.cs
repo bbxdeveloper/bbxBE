@@ -66,6 +66,14 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(req));
         }
 
+        [HttpGet("userlevels")]
+        public async Task<IActionResult> GetUserLevels()
+        {
+
+            var req = new GetEnum() { type = typeof(enUserLevel) };
+            return Ok(await Mediator.Send(req));
+        }
+
         //   [Authorize]
         [HttpGet("exchangerate")]
         public async Task<IActionResult> GetExchangeRate([FromQuery] DateTime ExchengeRateDate, string Currency)
