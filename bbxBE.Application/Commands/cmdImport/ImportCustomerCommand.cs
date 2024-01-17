@@ -47,7 +47,7 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string CustomerPaymentDaysFieldName = "V_FIZH";
         private const string CustomerLatestDiscountPercentFieldName = "V_ENG";
         private const string CustomerMaxLimitFieldName = "LIMIT";
-        private const string CustomerIsFAFieldName = "FAFA";
+        private const string CustomerIsFAFieldName = "V_FAFA";
 
         private readonly ICustomerRepositoryAsync _customerRepository;
         //private readonly IUnitOfMEasure
