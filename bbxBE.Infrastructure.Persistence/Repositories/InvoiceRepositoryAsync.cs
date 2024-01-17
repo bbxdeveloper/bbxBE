@@ -660,9 +660,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // filter data
 
-            FilterBy(ref query, requestParameter.InvoiceType, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
+            FilterQueryBy(ref query, requestParameter.InvoiceType, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
                     requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
-                    requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo);
+                    requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo, requestParameter.CustomerID);
 
 
             // Count records after filter
@@ -800,18 +800,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //        .Include(i => i.Warehouse).AsQueryable();
 
             IQueryable<Invoice> query;
-            query = _dbContext.Invoice.AsNoTracking()
-                .Include(w => w.Warehouse).AsNoTracking()
-                .Include(s => s.Supplier).AsNoTracking()
-                .Include(c => c.Customer).AsNoTracking()
-                .Include(a => a.AdditionalInvoiceData).AsNoTracking()
+            query = getFullInvoiceQuery()
                 .Include(u => u.User).AsNoTracking();
+
 
             // filter data
 
-            FilterBy(ref query, requestParameter.InvoiceType, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
+            FilterQueryBy(ref query, requestParameter.InvoiceType, requestParameter.WarehouseCode, requestParameter.InvoiceNumber,
                     requestParameter.InvoiceIssueDateFrom, requestParameter.InvoiceIssueDateTo,
-                    requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo);
+                    requestParameter.InvoiceDeliveryDateFrom, requestParameter.InvoiceDeliveryDateTo,
+                    requestParameter.CustomerID);
 
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
@@ -832,9 +830,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return resultDataModel;
         }
 
-        private void FilterBy(ref IQueryable<Invoice> p_items, string invoiceType, string WarehouseCode, string InvoiceNumber,
+        private void FilterQueryBy(ref IQueryable<Invoice> p_items, string invoiceType, string WarehouseCode, string InvoiceNumber,
                                 DateTime? InvoiceIssueDateFrom, DateTime? InvoiceIssueDateTo,
-                                DateTime? InvoiceDeliveryDateFrom, DateTime? InvoiceDeliveryDateTo)
+                                DateTime? InvoiceDeliveryDateFrom, DateTime? InvoiceDeliveryDateTo,
+                                long? CustomerID)
         {
             if (!p_items.Any())
                 return;
@@ -849,6 +848,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             && (!InvoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= InvoiceIssueDateTo.Value)
                             && (!InvoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= InvoiceDeliveryDateFrom.Value)
                             && (!InvoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= InvoiceDeliveryDateTo.Value)
+                            && (!CustomerID.HasValue || p.SupplierID == CustomerID && p.Incoming || p.CustomerID == CustomerID && !p.Incoming)
                            );
 
             p_items = p_items.Where(predicate);

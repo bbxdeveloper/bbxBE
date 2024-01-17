@@ -394,7 +394,6 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("A számla végösszege forintban")]
         public decimal InvoiceGrossAmountHUF { get; set; }
 
-
         [ColumnLabel("Kiegyenlített érték")]
         [Description("A számla kiegyenlítések a számla pénznemében")]
         public decimal InvoicePaidAmount { get; set; }
@@ -402,6 +401,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Kiegyenlített érték HUF")]
         [Description("A számla kiegyenlítések forintban")]
         public decimal InvoicePaidAmountHUF { get; set; }
+
+        [ColumnLabel("Kiegyenlítések")]
+        [Description("Kiegyenlítések dátumai")]
+        public string InvoicePaidDates { get; set; }
 
         [ColumnLabel("Módosító bizonylat?")]
         [Description("Módosító bizonylat jelölése (értéke false)")]

@@ -48,6 +48,10 @@ namespace bbxBE.Application.Queries.qInvoice
         [Description("Teljesítés dátumig")]
         public DateTime? InvoiceDeliveryDateTo { get; set; }
 
+        [ColumnLabel("Partner azonosító")]
+        [Description("Partner azonosító")]
+        public long? CustomerID { get; set; }
+
         //Teljes reációs szerkezet kell? I/N
         public bool FullData { get; set; } = true;
 
