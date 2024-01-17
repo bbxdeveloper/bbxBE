@@ -49,7 +49,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
                               return CheckTaxPayerNumber(TaxpayerNumber);
                           }
                         ).WithMessage(bbxBEConsts.ERR_CST_TAXNUMBER_INV2)
-                      .Must(IsUniqueTaxpayerId).WithMessage(bbxBEConsts.ERR_EXISTS);
+                        .Must(IsUniqueTaxpayerId).WithMessage(bbxBEConsts.ERR_EXISTS);
 
             RuleFor(p => p.CustomerBankAccountNumber)
                         .MaximumLength(30).WithMessage(bbxBEConsts.ERR_MAXLEN)

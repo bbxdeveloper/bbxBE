@@ -34,6 +34,8 @@ namespace bbxBE.Domain.Entities
             }
         }
 
+        [ColumnLabel("Adószám")]
+        [Description("Belföldi adószám első nyolc jegye")]
         public string TaxpayerId { get; set; }
         [ColumnLabel("Áfakód")]
         [Description("Áfakód")]

@@ -135,6 +135,7 @@
 
         public const string ERR_CST_TAXNUMBER_INV = "{PropertyName}: Az adószám csak magyarországi partnerek esetén értelmezett.";
         public const string ERR_CST_TAXNUMBER_INV2 = "{PropertyName}: érvénytelen formátum/tartalom.";
+        public const string ERR_CST_TAXNUMBER_INV3 = "NAV-nál nem regisztrált adószám:{0}";
 
 
         public const string ERR_OFFER_DATE1 = "{PropertyName}: A lejárati dátum nem lehet korábbi, mint a ajánlat kibocsátásának dátuma!";
