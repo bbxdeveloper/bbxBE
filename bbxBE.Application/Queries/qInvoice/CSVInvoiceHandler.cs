@@ -47,6 +47,10 @@ namespace bbxBE.Application.Queries.qInvoice
         [Description("Teljesítés dátumig")]
         public DateTime? InvoiceDeliveryDateTo { get; set; }
 
+        [ColumnLabel("Partner azonosító")]
+        [Description("Partner azonosító")]
+        public long? CustomerID { get; set; }
+
         public string OrderBy { get; set; }
 
     }
@@ -111,16 +115,19 @@ namespace bbxBE.Application.Queries.qInvoice
                                 x.InvoiceVatAmountHUF.ToString(bbxBEConsts.DEF_NUMFORMAT) + bbxBEConsts.DEF_CSVSEP +
                                 x.InvoiceGrossAmount.ToString(bbxBEConsts.DEF_NUMFORMAT) + bbxBEConsts.DEF_CSVSEP +
                                 x.InvoiceGrossAmountHUF.ToString(bbxBEConsts.DEF_NUMFORMAT) + bbxBEConsts.DEF_CSVSEP +
+                                x.InvoicePaidAmount.ToString(bbxBEConsts.DEF_NUMFORMAT) + bbxBEConsts.DEF_CSVSEP +
+                                x.InvoicePaidAmountHUF.ToString(bbxBEConsts.DEF_NUMFORMAT) + bbxBEConsts.DEF_CSVSEP +
+                                x.InvoicePaidDates + bbxBEConsts.DEF_CSVSEP +
                                 (x.InvoiceCorrection ? bbxBEConsts.DEF_TRUE : bbxBEConsts.DEF_FALSE) + bbxBEConsts.DEF_CSVSEP +
                                 x.UserID.ToString() + bbxBEConsts.DEF_CSVSEP +
                                 x.UserName + bbxBEConsts.DEF_CSVSEP +
                                 x.WorkNumber + bbxBEConsts.DEF_CSVSEP +
                                 (x.PriceReview ? bbxBEConsts.DEF_TRUE : bbxBEConsts.DEF_FALSE)
                     ).ToArray());
-
             var csvHeader = "ID;Raktár ID;Raktár;Bizonylatszám;Kelt;Teljesítés;Fiz.hat;Szállító ID;Szállítónév;Szállító bankszámlaszám;Szállító adószám;Szállító országkód;Szállító irányítószám;Szállító város;Szállítócím;Külföldi adószám;" +
                             "Szállító megjegyzés;Ügyfél ID;Ügyfélnév;Ügyfél bankszámlaszám;Ügyfél adószám;Ügyfél országkód;Ügyfél irányítószám;Ügyfél város; Ügyfélcím; Külföldi adószám;Ügyfél megjegyzés;" +
                             "Fiz.mód;Fizetési mód megnevezés;Eredeti.biz;Megjegyzés;Nyomtatott példány száma;Kedvezmény %;Kedvezmény;Kedvezmény HUF;Nettó;Nettó HUF;Áfa;Afa HUF;Bruttó;Bruttó HUF;" +
+                            "Kiegyenlítve;KiegyenlítveHUF;Kiegyenlítés dáumok;" +
                             "Módosító bizonylat?;Felhasználó ID;Felhasználó;Munkaszám;Ár felülvizsgálat?";
 
             Random rnd = new Random();
