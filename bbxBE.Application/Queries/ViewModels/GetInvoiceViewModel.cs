@@ -326,6 +326,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Pénznem")]
         public string CurrencyCodeX { get; set; }
 
+        [ColumnLabel("Árfolyam")]
+        [Description("Árfolyam")]
+        public decimal ExchangeRate { get; set; }
+
 
         #region PaymentMethod
 
