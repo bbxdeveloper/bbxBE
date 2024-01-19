@@ -100,6 +100,7 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.PriceReview, opt => opt.MapFrom(src => src.InvoiceLines.Any(il => il.PriceReview.HasValue && il.PriceReview.Value)))
              .ForMember(dst => dst.InvoicePaidAmount, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmount)))
              .ForMember(dst => dst.InvoicePaidAmountHUF, opt => opt.MapFrom(src => src.InvPayments.Sum(s => s.InvPaymentAmountHUF)))
+             .ForMember(dst => dst.InvoicePaidDates, opt => opt.MapFrom(src => string.Join(",", src.InvPayments.Select(s => s.InvPaymentDate.ToString(bbxBEConsts.DEF_DATEFORMAT)))))
              .ForMember(dst => dst.InvoiceProductFeeGrossSummary, opt => opt.MapFrom(src => src.InvoiceLines.Sum(s =>
                         Math.Round((s.ProductFeeAmount * (1 + s.VatPercentage / 100)) * src.ExchangeRate, 1)
                         )))
