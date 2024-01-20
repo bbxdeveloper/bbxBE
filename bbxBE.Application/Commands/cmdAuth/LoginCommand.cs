@@ -8,7 +8,7 @@ using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.ComponentModel;
 using System.Threading;
@@ -36,9 +36,9 @@ namespace bxBE.Application.Commands.cmdAuth
         private readonly IUserRepositoryAsync _userRepositoryAsync;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
-        private readonly ILogger<LoginCommandHandler> _logger;
+        private readonly ILogger _logger;
 
-        public LoginCommandHandler(IUserRepositoryAsync userRepositoryAsync, IMapper mapper, IConfiguration configuration, ILogger<LoginCommandHandler> logger)
+        public LoginCommandHandler(IUserRepositoryAsync userRepositoryAsync, IMapper mapper, IConfiguration configuration, ILogger logger)
         {
             _userRepositoryAsync = userRepositoryAsync;
             _mapper = mapper;
@@ -48,7 +48,7 @@ namespace bxBE.Application.Commands.cmdAuth
 
         public async Task<Response<LoginInfo>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Logging:{request.LoginName}");
+            _logger.Information($"Logging:{request.LoginName}");
 
             var usr = await _userRepositoryAsync.GetUserRecordByLoginNameAsync(request.LoginName);
             if (usr == null || !usr.Active)

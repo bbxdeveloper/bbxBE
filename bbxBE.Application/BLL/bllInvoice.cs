@@ -138,30 +138,24 @@ namespace bbxBE.Application.BLL
         {
             if (p_num == 0)
                 return p_num;
+            p_num = Math.Round(p_num);
 
             var lastDigit = (p_num % 10);
-            var roundNum = 5;
+            decimal roundedNum = 0;
             if (lastDigit >= 8)
             {
-                roundNum = 10;
+                roundedNum = Math.Floor(p_num / 10) * 10 + 10;
             }
             else if (lastDigit <= 2)
             {
-                roundNum = 10;
+                roundedNum = Math.Floor(p_num / 10) * 10;
             }
             else
             {
-                roundNum = 5;
+                roundedNum = Math.Floor(p_num / 10) * 10 + 5;
             }
 
-            if (p_num > 0)
-            {
-                return p_num - lastDigit + roundNum;
-            }
-            else
-            {
-                return p_num + lastDigit - roundNum;
-            }
+            return roundedNum;
         }
 
 
@@ -220,7 +214,8 @@ namespace bbxBE.Application.BLL
                     supplierAddressNAV.additionalAddressDetail = invoice.Supplier.AdditionalAddressDetail;
 
 
-                invHeadNAV.supplierInfo.supplierBankAccountNumber = invoice.Supplier.CustomerBankAccountNumber;
+                invHeadNAV.supplierInfo.supplierBankAccountNumber = !string.IsNullOrWhiteSpace(invoice.Supplier.CustomerBankAccountNumber)
+                                                                        ? invoice.Supplier.CustomerBankAccountNumber : null;
                 //invHead.supplierInfo.individualExemption = false;                 //BBX: nem tartjuk nyilván
                 //invHead.supplierInfo.exciseLicenceNum                             //BBX: nem tartjuk nyilván
 
@@ -267,7 +262,8 @@ namespace bbxBE.Application.BLL
                         customerAddressNAV.additionalAddressDetail = invoice.Customer.AdditionalAddressDetail;
 
 
-                    invHeadNAV.customerInfo.customerBankAccountNumber = invoice.Customer.CustomerBankAccountNumber;
+                    invHeadNAV.customerInfo.customerBankAccountNumber = (!string.IsNullOrWhiteSpace(invoice.Customer.CustomerBankAccountNumber) ?
+                                                                            invoice.Customer.CustomerBankAccountNumber : null);
                 }
                 else
                 {
@@ -405,13 +401,15 @@ namespace bbxBE.Application.BLL
                     };
                     productCodes.Add(productCode);
 
-                    var VTSZCode = new ProductCodeType()
+                    if (!string.IsNullOrWhiteSpace(ili.VTSZ))
                     {
-                        productCodeCategory = ProductCodeCategoryType.VTSZ,
-                        Item = ili.VTSZ
-                    };
-                    productCodes.Add(VTSZCode);
-
+                        var VTSZCode = new ProductCodeType()
+                        {
+                            productCodeCategory = ProductCodeCategoryType.VTSZ,
+                            Item = ili.VTSZ
+                        };
+                        productCodes.Add(VTSZCode);
+                    }
                     invlineNAV.productCodes = productCodes.ToArray();
 
                     invlineNAV.lineDescription = ili.LineDescription;
@@ -567,14 +565,27 @@ namespace bbxBE.Application.BLL
                     discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount = discountLineNAV.unitPrice * discountLineNAV.quantity;
                     discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF = discountLineNAV.unitPriceHUF * discountLineNAV.quantity;
 
-                    discountLineAmountsNormalNAV.lineVatData.lineVatAmount = Math.Round(vatRateDiscount.VatPercentage / 100 * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount, 0);
-                    discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF = Math.Round(vatRateDiscount.VatPercentage / 100 * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF, 0); ;
+                    //Az engedmény-tétel esetén két tizedesre kerekítés, hogy jobban kijöjjön a matek
+                    discountLineAmountsNormalNAV.lineVatData.lineVatAmount = Math.Round(vatRateDiscount.VatPercentage * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount, 2);
+                    discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF = Math.Round(vatRateDiscount.VatPercentage * discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF, 2);
 
                     discountLineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormal = discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmount + discountLineAmountsNormalNAV.lineVatData.lineVatAmount;
                     discountLineAmountsNormalNAV.lineGrossAmountData.lineGrossAmountNormalHUF = discountLineAmountsNormalNAV.lineNetAmountData.lineNetAmountHUF + discountLineAmountsNormalNAV.lineVatData.lineVatAmountHUF;
 
                     //Áfa
                     discountLineAmountsNormalNAV.lineVatRate = getVatRateNAV(vatRateDiscount);
+
+                    if (invoiceDetailNAV.invoiceCategory == InvoiceCategoryType.AGGREGATE)
+                    {
+                        ////////////////////////
+                        // Gyűjtőszámla sorok //
+                        ////////////////////////
+                        discountLineNAV.aggregateInvoiceLineData = new AggregateInvoiceLineDataType(
+                                    p_lineExchangeRateSpecified: true);
+                        discountLineNAV.aggregateInvoiceLineData.lineExchangeRate = invoice.ExchangeRate;   //Gyűjtőszámla esetén minden LineExchangeRate a bizonylat árfolyamával kell megegyeznie! 
+                        discountLineNAV.aggregateInvoiceLineData.lineDeliveryDate = invoiceLinesNAV.Max(m => (m.aggregateInvoiceLineData != null ? m.aggregateInvoiceLineData.lineDeliveryDate : DateTime.Now.Date));
+
+                    }
 
                     //Módosító szála
                     if (invoice.InvoiceCorrection)

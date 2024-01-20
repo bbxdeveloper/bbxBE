@@ -5,6 +5,7 @@ using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.ViewModels;
 using bbxBE.Domain.Entities;
 using bbxBE.Infrastructure.Persistence.Repository;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -48,7 +49,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 var pcID = p_lstOldProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString())?.ID;
                 if (pcID != null)
+                {
                     pc.ID = pcID.Value;
+                    _dbContext.Instance.Entry(pc).State = EntityState.Modified;
+                }
             }
 
             var vtsz = p_lstNewProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString());
@@ -56,7 +60,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 var vtszID = p_lstOldProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.VTSZ.ToString())?.ID;
                 if (vtszID != null)
+                {
                     vtsz.ID = vtszID.Value;
+                    _dbContext.Instance.Entry(vtsz).State = EntityState.Modified;
+                }
             }
 
 
@@ -66,7 +73,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 var eanOrig = p_lstOldProductCodes.SingleOrDefault(x => x.ProductCodeCategory == enCustproductCodeCategory.EAN.ToString());
                 if (eanOrig != null)
+                {
                     eanUpd.ID = eanOrig.ID;
+                    _dbContext.Instance.Entry(eanUpd).State = EntityState.Modified;
+                }
                 else
                 {
 
@@ -83,6 +93,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 //mivel a p_lstOldProductCodes-ból szedjük ki a törölt tételeket, SaveChangesAsync kell a removeRange után
                 //hogy törlődjenek ezek a tételek a ChangeTrackerből is
                 //
+                deletedProductCodes.ForEach(d =>
+                    { _dbContext.Instance.Entry(d).State = EntityState.Deleted; }
+                    );
                 await RemoveRangeAsync(deletedProductCodes, true);
             }
             await AddRangeAsync(p_lstNewProductCodes.Where(w => !p_lstOldProductCodes.Any(a => a.ID == w.ID)).ToList(), false);

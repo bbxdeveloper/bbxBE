@@ -16,7 +16,6 @@ namespace bbxBE.Application.Interfaces
         DbSet<InvCtrlPeriod> InvCtrlPeriod { get; set; }
         DbSet<Invoice> Invoice { get; set; }
         DbSet<InvoiceLine> InvoiceLine { get; set; }
-        DbSet<Location> Location { get; set; }
         DbSet<Offer> Offer { get; set; }
         DbSet<OfferLine> OfferLine { get; set; }
         DbSet<Origin> Origin { get; set; }
@@ -32,8 +31,11 @@ namespace bbxBE.Application.Interfaces
         DbSet<WhsTransfer> WhsTransfer { get; set; }
         DbSet<WhsTransferLine> WhsTransferLine { get; set; }
         DbSet<Zip> Zip { get; set; }
+        DbSet<Location> Location { get; set; }
+        DbSet<NAVXChange> NAVXChange { get; set; }
+        DbSet<NAVXResult> NAVXResult { get; set; }
 
-
+        DbSet<InvPayment> InvPayment { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

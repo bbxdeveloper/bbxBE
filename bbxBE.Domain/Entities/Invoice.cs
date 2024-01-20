@@ -258,12 +258,15 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Számlasorok")]
         [Description("Számlasorok")]
-        public virtual ICollection<InvoiceLine> InvoiceLines { get; set; }
+        public virtual IList<InvoiceLine> InvoiceLines { get; set; }
 
         [ColumnLabel("NAV adatküldések")]
         [Description("NAV adatküldések")]
         public virtual IList<NAVXChange> NAVXChanges { get; set; }
 
+        [ColumnLabel("Pénzügyi kiegyenlítések")]
+        [Description("Pénzügyi kiegyenlítések")]
+        public virtual IList<InvPayment> InvPayments { get; set; }
 
     }
 }

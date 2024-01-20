@@ -159,6 +159,10 @@ namespace bbxBE.Command.Mappings
 
             CreateMap<UpdateWhsTransferCommand, WhsTransfer>();
             CreateMap<UpdateWhsTransferCommand.WhsTransferLine, WhsTransferLine>();
+
+            CreateMap<CreateInvPaymentCommand.InvPaymentItem, InvPayment>();
+
+
         }
     }
 }

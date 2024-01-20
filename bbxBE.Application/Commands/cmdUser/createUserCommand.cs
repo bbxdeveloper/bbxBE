@@ -18,6 +18,11 @@ namespace bbxBE.Application.Commands.cmdUser
         [ColumnLabel("Név")]
         [Description("Név")]
         public string Name { get; set; }
+
+        [ColumnLabel("Szint")]
+        [Description("Szint")]
+        public string UserLevel { get; set; }
+
         [ColumnLabel("E-mail")]
         [Description("E-mail")]
         public string Email { get; set; }
@@ -33,6 +38,10 @@ namespace bbxBE.Application.Commands.cmdUser
         [ColumnLabel("Aktív?")]
         [Description("Aktív?")]
         public bool Active { get; set; }
+
+        [ColumnLabel("Raktár ID")]
+        [Description("Alapértelmezett raktár ID")]
+        public long? WarehouseID { get; set; }
 
     }
 

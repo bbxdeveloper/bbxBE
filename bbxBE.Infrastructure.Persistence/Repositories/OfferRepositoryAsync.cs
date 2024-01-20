@@ -287,9 +287,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetOfferViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetOfferViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
 
         public async Task<Offer> GetOfferRecordAsync(long ID)
@@ -398,9 +398,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var listFieldsModel = _modelHelper.GetModelFields<GetOfferViewModel>();
 
-            var shapeData = _dataShaperGetOfferViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetOfferViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
         private void FilterBy(ref IQueryable<Offer> p_items, long CustomerID, string OfferNumber,
@@ -443,7 +443,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             if (string.IsNullOrWhiteSpace(offer.CurrencyCode))
             {
                 offer.CurrencyCode = enCurrencyCodes.HUF.ToString();    // Forintos a default
-                offer.ExchangeRate = 1;
+                offer.ExchangeRate = bbxBEConsts.DEF_HUFEXCHANGERATE;
             }
 
             var counterCode = "";
@@ -452,7 +452,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
                 offer.LatestVersion = true;
                 //Árajánlatszám megállapítása
-                counterCode = bbxBEConsts.DEF_OFFERCOUNTER;
+                var whs = bbxBEConsts.DEF_WAREHOUSE_ID.ToString().PadLeft(3, '0');
+                counterCode = String.Format($"{bbxBEConsts.DEF_WHTCOUNTER}_{whs}");
+
                 offer.OfferNumber = await _counterRepository.GetNextValueAsync(counterCode, bbxBEConsts.DEF_WAREHOUSE_ID);
                 offer.Copies = 1;
 
@@ -463,20 +465,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
                     var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
-                    if (prod == null)
-                    {
-                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
-                    }
+
                     var vatRate = _vatRateRepository.GetVatRateByCode(rln.VatRateCode);
                     if (vatRate == null)
                     {
-                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
+                        if (prod != null) //létező termék, de helytelen áfakód
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
+                        }
+                        else
+                        {
+                            vatRate = _vatRateRepository.GetVatRateByCode(bbxBEConsts.VATCODE_27);
+                        }
                     }
 
                     //	ln.Product = prod;
-                    ln.ProductID = prod.ID;
+                    ln.ProductID = prod?.ID;
                     ln.ProductCode = rln.ProductCode;
-                    ln.NoDiscount = prod.NoDiscount;
+                    ln.NoDiscount = (prod != null ? prod.NoDiscount : false);
                     //Ez modelből jön: ln.LineDescription = prod.Description;
 
                     //	ln.VatRate = vatRate;
@@ -515,20 +521,23 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var rln = request.OfferLines.SingleOrDefault(i => i.LineNumber == ln.LineNumber);
 
                     var prod = _productRepository.GetProductByProductCode(rln.ProductCode);
-                    if (prod == null)
-                    {
-                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODCODENOTFOUND, rln.ProductCode));
-                    }
                     var vatRate = _vatRateRepository.GetVatRateByCode(rln.VatRateCode);
                     if (vatRate == null)
                     {
-                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
+                        if (prod != null) //létező termék, de helytelen áfakód
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_VATRATECODENOTFOUND, rln.VatRateCode));
+                        }
+                        else
+                        {
+                            vatRate = _vatRateRepository.GetVatRateByCode(bbxBEConsts.VATCODE_27);
+                        }
                     }
 
                     //	ln.Product = prod;
-                    ln.ProductID = prod.ID;
+                    ln.ProductID = prod?.ID;
                     ln.ProductCode = rln.ProductCode;
-                    ln.NoDiscount = prod.NoDiscount;
+                    ln.NoDiscount = (prod != null ? prod.NoDiscount : false);
                     //Ez modelből jön: ln.LineDescription = prod.Description;
 
                     //	ln.VatRate = vatRate;

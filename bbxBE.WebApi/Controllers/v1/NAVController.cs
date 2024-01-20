@@ -41,10 +41,43 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
 
-        [HttpPost("manageinvoice")]
+
+        [HttpPost("sendinvoicetonav")]
         public async Task<IActionResult> SendInvoiceToNAV([FromQuery] sendInvoiceToNAVCommand request)
         {
             return Ok(await Mediator.Send(request));
         }
+
+
+        [HttpGet("sendannulmenttonav")]
+        public async Task<IActionResult> SendAnnulmentNAV([FromQuery] sendAnnulmentNAVCommand request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
+
+
+        [HttpGet("querytransactionstatus")]
+        public async Task<IActionResult> QueryTransactionStatusNAV([FromQuery] queryTransactionStatusNAVCommand request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
+
+        /**************/
+
+
+        [HttpGet("callmanageinvoice")]
+        public async Task<IActionResult> callManageInvoiceNAV([FromQuery] callManageInvoiceNAVCommand request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
+
+
+        [HttpGet("callmanageannulment")]
+        public async Task<IActionResult> CallManageAnnulmentNAV([FromQuery] callManageAnnulmentNAVCommand request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
+
+
     }
 }

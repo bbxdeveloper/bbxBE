@@ -1,4 +1,5 @@
 ﻿using bbxBE.Common.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
@@ -12,6 +13,38 @@ namespace bbxBE.Application.Queries.ViewModels
     /// </summary>
     public class GetProductViewModel
     {
+
+        public class ProductStock
+        {
+            [MapToEntity("ID")]
+            public long ID { get; set; }
+
+            [ColumnLabel("Raktár ID")]
+            [Description("Raktár ID")]
+            public long WarehouseID { get; set; }
+
+            [ColumnLabel("Raktárnév")]
+            [Description("Raktár megnevezése")]
+            public string WarehouseDescription { get; set; }
+
+
+            [ColumnLabel("Valós")]
+            [Description("Valós mennyiség")]
+            public decimal RealQty { get; set; }
+
+            [ColumnLabel("ELÁBÉ")]
+            [Description("Átlagolt beszerzési egységár")]
+            public decimal AvgCost { get; set; }
+
+            [ColumnLabel("Bev.")]
+            [Description("Legutolsó bevétel dátuma")]
+            public DateTime? LatestIn { get; set; }
+
+            [ColumnLabel("Kiad.")]
+            [Description("Legutolsó kiadás dátuma")]
+            public DateTime? LatestOut { get; set; }
+
+        }
 
         [MapToEntity("ID")]
         public long ID { get; set; }
@@ -29,6 +62,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Termékcsoport")]
         [Description("Termékcsoport")]
         public string ProductGroup { get; set; }
+
+        [ColumnLabel("Árrés minimum%")]
+        [Description("Árrés minimum%")]
+        public decimal MinMargin { get; set; }
 
         [ColumnLabel("Származási hely")]
         [Description("Származási hely")]
@@ -86,10 +123,12 @@ namespace bbxBE.Application.Queries.ViewModels
         [ColumnLabel("Eng.tilt")]
         [Description("Engedmény adás tiltása")]
         public bool NoDiscount { get; set; }
-
+        [ColumnLabel("Súly")]
+        [Description("Súly")]
+        public Decimal UnitWeight { get; set; }
 
         [ColumnLabel("Készletek raktáranként")]
         [Description("Készletek raktáranként")]
-        public List<GetStockViewModel> Stocks { get; set; }
+        public List<ProductStock> Stocks { get; set; }
     }
 }

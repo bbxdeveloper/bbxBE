@@ -1,22 +1,29 @@
 using bbxBE.Application.Interfaces;
-using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Domain.Entities;
-using bbxBE.Infrastructure.Persistence.Contexts;
-using LinqKit;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Extensions.Logging;
 using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi
 {
+    internal static class SerilogExt
+    {
+        public static IHostBuilder UseSerilogLogger(this IHostBuilder hostBuilder, Serilog.ILogger logger = null, bool dispose = false)
+        {
+            hostBuilder.ConfigureServices((context, collection) =>
+            {
+                collection.AddSingleton<ILoggerFactory>(services => new SerilogLoggerFactory(logger, dispose));
+            });
+            return hostBuilder;
+        }
+    }
+
     public static class Program
     {
         public static void Main(string[] args)
@@ -32,7 +39,9 @@ namespace bbxBE.WebApi
                 .WriteTo.Console()
                 .CreateLogger();
 
-            var host = CreateHostBuilder(args).Build();
+            var host = CreateHostBuilder(args)
+                .UseSerilog() // using Microsoft...ILogger<type> interface in DI, but with Serilog
+                .Build();
 
             host.MigrateDatabase();
 
@@ -50,12 +59,9 @@ namespace bbxBE.WebApi
                 {
                     Log.Warning(ex, "An error occurred starting the application");
                 }
-                finally
-                {
-                    Log.CloseAndFlush();
-                }
 
                 refreshCaches(services);
+
             }
 
             host.Run();
@@ -76,7 +82,6 @@ namespace bbxBE.WebApi
             //***********
             var vatCache = services.GetService<ICacheService<VatRate>>();
             Task.Run(() => vatCache.RefreshCache()).Wait();
-        
 
             //************
             //* Customer *

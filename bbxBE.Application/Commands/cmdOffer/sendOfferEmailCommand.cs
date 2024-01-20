@@ -1,32 +1,20 @@
-﻿using AutoMapper;
+﻿using bbxBE.Application.BLL;
+using bbxBE.Application.Interfaces.Repositories;
+using bbxBE.Application.Wrappers;
+using bbxBE.Common;
+using bbxBE.Common.Attributes;
+using bxBE.Application.Commands.cmdEmail;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using SendGrid.Helpers.Mail;
 using System;
+using System.ComponentModel;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using SendGrid;
-using SendGrid.Helpers.Mail;
-using bbxBE.Application.Wrappers;
-using System.ComponentModel;
-using bbxBE.Common.Attributes;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Application.BLL;
-using System.Reflection;
-using System.IO;
-using bbxBE.Common;
 
 namespace bbxBE.Application.Commands.cmdOffer
 {
-    public class _EmailAddress : EmailAddress
-    {
-        [ColumnLabel("Email cím megnevezése")]
-        [Description("Email cím megnevezése")]
-        public string Name { get; set; }
-
-        [ColumnLabel("Email cím")]
-        [Description("Email cím")]
-        public string Email { get; set; }
-    }
 
     public class sendOfferEmailCommand : IRequest<Response<string>>
     {
@@ -74,15 +62,6 @@ namespace bbxBE.Application.Commands.cmdOffer
             {
 
 
-                var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
-                var client = new SendGridClient(apiKey);
-                var from = request.From;
-                var subject = request.Subject;
-                var to = request.To;
-                var plainTextContent = request.Body_plain_text;
-                var htmlContent = request.Body_html_text;
-
-
                 PrintOfferCommand po = new PrintOfferCommand() { ID = request.OfferID, baseURL = request.baseURL };
                 var reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Offer.trdx", Assembly.GetExecutingAssembly());
                 var res = await bllOffer.CreateOfferReportAsynch(_offerRepository, reportTRDX, po, cancellationToken);
@@ -94,19 +73,19 @@ namespace bbxBE.Application.Commands.cmdOffer
                     Type = "application/pdf",
                     ContentId = "ContentId"
                 };
-
-                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-                msg.Attachments = new System.Collections.Generic.List<Attachment>();
-                msg.Attachments.Add(att);
-
-
-                var response = await client.SendEmailAsync(msg).ConfigureAwait(false);
-
-                return new Response<string>
+                var emailCommand = new sendEmailCommand()
                 {
-                    Succeeded = true,
-                    Message = response.StatusCode.ToString()
+                    From = request.From,
+                    To = request.To,
+                    Body_plain_text = request.Body_plain_text,
+                    Body_html_text = request.Body_html_text,
+                    Subject = request.Subject,
+                    Attachments = new System.Collections.Generic.List<Attachment>() { att }
                 };
+
+                var result = await bllSendgrid.SendEmailAsync(emailCommand, cancellationToken);
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -115,6 +94,6 @@ namespace bbxBE.Application.Commands.cmdOffer
         }
 
 
- 
+
     }
 }

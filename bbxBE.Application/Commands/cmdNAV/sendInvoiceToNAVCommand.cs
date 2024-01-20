@@ -1,10 +1,8 @@
 using AutoMapper;
-using bbxBE.Application.BLL;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Wrappers;
 using bbxBE.Common.Attributes;
 using bbxBE.Common.Consts;
-using bbxBE.Common.Enums;
 using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using bbxBE.Domain.Settings;
@@ -31,15 +29,17 @@ namespace bbxBE.Application.Commands.cmdNAV
     public class sendInvoiceToNAVCommandHandler : IRequestHandler<sendInvoiceToNAVCommand, Response<NAVXChange>>
     {
         private readonly IInvoiceRepositoryAsync _invoiceRepository;
+        private readonly INAVXChangeRepositoryAsync _NAVXChangeRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly NAVSettings _NAVSettings;
 
-        public sendInvoiceToNAVCommandHandler(IInvoiceRepositoryAsync invoiceRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILoggerFactory loggerFactory, IConfiguration configuration)
+        public sendInvoiceToNAVCommandHandler(IInvoiceRepositoryAsync invoiceRepository, INAVXChangeRepositoryAsync NAVXChangeRepository, IMapper mapper, IOptions<NAVSettings> NAVSettings, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             _invoiceRepository = invoiceRepository;
+            _NAVXChangeRepository = NAVXChangeRepository;
             _mapper = mapper;
             _NAVSettings = NAVSettings.Value;
             _loggerFactory = loggerFactory;
@@ -50,20 +50,13 @@ namespace bbxBE.Application.Commands.cmdNAV
         public async Task<Response<NAVXChange>> Handle(sendInvoiceToNAVCommand request, CancellationToken cancellationToken)
         {
 
-            var invoice = await _invoiceRepository.GetInvoiceRecordByInvoiceNumberAsync(request.InvoiceNumber, invoiceQueryTypes.full);
+            var invoice = await _invoiceRepository.GetInvoiceRecordByInvoiceNumberAsync(request.InvoiceNumber, invoiceQueryTypes.NAV);
             if (invoice == null)
             {
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_INVOICENOTFOUND, (request.InvoiceNumber)));
             }
-            if (invoice.Incoming || invoice.InvoiceType != enInvoiceType.INV.ToString())
-            {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_NAVINV, (request.InvoiceNumber)));
-            }
 
-            var bllNavObj = new bllNAV(_NAVSettings, _loggerFactory);
-
-            var resNAVXChange = bllNavObj.SendManageInvoice(invoice);
-
+            var resNAVXChange = await _NAVXChangeRepository.CreateNAVXChangeForManageInvoiceAsynch(invoice, cancellationToken);
 
             return new Response<NAVXChange>(resNAVXChange);
         }

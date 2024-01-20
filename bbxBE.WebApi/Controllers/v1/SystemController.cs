@@ -1,29 +1,16 @@
-﻿using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
+﻿using bbxBE.Application.Commands.cmdCustomer;
 using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Application.Queries.qEnum;
-using bbxBE.Application.Queries.qOrigin;
-using bbxBE.Application.Queries.qStock;
 using bbxBE.Application.Queries.qZip;
-using bbxBE.Application.Wrappers;
 using bbxBE.Common.Enums;
 using bbxBE.Common.ExpiringData;
-using bbxBE.Domain.Entities;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using SendGrid.Helpers.Mail;
 using System;
-using System.Net;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Telerik.Reporting;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace bbxBE.WebApi.Controllers.v1
 {
@@ -35,7 +22,7 @@ namespace bbxBE.WebApi.Controllers.v1
         private readonly IConfiguration _conf;
         private readonly IProductRepositoryAsync _productRepositoryAsync;
         private readonly IExpiringData<ExpiringDataObject> _expiringData;
-        public SystemController(IWebHostEnvironment env, IConfiguration conf, 
+        public SystemController(IWebHostEnvironment env, IConfiguration conf,
             IProductRepositoryAsync productRepositoryAsync,
              IExpiringData<ExpiringDataObject> expiringData)
         {
@@ -76,6 +63,14 @@ namespace bbxBE.WebApi.Controllers.v1
         {
 
             var req = new GetEnum() { type = typeof(enInvoiceType) };
+            return Ok(await Mediator.Send(req));
+        }
+
+        [HttpGet("userlevels")]
+        public async Task<IActionResult> GetUserLevels()
+        {
+
+            var req = new GetEnum() { type = typeof(enUserLevel) };
             return Ok(await Mediator.Send(req));
         }
 
@@ -163,7 +158,7 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
         [HttpPost("addorupdateexpiringdata")]
-        public async Task<IActionResult>AddExpiringData([FromQuery] string Key, [FromQuery] string Data, [FromQuery] int LifetimeSec)
+        public async Task<IActionResult> AddExpiringData([FromQuery] string Key, [FromQuery] string Data, [FromQuery] int LifetimeSec)
         {
             var SessionID = HttpContext.Session.Id;
             var Lifetime = TimeSpan.FromSeconds(LifetimeSec);
@@ -184,6 +179,13 @@ namespace bbxBE.WebApi.Controllers.v1
         {
             var item = _expiringData.List();
             return Ok(item);
+        }
+
+
+        [HttpPost("unlockallcustomers")]
+        public async Task<IActionResult> UnlockAllCustomers(UnlockAllCustomersCommand req)
+        {
+            return Ok(await Mediator.Send(req));
         }
     }
 }

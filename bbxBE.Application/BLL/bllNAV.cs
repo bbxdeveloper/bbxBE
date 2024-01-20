@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Commands.cmdNAV;
+﻿using AngleSharp.Html.Parser;
+using bbxBE.Application.Commands.cmdNAV;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Common;
 using bbxBE.Common.Consts;
@@ -7,7 +8,9 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.NAV;
 using bbxBE.Domain.Entities;
 using bbxBE.Domain.Settings;
-using Microsoft.Extensions.Logging;
+using bxBE.Application.Commands.cmdEmail;
+using Newtonsoft.Json;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +18,8 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace bbxBE.Application.BLL
 {
@@ -23,11 +28,10 @@ namespace bbxBE.Application.BLL
         NAVSettings _NAVSettings { get; }
         private readonly ILogger _logger;
 
-        public bllNAV(NAVSettings p_NAVSettings, ILoggerFactory loggerFactory)
+        public bllNAV(NAVSettings p_NAVSettings, ILogger logger)
         {
             _NAVSettings = p_NAVSettings;
-            _logger = loggerFactory.CreateLogger("NAV");
-
+            _logger = logger;
         }
 
         public bool NAVPost(string p_uri, string p_requestId, string p_content, string p_procname, out string o_response)
@@ -35,7 +39,6 @@ namespace bbxBE.Application.BLL
             o_response = "";
             try
             {
-
                 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
                 p_content = p_content.Replace("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", "");
@@ -54,8 +57,6 @@ namespace bbxBE.Application.BLL
                 requestStream.Close();
 
                 return GetNAVResponse(request, p_requestId, p_content, p_procname, out o_response);
-
-
             }
             catch (Exception)
             {
@@ -64,8 +65,6 @@ namespace bbxBE.Application.BLL
                 //ExceptionDispatchInfo.Capture(ex).Throw();
                 throw;
             }
-
-
         }
 
         private bool GetNAVResponse(WebRequest request, string p_requestId, string p_content, string p_procname, out string o_response)
@@ -119,12 +118,10 @@ namespace bbxBE.Application.BLL
                 //ExceptionDispatchInfo.Capture(ex).Throw();
                 throw;
             }
-
         }
 
         public List<InvoiceDigestType> QueryInvoiceDigest(importFromNAVCommand request)
         {
-
             var invoiceDigestRes = new List<InvoiceDigestType>();
 
             var ter = new TokenExchangeRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey);
@@ -170,7 +167,7 @@ namespace bbxBE.Application.BLL
                                 else
                                 {
                                     var errmsg = String.Format(bbxBEConsts.NAV_QINVDIGEST_NEXTPG_ERR, MethodBase.GetCurrentMethod().Name, response);
-                                    _logger.LogError(errmsg);
+                                    _logger.Error(errmsg);
                                     throw new NAVException(errmsg);
                                 }
                             }
@@ -179,20 +176,20 @@ namespace bbxBE.Application.BLL
                     else
                     {
                         var errmsg = String.Format(bbxBEConsts.NAV_QINVDIGEST_FIRSTPG_ERR, MethodBase.GetCurrentMethod().Name, response);
-                        _logger.LogError(errmsg);
+                        _logger.Error(errmsg);
                         throw new NAVException(errmsg);
                     }
 
                     string msg = String.Format(bbxBEConsts.NAV_QINVDIGEST_OK, MethodBase.GetCurrentMethod().Name,
                         request.InvoiceDirection, true, request.IssueDateFrom, request.IssueDateTo);
                     Console.WriteLine(msg);
-                    _logger.LogInformation(msg);
+                    _logger.Information(msg);
                 }
             }
             else
             {
                 var msg = String.Format(bbxBEConsts.NAV_TOKENEXCHANGE_ERR, MethodBase.GetCurrentMethod().Name, response);
-                _logger.LogError(msg);
+                _logger.Error(msg);
                 throw new NAVException(msg);
             }
 
@@ -240,7 +237,7 @@ namespace bbxBE.Application.BLL
                         else
                         {
                             var errmsg = String.Format(bbxBEConsts.NAV_QINVDATA_NOTFND_ERR, MethodBase.GetCurrentMethod().Name, p_invoiceNumber);
-                            _logger.LogError(errmsg);
+                            _logger.Error(errmsg);
                             throw new NAVException(errmsg);
                         }
 
@@ -248,30 +245,28 @@ namespace bbxBE.Application.BLL
                     else
                     {
                         var errmsg = String.Format(bbxBEConsts.NAV_QINVDATA_ERR, MethodBase.GetCurrentMethod().Name, response);
-                        _logger.LogError(errmsg);
+                        _logger.Error(errmsg);
                         throw new NAVException(errmsg);
                     }
 
                     var msg = String.Format(bbxBEConsts.NAV_QINVDATA_OK, MethodBase.GetCurrentMethod().Name, resp.result.funcCode,
                                    (resp.result.errorCode != null ? resp.result.errorCode : ""), (resp.result.message != null ? resp.result.message : ""));
                     Console.WriteLine(msg);
-                    _logger.LogInformation(msg);
+                    _logger.Information(msg);
                 }
             }
             else
             {
                 var msg = String.Format(bbxBEConsts.NAV_TOKENEXCHANGE_ERR, MethodBase.GetCurrentMethod().Name, response);
-                _logger.LogError(msg);
+                _logger.Error(msg);
                 throw new NAVException(msg);
             }
 
             return result;
         }
 
-
         public TaxpayerDataType QueryTaxPayer(QueryTaxPayer request)
         {
-
             var invoiceDigestRes = new List<InvoiceDigestType>();
 
             var ter = new TokenExchangeRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey);
@@ -282,7 +277,6 @@ namespace bbxBE.Application.BLL
             string msg = "";
             if (NAVPost(_NAVSettings.TokenExchange, ter.header.requestId, reqTer, MethodBase.GetCurrentMethod().Name, out response))
             {
-
                 TokenExchangeResponse resp = XMLUtil.XMLStringToObject<TokenExchangeResponse>(response);
 
                 var qtp = new QueryTaxpayerRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey, request.Taxnumber);
@@ -291,36 +285,33 @@ namespace bbxBE.Application.BLL
 
                 if (NAVPost(_NAVSettings.QueryTaxPayer, qtp.header.requestId, qtpTer, MethodBase.GetCurrentMethod().Name, out response))
                 {
-
                     QueryTaxpayerResponse respQtp = XMLUtil.XMLStringToObject<QueryTaxpayerResponse>(response);
                     if (respQtp.taxpayerData != null)
                     {
                         result = respQtp.taxpayerData;
                         msg = String.Format(bbxBEConsts.NAV_QTAXPAYERT_OK, MethodBase.GetCurrentMethod().Name, request.Taxnumber);
                         Console.WriteLine(msg);
-                        _logger.LogInformation(msg);
+                        _logger.Information(msg);
                     }
                     else
                     {
                         // egyelőre csak logoljuk a hibát
                         msg = String.Format(bbxBEConsts.NAV_QTAXPAYER_ERR, MethodBase.GetCurrentMethod().Name, request.Taxnumber, response);
-                        _logger.LogError(msg);
+                        _logger.Error(msg);
                     }
-
                 }
             }
             else
             {
                 // egyelőre csak logoljuk a hibát
                 msg = String.Format(bbxBEConsts.NAV_QTAXPAYER_TOKEN_ERR, MethodBase.GetCurrentMethod().Name, request.Taxnumber, response);
-                _logger.LogError(msg);
+                _logger.Error(msg);
             }
             return result;
         }
 
-        public static void ProcessGeneralSendErrorResponse(NAVXChange xChangeResult, string generalErrResp)
+        private static void ProcessGeneralErrorResponse(NAVXChange xChangeResult, string generalErrResp)
         {
-
             xChangeResult.Status = enNAVStatus.ERROR.ToString();
             xChangeResult.SendResponse = generalErrResp;
             // Általános hibák nem blokkolják a feldolgozást, 
@@ -360,8 +351,54 @@ namespace bbxBE.Application.BLL
             }
         }
 
+        public static void ProcessTransactionResult(NAVXChange xChangeResult, QueryTransactionStatusResponse p_resp)
+        {
+            if (xChangeResult.NAVXResults == null)
+            {
+                xChangeResult.NAVXResults = new List<NAVXResult>();
+            }
+            if (p_resp.processingResults != null)
+            {
+                foreach (var pres in p_resp.processingResults.processingResult)
+                {
+                    if (pres.businessValidationMessages != null)
+                    {
+                        foreach (var businessres in pres.businessValidationMessages)
+                        {
+                            NAVXResult xres = new NAVXResult()
+                            {
+                                ErrorCode = businessres.validationErrorCode,
+                                ResultCode = businessres.validationResultCode.ToString(),
+                                Message = businessres.message,
+                                Tag = businessres.pointer.tag,
+                                Value = businessres.pointer.value,
+                                Line = businessres.pointer.line
+                            };
+                            xChangeResult.NAVXResults.Add(xres);
+                        }
+                    }
 
-        public NAVXChange SendManageInvoice(Invoice invoice)
+                    if (pres.technicalValidationMessages != null)
+                    {
+                        if (pres.technicalValidationMessages != null)
+                        {
+                            foreach (var techres in pres.technicalValidationMessages)
+                            {
+                                NAVXResult xres = new NAVXResult()
+                                {
+                                    ErrorCode = techres.validationErrorCode,
+                                    ResultCode = techres.validationResultCode.ToString(),
+                                    Message = techres.message
+                                };
+                                xChangeResult.NAVXResults.Add(xres);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public NAVXChange CallManageInvoiceFull(Invoice invoice)
         {
             var resNAVXChange = new NAVXChange();
 
@@ -370,55 +407,346 @@ namespace bbxBE.Application.BLL
             resNAVXChange.InvoiceNumber = invoice.InvoiceNumber;
             resNAVXChange.InvoiceXml = XMLUtil.Object2XMLString<InvoiceData>(invoiceNAVXML, Encoding.UTF8, NAVGlobal.XMLNamespaces);
             resNAVXChange.Operation = enNAVOperation.MANAGEINVOICE.ToString();
+            return ManageInvoiceByXChange(resNAVXChange);
+        }
 
+        public NAVXChange CallManageAnnulmentFull(Invoice invoice)
+        {
+            var resNAVXChange = new NAVXChange();
+
+            var annulmentData = new InvoiceAnnulment(invoice.InvoiceNumber);
+            var annulmentDataStr = XMLUtil.Object2XMLString<InvoiceAnnulment>(annulmentData, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+
+            resNAVXChange.InvoiceID = invoice.ID;
+            resNAVXChange.InvoiceNumber = invoice.InvoiceNumber;
+            resNAVXChange.InvoiceXml = annulmentDataStr;
+            resNAVXChange.Operation = enNAVOperation.MANAGEANNULMENT.ToString();
+            return ManageAnnulmentByXChange(resNAVXChange);
+        }
+
+        public NAVXChange ManageInvoiceByXChange(NAVXChange NAVXChange)
+        {
             var ter = new TokenExchangeRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey);
 
             var reqTer = XMLUtil.Object2XMLString<TokenExchangeRequest>(ter, Encoding.UTF8, NAVGlobal.XMLNamespaces);
-            resNAVXChange.TokenTime = DateTime.UtcNow;
-            resNAVXChange.TokenRequest = reqTer;
-            resNAVXChange.Status = enNAVStatus.CREATED.ToString();
+
+            NAVXChange.TokenTime = DateTime.UtcNow;
+            NAVXChange.TokenRequest = reqTer;
+            NAVXChange.Status = enNAVStatus.CREATED.ToString();
+
             string resp = "";
+
             if (NAVPost(_NAVSettings.TokenExchange, ter.header.requestId, reqTer, MethodBase.GetCurrentMethod().Name, out resp))
             {
                 TokenExchangeResponse tokenResponse = XMLUtil.XMLStringToObject<TokenExchangeResponse>(resp);
 
                 var token = tokenResponse.encodedExchangeToken;
-                resNAVXChange.TokenResponse = resp;
-                resNAVXChange.Token = Convert.ToBase64String(token);
-                resNAVXChange.TokenFuncCode = tokenResponse.result.funcCode.ToString();
-                resNAVXChange.TokenMessage = (tokenResponse.result.errorCode + " " + tokenResponse.result.message).Trim();
-                resNAVXChange.Status = enNAVStatus.TOKEN_SENT.ToString();
+                NAVXChange.TokenResponse = resp;
+                NAVXChange.Token = Convert.ToBase64String(token);
+                NAVXChange.TokenFuncCode = tokenResponse.result.funcCode.ToString();
+                NAVXChange.TokenMessage = (tokenResponse.result.errorCode + " " + tokenResponse.result.message).Trim();
+                NAVXChange.Status = enNAVStatus.TOKEN.ToString();
 
-                var mar = new ManageInvoiceRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey, _NAVSettings.ExchangeKey,
-                    token, new string[] { resNAVXChange.InvoiceXml });
-                var reqManageInvoice = XMLUtil.Object2XMLString<ManageInvoiceRequest>(mar, Encoding.UTF8, NAVGlobal.XMLNamespaces);
-                resNAVXChange.SendTime = DateTime.UtcNow;
-                resNAVXChange.SendRequest = reqManageInvoice;
+                var mir = new ManageInvoiceRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey, _NAVSettings.ExchangeKey,
+                    token, new string[] { NAVXChange.InvoiceXml });
+                var reqManageInvoice = XMLUtil.Object2XMLString<ManageInvoiceRequest>(mir, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+                
+                NAVXChange.SendTime = DateTime.UtcNow;
+                NAVXChange.SendRequest = reqManageInvoice;
+
                 resp = "";
-                if (NAVPost(_NAVSettings.ManageInvoice, mar.header.requestId, reqManageInvoice, MethodBase.GetCurrentMethod().Name, out resp))
+
+                if (NAVPost(_NAVSettings.ManageInvoice, mir.header.requestId, reqManageInvoice, MethodBase.GetCurrentMethod().Name, out resp))
                 {
                     ManageInvoiceResponse miresp = XMLUtil.XMLStringToObject<ManageInvoiceResponse>(resp);
 
-                    resNAVXChange.Status = enNAVStatus.DATA_SENT.ToString();
-                    resNAVXChange.SendResponse = resp;
-                    resNAVXChange.SendFuncCode = miresp.result.funcCode.ToString();
-                    resNAVXChange.SendMessage = (miresp.result.errorCode + " " + miresp.result.message).Trim();
-                    resNAVXChange.TransactionID = miresp.transactionId;
+                    NAVXChange.Status = enNAVStatus.DATA_SENT.ToString();
+                    NAVXChange.SendResponse = resp;
+                    NAVXChange.SendFuncCode = miresp.result.funcCode.ToString();
+                    NAVXChange.SendMessage = (miresp.result.errorCode + " " + miresp.result.message).Trim();
+                    NAVXChange.TransactionID = miresp.transactionId;
                 }
                 else
                 {
                     var msg = String.Format(bbxBEConsts.NAV_MANAGEINVOICE_ERR, MethodBase.GetCurrentMethod().Name, resp);
-                    _logger.LogError(msg);
-                    ProcessGeneralSendErrorResponse(resNAVXChange, resp);
+                    _logger.Error(msg);
+                    ProcessGeneralErrorResponse(NAVXChange, resp);
                 }
             }
             else
             {
                 var msg = String.Format(bbxBEConsts.NAV_TOKENEXCHANGE_ERR, MethodBase.GetCurrentMethod().Name, resp);
-                _logger.LogError(msg);
+                _logger.Error(msg);
             }
-            return resNAVXChange;
+            return NAVXChange;
         }
 
+        public NAVXChange ManageAnnulmentByXChange(NAVXChange NAVXChange)
+        {
+            var ter = new TokenExchangeRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey);
+
+            var reqTer = XMLUtil.Object2XMLString<TokenExchangeRequest>(ter, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+
+            NAVXChange.TokenTime = DateTime.UtcNow;
+            NAVXChange.TokenRequest = reqTer;
+            NAVXChange.Status = enNAVStatus.CREATED.ToString();
+
+            string resp = "";
+
+            if (NAVPost(_NAVSettings.TokenExchange, ter.header.requestId, reqTer, MethodBase.GetCurrentMethod().Name, out resp))
+            {
+                TokenExchangeResponse tokenResponse = XMLUtil.XMLStringToObject<TokenExchangeResponse>(resp);
+
+                var token = tokenResponse.encodedExchangeToken;
+                NAVXChange.TokenResponse = resp;
+                NAVXChange.Token = Convert.ToBase64String(token);
+                NAVXChange.TokenFuncCode = tokenResponse.result.funcCode.ToString();
+                NAVXChange.TokenMessage = (tokenResponse.result.errorCode + " " + tokenResponse.result.message).Trim();
+                NAVXChange.Status = enNAVStatus.TOKEN.ToString();
+
+                var mar = new ManageAnnulmentRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey, _NAVSettings.ExchangeKey,
+                    token, new string[] { NAVXChange.InvoiceXml });
+                var reqManageAnnulment = XMLUtil.Object2XMLString<ManageAnnulmentRequest>(mar, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+
+                NAVXChange.SendTime = DateTime.UtcNow;
+                NAVXChange.SendRequest = reqManageAnnulment;
+
+                resp = "";
+
+                if (NAVPost(_NAVSettings.ManageAnnulment, mar.header.requestId, reqManageAnnulment, MethodBase.GetCurrentMethod().Name, out resp))
+                {
+                    ManageAnnulmentResponse maresp = XMLUtil.XMLStringToObject<ManageAnnulmentResponse>(resp);
+
+                    NAVXChange.Status = enNAVStatus.DATA_SENT.ToString();
+                    NAVXChange.SendResponse = resp;
+                    NAVXChange.SendFuncCode = maresp.result.funcCode.ToString();
+                    NAVXChange.SendMessage = (maresp.result.errorCode + " " + maresp.result.message).Trim();
+                    NAVXChange.TransactionID = maresp.transactionId;
+                }
+                else
+                {
+                    var msg = String.Format(bbxBEConsts.NAV_MANAGEINVOICE_ERR, MethodBase.GetCurrentMethod().Name, resp);
+                    _logger.Error(msg);
+                    ProcessGeneralErrorResponse(NAVXChange, resp);
+                }
+            }
+            else
+            {
+                var msg = String.Format(bbxBEConsts.NAV_TOKENEXCHANGE_ERR, MethodBase.GetCurrentMethod().Name, resp);
+                _logger.Error(msg);
+            }
+            return NAVXChange;
+        }
+
+        public NAVXChange QueryTransactionStatusByXChange(NAVXChange NAVXChange)
+        {
+            var ter = new TokenExchangeRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey);
+
+            var reqTer = XMLUtil.Object2XMLString<TokenExchangeRequest>(ter, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+            string resp = "";
+            if (NAVPost(_NAVSettings.TokenExchange, ter.header.requestId, reqTer, MethodBase.GetCurrentMethod().Name, out resp))
+            {
+                TokenExchangeResponse tokenResponse = XMLUtil.XMLStringToObject<TokenExchangeResponse>(resp);
+                var qtr = new QueryTransactionStatusRequest(_NAVSettings.Taxnum, _NAVSettings.TechUser, _NAVSettings.TechUserPwd, _NAVSettings.SignKey, NAVXChange.TransactionID);
+                var reqQtr = XMLUtil.Object2XMLString<QueryTransactionStatusRequest>(qtr, Encoding.UTF8, NAVGlobal.XMLNamespaces);
+
+                NAVXChange.QueryTime = DateTime.UtcNow;
+                NAVXChange.QueryRequest = reqQtr;
+
+                resp = "";
+
+                if (NAVPost(_NAVSettings.QueryTransactionStatus, qtr.header.requestId, reqQtr, MethodBase.GetCurrentMethod().Name, out resp))
+                {
+                    NAVXChange.QueryResponse = resp;
+                    QueryTransactionStatusResponse qresp = XMLUtil.XMLStringToObject<QueryTransactionStatusResponse>(resp);
+                    NAVXChange.QueryFuncCode = qresp.result.funcCode.ToString();
+                    NAVXChange.QueryMessage = (qresp.result.errorCode + " " + qresp.result.message).Trim();
+
+                    if (qresp.processingResults != null && qresp.processingResults.processingResult != null)
+                    {
+
+                        //FONTOS : Egyelőre egy tranzakcióban csak egy számla van,m ezért a qresp.processingResults.processingResult 
+                        //         csak egy elemű lehet
+
+                        //foreach (var prr in qresp.processingResults.processingResult)
+                        var prr = qresp.processingResults.processingResult.First();
+
+                        {
+
+                            // InvoiceStatusType -> NAV_enums.enTransactionStatus átfordítás
+                            var status = (NAV_enums.enTransactionStatus)Enum.Parse(typeof(NAV_enums.enTransactionStatus), prr.invoiceStatus.ToString());
+
+                            //A DONE és ERROR végstátusz, a folyamaban levőséget jelző RECEIVED és PROCESSING státusz nem blokkol
+                            if (prr.invoiceStatus == InvoiceStatusType.DONE ||
+                                prr.invoiceStatus == InvoiceStatusType.ABORTED)
+
+                            {
+                                NAVXChange.Status = prr.invoiceStatus.ToString();
+                                ProcessTransactionResult(NAVXChange, qresp);
+                                if (prr.invoiceStatus == InvoiceStatusType.ABORTED && !string.IsNullOrWhiteSpace(_NAVSettings.NotificationEmailTo))
+                                {
+                                    SendNAVErrorMessageMailAsync(NAVXChange).GetAwaiter().GetResult();
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //valami probléma törént, nincs státuszállítás, hogy újra megpróbálhassuk
+                        var msg = String.Format(bbxBEConsts.NAV_QUERYTRANSACTION_ERR, MethodBase.GetCurrentMethod().Name, resp);
+                        _logger.Error(msg);
+                        ProcessGeneralErrorResponse(NAVXChange, resp);
+                    }
+                }
+                else
+                {
+                    //valami probléma törént, nincs státuszállítás, hogy újra megpróbálhassuk
+                    var msg = String.Format(bbxBEConsts.NAV_QUERYTRANSACTION_ERR2, MethodBase.GetCurrentMethod().Name, resp);
+                    _logger.Error(msg);
+                    ProcessGeneralErrorResponse(NAVXChange, resp);
+                }
+            }
+            else
+            {
+                var msg = String.Format(bbxBEConsts.NAV_TOKENEXCHANGE_ERR, MethodBase.GetCurrentMethod().Name, resp);
+                _logger.Error(msg);
+            }
+            return NAVXChange;
+        }
+
+        public async Task SendNAVErrorMessageMailAsync(NAVXChange NAVXChange)
+        {
+            try
+            {
+                // convert string to stream
+
+                var mailBodyHtml = CreateNAVNotificationMailBodyHtml(NAVXChange);
+
+                var parser = new HtmlParser();
+                var document = parser.ParseDocument(mailBodyHtml);
+                var mailBodyText = document.Body.TextContent;
+
+                string[] addr = _NAVSettings.NotificationEmailTo.Replace(",", ";").Split(';');
+
+                foreach (var toEmail in addr)
+                {
+                    /**********/
+
+                    var att = new SendGrid.Helpers.Mail.Attachment()
+                    {
+                        Filename = NAVXChange.InvoiceNumber + ".xml",
+                        Content = Utils.ConvertToBase64String(NAVXChange.InvoiceXml),
+                        Type = "application/xml",
+                        ContentId = "ContentId"
+                    };
+                    var emailCommand = new sendEmailCommand()
+                    {
+                        From = new _EmailAddress() { Name = _NAVSettings.NotificationEmailFrom, Email = _NAVSettings.NotificationEmailFrom },
+                        To = new _EmailAddress() { Name = toEmail, Email = toEmail },
+                        Body_plain_text = mailBodyText,
+                        Body_html_text = mailBodyHtml,
+                        Subject = string.Format(_NAVSettings.NotificationEmailSubject, NAVXChange.InvoiceNumber),
+                        Attachments = new System.Collections.Generic.List<SendGrid.Helpers.Mail.Attachment>() { att }
+                    };
+
+                    var emailResult = await bllSendgrid.SendEmailAsync(emailCommand, default(CancellationToken));
+                    if (emailResult.Succeeded)
+                    {
+                        var msg = String.Format(bbxBEConsts.NAV_NOTIFICATIONEMAIL_SENT, toEmail, NAVXChange.InvoiceNumber);
+                        _logger.Information(msg);
+                    }
+                    else
+                    {
+                        var msg = String.Format(bbxBEConsts.NAV_NOTIFICATIONEMAIL_SENT_ERR, toEmail, NAVXChange.InvoiceNumber, JsonConvert.SerializeObject(emailResult));
+                        _logger.Information(msg);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public static string CreateNAVNotificationMailBodyHtml(NAVXChange NAVXChange)
+        {
+            var line = "<tr>" + Environment.NewLine +
+                        "<td>%%ResultCode</td>" + Environment.NewLine +
+                        "<td>%%ErrorCode</td>" + Environment.NewLine +
+                        "<td>%%Message</td>" + Environment.NewLine +
+                        "<td>%%Line</td> " + Environment.NewLine +
+                        "<td>%%Tag</td>" + Environment.NewLine +
+                        "<td>%%Value</td>" + Environment.NewLine +
+                        "</tr>" + Environment.NewLine;
+            var mailBody = "<!DOCTYPE html>" + Environment.NewLine +
+                        "<html>" + Environment.NewLine +
+                        "<head>" + Environment.NewLine +
+                        "<style>" + Environment.NewLine +
+                        "	table {" + Environment.NewLine +
+                        "	  width:100%;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "	table, th, td {" + Environment.NewLine +
+                        "	  border: 1px solid black;" + Environment.NewLine +
+                        "	  border-collapse: collapse;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "	th, td {" + Environment.NewLine +
+                        "	  padding: 15px;" + Environment.NewLine +
+                        "	  text-align: left;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "	#t01 tr:nth-child(even) {" + Environment.NewLine +
+                        "	  background-color: #eee;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "	#t01 tr:nth-child(odd) {" + Environment.NewLine +
+                        "	 background-color: azure;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "	#t01 th {" + Environment.NewLine +
+                        "	  background-color: cyan;" + Environment.NewLine +
+                        "	  color: black;" + Environment.NewLine +
+                        "	}" + Environment.NewLine +
+                        "</style>" + Environment.NewLine +
+                        "</head>" + Environment.NewLine +
+                        "<body>" + Environment.NewLine +
+                        "<p>Sz&aacute;mla:<strong>%%INVOICE</strong></p>" + Environment.NewLine +
+                        "<p>Transaction ID:<strong>%%TRANSACTIONID</strong></p>" + Environment.NewLine +
+                        "<table id=\"t01\">" + Environment.NewLine +
+                        "<tr>" + Environment.NewLine +
+                        "<th>ResultCode</th>" + Environment.NewLine +
+                        "<th>ErrorCode</th>" + Environment.NewLine +
+                        "<th>Message</th>" + Environment.NewLine +
+                        "<th>Line</th>" + Environment.NewLine +
+                        "<th>Tag</th>" + Environment.NewLine +
+                        "<th>Value</th>" + Environment.NewLine +
+                        "</tr>" + Environment.NewLine +
+                        "%%LINES" + Environment.NewLine +
+                        "</table>" + Environment.NewLine +
+                        "</body>" + Environment.NewLine +
+            "<html>";
+
+            var lines = "";
+            foreach (var xr in NAVXChange.NAVXResults)
+            {
+                /*
+                                lines += line.Replace("%%ResultCode", xr.ResultCode)
+                                             .Replace("%%ErrorCode", Util.ConvertEncoding(xr.ErrorCode, Encoding.UTF8, Encoding.GetEncoding("ISO-8859-1")))
+                                             .Replace("%%Message", Util.ConvertEncoding(xr.Message, Encoding.UTF8, Encoding.GetEncoding("ISO-8859-1")))
+                                             .Replace("%%Line", xr.Line)
+                                             .Replace("%%Tag", xr.Tag)
+                                             .Replace("%%Value", Util.ConvertEncoding(xr.Value, Encoding.UTF8, Encoding.GetEncoding("ISO-8859-1"))) + "árvíztűrő tükörfúrógép";
+                */
+                lines += line.Replace("%%ResultCode", xr.ResultCode)
+                             .Replace("%%ErrorCode", xr.ErrorCode)
+                             .Replace("%%Message", xr.Message)
+                             .Replace("%%Line", xr.Line)
+                             .Replace("%%Tag", xr.Tag)
+                             .Replace("%%Value", xr.Value);
+            }
+
+            var body = mailBody.Replace("%%INVOICE", NAVXChange.InvoiceNumber)
+                                .Replace("%%TRANSACTIONID", NAVXChange.TransactionID)
+                               .Replace("%%LINES", lines);
+
+            return body;
+        }
+        /******************/
     }
 }

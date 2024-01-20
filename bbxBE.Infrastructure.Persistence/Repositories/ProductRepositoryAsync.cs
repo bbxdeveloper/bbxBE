@@ -494,9 +494,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
 
         public Product GetProductByProductCode(string productCode)
@@ -519,9 +519,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 var listFieldsModel = _modelHelper.GetModelFields<GetProductViewModel>();
 
                 // shape data
-                var shapeData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+                var shapedData = _dataShaperGetProductViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-                return shapeData;
+                return shapedData;
             }
             else
             {
@@ -601,8 +601,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             {
                 if (requestParameter.FilterByCode.HasValue && requestParameter.FilterByCode.Value)
                 {
-                    query = query.OrderBy(o => o.ProductCodes.Single(s =>
-                                s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue);
+                    query = query.OrderBy(o =>
+                            o.ProductCodes != null &&
+                            o.ProductCodes.Any(s =>
+                                    s.ProductCodeValue != null && s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()) ?
+                            o.ProductCodes.SingleOrDefault(s =>
+                                    s.ProductCodeValue != null && s.ProductCodeCategory == enCustproductCodeCategory.OWN.ToString()).ProductCodeValue :
+                           String.Empty
+                        );
                 }
                 else if (requestParameter.FilterByName.HasValue && requestParameter.FilterByName.Value)
                 {
@@ -624,9 +630,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             );
 
 
-            var shapeData = _dataShaperGetProductViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetProductViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
         private void FilterBySearchString(ref IQueryable<Product> p_items, string p_searchString, bool? p_filterByCode, bool? p_filterByName, IList<long> p_IDList)
@@ -725,7 +731,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                  .Include(p => p.ProductCodes).AsNoTracking()
                  .Include(pg => pg.ProductGroup).AsNoTracking()
                  .Include(o => o.Origin).AsNoTracking()
-                 .Include(v => v.VatRate).AsNoTracking().ToListAsync();
+                 .Include(v => v.VatRate).AsNoTracking()
+                 .Include(v => v.Stocks).AsNoTracking()
+                 .Include(v => v.Stocks).ThenInclude(w => w.Warehouse).AsNoTracking()
+                 .ToListAsync();
         }
 
 

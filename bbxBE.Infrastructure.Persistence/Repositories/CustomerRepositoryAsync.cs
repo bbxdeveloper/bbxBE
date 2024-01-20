@@ -240,14 +240,14 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var resultDataModel = new List<GetCustomerViewModel>();
             resultData.ForEach(i => resultDataModel.Add(
                _mapper.Map<Customer, GetCustomerViewModel>(i))
-            );
+            ); ;
 
 
             var listFieldsModel = _modelHelper.GetModelFields<GetCustomerViewModel>();
 
-            var shapeData = _dataShaperGetCustomerViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetCustomerViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
         private void FilterBySearchString(ref IQueryable<Customer> p_item, string p_searchString, bool? IsOwnData = null)

@@ -21,6 +21,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [MapToEntity("customerVatStatus")]
         public string CustomerVatStatus { get; set; }
 
+        [ColumnLabel("Magánszemély?")]
+        [Description("Magánszemély?")]
+        public bool PrivatePerson { get; set; } = false;
+
         //     [NotDBField]
         [MapToEntity("TaxpayerNumber")]
         [NotDBFieldAttribute]
@@ -108,6 +112,10 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Legutoljára megadott bizonylatkedvezmény %")]
         public short? LatestDiscountPercent { get; set; }
 
+        [MapToEntity("isFA")]
+        [ColumnLabel("Fordtott áfás?")]
+        [Description("Fordtott áfás ?")]
+        public bool IsFA { get; set; }
 
         [MapToEntity("isOwnData")]
         [ColumnLabel("Saját adat?")]

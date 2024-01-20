@@ -116,8 +116,29 @@ namespace bbxBE.Common.ExpiringData
             {
                 throw new LockException(string.Format(bbxBEConsts.ERR_LOCK, Key));
             }
-
         }
+
+        public async Task DeleteItemsByKeyPartAsync(string KeyPart, bool silent = true)
+        {
+
+            bool bOK = await _asyncKeyedLocker.TryLockAsync(KeyPart, async () =>
+            {
+                T dobj;
+
+                var locks = ExpiringDataList.Where(w => w.Key.ToUpper().Contains(KeyPart.ToUpper()));
+                foreach (var lockDict in locks)
+                {
+                    ExpiringDataList.TryRemove(lockDict.Key, out dobj);
+
+                }
+
+            }, bbxBEConsts.WaitForExpiringDataSec * 1000).ConfigureAwait(false);
+            if (!bOK)
+            {
+                throw new LockException(string.Format(bbxBEConsts.ERR_LOCK, KeyPart));
+            }
+        }
+
         private void Maintain()
         {
             foreach (var kvp in ExpiringDataList)

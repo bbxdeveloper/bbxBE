@@ -9,7 +9,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
     {
         public override void Down()
         {
-            Delete.Table("NAVXChange");
+            Delete.Table("NAVXResult");
             Delete.Table("NAVXChange");
         }
         public override void Up()
@@ -24,7 +24,7 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
                     .WithColumn("InvoiceNumber").AsString()
                     .WithColumn("InvoiceXml").AsString(int.MaxValue)
                     .WithColumn("Status").AsString().NotNullable()                               //CREATED-SENT-DONE/ABORTED
-                    .WithColumn("Notice").AsString(int.MaxValue)
+                    .WithColumn("Notice").AsString(int.MaxValue).Nullable()
                     .WithColumn("Operation").AsString().NotNullable()                            //CREATE/MODIFY
 
                     .WithColumn("TokenTime").AsDateTime2()

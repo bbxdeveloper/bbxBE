@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AsyncKeyedLock;
+using AutoMapper;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -77,7 +78,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 ICacheService<Customer> customerCacheService,
                 ICacheService<ProductGroup> productGroupCacheService,
                 ICacheService<Origin> originCacheService,
-                ICacheService<VatRate> vatRateCacheService) : base(dbContext)
+                ICacheService<VatRate> vatRateCacheService,
+                AsyncKeyedLocker<string> asyncKeyedLocker) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperInvCtrl = new DataShapeHelper<InvCtrl>();
@@ -87,7 +89,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _mapper = mapper;
             _mockData = mockData;
             _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
-            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService, asyncKeyedLocker);
             _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
             _productcacheService = productCacheService;
         }
@@ -132,6 +134,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         if (stock != null)
                         {
                             InvCtrl.AvgCost = stock.AvgCost;
+                            InvCtrl.ORealQty = stock.RealQty;
                         }
 
                         // 2. raktárkészlet alapján nem sikerült, cikktörzs alapján
@@ -288,9 +291,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetInvCtrlViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
         public async Task<Entity> GetLastestInvCtrlICC(GetLastestInvCtrlICC requestParameter)
         {
@@ -313,9 +316,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             // shape data
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
-            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetInvCtrlViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
 
         public Task<InvCtrl> GetInvCtrlICPRecordAsync(long InvCtlPeriodID, long ProductID)
@@ -369,15 +372,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
 
             var absenedItems = stockItems.Where(s =>
-                        s.Product == null || !invCtrlItems.Any(i => i.ProductID == s.ProductID) &&
-                        (!requestParameter.IsInStock || s.RealQty != 0)).ToList();
+                        s.Product == null || !invCtrlItems.Any(i => i.ProductID == s.ProductID)).ToList();
 
             if (!requestParameter.IsInStock)
             {
                 //Hozzácsapjuk a nonStockedProducts-ből azokat a termékeket, amelyeknek nincs készletrekordja
                 //és nincs leltárban
                 var nonStockedProducts = prodItems.Where(p => !stockItems.Any(s => s.ProductID == p.ID) &&
-                                                              !absenedItems.Any(s => s.ProductID == p.ID)).ToList();
+                                                              !absenedItems.Any(s => s.ProductID == p.ID) &&
+                                                              !invCtrlItems.Any(i => i.ProductID == p.ID)).ToList();
                 nonStockedProducts.ForEach(p =>
                 {
                     absenedItems.Add(new Stock()
@@ -459,9 +462,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             );
             var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
 
-            var shapeData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
 
@@ -578,9 +581,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var pagedData = await QueryPagedInvCtrlViewModelAsync(requestParameter);
             var listFieldsModel = _modelHelper.GetModelFields<GetInvCtrlViewModel>();
 
-            var shapeData = _dataShaperGetInvCtrlViewModel.ShapeData(pagedData.data, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetInvCtrlViewModel.ShapeData(pagedData.data, String.Join(",", listFieldsModel));
 
-            return (shapeData, pagedData.recordsCount);
+            return (shapedData, pagedData.recordsCount);
         }
         private void FilterBySeachString(ref IQueryable<InvCtrl> p_item, string p_searchString)
         {

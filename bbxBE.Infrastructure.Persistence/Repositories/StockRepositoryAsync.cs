@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AsyncKeyedLock;
+using AutoMapper;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -32,15 +33,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IStockCardRepositoryAsync _stockCardRepository;
         private readonly IProductRepositoryAsync _productRepository;
         private readonly ILocationRepositoryAsync _locationRepository;
+        private readonly IWarehouseRepositoryAsync _warehouseRepositoryAsync;
 
         private readonly ICacheService<Product> _productCacheService;
+        private readonly AsyncKeyedLocker<string> _asyncKeyedLocker;
 
         public StockRepositoryAsync(IApplicationDbContext dbContext,
             IModelHelper modelHelper, IMapper mapper, IMockService mockData,
             ICacheService<Product> productCacheService,
             ICacheService<ProductGroup> productGroupCacheService,
             ICacheService<Origin> originCacheService,
-            ICacheService<VatRate> vatRateCacheService) : base(dbContext)
+            ICacheService<VatRate> vatRateCacheService,
+            AsyncKeyedLocker<string> asyncKeyedLocker) : base(dbContext)
         {
             _dbContext = dbContext;
             _dataShaperStock = new DataShapeHelper<Stock>();
@@ -52,16 +56,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productCacheService = productCacheService;
 
             _stockCardRepository = new StockCardRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService);
-
             _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
-
             _locationRepository = new LocationRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _warehouseRepositoryAsync = new WarehouseRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+
+            _asyncKeyedLocker = asyncKeyedLocker;
 
         }
 
         public async Task<List<Stock>> MaintainStockByInvoiceAsync(Invoice invoice)
         {
             var lstStock = new List<Stock>();
+
 
             foreach (var invoiceLine in invoice.InvoiceLines)
             {
@@ -73,6 +79,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     {
 
                         stock = await _dbContext.Stock
+                                .Include(w => w.Warehouse).AsNoTracking()
                                 .Where(x => x.WarehouseID == invoice.WarehouseID && x.ProductID == invoiceLine.ProductID && !x.Deleted)
                                 .FirstOrDefaultAsync();
                     }
@@ -82,9 +89,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         stock = new Stock()
                         {
                             WarehouseID = invoice.WarehouseID,
-                            //Warehouse = invoice.Warehouse,
+                            // Warehouse =  itt nem szabad megadni
                             ProductID = invoiceLine.ProductID.Value,
-                            //Product = invoiceLine.Product,
+                            //Product = itt nem szabad megadni
                             AvgCost = invoiceLine.UnitPrice
                         };
                         await AddAsync(stock);
@@ -134,6 +141,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
 
+            await RefreshStockInProductCache(lstStock);
             await UpdateRangeAsync(lstStock);
             return lstStock;
         }
@@ -196,6 +204,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
             }
 
+            await RefreshStockInProductCache(lstStock);
             await UpdateRangeAsync(lstStock);
 
             return lstStock;
@@ -296,10 +305,56 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             }
 
+            await RefreshStockInProductCache(lstStock);
             await UpdateRangeAsync(lstStock, false);
 
             return lstStock;
         }
+
+        private async Task RefreshStockInProductCache(List<Stock> lstStock)
+        {
+
+            bool bOK = await _asyncKeyedLocker.TryLockAsync(bbxBEConsts.DEF_STOCKLOCK, async () =>
+            {
+
+                foreach (var stock in lstStock)
+                {
+
+                    Product prod = null;
+                    if (!_productCacheService.TryGetValue(stock.ProductID, out prod))
+                        throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_PRODNOTFOUND, stock.ProductID));
+
+                    var stk = prod.Stocks?.Where(w => w.WarehouseID == stock.WarehouseID).SingleOrDefault();
+                    if (stk == null)
+                    {
+
+                        var warehouse = await _warehouseRepositoryAsync.GetByIdAsync(stock.WarehouseID); //Az új stock létrehozásához szükésges
+                        if (warehouse == null)
+                        {
+                            throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND2, stock.WarehouseID));
+                        }
+
+
+                        stk = (Stock)stock.Clone();
+                        stk.Warehouse = warehouse;
+                        prod.Stocks.Add(stk);
+                    }
+                    else
+                    {
+                        stk.LatestIn = stock.LatestIn;
+                        stk.LatestOut = stock.LatestOut;
+                        stk.RealQty = stock.RealQty;
+                        stk.AvgCost = stock.AvgCost;
+
+                    }
+                }
+            }, bbxBEConsts.WaitForExpiringDataSec * 1000).ConfigureAwait(false);
+            if (!bOK)
+            {
+                throw new LockException(string.Format(bbxBEConsts.ERR_LOCK, bbxBEConsts.DEF_STOCKLOCK));
+            }
+        }
+
 
         public async Task<Entity> GetStockAsync(long ID)
         {
@@ -322,9 +377,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetStockViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetStockViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
         public async Task<IEnumerable<Entity>> GetProductStocksAsync(long productID)
         {
@@ -345,8 +400,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
 
-            var shapeData = await _dataShaperGetStockViewModel.ShapeDataAsync(resultDataModel, String.Join(",", listFieldsModel));
-            return shapeData;
+            var shapedData = await _dataShaperGetStockViewModel.ShapeDataAsync(resultDataModel, String.Join(",", listFieldsModel));
+            return shapedData;
         }
 
         public async Task<Stock> GetStockRecordAsync(long warehouseID, long productID)
@@ -463,9 +518,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var listFieldsModel = _modelHelper.GetModelFields<GetStockViewModel>();
 
-            var shapeData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetStockViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
         private void FilterByParameters(ref IQueryable<Stock> p_item, long p_warehouseID, string p_searchString)

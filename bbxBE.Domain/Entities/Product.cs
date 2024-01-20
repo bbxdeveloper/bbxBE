@@ -3,8 +3,6 @@ using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -52,33 +50,42 @@ namespace bbxBE.Domain.Entities
         [Description("Termékértékesítés vagy szolgáltatásnyújtás jelölése (egyelőre csak PRODUCT)")]
         public string NatureIndicator { get; set; }
 
-        [ColumnLabel("Aktív?")]
-        [Description("Aktív?")]
-        public bool Active { get; set; }
+        [ColumnLabel("Súly")]
+        [Description("Súly")]
+        public Decimal UnitWeight { get; set; }
 
         [ColumnLabel("Eng.tilt")]
         [Description("Engedmény adás tiltása")]
         public bool NoDiscount { get; set; }
 
+        [ColumnLabel("Aktív?")]
+        [Description("Aktív?")]
+        public bool Active { get; set; }
+
         //relációk
-        [ForeignKey("ProductGroupID")]
+        //[ForeignKey("ProductGroupID")]
         [ColumnLabel("Termékcsoport")]
         [Description("Termékcsoport")]
         public virtual ProductGroup ProductGroup { get; set; }
 
-        [ForeignKey("OriginID")]
+        //[ForeignKey("OriginID")]
         [ColumnLabel("Származási hely")]
         [Description("Származási hely")]
         public virtual Origin Origin { get; set; }
 
-        [ForeignKey("VatRateID")]
+        //[ForeignKey("VatRateID")]
         [ColumnLabel("Áfa leíró")]
         [Description("Áfa leíró")]
         public virtual VatRate VatRate { get; set; }
 
+        //[ForeignKey("ProductCodeID")]
         [ColumnLabel("Termékkódok")]
         [Description("Termékkódok")]
         //    [InverseProperty("Product")]
         public virtual ICollection<ProductCode> ProductCodes { get; set; }
+
+        [ColumnLabel("Készletek")]
+        [Description("Készletek")]
+        public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();
     }
 }

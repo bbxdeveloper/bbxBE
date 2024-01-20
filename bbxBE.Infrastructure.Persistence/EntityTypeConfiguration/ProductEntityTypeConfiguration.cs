@@ -1,10 +1,6 @@
 ﻿using bbxBE.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
 {
@@ -18,7 +14,15 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .HasMany<ProductCode>(g => g.ProductCodes)
             .WithOne(s => s.Product)
             .HasForeignKey(s => s.ProductID);
+
+            builder
+            .HasMany<Stock>(r => r.Stocks)
+            .WithOne(r => r.Product)
+            .HasForeignKey(s => s.ProductID)
+            .IsRequired(false);
+
+
         }
-        
+
     }
 }

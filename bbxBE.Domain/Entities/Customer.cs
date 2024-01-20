@@ -34,6 +34,8 @@ namespace bbxBE.Domain.Entities
             }
         }
 
+        [ColumnLabel("Adószám")]
+        [Description("Belföldi adószám első nyolc jegye")]
         public string TaxpayerId { get; set; }
         [ColumnLabel("Áfakód")]
         [Description("Áfakód")]
@@ -116,6 +118,10 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Legutoljára megadott kedvezmény %")]
         [Description("Legutoljára megadott bizonylatkedvezmény %")]
         public decimal? LatestDiscountPercent { get; set; }
+
+        [ColumnLabel("Fordtott áfás?")]
+        [Description("Fordtott áfás ?")]
+        public bool IsFA { get; set; }
 
 
         [ColumnLabel("Saját adat?")]

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AsyncKeyedLock;
+using AutoMapper;
 using bbxBE.Application.Helpers;
 using bbxBE.Application.Interfaces;
 using bbxBE.Application.Interfaces.Repositories;
@@ -38,6 +39,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly ICounterRepositoryAsync _counterRepository;
         private readonly IWarehouseRepositoryAsync _warehouseRepository;
         private readonly IProductRepositoryAsync _productRepository;
+        private readonly AsyncKeyedLocker<string> _asyncKeyedLocker;
 
         public WhsTransferRepositoryAsync(IApplicationDbContext dbContext,
                 IExpiringData<ExpiringDataObject> expiringData,
@@ -46,6 +48,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 ICacheService<ProductGroup> productGroupCacheService,
                 ICacheService<Origin> originCacheService,
                 ICacheService<VatRate> vatRateCacheService,
+                AsyncKeyedLocker<string> asyncKeyedLocker,
                 IModelHelper modelHelper, IMapper mapper, IMockService mockData) : base(dbContext)
         {
             _dbContext = dbContext;
@@ -54,7 +57,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _modelHelper = modelHelper;
             _mapper = mapper;
             _mockData = mockData;
-            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
+            _stockRepository = new StockRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService, asyncKeyedLocker);
             _customerRepository = new CustomerRepositoryAsync(dbContext, modelHelper, mapper, mockData, expiringData, customerCacheService);
             _counterRepository = new CounterRepositoryAsync(dbContext, modelHelper, mapper, mockData);
             _warehouseRepository = new WarehouseRepositoryAsync(dbContext, modelHelper, mapper, mockData);
@@ -163,9 +166,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             var listFieldsModel = _modelHelper.GetModelFields<GetWhsTransferViewModel>();
 
             // shape data
-            var shapeData = _dataShaperGetWhsTransferViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetWhsTransferViewModel.ShapeData(itemModel, String.Join(",", listFieldsModel));
 
-            return shapeData;
+            return shapedData;
         }
         public async Task<WhsTransfer> GetWhsTransferRecordAsync(long ID, bool fulldata)
         {
@@ -252,9 +255,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var listFieldsModel = _modelHelper.GetModelFields<GetWhsTransferViewModel>();
 
-            var shapeData = _dataShaperGetWhsTransferViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+            var shapedData = _dataShaperGetWhsTransferViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapeData, recordsCount);
+            return (shapedData, recordsCount);
         }
 
         private void FilterBy(ref IQueryable<WhsTransfer> p_items, string WhsTransferStatus, string FromWarehouseCode, string ToWarehouseCode,
@@ -345,9 +348,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 whsTransfer.Notice = Utils.TidyHtml(whsTransfer.Notice);
 
 
-                var prefix = "WHT";
                 var whs = whsTransfer.FromWarehouseID.ToString().PadLeft(3, '0');
-                counterCode = String.Format($"{prefix}_{whs}");
+                counterCode = String.Format($"{bbxBEConsts.DEF_WHTCOUNTER}_{whs}");
                 whsTransfer.WhsTransferNumber = await _counterRepository.GetNextValueAsync(counterCode, whsTransfer.FromWarehouseID);
                 whsTransfer.Copies = 1;
                 whsTransfer.WhsTransferStatus = enWhsTransferStatus.READY.ToString();

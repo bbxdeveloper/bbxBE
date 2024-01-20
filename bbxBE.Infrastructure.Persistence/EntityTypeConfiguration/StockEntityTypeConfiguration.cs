@@ -1,10 +1,6 @@
 ﻿using bbxBE.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
 {
@@ -16,9 +12,23 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
         public void Configure(EntityTypeBuilder<Stock> builder)
         {
 
-//            builder.HasOne(w => w.Warehouse).WithMany().IsRequired(true);
-            builder.HasOne<Location>( l=>l.Location).WithMany().IsRequired(false);
-       
+            builder
+                .HasOne<Warehouse>(w => w.Warehouse)
+                .WithMany(s => s.Stocks)
+                .HasForeignKey(s => s.WarehouseID)
+                .IsRequired(true);
+
+            builder
+                .HasOne<Location>(l => l.Location)
+                .WithMany(s => s.Stocks)
+                .HasForeignKey(s => s.LocationID)
+                .IsRequired(false);
+
+            builder
+                .HasOne<Product>(p => p.Product)
+                .WithMany(s => s.Stocks)
+                .HasForeignKey(s => s.ProductID)
+                .IsRequired(true);
 
         }
     }

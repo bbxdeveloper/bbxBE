@@ -181,6 +181,9 @@ namespace bbxBE.Domain.Entities
         [Description("A számlára v. gyűjtőszámlán, a kapcsolt szállítólevélre adott teljes kedvezmény %")]
         public decimal LineDiscountPercent { get; set; }        //NoDiscount esetén értéke 0!
 
+        [ColumnLabel("Súly")]
+        [Description("Súly")]
+        public Decimal UnitWeight { get; set; }
 
         //Relációk, navigációs komponensek
         [JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez

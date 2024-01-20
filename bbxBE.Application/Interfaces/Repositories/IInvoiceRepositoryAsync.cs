@@ -24,8 +24,9 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Invoice> AddInvoiceAsync(Invoice p_invoice, Dictionary<long, InvoiceLine> p_RelDNInvoiceLines);
         Task<Invoice> UpdateInvoiceAsync(Invoice p_invoice, ICollection<SummaryByVatRate> p_delSummaryByVatRates);
         Task<Entity> GetInvoiceAsync(long ID, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full);
+        Task<Entity> GetInvoiceByInvoiceNumberAsync(string invoiceNumber, invoiceQueryTypes invoiceQueryType = invoiceQueryTypes.full);
         Task<Entity> GetAggregateInvoiceAsync(long ID);
-        Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID, string currencyCode);
+        Task<IEnumerable<Entity>> GetPendigDeliveryNotesSummaryAsync(bool incoming, long warehouseID);
         Task<IEnumerable<Entity>> GetPendigDeliveryNotesItemsAsync(bool incoming, long warehouseID, long customerID, string currencyCode);
         Task<IEnumerable<Entity>> GetPendigDeliveryNotesAsync(bool incoming, long warehouseID, string currencyCode);
         Task<decimal> GetUnPaidAmountAsyn(long customerID);
@@ -36,6 +37,7 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceNumber(string invoiceNumber);
         Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceID(long invoiceID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUnpaidInvoiceAsync(QueryUnpaidInvoice requestParameter);
         Task<(IList<GetCustomerInvoiceSummary> data, RecordsCount recordsCount)> QueryPagedCustomerInvoiceSummaryAsync(QueryCustomerInvoiceSummary requestParameters);
         Task<IList<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter);
 
