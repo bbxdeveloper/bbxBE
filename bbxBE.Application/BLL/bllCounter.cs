@@ -8,10 +8,6 @@ namespace bbxBE.Application.BLL
 
     public static class bllCounter
     {
-        public static object Locker = new object();
-
-
-
         public static string GetCounterCode(enInvoiceType p_invoiceType, PaymentMethodType p_paymentMethod, bool Incoming, bool isCorrectionInvoice, long WarehouseID)
         {
 
