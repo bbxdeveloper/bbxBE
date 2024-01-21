@@ -350,7 +350,7 @@
         </Panel>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="4.519cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="5.003cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
@@ -362,7 +362,7 @@
             <Font Name="Courier New" Size="9pt" />
           </Style>
         </TextBox>
-        <Panel Width="10.684cm" Height="2.268cm" Left="4.222cm" Top="0.266cm" Name="panel7">
+        <Panel Width="11.278cm" Height="2.268cm" Left="4.222cm" Top="0.266cm" Name="panel7">
           <Items>
             <Table Width="9.663cm" Height="0.4cm" Left="0.013cm" Top="1.068cm" Name="tableSummaryByVatRates">
               <Body>
@@ -485,11 +485,6 @@
                 <Font Name="Courier New" Size="9pt" Bold="True" />
               </Style>
             </TextBox>
-            <TextBox Width="0.847cm" Height="0.35cm" Left="9.676cm" Top="1.818cm" Value="Ft" Name="textBox74">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" />
-              </Style>
-            </TextBox>
             <TextBox Width="2.976cm" Height="0.35cm" Left="6.697cm" Top="0.002cm" Value="= Fields.invoiceNetAmount + Fields.invoiceDiscount" Format="{0:N2}" Name="textBox50">
               <Style TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
@@ -573,6 +568,11 @@
                 </FormattingRule>
               </ConditionalFormatting>
             </TextBox>
+            <TextBox Width="1.309cm" Height="0.35cm" Left="9.676cm" Top="1.818cm" Value="= Fields.currencyCodeX" Name="textBox70">
+              <Style TextAlign="Left" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+            </TextBox>
           </Items>
         </Panel>
         <TextBox Width="18.75cm" Height="0.5cm" Left="0.055cm" Top="3.034cm" Value="= &quot;A tulajdonjogot a számla kiegyenlítéséig fenntartjuk! Késedelmi kamat évi 20%!&quot;" Name="textBox14">
@@ -636,6 +636,19 @@
               <Style Visible="False" />
               <Filters>
                 <Filter Expression="= Fields.isFA" Operator="NotEqual" Value="= True" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
+        </TextBox>
+        <TextBox Width="18.75cm" Height="0.484cm" Left="0.055cm" Top="4.519cm" Value="= &quot;Árfolyam: &quot; + Fields.exchangeRate + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox74">
+          <Style Visible="True" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.currencyCode" Operator="Equal" Value="= &quot;HUF&quot;" />
               </Filters>
             </FormattingRule>
           </ConditionalFormatting>

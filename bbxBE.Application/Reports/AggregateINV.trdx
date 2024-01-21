@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" Zoom="2" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;217&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoice" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;227&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoice" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Query" Name="ID">
           <Value>
@@ -131,7 +131,7 @@
         </Table>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="4.526cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="5.01cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
@@ -143,7 +143,7 @@
             <Font Name="Courier New" Size="9pt" />
           </Style>
         </TextBox>
-        <Panel Width="10.7cm" Height="2.323cm" Left="4.213cm" Top="0.2cm" Name="panel7">
+        <Panel Width="11.287cm" Height="2.323cm" Left="4.213cm" Top="0.2cm" Name="panel7">
           <Items>
             <Table Width="9.608cm" Height="0.4cm" Left="0.014cm" Top="1.052cm" Name="tableSummaryByVatRates">
               <Body>
@@ -266,11 +266,6 @@
                 <Font Name="Courier New" Size="9pt" Bold="True" />
               </Style>
             </TextBox>
-            <TextBox Width="0.847cm" Height="0.35cm" Left="9.638cm" Top="1.973cm" Value="Ft" Name="textBox74">
-              <Style TextAlign="Center" VerticalAlign="Middle">
-                <Font Name="Courier New" Size="9pt" />
-              </Style>
-            </TextBox>
             <TextBox Width="2.976cm" Height="0.35cm" Left="6.654cm" Top="0cm" Value="= Fields.invoiceNetAmount + Fields.invoiceDiscount" Format="{0:N2}" Name="textBox50">
               <Style TextAlign="Right" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
@@ -354,6 +349,11 @@
                 </FormattingRule>
               </ConditionalFormatting>
             </TextBox>
+            <TextBox Width="1.301cm" Height="0.35cm" Left="9.638cm" Top="1.973cm" Value="= Fields.currencyCodeX" Name="textBox39">
+              <Style TextAlign="Left" VerticalAlign="Middle">
+                <Font Name="Courier New" Size="9pt" />
+              </Style>
+            </TextBox>
           </Items>
         </Panel>
         <TextBox Width="18.839cm" Height="0.5cm" Left="0.144cm" Top="3.041cm" Value="= &quot;A tulajdonjogot a számla kiegyenlítéséig fenntartjuk! Késedelmi kamat évi 20%!&quot;" Name="textBox33">
@@ -421,6 +421,20 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
+        <TextBox Width="18.839cm" Height="0.484cm" Left="0.144cm" Top="4.526cm" Value="= &quot;Árfolyam: &quot; + Fields.exchangeRate + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox40">
+          <Style Visible="True" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="True" />
+              <Filters>
+                <Filter Expression="= Fields.currencyCode" Operator="Equal" Value="= &quot;HUF&quot;" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
+        </TextBox>
+        <TextBox Width="1.181in" Height="0.236in" Left="0.236in" Top="0.552in" Value="= Fields.currencyCode" Name="textBox41" />
       </Items>
     </ReportFooterSection>
     <ReportHeaderSection Height="4.1cm" Name="reportHeaderSection1">
