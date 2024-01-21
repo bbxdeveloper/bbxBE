@@ -80,5 +80,13 @@ namespace bbxBE.Application.Queries.ViewModels
         public string UserName { get; set; }
 
 
+        [ColumnLabel("Bruttó")]
+        [Description("A számla végösszege a számla pénznemében")]
+        public decimal InvoiceGrossAmount { get; set; }
+
+        [ColumnLabel("Bruttó HUF")]
+        [Description("A számla végösszege forintban")]
+        public decimal InvoiceGrossAmountHUF { get; set; }
+
     }
 }
