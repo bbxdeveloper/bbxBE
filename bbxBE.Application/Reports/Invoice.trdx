@@ -350,7 +350,7 @@
         </Panel>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="4.421cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="4.905cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
@@ -362,7 +362,7 @@
             <Font Name="Courier New" Size="9pt" />
           </Style>
         </TextBox>
-        <Panel Width="10.684cm" Height="2.268cm" Left="4.215cm" Top="0.168cm" Name="panel7">
+        <Panel Width="11.285cm" Height="2.268cm" Left="4.215cm" Top="0.168cm" Name="panel7">
           <Items>
             <Table Width="9.663cm" Height="0.4cm" Left="0.013cm" Top="1.068cm" Name="tableSummaryByVatRates">
               <Body>
@@ -485,8 +485,8 @@
                 <Font Name="Courier New" Size="9pt" Bold="True" />
               </Style>
             </TextBox>
-            <TextBox Width="0.847cm" Height="0.35cm" Left="9.676cm" Top="1.818cm" Value="Ft" Name="textBox74">
-              <Style TextAlign="Center" VerticalAlign="Middle">
+            <TextBox Width="1.309cm" Height="0.35cm" Left="9.676cm" Top="1.818cm" Value="= Fields.currencyCodeX" Name="textBox74">
+              <Style TextAlign="Left" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
@@ -636,6 +636,19 @@
               <Style Visible="False" />
               <Filters>
                 <Filter Expression="= Fields.isFA" Operator="NotEqual" Value="= True" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
+        </TextBox>
+        <TextBox Width="18.839cm" Height="0.484cm" Left="0.055cm" Top="4.421cm" Value="= &quot;Árfolyam: &quot; + Fields.exchangeRate + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox20">
+          <Style Visible="True" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.currencyCode" Operator="Equal" Value="= &quot;HUF&quot;" />
               </Filters>
             </FormattingRule>
           </ConditionalFormatting>
