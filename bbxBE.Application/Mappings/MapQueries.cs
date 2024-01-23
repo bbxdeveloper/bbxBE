@@ -267,9 +267,9 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.PaymentDate, opt => opt.MapFrom(src => src.Invoice.PaymentDate))
              .ForMember(dst => dst.CustomerID, opt => opt.MapFrom(src => (src.Invoice.Incoming ? src.Invoice.SupplierID : src.Invoice.CustomerID)))
              .ForMember(dst => dst.CustomerName, opt => opt.MapFrom(src => (src.Invoice.Incoming ? src.Invoice.Supplier.CustomerName : src.Invoice.Customer.CustomerName)))
-             .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.CurrencyCode)));
-
-            ;
+             .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.CurrencyCode)))
+             .ForMember(dst => dst.InvoiceGrossAmount, opt => opt.MapFrom(src => src.Invoice.InvoiceGrossAmount))
+             .ForMember(dst => dst.InvoiceGrossAmountHUF, opt => opt.MapFrom(src => src.Invoice.InvoiceGrossAmountHUF));
         }
 
         private static string enStockCardTypeNameResolver(string ScType)

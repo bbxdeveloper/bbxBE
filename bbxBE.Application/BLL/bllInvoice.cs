@@ -100,7 +100,7 @@ namespace bbxBE.Application.BLL
                 //összesítők
 
                 //Kedvezmény nélküli nettó
-                var InvoiceNetAmountWithoutDiscount = invoice.InvoiceLines.Sum(s => s.LineNetAmountHUF);
+                var InvoiceNetAmountWithoutDiscount = invoice.InvoiceLines.Sum(s => s.LineNetAmount);
                 var InvoiceNetAmountWithoutDiscountHUF = invoice.InvoiceLines.Sum(s => s.LineNetAmountHUF);
 
                 //Nettóból adott kedvezmény mértéke
