@@ -30,31 +30,33 @@ namespace bbxBE.Application.BLL
                 //Tételsorok előfeldolgozása
                 foreach (var ln in invoice.InvoiceLines)
                 {
+                    var lineRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 3);
 
                     ln.UnitPriceHUF = ln.UnitPrice * ln.LineExchangeRate;
 
-                    ln.LineNetAmount = Math.Round(ln.UnitPrice * ln.Quantity, 1);
-                    ln.LineNetAmountHUF = Math.Round(ln.LineNetAmount * ln.LineExchangeRate, 1);
+                    ln.LineNetAmount = Math.Round(ln.UnitPrice * ln.Quantity, lineRound);
+                    ln.LineNetAmountHUF = Math.Round(ln.LineNetAmount * ln.LineExchangeRate, lineRound);
 
-                    ln.LineVatAmount = Math.Round(ln.LineNetAmount * ln.VatPercentage, 1);
-                    ln.LineVatAmountHUF = Math.Round(ln.LineVatAmount * ln.LineExchangeRate, 1);
+                    ln.LineVatAmount = Math.Round(ln.LineNetAmount * ln.VatPercentage, lineRound);
+                    ln.LineVatAmountHUF = Math.Round(ln.LineVatAmount * ln.LineExchangeRate, lineRound);
 
                     ln.LineGrossAmountNormal = ln.LineNetAmount + ln.LineVatAmount;
                     ln.LineGrossAmountNormalHUF = ln.LineNetAmountHUF + ln.LineVatAmountHUF;
 
                     if (ln.LineDiscountPercent != 0)
                     {
+                        var discountRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 2 : 3);
                         //kerekítési veszteségek elkerüléséért 2 tizedesre kerekítjük a discounted mezőket
                         //
-                        InvoiceDiscount += Math.Round(ln.LineNetAmount * ln.LineDiscountPercent / 100, 2);
-                        InvoiceDiscountHUF += Math.Round(ln.LineNetAmountHUF * ln.LineDiscountPercent / 100, 2);
+                        InvoiceDiscount += Math.Round(ln.LineNetAmount * ln.LineDiscountPercent / 100, discountRound);
+                        InvoiceDiscountHUF += Math.Round(ln.LineNetAmountHUF * ln.LineDiscountPercent / 100, discountRound);
 
-                        ln.LineNetDiscountedAmount = Math.Round(ln.LineNetAmount * (1 - ln.LineDiscountPercent / 100), 2);
-                        ln.LineNetDiscountedAmountHUF = Math.Round(ln.LineNetAmountHUF * (1 - ln.LineDiscountPercent / 100), 2);
-                        ln.LineVatDiscountedAmount = Math.Round(ln.LineVatAmount * (1 - ln.LineDiscountPercent / 100), 2);
-                        ln.LineVatDiscountedAmountHUF = Math.Round(ln.LineVatAmountHUF * (1 - ln.LineDiscountPercent / 100), 2);
-                        ln.LineGrossDiscountedAmountNormal = Math.Round(ln.LineGrossAmountNormal * (1 - ln.LineDiscountPercent / 100), 2);
-                        ln.LineGrossDiscountedAmountNormalHUF = Math.Round(ln.LineGrossAmountNormalHUF * (1 - ln.LineDiscountPercent / 100), 2);
+                        ln.LineNetDiscountedAmount = Math.Round(ln.LineNetAmount * (1 - ln.LineDiscountPercent / 100), discountRound);
+                        ln.LineNetDiscountedAmountHUF = Math.Round(ln.LineNetAmountHUF * (1 - ln.LineDiscountPercent / 100), discountRound);
+                        ln.LineVatDiscountedAmount = Math.Round(ln.LineVatAmount * (1 - ln.LineDiscountPercent / 100), discountRound);
+                        ln.LineVatDiscountedAmountHUF = Math.Round(ln.LineVatAmountHUF * (1 - ln.LineDiscountPercent / 100), discountRound);
+                        ln.LineGrossDiscountedAmountNormal = Math.Round(ln.LineGrossAmountNormal * (1 - ln.LineDiscountPercent / 100), discountRound);
+                        ln.LineGrossDiscountedAmountNormalHUF = Math.Round(ln.LineGrossAmountNormalHUF * (1 - ln.LineDiscountPercent / 100), discountRound);
                     }
                     else
                     {
@@ -70,15 +72,18 @@ namespace bbxBE.Application.BLL
 
                 //SummaryByVatrate (Megj: A Bizonylatkedvezménnyel csökkentett árral kell számolni)
 
+                var vatSummaryRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 3);
+
                 invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
                         .Select(g =>
                         {
-                            var VatRateNetAmount = Math.Round(g.Sum(s => s.LineNetDiscountedAmount), 1);
-                            var VatRateNetAmountHUF = Math.Round(g.Sum(s => s.LineNetDiscountedAmountHUF), 1);
+
+                            var VatRateNetAmount = Math.Round(g.Sum(s => s.LineNetDiscountedAmount), vatSummaryRound);
+                            var VatRateNetAmountHUF = Math.Round(g.Sum(s => s.LineNetDiscountedAmountHUF), vatSummaryRound);
                             var VatPercentage = g.First().VatPercentage;    //Áfa kulcs
 
-                            var VatRateVatAmount = Math.Round(g.Sum(s => s.LineVatDiscountedAmount), (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
-                            var VatRateVatAmountHUF = Math.Round(g.Sum(s => s.LineVatDiscountedAmountHUF), 0);
+                            var VatRateVatAmount = Math.Round(g.Sum(s => s.LineVatDiscountedAmount), vatSummaryRound);
+                            var VatRateVatAmountHUF = Math.Round(g.Sum(s => s.LineVatDiscountedAmountHUF), vatSummaryRound);
 
 
                             var VatRateGrossAmount = VatRateNetAmount + VatRateVatAmount;
@@ -98,6 +103,8 @@ namespace bbxBE.Application.BLL
                         ).ToList();
 
                 //összesítők
+                var vatGrossVatRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 2);
+                var vatGrossRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 2);
 
                 //Kedvezmény nélküli nettó
                 var InvoiceNetAmountWithoutDiscount = invoice.InvoiceLines.Sum(s => s.LineNetAmount);
@@ -112,12 +119,12 @@ namespace bbxBE.Application.BLL
                 invoice.InvoiceNetAmountHUF = InvoiceNetAmountWithoutDiscountHUF - invoice.InvoiceDiscountHUF;
 
                 //Áfa értéke
-                invoice.InvoiceVatAmount = invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmount);
-                invoice.InvoiceVatAmountHUF = invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmountHUF);
+                invoice.InvoiceVatAmount = Math.Round(invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmount), vatGrossVatRound);
+                invoice.InvoiceVatAmountHUF = Math.Round(invoice.SummaryByVatRates.Sum(s => s.VatRateVatAmountHUF), vatGrossVatRound);
 
                 //Számla bruttó értéke (kedvezménnyel együtt)
-                invoice.InvoiceGrossAmount = Math.Round(invoice.InvoiceNetAmount + invoice.InvoiceVatAmount, (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 1));
-                invoice.InvoiceGrossAmountHUF = Math.Round(invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF, 0);
+                invoice.InvoiceGrossAmount = Math.Round(invoice.InvoiceNetAmount + invoice.InvoiceVatAmount, vatGrossRound);
+                invoice.InvoiceGrossAmountHUF = Math.Round(invoice.InvoiceNetAmountHUF + invoice.InvoiceVatAmountHUF, vatGrossRound);
 
                 //kp-s kerekítések HUF számla esetén
                 if (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString()
