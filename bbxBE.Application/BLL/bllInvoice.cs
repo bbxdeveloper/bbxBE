@@ -30,7 +30,7 @@ namespace bbxBE.Application.BLL
                 //Tételsorok előfeldolgozása
                 foreach (var ln in invoice.InvoiceLines)
                 {
-                    var lineRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 3);
+                    var lineRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2);
 
                     ln.UnitPriceHUF = ln.UnitPrice * ln.LineExchangeRate;
 
@@ -45,7 +45,7 @@ namespace bbxBE.Application.BLL
 
                     if (ln.LineDiscountPercent != 0)
                     {
-                        var discountRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 2 : 3);
+                        var discountRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 2 : 2);
                         //kerekítési veszteségek elkerüléséért 2 tizedesre kerekítjük a discounted mezőket
                         //
                         InvoiceDiscount += Math.Round(ln.LineNetAmount * ln.LineDiscountPercent / 100, discountRound);
@@ -72,7 +72,7 @@ namespace bbxBE.Application.BLL
 
                 //SummaryByVatrate (Megj: A Bizonylatkedvezménnyel csökkentett árral kell számolni)
 
-                var vatSummaryRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 3);
+                var vatSummaryRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2);
 
                 invoice.SummaryByVatRates = invoice.InvoiceLines.GroupBy(g => g.VatRateID)
                         .Select(g =>
@@ -105,14 +105,15 @@ namespace bbxBE.Application.BLL
                 //összesítők
                 var vatGrossVatRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 2);
                 var vatGrossRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 0 : 2);
+                var invoiceDiscountRound = (invoice.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : 2);
 
                 //Kedvezmény nélküli nettó
                 var InvoiceNetAmountWithoutDiscount = invoice.InvoiceLines.Sum(s => s.LineNetAmount);
                 var InvoiceNetAmountWithoutDiscountHUF = invoice.InvoiceLines.Sum(s => s.LineNetAmountHUF);
 
                 //Nettóból adott kedvezmény mértéke
-                invoice.InvoiceDiscount = Math.Round(InvoiceDiscount, 1);
-                invoice.InvoiceDiscountHUF = Math.Round(InvoiceDiscountHUF, 1);
+                invoice.InvoiceDiscount = Math.Round(InvoiceDiscount, invoiceDiscountRound);
+                invoice.InvoiceDiscountHUF = Math.Round(InvoiceDiscountHUF, invoiceDiscountRound);
 
                 //Kedvezménnyel csökkentett nettó
                 invoice.InvoiceNetAmount = InvoiceNetAmountWithoutDiscount - invoice.InvoiceDiscount;
@@ -531,6 +532,8 @@ namespace bbxBE.Application.BLL
                                                                     .OrderBy(o => o.VatRateID)
                                                                     .GroupBy(g => g.VatRateID).ToList())
                 {
+
+
 
                     var discountValue = Math.Round(disountedVRGrp.Sum(s => (-s.LineDiscountPercent / 100) * s.LineNetAmount), 1);
                     var discountValueHUF = Math.Round(disountedVRGrp.Sum(s => (-s.LineDiscountPercent / 100) * s.LineNetAmountHUF), 1);
