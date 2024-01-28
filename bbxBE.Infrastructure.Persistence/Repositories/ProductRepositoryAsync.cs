@@ -775,7 +775,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var request in requestList)
             {
                 var prod = _mapper.Map<Product>(request);
-
+                prod.CreateTime = DateTime.UtcNow;
                 prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
 
                 prod.ProductCodes = new List<ProductCode>();
@@ -830,6 +830,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             foreach (var request in requestList)
             {
                 var prod = _mapper.Map<Product>(request);
+                prod.UpdateTime = DateTime.UtcNow;
+
                 prod.NatureIndicator = enCustlineNatureIndicatorType.PRODUCT.ToString();
                 var pcCode = new ProductCode() { ProductID = prod.ID, ProductCodeCategory = enCustproductCodeCategory.OWN.ToString(), ProductCodeValue = request.ProductCode };
                 prod.ProductCodes = new List<ProductCode>();
@@ -851,5 +853,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return await this.UpdateProductRangeAsync(prodList, productGroupCodeList, originCodeList, vatRateCodeList);
         }
+
     }
 }

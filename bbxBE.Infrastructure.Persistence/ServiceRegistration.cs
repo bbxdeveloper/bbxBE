@@ -27,7 +27,7 @@ namespace bbxBE.Infrastructure.Persistence
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseInMemoryDatabase("ApplicationDb"));
 
-                services.AddDbContext<ApplicationQueryDbContext>(options =>
+                services.AddDbContext<ApplicationGlobalDbContext>(options =>
                     options.UseInMemoryDatabase("ApplicationDb"));
             }
             else
@@ -43,15 +43,14 @@ namespace bbxBE.Infrastructure.Persistence
                         optionsLifetime: ServiceLifetime.Singleton
                );
 
-                services.AddDbContext<ApplicationQueryDbContext>(options =>
-                    options.UseSqlServer(
-                        configuration.GetConnectionString("bbxdbconnection"),
-                        b => b.MigrationsAssembly(typeof(ApplicationQueryDbContext).Assembly.FullName)
-                        ),
-                        contextLifetime: ServiceLifetime.Singleton,
-                         optionsLifetime: ServiceLifetime.Singleton
-                );
-
+                services.AddDbContext<ApplicationGlobalDbContext>(options =>
+                     options.UseSqlServer(
+                         configuration.GetConnectionString("bbxdbconnection"),
+                         b => b.MigrationsAssembly(typeof(ApplicationGlobalDbContext).Assembly.FullName)
+                         ),
+                         contextLifetime: ServiceLifetime.Singleton,
+                          optionsLifetime: ServiceLifetime.Singleton
+                 );
             }
 
             // Connection Dappernak
@@ -64,7 +63,7 @@ namespace bbxBE.Infrastructure.Persistence
             //
             services.AddTransient(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
             services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
-            services.AddSingleton<IApplicationQueryDbContext, ApplicationQueryDbContext>();
+            services.AddSingleton<IApplicationGlobalDbContext, ApplicationGlobalDbContext>();
 
             services.AddTransient<IUserRepositoryAsync, UserRepositoryAsync>();
             services.AddTransient<ICustomerRepositoryAsync, CustomerRepositoryAsync>();
@@ -90,6 +89,11 @@ namespace bbxBE.Infrastructure.Persistence
             services.AddTransient<INAVXChangeRepositoryAsync, NAVXChangeRepositoryAsync>();
             services.AddTransient<INAVXResultRepositoryAsync, NAVXResultRepositoryAsync>();
             services.AddTransient<IInvPaymentRepositoryAsync, InvPaymentRepositoryAsync>();
+
+            services.AddTransient<IProductGlobalRepositoryAsync, ProductGlobalRepositoryAsync>();
+            services.AddTransient<IProductGroupGlobalRepositoryAsync, ProductGroupGlobalRepositoryAsync>();
+            services.AddTransient<IOriginGlobalRepositoryAsync, OriginGlobalRepositoryAsync>();
+            services.AddTransient<IProductCodeGlobalRepositoryAsync, ProductCodeGlobalRepositoryAsync>();
 
 
             //Cache-k
