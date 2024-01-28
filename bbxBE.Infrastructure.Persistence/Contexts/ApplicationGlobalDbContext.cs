@@ -4,9 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace bbxBE.Infrastructure.Persistence.Contexts
 {
-    public class ApplicationQueryDbContext : ApplicationDbContext, IApplicationQueryDbContext
+    public class ApplicationGlobalDbContext : ApplicationDbContext, IApplicationGlobalDbContext
     {
-        public ApplicationQueryDbContext(DbContextOptions<ApplicationDbContext> options, IDateTimeService dateTime, ILoggerFactory loggerFactory)
+        public ApplicationGlobalDbContext(DbContextOptions<ApplicationDbContext> options, IDateTimeService dateTime, ILoggerFactory loggerFactory)
             : base(options, dateTime, loggerFactory)
         {
         }
