@@ -197,6 +197,11 @@ namespace bbxBE.Application.Commands.cmdImport
             // save Prodcuts list into DB. They need to update only
             try
             {
+                // fill update Product items in Update list
+                for (int i = 0; i < updateProductCommands.Count; i++)
+                {
+                    UpdateUnitOfMeasureIfNotExists(updateProductCommands[i]);
+                }
                 await _productRepository.UpdateRangeAsynch(updateProductCommands, cancellationToken);
             }
             catch (Exception ex)
@@ -211,6 +216,10 @@ namespace bbxBE.Application.Commands.cmdImport
             // save Prodcuts list into DB. They need to create only
             try
             {
+                for (int i = 0; i < createProductCommands.Count; i++)
+                {
+                    UpdateUnitOfMeasureIfNotExists(createProductCommands[i]);
+                }
                 await _productRepository.CreateRangeAsynch(createProductCommands, cancellationToken);
             }
             catch (Exception ex)

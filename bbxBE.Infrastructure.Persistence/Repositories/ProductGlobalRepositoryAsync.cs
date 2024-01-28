@@ -12,8 +12,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             ICacheService<Product> productCacheService,
             ICacheService<ProductGroup> productGroupCacheService,
             ICacheService<Origin> originCacheService,
-            ICacheService<VatRate> vatRateCacheService,
-            IProductCodeGlobalRepositoryAsync productCodeGlobalRepository
+            ICacheService<VatRate> vatRateCacheService
             ) : base(dbContext,
                 modelHelper, mapper, mockData,
                 productCacheService,
