@@ -105,7 +105,7 @@ namespace bbxBE.Application.Commands.cmdImport
 
                 var mappedProductColumns = new ProductMappingParser().GetProductMapping(mapFileContent).ReCalculateIndexValues();
                 await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"Parsing CSV...", SessionID, TimeSpan.FromHours(2));
-                var productItemsFromCSV = GetProductItemsAsync(CSVContent, FieldSeparator, mappedProductColumns.productMap, SessionID).GetAwaiter().GetResult();
+                var productItemsFromCSV = await GetProductItemsAsync(CSVContent, FieldSeparator, mappedProductColumns.productMap, SessionID);
                 var importProductResponse = new ImportedItemsStatistics { AllItemsCount = productItemsFromCSV.Count };
 
 
@@ -143,7 +143,7 @@ namespace bbxBE.Application.Commands.cmdImport
                         await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"Insert/Update preprocessing:{counter}/{productItemsFromCSV.Count}", SessionID, TimeSpan.FromHours(2));
                     }
                 }
-                await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "Write is processing", SessionID, TimeSpan.FromHours(2));
+                await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "Write is processing...", SessionID, TimeSpan.FromHours(2));
 
 
                 if (createProductCommands.Count > 0)
