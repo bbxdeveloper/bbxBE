@@ -23,6 +23,10 @@ namespace bbxBE.Application.Commands.cmdImport
         [Description("Mezõelválasztó")]
         public string FieldSeparator { get; set; } = ";";
 
+        [ColumnLabel("Csak új tétel felvitele?")]
+        [Description("Csak új tétel felvitele?")]
+        public bool OnlyInsert { get; set; } = false;
+
         [JsonIgnore]
         public string SessionID { get; set; }
 
@@ -55,7 +59,7 @@ namespace bbxBE.Application.Commands.cmdImport
 
             _ = Task.Run(async () =>
             {
-                await _pproc.Process(mapContent, CSVContent, request.FieldSeparator, request.SessionID, cancellationToken);
+                await _pproc.Process(mapContent, CSVContent, request.FieldSeparator, request.SessionID, request.OnlyInsert, cancellationToken);
             }
             );
             var resp = new Response<String>("Productimport has been started");

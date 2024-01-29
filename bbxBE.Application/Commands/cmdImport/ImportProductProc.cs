@@ -91,7 +91,7 @@ namespace bbxBE.Application.Commands.cmdImport
         }
 
 
-        public async Task Process(string mapFileContent, string CSVContent, string FieldSeparator, string SessionID, CancellationToken cancellationToken)
+        public async Task Process(string mapFileContent, string CSVContent, string FieldSeparator, string SessionID, bool onlyInsert, CancellationToken cancellationToken)
         {
 
             await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "0/0", SessionID, TimeSpan.FromHours(2));
@@ -150,7 +150,7 @@ namespace bbxBE.Application.Commands.cmdImport
                 {
                     await CreateProdcutItems(importProductResponse, cancellationToken);
                 }
-                if (updateProductCommands.Count > 0)
+                if (!onlyInsert && updateProductCommands.Count > 0)
                 {
                     await UpdateProductItems(importProductResponse, cancellationToken);
                 }
@@ -200,8 +200,20 @@ namespace bbxBE.Application.Commands.cmdImport
                 // fill update Product items in Update list
                 for (int i = 0; i < updateProductCommands.Count; i++)
                 {
+                    await CreateProductGroupCodeIfNotExistsAsync(updateProductCommands[i].ProductGroupCode, cancellationToken);
+                    await CreateOriginCodeIfNotExistsAsync(updateProductCommands[i].OriginCode, cancellationToken);
                     UpdateUnitOfMeasureIfNotExists(updateProductCommands[i]);
                 }
+                if (createableOriginCodes.Count > 0)
+                {
+                    await _originRepository.AddOriginRangeAsync(createableOriginCodes);
+                }
+
+                if (createableProductGroupCodes.Count > 0)
+                {
+                    await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
+                }
+
                 await _productRepository.UpdateRangeAsynch(updateProductCommands, cancellationToken);
             }
             catch (Exception ex)
@@ -218,8 +230,19 @@ namespace bbxBE.Application.Commands.cmdImport
             {
                 for (int i = 0; i < createProductCommands.Count; i++)
                 {
+                    await CreateProductGroupCodeIfNotExistsAsync(createProductCommands[i].ProductGroupCode, cancellationToken);
+                    await CreateOriginCodeIfNotExistsAsync(createProductCommands[i].OriginCode, cancellationToken);
                     UpdateUnitOfMeasureIfNotExists(createProductCommands[i]);
                 }
+                if (createableOriginCodes.Count > 0)
+                {
+                    await _originRepository.AddOriginRangeAsync(createableOriginCodes);
+                }
+                if (createableProductGroupCodes.Count > 0)
+                {
+                    await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
+                }
+
                 await _productRepository.CreateRangeAsynch(createProductCommands, cancellationToken);
             }
             catch (Exception ex)
@@ -274,30 +297,30 @@ namespace bbxBE.Application.Commands.cmdImport
 
         }
 
-        private async Task CreateOriginCodeIfNotExistsAsync(object item, CancellationToken cancellationToken)
+        private async Task CreateOriginCodeIfNotExistsAsync(string OriginCode, CancellationToken cancellationToken)
         {
-            if (!String.IsNullOrEmpty((item as CreateProductCommand).OriginCode))
+            if (!String.IsNullOrEmpty(OriginCode))
             {
-                if (_originRepository.IsUniqueOriginCode((item as CreateProductCommand).OriginCode) && !createableOriginCodes.Any(b => b.OriginCode == (item as CreateProductCommand).OriginCode))
+                if (_originRepository.IsUniqueOriginCode(OriginCode) && !createableOriginCodes.Any(b => b.OriginCode == OriginCode))
                 {
                     createableOriginCodes.Add(new Origin
                     {
-                        OriginCode = (item as CreateProductCommand).OriginCode,
-                        OriginDescription = (item as CreateProductCommand).OriginCode
+                        OriginCode = OriginCode,
+                        OriginDescription = OriginCode
                     });
                 }
             }
         }
 
-        private async Task CreateProductGroupCodeIfNotExistsAsync(object item, CancellationToken cancellationToken)
+        private async Task CreateProductGroupCodeIfNotExistsAsync(string ProductGroupCode, CancellationToken cancellationToken)
         {
 
-            if (_productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode) && !createableProductGroupCodes.Any(aa => aa.ProductGroupCode == (item as CreateProductCommand).ProductGroupCode))
+            if (_productGroupRepository.IsUniqueProductGroupCode(ProductGroupCode) && !createableProductGroupCodes.Any(aa => aa.ProductGroupCode == ProductGroupCode))
             {
                 createableProductGroupCodes.Add(new ProductGroup
                 {
-                    ProductGroupCode = (item as CreateProductCommand).ProductGroupCode,
-                    ProductGroupDescription = (item as CreateProductCommand).ProductGroupCode
+                    ProductGroupCode = ProductGroupCode,
+                    ProductGroupDescription = ProductGroupCode
                 });
             }
         }
@@ -386,6 +409,10 @@ namespace bbxBE.Application.Commands.cmdImport
                 createProductCommand.EAN = productMapper.ContainsKey(EANFieldName) ? currentFieldsArray[productMapper[EANFieldName]].Replace("\"", "").Trim() : null;
                 createProductCommand.VTSZ = productMapper.ContainsKey(VTSZFieldName) ? currentFieldsArray[productMapper[VTSZFieldName]].Replace("\"", "").Trim() : null;
                 createProductCommand.ProductGroupCode = productMapper.ContainsKey(ProductGroupCodeFieldName) ? currentFieldsArray[productMapper[ProductGroupCodeFieldName]].Replace("\"", "").Trim() : null;
+                if (string.IsNullOrWhiteSpace(createProductCommand.ProductGroupCode))
+                {
+                    createProductCommand.ProductGroupCode = createProductCommand.ProductCode.Substring(0, 3);
+                }
 
                 var FAFA = productMapper.ContainsKey(FAFAFieldName) ?
                     (currentFieldsArray[productMapper[FAFAFieldName]] == "1" || currentFieldsArray[productMapper[FAFAFieldName]] == "IGAZ" ?
