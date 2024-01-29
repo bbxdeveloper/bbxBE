@@ -156,9 +156,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
 
                     p_product.ProductGroupID = pg.ID;
-                    p_product.ProductGroup = pg;
-                    _dbContext.Instance.Entry(pg).State = EntityState.Unchanged;
-
+                }
+                else
+                {
+                    pg = new ProductGroup() { ProductGroupCode = p_ProductGroupCode, };
                 }
             }
 
@@ -178,8 +179,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 {
 
                     p_product.OriginID = og.ID;
-                    p_product.Origin = og;
-                    _dbContext.Instance.Entry(og).State = EntityState.Unchanged;
                 }
             }
 
@@ -208,8 +207,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
 
             p_product.VatRateID = vr.ID;
-            p_product.VatRate = vr;
-            _dbContext.Instance.Entry(vr).State = EntityState.Unchanged;
 
             foreach (var pc in p_product.ProductCodes)
             {
@@ -248,16 +245,18 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<int> AddProductRangeAsync(List<Product> p_productList, List<string> p_ProductGroupCodeList, List<string> p_OriginCodeList, List<string> p_VatRateCodeList)
         {
             var item = 0;
+            var bulkItemID = Int64.MaxValue - p_productList.Count();
 
             foreach (var prod in p_productList)
             {
                 PrepareNewProduct(prod, p_ProductGroupCodeList[item], p_OriginCodeList[item], p_VatRateCodeList[item]);
-                item++;
+                prod.ID = bulkItemID + item++;   //BulkInsertAsync -nak be kell állítani egy nagyon magas ID értéket, hogy a PreserveInsertOrder működjön:https://github.com/borisdj/EFCore.BulkExtensions/issues/204
             }
 
             try
             {
-                await _dbContext.Instance.BulkInsertAsync(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
+                //MEGJ: ey a beállítás rosszul adja vissza az ID-ket. _dbContext.Instance.BulkInsert(p_productList, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
+                await _dbContext.Instance.BulkInsertAsync(p_productList, new BulkConfig { PreserveInsertOrder = true, SetOutputIdentity = true, BulkCopyTimeout = 0, WithHoldlock = false, BatchSize = 5000 });
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception e)
@@ -272,6 +271,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 foreach (var productCode in product.ProductCodes)
                 {
                     productCode.ProductID = product.ID; // sets FK to match its linked PK that was generated in DB
+                    productCode.CreateTime = DateTime.UtcNow;
                 }
                 productCodes.AddRange(product.ProductCodes);
             }
@@ -304,7 +304,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (pg != null)
                 {
                     p_productUpd.ProductGroupID = pg.ID;
-                    p_productUpd.ProductGroup = pg;
+                    //                   p_productUpd.ProductGroup = pg;
                 }
             }
 
@@ -325,7 +325,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (origin != null)
                 {
                     p_productUpd.OriginID = origin.ID;
-                    p_productUpd.Origin = origin;
+                    //                    p_productUpd.Origin = origin;
                 }
             }
 
@@ -347,7 +347,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (vatRate != null)
                 {
                     p_productUpd.VatRateID = vatRate.ID;
-                    p_productUpd.VatRate = vatRate;
+                    //                  p_productUpd.VatRate = vatRate;
                 }
             }
             return p_productUpd;
@@ -411,6 +411,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 throw e;
             }
 
+            /* Update esetén nem foglalkozunk a ProductCode-al
             var productCodes = new List<ProductCode>();
             foreach (var product in p_productList)
             {
@@ -422,6 +423,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             await _dbContext.Instance.BulkUpdateAsync(productCodes);
             //await RefreshProductCache();
+            */
 
             await _dbContext.SaveChangesAsync();
 
@@ -761,7 +763,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 pcEAN = new ProductCode() { ProductCodeCategory = enCustproductCodeCategory.EAN.ToString(), ProductCodeValue = request.EAN };
                 prod.ProductCodes.Add(pcEAN);
             }
-
             prod = await this.AddProductAsync(prod, request.ProductGroupCode, request.OriginCode, request.VatRateCode);
             return prod;
         }

@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -98,9 +97,10 @@ namespace bbxBE.WebApi.Controllers.v1
 
 
         [HttpPost("import")]
-        public async Task<IActionResult> Import(List<IFormFile> productFiles, string fieldSeparator)
+        public async Task<IActionResult> Import([FromQuery] ImportProductCommand productRequest)
         {
-            var productRequest = new ImportProductCommand() { ProductFiles = productFiles, FieldSeparator = fieldSeparator, SessionID = HttpContext.Session.Id };
+            productRequest.SessionID = HttpContext.Session.Id;
+            //            var productRequest = new ImportProductCommand() { ProductFiles = productFiles, FieldSeparator = fieldSeparator, SessionID = HttpContext.Session.Id, OnlyInsert = onlyInsert };
             return Ok(await Mediator.Send(productRequest));
         }
     }
