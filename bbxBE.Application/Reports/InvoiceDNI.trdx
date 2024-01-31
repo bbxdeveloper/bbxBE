@@ -357,7 +357,7 @@
         <BorderWidth Top="1pt" />
       </Style>
       <Items>
-        <TextBox Width="18.839cm" Height="0.5cm" Left="0cm" Top="2.568cm" Value="= &quot;Köszönjük a vásárlást! &quot; + &quot;Bizonylatot kiállította: &quot; + Fields.userName" Name="textBox59">
+        <TextBox Width="18.839cm" Height="0.5cm" Left="0cm" Top="2.568cm" Value="= &quot;Bizonylatot kiállította: &quot; + Fields.userName" Name="textBox59">
           <Style Visible="False" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
