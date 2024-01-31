@@ -350,14 +350,14 @@
         </Panel>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="4.905cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="5.968cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
         <BorderWidth Top="1pt" />
       </Style>
       <Items>
-        <TextBox Width="18.839cm" Height="0.5cm" Left="0.042cm" Top="2.436cm" Value="= &quot;Köszönjük a vásárlást! &quot; + &quot;Bizonylatot kiállította: &quot; + Fields.userName" Name="textBox59">
+        <TextBox Width="18.992cm" Height="1.132cm" Left="0.042cm" Top="2.436cm" Value="= &quot;Köszönjük a vásárlást! Az áfa törvény 169. és 177. paragrafusa értelmében a számla pecsét és aláírás nélkül érvényes! A kiterjesztett gyártói felelősségi díj megfizetése az eladót terheli!&#xD;&#xA;Bizonylatot kiállította: &quot; + Fields.userName" Name="textBox59">
           <Style VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -575,7 +575,7 @@
             </TextBox>
           </Items>
         </Panel>
-        <TextBox Width="18.839cm" Height="0.5cm" Left="0.042cm" Top="2.936cm" Value="= &quot;A tulajdonjogot a számla kiegyenlítéséig fenntartjuk! Késedelmi kamat évi 20%!&quot;" Name="textBox9">
+        <TextBox Width="18.992cm" Height="0.8cm" Left="0.042cm" Top="3.568cm" Value="= &quot;A tulajdonjogot a számla kiegyenlítéséig fenntartjuk! Késedelmi kamat évi 20%! &#xD;&#xA;Kérjük átutalásnál a számla sorszámát tüntessék fel!&quot;" Name="textBox9">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -588,7 +588,7 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="10.658cm" Height="0.5cm" Left="0.042cm" Top="3.436cm" Value="= &quot;Bizonylat termékdíj-tartalom áfával növelt összege:&quot;" Name="textBox15">
+        <TextBox Width="10.658cm" Height="0.5cm" Left="0.042cm" Top="4.368cm" Value="= &quot;Bizonylat termékdíj-tartalom áfával növelt összege:&quot;" Name="textBox15">
           <Style Visible="True" TextAlign="Left" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -601,7 +601,7 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="0.701in" Height="0.191in" Left="4.216in" Top="1.359in" Value="= Fields.invoiceProductFeeGrossSummary" Format="{0:# ##0.00}" Name="textBox16">
+        <TextBox Width="0.701in" Height="0.191in" Left="4.213in" Top="1.726in" Value="= Fields.invoiceProductFeeGrossSummary" Format="{0:# ##0.00}" Name="textBox16">
           <Style Visible="True" TextAlign="Left" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -614,7 +614,7 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="0.551in" Height="0.191in" Left="4.917in" Top="1.359in" Value="= Fields.currencyCodeX" Format="{0:# ### ##0.00}" Name="textBox18">
+        <TextBox Width="0.551in" Height="0.191in" Left="4.918in" Top="1.726in" Value="= Fields.currencyCodeX" Format="{0:# ### ##0.00}" Name="textBox18">
           <Style Visible="True" TextAlign="Left" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -627,7 +627,7 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="18.839cm" Height="0.484cm" Left="0.042cm" Top="3.937cm" Value="= &quot;A fordított adózás szabályai szerint az adót a vevő fizeti meg.&quot;" Name="textBox38">
+        <TextBox Width="19.012cm" Height="0.484cm" Left="0cm" Top="4.868cm" Value="= &quot;A fordított adózás szabályai szerint az adót a vevő fizeti meg.&quot;" Name="textBox38">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -640,7 +640,7 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="18.839cm" Height="0.484cm" Left="0.055cm" Top="4.421cm" Value="= &quot;Árfolyam: &quot; + Fields.exchangeRate + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox20">
+        <TextBox Width="18.994cm" Height="0.484cm" Left="0cm" Top="5.352cm" Value="= &quot;Árfolyam: &quot; + Fields.exchangeRate + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox20">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
