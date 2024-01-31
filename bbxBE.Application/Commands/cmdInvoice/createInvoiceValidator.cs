@@ -36,10 +36,10 @@ namespace bbxBE.Application.Commands.cmdInvoice
                 .When(p => p.Incoming)
                 .WithMessage(bbxBEConsts.ERR_REQUIRED);
 
-            RuleFor(r => new { r.InvoiceIssueDate, r.InvoiceDeliveryDate, r.Incoming }).Must(m => m.Incoming || m.InvoiceIssueDate >= m.InvoiceDeliveryDate)
-                .WithMessage(bbxBEConsts.ERR_INV_DATE1);
+            // Lehetséges a későbbre számlázás, azaz a számla dátuma lehet korábbi, mint a teljesítés
+
             RuleFor(r => new { r.InvoiceIssueDate, r.PaymentDate, r.Incoming }).Must(m => m.Incoming || m.InvoiceIssueDate <= m.PaymentDate)
-                .WithMessage(bbxBEConsts.ERR_INV_DATE2);
+                .WithMessage(bbxBEConsts.ERR_INV_DATE_PAYMENT);
 
             RuleFor(r => r.CustomerID)
                 .NotEmpty()
