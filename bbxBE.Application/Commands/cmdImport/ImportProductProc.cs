@@ -40,13 +40,14 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string EANFieldName = "EAN";
         private const string VTSZFieldName = "VTSZ";
         private const string NODISCOUNTFieldName = "NODISCOUNT";
-        private const string ImportLockKey = "PRODIMPORT";
-        private const string BESZARFieldName = "BESZAR";
         private const string SulyFieldName = "SULY";
+        private const string FAFAFieldName = "FAFA";
 
-        private readonly IProductRepositoryAsync _productRepository;
-        private readonly IProductGroupRepositoryAsync _productGroupRepository;
-        private readonly IOriginRepositoryAsync _originRepository;
+
+        private const string ImportLockKey = "PRODIMPORT";
+        private readonly IProductGlobalRepositoryAsync _productRepository;
+        private readonly IProductGroupGlobalRepositoryAsync _productGroupRepository;
+        private readonly IOriginGlobalRepositoryAsync _originRepository;
 
         private readonly ICacheService<Product> _productcacheService;
         private readonly ICacheService<ProductGroup> _productGroupCacheService;
@@ -66,16 +67,16 @@ namespace bbxBE.Application.Commands.cmdImport
         private List<ProductGroup> createableProductGroupCodes = new List<ProductGroup>();
 
 
-        public ImportProductProc(IProductRepositoryAsync productGlobalRepository,
-                            IProductGroupRepositoryAsync productGroupCodeGlobalRepository,
-                            IOriginRepositoryAsync originGlobalRepository,
-                            IMapper mapper,
-                            ILogger logger,
-                            ICacheService<Product> productCacheService,
-                            ICacheService<ProductGroup> productGroupCacheService,
-                            ICacheService<Origin> originCacheService,
-                            ICacheService<VatRate> vatRateCacheService,
-                            IExpiringData<ExpiringDataObject> expiringData)
+        public ImportProductProc(IProductGlobalRepositoryAsync productGlobalRepository,
+                                           IProductGroupGlobalRepositoryAsync productGroupCodeGlobalRepository,
+                                           IOriginGlobalRepositoryAsync originGlobalRepository,
+                                           IMapper mapper,
+                                           ILogger logger,
+                                           ICacheService<Product> productCacheService,
+                                           ICacheService<ProductGroup> productGroupCacheService,
+                                           ICacheService<Origin> originCacheService,
+                                           ICacheService<VatRate> vatRateCacheService,
+                                           IExpiringData<ExpiringDataObject> expiringData)
         {
             _productRepository = productGlobalRepository;
             _productGroupRepository = productGroupCodeGlobalRepository;
@@ -90,7 +91,7 @@ namespace bbxBE.Application.Commands.cmdImport
         }
 
 
-        public async Task Process(string mapFileContent, string CSVContent, string FieldSeparator, string SessionID, CancellationToken cancellationToken)
+        public async Task Process(string mapFileContent, string CSVContent, string FieldSeparator, string SessionID, bool onlyInsert, CancellationToken cancellationToken)
         {
 
             await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "0/0", SessionID, TimeSpan.FromHours(2));
@@ -142,17 +143,15 @@ namespace bbxBE.Application.Commands.cmdImport
                         await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"Insert/Update preprocessing:{counter}/{productItemsFromCSV.Count}", SessionID, TimeSpan.FromHours(2));
                     }
                 }
+                await _expiringData.AddOrUpdateItemAsync(ImportLockKey, "Write is processing...", SessionID, TimeSpan.FromHours(2));
 
 
                 if (createProductCommands.Count > 0)
                 {
-                    await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"CreateProdcutItems is processing...", SessionID, TimeSpan.FromHours(2));
-
                     await CreateProdcutItems(importProductResponse, cancellationToken);
                 }
-                if (updateProductCommands.Count > 0)
+                if (!onlyInsert && updateProductCommands.Count > 0)
                 {
-                    await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"UpdateProductItems is processing...", SessionID, TimeSpan.FromHours(2));
                     await UpdateProductItems(importProductResponse, cancellationToken);
                 }
 
@@ -194,15 +193,27 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private async Task UpdateProductItems(ImportedItemsStatistics importProductResponse, CancellationToken cancellationToken)
         {
-            // fill update Product items in Update list
-            for (int i = 0; i < updateProductCommands.Count; i++)
-            {
-                await CreateOrUpdateProductionAsync(updateProductCommands[i], cancellationToken);
-            }
 
             // save Prodcuts list into DB. They need to update only
             try
             {
+                // fill update Product items in Update list
+                for (int i = 0; i < updateProductCommands.Count; i++)
+                {
+                    await CreateProductGroupCodeIfNotExistsAsync(updateProductCommands[i].ProductGroupCode, cancellationToken);
+                    await CreateOriginCodeIfNotExistsAsync(updateProductCommands[i].OriginCode, cancellationToken);
+                    UpdateUnitOfMeasureIfNotExists(updateProductCommands[i]);
+                }
+                if (createableOriginCodes.Count > 0)
+                {
+                    await _originRepository.AddOriginRangeAsync(createableOriginCodes);
+                }
+
+                if (createableProductGroupCodes.Count > 0)
+                {
+                    await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
+                }
+
                 await _productRepository.UpdateRangeAsynch(updateProductCommands, cancellationToken);
             }
             catch (Exception ex)
@@ -213,22 +224,25 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private async Task CreateProdcutItems(ImportedItemsStatistics importProductResponse, CancellationToken cancellationToken)
         {
-            // fill create Product items in Create list
-            for (int i = 0; i < createProductCommands.Count; i++)
-            {
-                await CreateOrUpdateProductionAsync(createProductCommands[i], cancellationToken);
-            }
-
-            // create product groups into DB
-
-            // create origin into DB
-            await _originRepository.AddOriginRangeAsync(createableOriginCodes);
-
-            await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
 
             // save Prodcuts list into DB. They need to create only
             try
             {
+                for (int i = 0; i < createProductCommands.Count; i++)
+                {
+                    await CreateProductGroupCodeIfNotExistsAsync(createProductCommands[i].ProductGroupCode, cancellationToken);
+                    await CreateOriginCodeIfNotExistsAsync(createProductCommands[i].OriginCode, cancellationToken);
+                    UpdateUnitOfMeasureIfNotExists(createProductCommands[i]);
+                }
+                if (createableOriginCodes.Count > 0)
+                {
+                    await _originRepository.AddOriginRangeAsync(createableOriginCodes);
+                }
+                if (createableProductGroupCodes.Count > 0)
+                {
+                    await _productGroupRepository.AddProudctGroupRangeAsync(createableProductGroupCodes);
+                }
+
                 await _productRepository.CreateRangeAsynch(createProductCommands, cancellationToken);
             }
             catch (Exception ex)
@@ -242,32 +256,6 @@ namespace bbxBE.Application.Commands.cmdImport
             importProductResponse.HasErrorDuringImport = true;
             importProductResponse.ErroredItemsCount = +1;
             _logger.Error(ex.Message);
-        }
-
-        private async Task CreateOrUpdateProductionAsync(object item, CancellationToken cancellationToken)
-        {
-            switch (item.GetType().Name)
-            {
-                case "CreateProductCommand":
-                    {
-                        await CreateProductGroupCodeIfNotExistsAsync(item, cancellationToken);
-
-                        await CreateOriginCodeIfNotExistsAsync(item, cancellationToken);
-
-                        UpdateUnitOfMeasureIfNotExists(item);
-                        break;
-                    }
-                case "UpdateProductCommand":
-                    {
-                        UpdateUnitOfMeasureIfNotExists(item);
-                        break;
-                    }
-                default:
-                    break;
-            }
-
-
-            return;
         }
 
         private static void UpdateUnitOfMeasureIfNotExists(object item)
@@ -309,30 +297,30 @@ namespace bbxBE.Application.Commands.cmdImport
 
         }
 
-        private async Task CreateOriginCodeIfNotExistsAsync(object item, CancellationToken cancellationToken)
+        private async Task CreateOriginCodeIfNotExistsAsync(string OriginCode, CancellationToken cancellationToken)
         {
-            if (!String.IsNullOrEmpty((item as CreateProductCommand).OriginCode))
+            if (!String.IsNullOrEmpty(OriginCode))
             {
-                if (_originRepository.IsUniqueOriginCode((item as CreateProductCommand).OriginCode) && !createableOriginCodes.Any(b => b.OriginCode == (item as CreateProductCommand).OriginCode))
+                if (_originRepository.IsUniqueOriginCode(OriginCode) && !createableOriginCodes.Any(b => b.OriginCode == OriginCode))
                 {
                     createableOriginCodes.Add(new Origin
                     {
-                        OriginCode = (item as CreateProductCommand).OriginCode,
-                        OriginDescription = (item as CreateProductCommand).OriginCode
+                        OriginCode = OriginCode,
+                        OriginDescription = OriginCode
                     });
                 }
             }
         }
 
-        private async Task CreateProductGroupCodeIfNotExistsAsync(object item, CancellationToken cancellationToken)
+        private async Task CreateProductGroupCodeIfNotExistsAsync(string ProductGroupCode, CancellationToken cancellationToken)
         {
 
-            if (_productGroupRepository.IsUniqueProductGroupCode((item as CreateProductCommand).ProductGroupCode) && !createableProductGroupCodes.Any(aa => aa.ProductGroupCode == (item as CreateProductCommand).ProductGroupCode))
+            if (_productGroupRepository.IsUniqueProductGroupCode(ProductGroupCode) && !createableProductGroupCodes.Any(aa => aa.ProductGroupCode == ProductGroupCode))
             {
                 createableProductGroupCodes.Add(new ProductGroup
                 {
-                    ProductGroupCode = (item as CreateProductCommand).ProductGroupCode,
-                    ProductGroupDescription = (item as CreateProductCommand).ProductGroupCode
+                    ProductGroupCode = ProductGroupCode,
+                    ProductGroupDescription = ProductGroupCode
                 });
             }
         }
@@ -367,14 +355,20 @@ namespace bbxBE.Application.Commands.cmdImport
                     {
                         await _expiringData.AddOrUpdateItemAsync(ImportLockKey, $"Parsing CSV:{counter}/{lines.Count} {currentLine}", sessionID, TimeSpan.FromHours(2));
                     }
-
-                    var p = GetProductFromCSV(currentLine, productMapping, FieldSeparator);
-                    foreach (var item in p)
+                    try
                     {
-                        if ((item.Value.Active) && (!producItems.ContainsKey(item.Key)))
+                        var p = GetProductFromCSV(currentLine, productMapping, FieldSeparator);
+                        foreach (var item in p)
                         {
-                            producItems.Add(item.Key, item.Value);
+                            if ((item.Value.Active) && (!producItems.ContainsKey(item.Key)))
+                            {
+                                producItems.Add(item.Key, item.Value);
+                            }
                         }
+                    }
+                    catch
+                    {
+                        throw;
                     }
                 }
             });
@@ -415,11 +409,28 @@ namespace bbxBE.Application.Commands.cmdImport
                 createProductCommand.EAN = productMapper.ContainsKey(EANFieldName) ? currentFieldsArray[productMapper[EANFieldName]].Replace("\"", "").Trim() : null;
                 createProductCommand.VTSZ = productMapper.ContainsKey(VTSZFieldName) ? currentFieldsArray[productMapper[VTSZFieldName]].Replace("\"", "").Trim() : null;
                 createProductCommand.ProductGroupCode = productMapper.ContainsKey(ProductGroupCodeFieldName) ? currentFieldsArray[productMapper[ProductGroupCodeFieldName]].Replace("\"", "").Trim() : null;
-                createProductCommand.VatRateCode = "27%";
+                if (string.IsNullOrWhiteSpace(createProductCommand.ProductGroupCode))
+                {
+                    createProductCommand.ProductGroupCode = createProductCommand.ProductCode.Substring(0, 3);
+                }
+
+                var FAFA = productMapper.ContainsKey(FAFAFieldName) ?
+                    (currentFieldsArray[productMapper[FAFAFieldName]] == "1" || currentFieldsArray[productMapper[FAFAFieldName]] == "IGAZ" ?
+                    true : false)
+                    : false;
+
+                if (FAFA)
+                {
+                    createProductCommand.VatRateCode = "FA";
+                }
+                else
+                {
+                    createProductCommand.VatRateCode = "27%";
+                }
                 //createPRoductCommand.LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]]) : 0;
                 createProductCommand.NoDiscount = (productMapper.ContainsKey(NODISCOUNTFieldName)) && (currentFieldsArray[productMapper[NODISCOUNTFieldName]].Equals("IGAZ"))
                         ? true : false;
-                createProductCommand.LatestSupplyPrice = productMapper.ContainsKey(BESZARFieldName) ? decimal.Parse(currentFieldsArray[productMapper[BESZARFieldName]]) : 0;
+                createProductCommand.LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]]) : 0;
                 createProductCommand.UnitWeight = productMapper.ContainsKey(SulyFieldName) ? decimal.Parse(currentFieldsArray[productMapper[SulyFieldName]]) : 0;
                 return new Dictionary<string, CreateProductCommand> {
                     {
