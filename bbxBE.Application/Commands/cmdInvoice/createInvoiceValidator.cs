@@ -38,8 +38,8 @@ namespace bbxBE.Application.Commands.cmdInvoice
 
             // Lehetséges a későbbre számlázás, azaz a számla dátuma lehet korábbi, mint a teljesítés
 
-            //TODO ideiglenesen kikötve          RuleFor(r => new { r.InvoiceIssueDate, r.PaymentDate, r.Incoming }).Must(m => m.Incoming || m.InvoiceIssueDate <= m.PaymentDate)
-            //                .WithMessage(bbxBEConsts.ERR_INV_DATE_PAYMENT);
+            RuleFor(r => new { r.InvoiceIssueDate, r.PaymentDate, r.Incoming }).Must(m => m.Incoming || m.InvoiceIssueDate <= m.PaymentDate)
+                            .WithMessage(bbxBEConsts.ERR_INV_DATE_PAYMENT);
 
             RuleFor(r => r.CustomerID)
                 .NotEmpty()
