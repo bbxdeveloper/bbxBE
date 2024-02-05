@@ -1144,6 +1144,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                         invoice.OriginalInvoiceNumber = OriginalInvoice.InvoiceNumber;
                         invoice.ModificationIndex = (short)(ModificationInvoices.Count() + 1);
                         invoice.ModifyWithoutMaster = false;
+                        invoice.InvoiceCategory = OriginalInvoice.InvoiceCategory;
                     }
 
                     //Megjegyzés
