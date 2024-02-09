@@ -52,6 +52,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IVatRateRepositoryAsync _vatRateRepository;
         private readonly INAVXChangeRepositoryAsync _NAVXChangeRepository;
+        private readonly IZipRepositoryAsync _ZipRepositoryAsync;
+
 
         public InvoiceRepositoryAsync(IApplicationDbContext dbContext,
                 IModelHelper modelHelper, IMapper mapper, IMockService mockData,
@@ -83,6 +85,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
             _vatRateRepository = new VatRateRepositoryAsync(dbContext, modelHelper, mapper, mockData, vatRateCacheService);
             _NAVXChangeRepository = new NAVXChangeRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _ZipRepositoryAsync = new ZipRepositoryAsync(dbContext, modelHelper, mapper, mockData);
             _expiringData = expiringData;
         }
         public async Task<bool> IsUniqueInvoiceNumberAsync(string InvoiceNumber, long? ID = null)
@@ -1606,6 +1609,24 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     var V_FAFA = invoiceItem["V_FAFA"];
                     var ORSZAG = invoiceItem["ORSZAG"];
                     var EUADOSZAM = invoiceItem["EUADOSZAM"];
+
+                    if (string.IsNullOrWhiteSpace(IRSZAM) && !string.IsNullOrWhiteSpace(VAROS))
+                    {
+                        var zip = _ZipRepositoryAsync.GetZipByCity(VAROS).GetAwaiter().GetResult();
+                        if (zip != null)
+                        {
+                            IRSZAM = zip.ZipCode;
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(IRSZAM) && string.IsNullOrWhiteSpace(VAROS))
+                    {
+                        var zip = _ZipRepositoryAsync.GetCityByZip(IRSZAM).GetAwaiter().GetResult();
+                        if (zip != null)
+                        {
+                            IRSZAM = zip.ZipCity;
+                        }
+                    }
 
                     cust = new Customer();
                     cust.CustomerName = veovNev;

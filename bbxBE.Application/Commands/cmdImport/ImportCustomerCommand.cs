@@ -106,7 +106,11 @@ namespace bbxBE.Application.Commands.cmdImport
             string regExpPattern = $"{fieldSeparator}(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
             Regex regexp = new Regex(regExpPattern);
             string[] currentFieldsArray = regexp.Split(currentLine.Replace("\r", ""));
-
+            for (int i = 0; i < currentFieldsArray.Length; i++)
+            {
+                if (currentFieldsArray[i].ToUpper() == "NULL")
+                    currentFieldsArray[i] = "";
+            }
 
             string regExpPatternForBankAccount = $"([0-9]{{8}}-[0-9]{{8}}-[0-9]{{8}}-[0-9]{{8}}|[0-9]{{8}}-[0-9]{{8}}-[0-9]{{8}})";
             string regExpPatternForVatNumber = $"[0-9]{{8}}-[0-9]{{1}}-[0-9]{{2}}";

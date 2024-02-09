@@ -194,6 +194,9 @@ namespace bbxBE.Application.Queries.ViewModels
         [Description("Bejővő/Kimenő")]
         public bool Incoming { get; set; }
 
+        [ColumnLabel("Típus")]
+        [Description("Típus")]
+        public string InvoiceCategory { get; set; }
 
         [ColumnLabel("Raktár ID")]
         [Description("Raktár ID")]
