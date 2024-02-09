@@ -146,7 +146,10 @@ namespace bbxBE.Application.BLL
         {
             if (p_num == 0)
                 return p_num;
-            p_num = Math.Round(p_num);
+
+            var neg = (p_num >= 0 ? 1 : -1);
+
+            p_num = Math.Round(Math.Abs(p_num));
 
             var lastDigit = (p_num % 10);
             decimal roundedNum = 0;
@@ -163,7 +166,7 @@ namespace bbxBE.Application.BLL
                 roundedNum = Math.Floor(p_num / 10) * 10 + 5;
             }
 
-            return roundedNum;
+            return roundedNum * neg;
         }
 
 
