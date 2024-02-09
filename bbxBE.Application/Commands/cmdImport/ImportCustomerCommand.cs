@@ -43,11 +43,13 @@ namespace bbxBE.Application.Commands.cmdImport
         private const string HouseNumberFieldName = "HouseNumber";
         private const string CustomerBankAccountNumberFieldName = "CustomerBankAccountNumber";
         private const string TaxpayerIdFieldName = "TaxpayerId";
-        private const string CustomerUnitPriceTypeFieldName = "V_FIZM";
+        private const string CustomerUnitPriceTypeFieldName = "V_ARTIP";
+        private const string CustomerDefPaymentMethod = "V_FIZM";
         private const string CustomerPaymentDaysFieldName = "V_FIZH";
         private const string CustomerLatestDiscountPercentFieldName = "V_ENG";
         private const string CustomerMaxLimitFieldName = "LIMIT";
         private const string CustomerIsFAFieldName = "V_FAFA";
+        private const string CustomerPrivatePersonFieldName = "MAGAN";
 
         private readonly ICustomerRepositoryAsync _customerRepository;
         //private readonly IUnitOfMEasure
@@ -103,7 +105,7 @@ namespace bbxBE.Application.Commands.cmdImport
         {
             string regExpPattern = $"{fieldSeparator}(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
             Regex regexp = new Regex(regExpPattern);
-            string[] currentFieldsArray = regexp.Split(currentLine);
+            string[] currentFieldsArray = regexp.Split(currentLine.Replace("\r", ""));
 
 
             string regExpPatternForBankAccount = $"([0-9]{{8}}-[0-9]{{8}}-[0-9]{{8}}-[0-9]{{8}}|[0-9]{{8}}-[0-9]{{8}}-[0-9]{{8}})";
@@ -114,7 +116,7 @@ namespace bbxBE.Application.Commands.cmdImport
             {
                 var custName1 = customerMapping.ContainsKey(CustomerNameFieldName) ? currentFieldsArray[customerMapping[CustomerNameFieldName]].Replace("\"", "").Trim() : null;
                 var custName2 = customerMapping.ContainsKey(CustomerName2FieldName) ? currentFieldsArray[customerMapping[CustomerName2FieldName]].Replace("\"", "").Trim() : null;
-                createCustomerCommand.CustomerName = !string.IsNullOrEmpty(custName1) || !string.IsNullOrEmpty(custName2) ? (custName1 + " " + custName2) : null;
+                createCustomerCommand.CustomerName = !string.IsNullOrEmpty(custName1) || !string.IsNullOrEmpty(custName2) ? (custName1 + " " + custName2).Trim() : null;
 
                 createCustomerCommand.PostalCode = customerMapping.ContainsKey(PostalCodeFieldName) ? currentFieldsArray[customerMapping[PostalCodeFieldName]].Replace("\"", "").Trim() : null;
                 createCustomerCommand.City = customerMapping.ContainsKey(CityFieldName) ? currentFieldsArray[customerMapping[CityFieldName]].Replace("\"", "").Trim() : null;
@@ -143,8 +145,9 @@ namespace bbxBE.Application.Commands.cmdImport
                 var unitPriceType = customerMapping.ContainsKey(CustomerUnitPriceTypeFieldName) ? currentFieldsArray[customerMapping[CustomerUnitPriceTypeFieldName]].Replace("\"", "").Trim() : null;
                 createCustomerCommand.UnitPriceType = unitPriceType.Equals("1") ? "UNIT" : "LIST";
 
-                createCustomerCommand.DefPaymentMethod = unitPriceType.Equals("1") ? PaymentMethodType.CASH.ToString()
-                    : unitPriceType.Equals("2") ? PaymentMethodType.TRANSFER.ToString() : PaymentMethodType.CASH.ToString();
+                var defPaymentMethod = customerMapping.ContainsKey(CustomerDefPaymentMethod) ? currentFieldsArray[customerMapping[CustomerDefPaymentMethod]].Replace("\"", "").Trim() : null;
+                createCustomerCommand.DefPaymentMethod = defPaymentMethod.Equals("1") ? PaymentMethodType.CASH.ToString()
+                    : defPaymentMethod.Equals("2") ? PaymentMethodType.TRANSFER.ToString() : PaymentMethodType.CASH.ToString();
 
                 if (customerMapping.ContainsKey(CustomerLatestDiscountPercentFieldName)
                     && Decimal.TryParse(currentFieldsArray[customerMapping[CustomerLatestDiscountPercentFieldName]], out decimal latestDiscountPercent))
@@ -176,15 +179,35 @@ namespace bbxBE.Application.Commands.cmdImport
                     createCustomerCommand.MaxLimit = (decimal?)null;
                 }
 
-                if (customerMapping.ContainsKey(CustomerIsFAFieldName)
-                    && Boolean.TryParse(currentFieldsArray[customerMapping[CustomerIsFAFieldName]], out bool isFA))
+                if (customerMapping.ContainsKey(CustomerIsFAFieldName))
                 {
+                    var isFA =
+                        currentFieldsArray[customerMapping[CustomerIsFAFieldName]] == "1"
+                        || currentFieldsArray[customerMapping[CustomerIsFAFieldName]] == "IGAZ"
+                        || currentFieldsArray[customerMapping[CustomerIsFAFieldName]] == "TRUE";
+
                     createCustomerCommand.IsFA = isFA;
                 }
                 else
                 {
                     createCustomerCommand.IsFA = false;
                 }
+
+
+                if (customerMapping.ContainsKey(CustomerPrivatePersonFieldName))
+                {
+                    var privatePerson =
+                        currentFieldsArray[customerMapping[CustomerPrivatePersonFieldName]] == "1"
+                        || currentFieldsArray[customerMapping[CustomerPrivatePersonFieldName]] == "IGAZ"
+                        || currentFieldsArray[customerMapping[CustomerPrivatePersonFieldName]] == "TRUE";
+
+                    createCustomerCommand.PrivatePerson = privatePerson;
+                }
+                else
+                {
+                    createCustomerCommand.PrivatePerson = false;
+                }
+
 
                 return createCustomerCommand;
             }

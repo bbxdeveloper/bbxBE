@@ -44,5 +44,6 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand request, CancellationToken cancellationToken);
         Task<Invoice> UpdatePricePreviewAsynch(UpdatePricePreviewCommand request, CancellationToken cancellationToken);
 
+        public IList<string> Import(string CSVContent, string warehouseCode);
     }
 }

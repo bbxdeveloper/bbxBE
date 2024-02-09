@@ -23,6 +23,8 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Customer> UpdateCustomerLatestDiscountPercentAsync(long ID, decimal LatestDiscountPercent);
         Customer GetOwnData();
         Customer GetCustomerRecord(long customerID);
+        Customer GetCustomerRecordByTaxpayerId(string taxpaxpayerID);
+        List<Customer> GetCustomerRecordsByName(string name);
         Entity GetCustomer(long customerID);
         Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedCustomerAsync(QueryCustomer requestParamter);
     }
