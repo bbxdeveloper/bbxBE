@@ -1538,7 +1538,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int counter = 0;
             string[] headerArray = null;
 
-            lines.Take(200).ToList().ForEach(currentLine =>
+            lines.ToList().ForEach(currentLine =>
             {
                 if (counter == 0)
                 {
@@ -1653,7 +1653,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     cust.IsFA = V_FAFA == "1";
                     cust.CustomerVatStatus = !string.IsNullOrWhiteSpace(adoszam) && cust.CountryCode == "HU" ? CustomerVatStatusType.DOMESTIC.ToString() :
                                              !string.IsNullOrWhiteSpace(EUADOSZAM) && cust.CountryCode != "HU" ? CustomerVatStatusType.OTHER.ToString() :
-                                             CustomerVatStatusType.PRIVATE_PERSON.ToString();
+                                             string.IsNullOrWhiteSpace(adoszam) && cust.CountryCode == "HU" ? CustomerVatStatusType.PRIVATE_PERSON.ToString() :
+                                             CustomerVatStatusType.OTHER.ToString();
 
 
                     _customerRepository.AddCustomerAsync(cust).GetAwaiter().GetResult();
