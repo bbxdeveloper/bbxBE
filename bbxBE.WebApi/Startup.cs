@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
+using System.Net.Http;
 using System.Text.Json;
 
 namespace bbxBE.WebApi
@@ -89,6 +90,17 @@ namespace bbxBE.WebApi
             });
 
             services.AddHttpContextAccessor();
+
+            services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                ServerCertificateCustomValidationCallback =
+               (httpRequestMessage, cert, cetChain, policyErrors) =>
+               {
+
+                   return true;
+               }
+            });
 
             services.AddAutoMapper(typeof(Startup));
             services.AddControllersWithViews();
