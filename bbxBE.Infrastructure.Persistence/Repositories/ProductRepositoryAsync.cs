@@ -154,8 +154,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 if (pg != null)
                 {
-
+                    p_product.ProductGroup = pg;
                     p_product.ProductGroupID = pg.ID;
+                    _dbContext.Instance.Entry<ProductGroup>(pg).State = EntityState.Unchanged;
+
                 }
                 else
                 {
@@ -177,8 +179,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 }
                 if (og != null)
                 {
-
+                    p_product.Origin = og;
                     p_product.OriginID = og.ID;
+                    _dbContext.Instance.Entry<Origin>(og).State = EntityState.Unchanged;
+
                 }
             }
 
@@ -206,7 +210,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 vr = _dbContext.VatRate.AsNoTracking().SingleOrDefault(x => x.VatRateCode == bbxBEConsts.VATCODE_27);
             }
 
+            p_product.VatRate = vr;
             p_product.VatRateID = vr.ID;
+            _dbContext.Instance.Entry<VatRate>(vr).State = EntityState.Unchanged;
 
             foreach (var pc in p_product.ProductCodes)
             {
@@ -230,6 +236,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     await dbContextTransaction.CommitAsync();
 
                     _productcacheService.AddOrUpdate(p_product);
+
                 }
                 catch (Exception)
                 {
@@ -304,7 +311,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (pg != null)
                 {
                     p_productUpd.ProductGroupID = pg.ID;
-                    //                   p_productUpd.ProductGroup = pg;
+                    p_productUpd.ProductGroup = pg;
+                    _dbContext.Instance.Entry<ProductGroup>(pg).State = EntityState.Unchanged;
                 }
             }
 
@@ -325,7 +333,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (origin != null)
                 {
                     p_productUpd.OriginID = origin.ID;
-                    //                    p_productUpd.Origin = origin;
+                    p_productUpd.Origin = origin;
+                    _dbContext.Instance.Entry<Origin>(origin).State = EntityState.Unchanged;
                 }
             }
 
@@ -347,7 +356,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 if (vatRate != null)
                 {
                     p_productUpd.VatRateID = vatRate.ID;
-                    //                  p_productUpd.VatRate = vatRate;
+                    p_productUpd.VatRate = vatRate;
+                    _dbContext.Instance.Entry<VatRate>(vatRate).State = EntityState.Unchanged;
                 }
             }
             return p_productUpd;
@@ -356,7 +366,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Product> UpdateProductAsync(Product p_product, string p_ProductGroupCode, string p_OriginCode, string p_VatRateCode)
         {
 
-            //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
 
             Product prodOri = null;
             if (!_productcacheService.TryGetValue(p_product.ID, out prodOri))
@@ -456,7 +465,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         public async Task<Product> DeleteProductAsync(long ID)
         {
 
-            //   var manager = ((IObjectContextAdapter)_dbContext).ObjectContext.ObjectStateManager;
             Product prod = null;
             using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
