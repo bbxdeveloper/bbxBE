@@ -1,7 +1,7 @@
 name: 'nightly artifacts cleanup'
 on:
   schedule:
-    - cron: '0 0 1 * *' # every 1st day of the month
+    - cron: '0 1 1/4 * *' # every 1st day of the month
 
 jobs:
   delete-artifacts:
@@ -10,4 +10,4 @@ jobs:
       - uses: kolpav/purge-artifacts-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          expire-in: 15days # Setting this to 0 will delete all artifacts
+          expire-in: 3days # Setting this to 0 will delete all artifacts
