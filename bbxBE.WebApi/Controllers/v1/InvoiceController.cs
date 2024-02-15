@@ -1,4 +1,5 @@
-﻿using bbxBE.Application.Commands.cmdInvoice;
+﻿using bbxBE.Application.Commands.cmdImport;
+using bbxBE.Application.Commands.cmdInvoice;
 using bbxBE.Application.Commands.cmdNAV;
 using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;
@@ -228,6 +229,12 @@ namespace bbxBE.WebApi.Controllers.v1
                 return NotFound(); // returns a NotFoundResult with Status404NotFound response.
 
             return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
+        }
+
+        [HttpPost("import")]
+        public async Task<IActionResult> Import([FromQuery] ImportInvoiceCommand request)
+        {
+            return Ok(await Mediator.Send(request));
         }
 
     }

@@ -174,6 +174,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             return cust;
         }
 
+        public Customer GetCustomerRecordByTaxpayerId(string taxpaxpayerID)
+        {
+            var query = _cacheService.QueryCache();
+            return query.FirstOrDefault(p => !p.Deleted && p.TaxpayerId != null && p.TaxpayerId == taxpaxpayerID);
+        }
+
+
+        public List<Customer> GetCustomerRecordsByName(string name)
+        {
+
+            var query = _cacheService.QueryCache();
+            var res = query.Where(w => !w.Deleted && w.CustomerName != null && w.CustomerName.ToUpper().Contains(name.ToUpper().Trim()));
+            return res.ToList();
+
+        }
+
         public Entity GetCustomer(long customerID)
         {
             var cust = GetCustomerRecord(customerID);

@@ -19,8 +19,11 @@ using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using static bbxBE.Common.NAV.NAV_enums;
@@ -49,6 +52,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private readonly IProductRepositoryAsync _productRepository;
         private readonly IVatRateRepositoryAsync _vatRateRepository;
         private readonly INAVXChangeRepositoryAsync _NAVXChangeRepository;
+        private readonly IZipRepositoryAsync _ZipRepositoryAsync;
+
 
         public InvoiceRepositoryAsync(IApplicationDbContext dbContext,
                 IModelHelper modelHelper, IMapper mapper, IMockService mockData,
@@ -80,6 +85,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             _productRepository = new ProductRepositoryAsync(dbContext, modelHelper, mapper, mockData, productCacheService, productGroupCacheService, originCacheService, vatRateCacheService);
             _vatRateRepository = new VatRateRepositoryAsync(dbContext, modelHelper, mapper, mockData, vatRateCacheService);
             _NAVXChangeRepository = new NAVXChangeRepositoryAsync(dbContext, modelHelper, mapper, mockData);
+            _ZipRepositoryAsync = new ZipRepositoryAsync(dbContext, modelHelper, mapper, mockData);
             _expiringData = expiringData;
         }
         public async Task<bool> IsUniqueInvoiceNumberAsync(string InvoiceNumber, long? ID = null)
@@ -1504,5 +1510,237 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             }
             return null;
         }
+
+
+        public IList<string> Import(string CSVContent, string warehouseCode)
+        {
+
+            var wh = _warehouseRepository.GetWarehouseByCodeAsync(warehouseCode).GetAwaiter().GetResult();
+            if (wh == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, warehouseCode));
+            }
+
+            var own = _customerRepository.GetOwnData();
+            if (own == null)
+            {
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_OWNNOTFOUND));
+            }
+
+
+            var fieldSeparator = ";";
+            string regExpPattern = $"{fieldSeparator}(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
+            Regex regexp = new Regex(regExpPattern);
+
+            var invoicesFromCSV = new List<Dictionary<string, string>>();
+
+            List<String> lines = CSVContent.Split('\n').ToList();
+            int counter = 0;
+            string[] headerArray = null;
+
+            lines.ToList().ForEach(currentLine =>
+            {
+                if (counter == 0)
+                {
+                    headerArray = regexp.Split(currentLine.Replace("\r", ""));
+
+                }
+                else if (!string.IsNullOrWhiteSpace(currentLine))
+                {
+                    Debug.WriteLine(currentLine);
+                    string[] currentFieldsArray = regexp.Split(currentLine.Replace("\r", ""));
+                    var item = new Dictionary<string, string>();
+                    for (int i = 0; i < currentFieldsArray.Length; i++)
+                    {
+                        item.Add(headerArray[i], currentFieldsArray[i]);
+                    }
+                    invoicesFromCSV.Add(item);
+
+                }
+                counter++;
+            });
+
+            var invList = new List<Invoice>();
+
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
+            invoicesFromCSV.ForEach(invoiceItem =>
+            {
+                Customer cust = null;
+                //1. adószám alapján keresünk
+                var adoszam = invoiceItem["ADOSZAM"];
+                var veovNev = invoiceItem["VEVONEV"];
+                if (!string.IsNullOrWhiteSpace(adoszam))
+                {
+                    cust = _customerRepository.GetCustomerRecordByTaxpayerId(adoszam.Substring(0, 8));
+                }
+
+                //név alapján keresünk
+                if (cust == null)
+                {
+                    var custsFound = _customerRepository.GetCustomerRecordsByName(veovNev);
+
+                    if (custsFound.Count == 1)
+                    {
+                        cust = custsFound.First();
+                    }
+                    else if (custsFound.Count > 1)
+                    {
+                        var varos = invoiceItem["VAROS"].ToUpper();
+                        var utca = invoiceItem["UTCA"].ToUpper();
+                        cust = custsFound.FirstOrDefault(f => f.City.ToUpper() == varos && f.AdditionalAddressDetail.ToUpper().Contains(utca));
+                    }
+                }
+                if (cust == null)
+                {
+
+                    var IRSZAM = invoiceItem["IRSZAM"];
+                    var VAROS = invoiceItem["VAROS"];
+                    var UTCA = invoiceItem["UTCA"];
+                    var HAZSZAM = invoiceItem["HAZSZAM"];
+                    var BANK = invoiceItem["BANK"];
+                    var MEGJGYZ = invoiceItem["MEGJGYZ"];
+                    var EMAIL = invoiceItem["EMAIL"];
+                    var V_FIZM = invoiceItem["V_FIZM"];
+                    var V_FIZH = invoiceItem["V_FIZH"];
+                    var V_ARTIP = invoiceItem["V_ARTIP"];
+                    var V_ENG = invoiceItem["V_ENG"];
+                    //var LIMIT = invoiceItem["LIMIT"];
+                    var V_FAFA = invoiceItem["V_FAFA"];
+                    var ORSZAG = invoiceItem["ORSZAG"];
+                    var EUADOSZAM = invoiceItem["EUADOSZAM"];
+
+                    if (string.IsNullOrWhiteSpace(IRSZAM) && !string.IsNullOrWhiteSpace(VAROS))
+                    {
+                        var zip = _ZipRepositoryAsync.GetZipByCity(VAROS).GetAwaiter().GetResult();
+                        if (zip != null)
+                        {
+                            IRSZAM = zip.ZipCode;
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(IRSZAM) && string.IsNullOrWhiteSpace(VAROS))
+                    {
+                        var zip = _ZipRepositoryAsync.GetCityByZip(IRSZAM).GetAwaiter().GetResult();
+                        if (zip != null)
+                        {
+                            IRSZAM = zip.ZipCity;
+                        }
+                    }
+
+                    cust = new Customer();
+                    cust.CustomerName = veovNev;
+                    cust.PostalCode = IRSZAM;
+                    cust.City = VAROS;
+                    cust.AdditionalAddressDetail = (UTCA + " " + HAZSZAM).Trim();
+                    cust.Comment = MEGJGYZ;
+                    cust.CustomerBankAccountNumber = BANK;
+                    cust.UnitPriceType = V_ARTIP.Equals("1") ? "UNIT" : "LIST";
+                    cust.DefPaymentMethod = V_FIZM.Equals("1") ? PaymentMethodType.CASH.ToString()
+                            : V_FIZM.Equals("2") ? PaymentMethodType.TRANSFER.ToString() : PaymentMethodType.CASH.ToString();
+
+                    if (!string.IsNullOrWhiteSpace(adoszam))
+                    {
+                        cust.TaxpayerId = adoszam.Substring(0, 8);
+                        cust.VatCode = adoszam.Substring(9, 1);
+                        cust.CountyCode = adoszam.Substring(11, 2);
+                    }
+                    cust.CountryCode = !string.IsNullOrWhiteSpace(ORSZAG) ? ORSZAG : "HU";
+                    cust.LatestDiscountPercent = Decimal.Parse(V_ENG.Replace(".", ","));
+                    cust.PaymentDays = short.Parse(V_FIZH.Replace(".", ","));
+                    // cust.MaxLimit= Decimal.Parse(LIMIT.Replace(".", ","));
+                    cust.ThirdStateTaxId = EUADOSZAM;
+                    cust.IsFA = V_FAFA == "1";
+                    cust.CustomerVatStatus = !string.IsNullOrWhiteSpace(adoszam) && cust.CountryCode == "HU" ? CustomerVatStatusType.DOMESTIC.ToString() :
+                                             !string.IsNullOrWhiteSpace(EUADOSZAM) && cust.CountryCode != "HU" ? CustomerVatStatusType.OTHER.ToString() :
+                                             string.IsNullOrWhiteSpace(adoszam) && cust.CountryCode == "HU" ? CustomerVatStatusType.PRIVATE_PERSON.ToString() :
+                                             CustomerVatStatusType.OTHER.ToString();
+
+
+                    _customerRepository.AddCustomerAsync(cust).GetAwaiter().GetResult();
+                    _dbContext.SaveChangesAsync().GetAwaiter().GetResult();
+
+                    //                    throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_CUSTNOTFOUND));
+                }
+
+
+                var SZAMLASZ = invoiceItem["SZAMLASZ"];
+                var inv = GetInvoiceRecordByInvoiceNumberAsync(SZAMLASZ).GetAwaiter().GetResult();
+                if (inv == null)
+                {
+
+                    /*
+                    #define MAX_FIZMOD      9
+
+                    #define FM_BLANK        0                    //
+                    #define FM_KP           1                    // Kp
+                    #define FM_ATUTALAS     2                    // Átutalás
+                    #define FM_POSTAI       3                    // Utánvét
+                    #define FM_BELSO        4                    // Belső számla
+                    #define FM_BLKKP        5                    // Blokk készpénzes
+                    #define FM_BLKCARD      6                    // Blokk kártya
+                    #define FM_CARD         7                    // Kártya
+                    */
+                    var FIZMOD = invoiceItem["FIZMOD"];
+                    var CURRENCY = invoiceItem["CURRENCY"];
+                    var RATE = Decimal.Parse(invoiceItem["RATE"].Replace(".", ","));
+
+                    var FELAR = Decimal.Parse(invoiceItem["FELAR"].Replace(".", ","));
+                    var ENG = Decimal.Parse(invoiceItem["ENG"].Replace(".", ","));
+                    var ENGFELOSSZ = Decimal.Parse(invoiceItem["ENGFELOSSZ"].Replace(".", ","));
+
+                    var OSSZ = Decimal.Parse(invoiceItem["OSSZ"].Replace(".", ","));
+                    var AFAERT = Decimal.Parse(invoiceItem["AFAERT"].Replace(".", ","));
+                    var BRUTTO = Decimal.Parse(invoiceItem["BRUTTO"].Replace(".", ","));
+
+                    var CRCY_OSSZ = Decimal.Parse(invoiceItem["CRCY_OSSZ"].Replace(".", ","));
+                    var CRCY_AFA = Decimal.Parse(invoiceItem["CRCY_AFA"].Replace(".", ","));
+                    var CRCY_BRT = Decimal.Parse(invoiceItem["CRCY_BRT"].Replace(".", ","));
+
+
+                    inv = new Invoice();
+                    inv.Incoming = false;
+                    inv.InvoiceType = enInvoiceType.INV.ToString();
+                    inv.WarehouseID = wh.ID;
+                    inv.InvoiceNumber = SZAMLASZ;
+                    inv.InvoiceIssueDate = DateTime.ParseExact(invoiceItem["SZAMLAD"].Substring(0, 10), "yyyy-MM-dd", provider);
+                    inv.CompletenessIndicator = false;
+                    inv.SupplierID = own.ID;
+                    inv.CustomerID = cust.ID;
+                    inv.InvoiceCategory = InvoiceCategoryType.NORMAL.ToString();    //minden régi számlát normálként töltünk be
+                    inv.InvoiceDeliveryDate = DateTime.ParseExact(invoiceItem["SZAMLAE"].Substring(0, 10), "yyyy-MM-dd", provider);
+                    inv.PaymentDate = DateTime.ParseExact(invoiceItem["SZAMLAF"].Substring(0, 10), "yyyy-MM-dd", provider);
+                    inv.PaymentMethod = (FIZMOD == "1" ? PaymentMethodType.CASH.ToString() :
+                                         FIZMOD == "2" ? PaymentMethodType.TRANSFER.ToString() :
+                                         FIZMOD == "3" ? PaymentMethodType.TRANSFER.ToString() :
+                                         FIZMOD == "7" ? PaymentMethodType.CARD.ToString() : PaymentMethodType.OTHER.ToString());
+                    inv.CurrencyCode = (CURRENCY == "Ft" ? enCurrencyCodes.HUF.ToString() :
+                                        CURRENCY == "EUR" ? enCurrencyCodes.EUR.ToString() :
+                                        CURRENCY == "USD" ? enCurrencyCodes.USD.ToString() :
+                                        CURRENCY == "HUF" ? enCurrencyCodes.HUF.ToString() : enCurrencyCodes.HUF.ToString());
+                    inv.ExchangeRate = RATE == 0 || inv.CurrencyCode == enCurrencyCodes.HUF.ToString() ? 1 : RATE;
+                    inv.InvoiceAppearance = InvoiceAppearanceType.PAPER.ToString();
+                    inv.Copies = -1;
+                    inv.IncomingInvReference = "";
+                    inv.OriginalInvoiceID = 0;              //a betöltött számláknál nem kezeljükl a referenciát a javított számlára
+                    inv.OriginalInvoiceNumber = "";
+                    inv.ModifyWithoutMaster = false;
+                    inv.InvoiceDiscountPercent = ENG - FELAR;
+                    inv.InvoiceDiscount = ENGFELOSSZ;
+                    inv.InvoiceDiscountHUF = Math.Round(inv.ExchangeRate * ENGFELOSSZ, 1);
+                    inv.InvoiceNetAmount = Math.Round(inv.CurrencyCode == enCurrencyCodes.HUF.ToString() ? OSSZ : CRCY_OSSZ, 1);
+                    inv.InvoiceNetAmountHUF = Math.Round(OSSZ, 1);
+                    inv.InvoiceVatAmount = Math.Round(inv.CurrencyCode == enCurrencyCodes.HUF.ToString() ? AFAERT : CRCY_AFA, 1);
+                    inv.InvoiceVatAmountHUF = Math.Round(AFAERT, 1);
+                    inv.InvoiceGrossAmount = Math.Round(inv.CurrencyCode == enCurrencyCodes.HUF.ToString() ? BRUTTO : CRCY_BRT, 1);
+
+                    invList.Add(inv);
+                }
+            });
+
+            AddRangeAsync(invList).GetAwaiter().GetResult();
+            return new List<string>();
+        }
+
     }
 }
