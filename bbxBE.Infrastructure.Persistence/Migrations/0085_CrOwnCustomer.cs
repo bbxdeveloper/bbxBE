@@ -4,8 +4,8 @@
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
-    [Migration(00087, "v00.02.50-OWN customer létrehozása, amennyiben nincs")]
-    public class InitialTables_00087 : Migration
+    [Migration(00085, "v00.02.50-OWN customer létrehozása, amennyiben nincs")]
+    public class InitialTables_0085 : Migration
     {
         public override void Down()
         {

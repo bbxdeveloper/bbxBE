@@ -62,7 +62,7 @@ namespace bbxBE.Application.Queries.qInvoice
 
         [ColumnLabel("Lejárt tartozás?")]
         [Description("Lejárt tartozás?")]
-        public bool Expired { get; set; } = true;
+        public bool Expired { get; set; } = false;
 
     }
 
