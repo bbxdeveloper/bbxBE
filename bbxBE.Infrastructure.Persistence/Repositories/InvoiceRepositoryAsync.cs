@@ -448,8 +448,13 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             decimal pendingAmount = await q1.SumAsync(s => s.SumNetAmountDiscountedHUF);
 
-            //2. kiegyenlítettlen számlák???
-
+            //2. kiegyenlítettlen számlák
+            var customerFilter = new QueryUnpaidInvoice() { CustomerID = customerID, Incoming = false, Expired = false, PageSize = 999999 };
+            var unpaidInvoices = await GetPagedUnpaidInvoiceRecordsAsync(customerFilter);
+            if (unpaidInvoices.Count > 0)
+            {
+                pendingAmount += unpaidInvoices.Sum(ui => ui.InvoiceGrossAmountHUF - ui.InvPayments.Sum(s => s.InvPaymentAmountHUF));
+            }
             return pendingAmount;
         }
 
@@ -461,7 +466,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             //
             if (incoming)
             {
-                //először grouo-olunk ccustomerre és számlákra, hogy a különböző kedvezményekkel 
+                //először grouo-olunk ccustomerre és számlákra, hogy a különböző kedvezményekkel 0
                 //kiszámoljuk a summákat
                 //
                 q1 = from InvoiceLine in _dbContext.InvoiceLine
@@ -720,13 +725,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return (shapedData, recordsCount);
         }
-
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUnpaidInvoiceAsync(QueryUnpaidInvoice requestParameter)
+        public async Task<List<Invoice>> GetPagedUnpaidInvoiceRecordsAsync(QueryUnpaidInvoice requestParameter)
         {
 
             var orderBy = requestParameter.OrderBy;
-            //      var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetInvoiceViewModel, Invoice>();
 
 
             int recordsTotal, recordsFiltered;
@@ -751,29 +753,26 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // Count records after filter
             recordsFiltered = await query.CountAsync();
 
-            //set Record counts
-            var recordsCount = new RecordsCount
-            {
-                RecordsFiltered = recordsFiltered,
-                RecordsTotal = recordsTotal
-            };
-
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
                 query = query.OrderBy(orderBy);
             }
 
-            // select columns
-            /*
-            if (!string.IsNullOrWhiteSpace(fields))
-            {
-                result = result.Select<Invoice>("new(" + fields + ")");
-            }
-            */
-
             // retrieve data to list
-            List<Invoice> resultData = await GetPagedData(query, requestParameter);
+            return await GetPagedData(query, requestParameter);
+        }
+
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUnpaidInvoiceAsync(QueryUnpaidInvoice requestParameter)
+        {
+
+            var resultData = await GetPagedUnpaidInvoiceRecordsAsync(requestParameter);
+
+            var recordsCount = new RecordsCount
+            {
+                RecordsFiltered = resultData.Count,
+                RecordsTotal = 9999999          //egyelőre nem fontos..
+            };
 
 
             //TODO: szebben megoldani
@@ -862,8 +861,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         private void UnpaidFilterBy(ref IQueryable<Invoice> p_items, bool p_incoming,
             string p_invoiceNumber, string p_customerInvoiceNumber, long? p_customerID,
-            DateTime p_invoiceIssueDateFrom, DateTime? p_invoiceIssueDateTo,
-            DateTime? p_invoiceDeliveryDateFrom, DateTime? p_invoiceDeliveryDateTo,
+            DateTime? p_invoiceIssueDateFrom, DateTime? p_invoiceIssueDateTo,
+            DateTime p_invoiceDeliveryDateFrom, DateTime? p_invoiceDeliveryDateTo,
             DateTime? p_paymentDateFrom, DateTime? p_paymentDateTo,
             bool? p_expired)
         {
@@ -876,18 +875,19 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             predicate = predicate.And(p =>
                             //kötelező mezők, indexbe
                             p.Incoming == p_incoming && p.PaymentMethod == PaymentMethodType.TRANSFER.ToString() && p.InvPayments.Sum(s => s.InvPaymentAmountHUF) < p.InvoiceGrossAmountHUF
-                            && (p.InvoiceIssueDate >= p_invoiceIssueDateFrom)
-                            //kötelező mezők
+                            && (p.InvoiceDeliveryDate >= p_invoiceDeliveryDateFrom)
+                            && (!p_customerID.HasValue || (p.Incoming && p.SupplierID == p_customerID) || (!p.Incoming && p.CustomerID == p_customerID))
+
+                            //nem kötelező mezők
                             && (string.IsNullOrWhiteSpace(p_invoiceNumber) || p.InvoiceNumber.Contains(p_invoiceNumber))
                             && (string.IsNullOrWhiteSpace(p_customerInvoiceNumber) || p.CustomerInvoiceNumber.ToUpper().Contains(p_customerInvoiceNumber.ToUpper()))
-                            && (!p_customerID.HasValue || (p.Incoming && p.SupplierID == p_customerID) || (!p.Incoming && p.CustomerID == p_customerID))
+                            && (!p_invoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= p_invoiceIssueDateFrom.Value)
                             && (!p_invoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= p_invoiceIssueDateTo.Value)
-                            && (!p_invoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= p_invoiceDeliveryDateFrom.Value)
                             && (!p_invoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= p_invoiceDeliveryDateTo.Value)
                             && (!p_paymentDateFrom.HasValue || p.PaymentDate >= p_paymentDateFrom.Value)
                             && (!p_paymentDateTo.HasValue || p.PaymentDate <= p_paymentDateTo.Value)
-                            && (!p_expired.HasValue || p.PaymentDate < DateTime.UtcNow.Date)
-                           );
+                            && (!p_expired.HasValue || !p_expired.Value || p.PaymentDate < DateTime.UtcNow.Date)
+                            );
 
             p_items = p_items.Where(predicate);
         }
