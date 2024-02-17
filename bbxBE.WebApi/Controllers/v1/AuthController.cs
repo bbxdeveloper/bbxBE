@@ -1,21 +1,8 @@
-﻿using bbxBE.Application.Commands.cmdCounter;
-using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
-using bbxBE.Application.Queries.qCounter;
-using bbxBE.Application.Wrappers;
-using bbxBE.Common.Exceptions;
-using bbxBE.Domain.Entities;
-using bxBE.Application.Commands.cmdAuth;
-using bxBE.Application.Commands.cmdCounter;
-using MediatR;
+﻿using bxBE.Application.Commands.cmdAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
 using System.Threading.Tasks;
 
 namespace bbxBE.WebApi.Controllers.v1
@@ -33,7 +20,7 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
 
-        [Route("auth/v1/login")]
+        [Route("login")]
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginCommand login)
@@ -42,15 +29,15 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
 #if (!DEBUG)
- //       [Authorize]
+        //       [Authorize]
 #else
         [AllowAnonymous]
 #endif
-        [Route("auth/v1/logout")]
+        [Route("logout")]
         [HttpPost()]
         public IActionResult Logout()
         {
-           // throw new NotImplementedException();
+            // throw new NotImplementedException();
             return Ok();
         }
     }
