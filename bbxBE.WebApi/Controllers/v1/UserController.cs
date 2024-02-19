@@ -70,8 +70,9 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
 
-        [HttpGet("loginnameandpwd")]
-        public async Task<IActionResult> GetUserByLoginNameAndPwd([FromQuery] GetUserByLoginNameAndPwd req)
+        [AllowAnonymous]
+        [HttpPost("loginnameandpwd")]
+        public async Task<IActionResult> GetUserByLoginNameAndPwd([FromBody] GetUserByLoginNameAndPwd req)
         {
             return Ok(await Mediator.Send(req));
         }

@@ -38,6 +38,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpGet("query")]
         public async Task<IActionResult> Query([FromQuery] QueryWarehouse filter)
         {
