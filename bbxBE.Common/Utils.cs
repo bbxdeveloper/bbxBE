@@ -1,6 +1,7 @@
 ﻿using AngleSharp.Dom;
 using AngleSharp.Html;
 using AngleSharp.Html.Parser;
+using Microsoft.AspNetCore.Http;
 using MimeKit;
 using Newtonsoft.Json;
 using System;
@@ -853,6 +854,16 @@ namespace bbxBE.Common
                 userID = Int64.Parse(p_ClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value);
             }
             return userID;
+        }
+
+        public static string getJWT(HttpContext ctx)
+        {
+            string jwtToken = "";
+            if (ctx.Request.Headers.TryGetValue("Authorization", out var headerAuth))
+            {
+                jwtToken = headerAuth.First().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
+            }
+            return jwtToken;
         }
     }
 }

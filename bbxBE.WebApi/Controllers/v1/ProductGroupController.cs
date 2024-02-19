@@ -1,11 +1,6 @@
 ﻿using bbxBE.Application.Commands.cmdProductGroup;
-using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qProductGroup;
-using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdProductGroup;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,13 +11,13 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+    [Authorize]
     public class ProductGroupController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
         private readonly IHttpContextAccessor _context;
-        public ProductGroupController( IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
+        public ProductGroupController(IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
@@ -66,7 +61,7 @@ namespace bbxBE.WebApi.Controllers.v1
 
         // POST: USRController/Edit/5
         [HttpPut]
- //       [ValidateAntiForgeryToken]
+        //       [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UpdateProductGroupCommand command)
         {
             return Ok(await Mediator.Send(command));

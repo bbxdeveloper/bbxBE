@@ -2,6 +2,7 @@
 using bbxBE.Application.Queries.qOffer;
 using bbxBE.Common;
 using bxBE.Application.Commands.cmdOffer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
-    //   [Authorize]
+    [Authorize]
     public class OfferController : BaseApiController
     {
 
@@ -98,6 +99,7 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Print(PrintOfferCommand command)
         {
 
+            command.JWT = Utils.getJWT(_context.HttpContext);
             command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
             var result = await Mediator.Send(command);
 
@@ -127,6 +129,7 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPost("SendOfferEmail")]
         public async Task<IActionResult> SendOfferEmail(sendOfferEmailCommand command)
         {
+            command.JWT = Utils.getJWT(_context.HttpContext);
             command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
             return Ok(await Mediator.Send(command));
         }

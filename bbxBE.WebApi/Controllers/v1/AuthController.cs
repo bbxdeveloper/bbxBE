@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
-    //   [Authorize]
     public class AuthController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
@@ -27,6 +26,7 @@ namespace bbxBE.WebApi.Controllers.v1
         {
             return Ok(await Mediator.Send(login));
         }
+
 
 #if (!DEBUG)
         //       [Authorize]

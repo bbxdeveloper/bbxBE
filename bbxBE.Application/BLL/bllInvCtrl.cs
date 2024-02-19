@@ -1,20 +1,16 @@
-﻿using bbxBE.Application.Commands.cmdOffer;
+﻿using bbxBE.Application.Commands.cmdInvCtrl;
+using bbxBE.Application.Interfaces.Repositories;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
-using bbxBE.Application.Interfaces.Repositories;
-using bbxBE.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Telerik.Reporting;
 using Telerik.Reporting.Processing;
 using Telerik.Reporting.XmlSerialization;
-using bbxBE.Application.Commands.cmdInvCtrl;
 
 namespace bbxBE.Application.BLL
 {
@@ -50,6 +46,7 @@ namespace bbxBE.Application.BLL
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvCtrlPeriodID", request.InvCtrlPeriodID));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvPeriodTitle", request.InvPeriodTitle));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("IsInStock", request.IsInStock));
+            reportSource.Parameters.Add(new Telerik.Reporting.Parameter(bbxBEConsts.JWT_REPPARAMETER, string.Format(bbxBEConsts.JWT_BEARER, request.JWT)));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
 
             ReportProcessor reportProcessor = new ReportProcessor();

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report DataSourceName="webServiceDataSource1" Width="19cm" Name="invoice" Zoom="1.5" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;,&quot;PageSize&quot;:&quot;9999999&quot;,&quot;Page&quot;:&quot;1&quot;,&quot;OrderBy&quot;:&quot;CustomerName&quot;,&quot;Incoming&quot;:&quot;true&quot;,&quot;InvoiceDeliveryDateFrom&quot;:&quot;2000-01-01&quot;,&quot;InvoiceDeliveryDateTo&quot;:&quot;2023-06-30&quot;,&quot;CustomerID&quot;:&quot;278984&quot;,&quot;WarehouseCode&quot;:&quot;001&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/querycustomerinvoicesummary" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;Authorization&quot;:&quot;Bearer xxxx&quot;,&quot;PageSize&quot;:&quot;9999999&quot;,&quot;Page&quot;:&quot;1&quot;,&quot;OrderBy&quot;:&quot;CustomerName&quot;,&quot;Incoming&quot;:&quot;true&quot;,&quot;InvoiceDeliveryDateFrom&quot;:&quot;2000-01-01&quot;,&quot;InvoiceDeliveryDateTo&quot;:&quot;2023-06-30&quot;,&quot;CustomerID&quot;:&quot;278984&quot;,&quot;WarehouseCode&quot;:&quot;001&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/querycustomerinvoicesummary" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Inline" Name="@BaseURL">
           <Value>
             <String>= Parameters.BaseURL.Value</String>
           </Value>
         </WebServiceParameter>
-        <WebServiceParameter WebServiceParameterType="Inline" Name="JWT">
+        <WebServiceParameter WebServiceParameterType="Header" Name="Authorization">
           <Value>
             <String>= Parameters.JWT.Value</String>
           </Value>
@@ -482,9 +482,9 @@
         <String>https://bbxbe.azurewebsites.net/</String>
       </Value>
     </ReportParameter>
-    <ReportParameter Name="JWT" AllowNull="True">
+    <ReportParameter Name="JWT" Visible="True" AllowNull="True">
       <Value>
-        <String>1234</String>
+        <String>Bearer xxxx</String>
       </Value>
     </ReportParameter>
     <ReportParameter Name="InvoiceDeliveryDateFrom" Type="DateTime" Text="InvoiceDeliveryDateFrom" Visible="True">

@@ -1,11 +1,7 @@
 ﻿using bbxBE.Application.Commands.cmdInvCtrlPeriod;
-using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qInvCtrlPeriod;
-using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
+using bbxBE.Common;
 using bxBE.Application.Commands.cmdInvCtrlPeriod;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,14 +12,14 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+    [Authorize]
     public class InvCtrlPeriodController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
         private readonly IHttpContextAccessor _context;
 
-        public InvCtrlPeriodController( IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
+        public InvCtrlPeriodController(IWebHostEnvironment env, IConfiguration conf, IHttpContextAccessor context)
         {
             _env = env;
             _conf = conf;
@@ -42,7 +38,7 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(filter));
         }
 
-    
+
 
         /// <summary>
         /// GET: api/controller
@@ -66,9 +62,9 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
-        
+
         [HttpPut]
- //       [ValidateAntiForgeryToken]
+        //       [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UpdateInvCtrlPeriodCommand command)
         {
             return Ok(await Mediator.Send(command));
@@ -92,6 +88,7 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Print(PrintInvCtrlPeriodCommand command)
         {
 
+            command.JWT = Utils.getJWT(_context.HttpContext);
             command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
             var result = await Mediator.Send(command);
 

@@ -1,14 +1,8 @@
 ﻿using bbxBE.Application.Commands.cmdWarehouse;
-using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qWarehouse;
-using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
 using bxBE.Application.Commands.cmdWarehouse;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
@@ -16,12 +10,12 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+    [Authorize]
     public class WarehouseController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        public WarehouseController( IWebHostEnvironment env, IConfiguration conf)
+        public WarehouseController(IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
@@ -64,7 +58,7 @@ namespace bbxBE.WebApi.Controllers.v1
 
         // POST: USRController/Edit/5
         [HttpPut]
- //       [ValidateAntiForgeryToken]
+        //       [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UpdateWarehouseCommand command)
         {
             return Ok(await Mediator.Send(command));
