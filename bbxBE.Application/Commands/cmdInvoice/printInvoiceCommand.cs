@@ -7,6 +7,7 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Common.NAV;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using System;
@@ -28,13 +29,19 @@ namespace bbxBE.Application.Commands.cmdInvoice
         [Description("ID")]
         public long ID { get; set; }
 
-        [ColumnLabel("Backend URL")]
-        [Description("Backend URL")]
-        public string baseURL;
-
         [ColumnLabel("Példány")]
         [Description("Példány")]
         public int Copies { get; set; } = 1;
+
+        [JsonIgnore]
+        [ColumnLabel("JWT")]
+        [Description("JWT")]
+        public string JWT;
+
+        [JsonIgnore]
+        [ColumnLabel("Backend URL")]
+        [Description("Backend URL")]
+        public string baseURL;
     }
 
     public class PrintInvoiceCommandHandler : IRequestHandler<PrintInvoiceCommand, FileStreamResult>
@@ -137,7 +144,7 @@ namespace bbxBE.Application.Commands.cmdInvoice
                     reportSource.ReportDocument = rep;
                 }
 
-                reportSource.Parameters.Add(new Telerik.Reporting.Parameter("JWT", ""));
+                reportSource.Parameters.Add(new Telerik.Reporting.Parameter(bbxBEConsts.JWT_REPPARAMETER, string.Format(bbxBEConsts.JWT_BEARER, request.JWT)));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvoiceID", request.ID));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
 

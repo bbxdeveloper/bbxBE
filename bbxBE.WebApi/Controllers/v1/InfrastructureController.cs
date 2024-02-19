@@ -1,4 +1,5 @@
 ﻿using bxBE.Application.Commands.cmdEmail;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
+    [Authorize]
     public class InfrastructureController : BaseApiController
     {
 

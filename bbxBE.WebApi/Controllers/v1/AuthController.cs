@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
-    //   [Authorize]
     public class AuthController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
@@ -24,6 +23,14 @@ namespace bbxBE.WebApi.Controllers.v1
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginCommand login)
+        {
+            return Ok(await Mediator.Send(login));
+        }
+
+        [Route("loginrep")]
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> LoginRep([FromQuery] LoginRepCommand login)
         {
             return Ok(await Mediator.Send(login));
         }

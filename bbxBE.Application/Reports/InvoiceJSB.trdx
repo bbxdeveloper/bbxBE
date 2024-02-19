@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;12&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;12345&quot;,&quot;FullData&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;12&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;Authorization&quot;:&quot;Bearer xxxx&quot;,&quot;FullData&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Query" Name="ID">
           <Value>
@@ -13,7 +13,7 @@
             <String>= Parameters.BaseURL.Value</String>
           </Value>
         </WebServiceParameter>
-        <WebServiceParameter WebServiceParameterType="Inline" Name="JWT">
+        <WebServiceParameter WebServiceParameterType="Header" Name="Authorization">
           <Value>
             <String>= Parameters.JWT.Value</String>
           </Value>
@@ -888,12 +888,12 @@
     </ReportParameter>
     <ReportParameter Name="BaseURL" Visible="True">
       <Value>
-        <String>https://bbxbe.azurewebsites.net/</String>
+        <String>https://bbxbe.azurewebsites.net</String>
       </Value>
     </ReportParameter>
-    <ReportParameter Name="JWT" AllowNull="True">
+    <ReportParameter Name="JWT" Visible="True" AllowNull="True">
       <Value>
-        <String>1234</String>
+        <String>Bearer xxxx</String>
       </Value>
     </ReportParameter>
     <ReportParameter Name="FullData" Type="Boolean" Text="FullData">

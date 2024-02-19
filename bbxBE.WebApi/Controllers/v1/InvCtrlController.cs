@@ -1,6 +1,8 @@
 ﻿using bbxBE.Application.Commands.cmdInvCtrl;
 using bbxBE.Application.Queries.qInvCtrl;
+using bbxBE.Common;
 using bxBE.Application.Commands.cmdInvCtrl;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
-    //   [Authorize]
+    [Authorize]
     public class InvCtrlController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
@@ -89,7 +91,7 @@ namespace bbxBE.WebApi.Controllers.v1
         [HttpPost("report")]
         public async Task<IActionResult> Print(PrintInvCtrlCommand command)
         {
-
+            command.JWT = Utils.getJWT(_context.HttpContext);
             command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
             var result = await Mediator.Send(command);
 

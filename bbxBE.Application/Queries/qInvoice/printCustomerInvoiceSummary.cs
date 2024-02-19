@@ -6,6 +6,7 @@ using bbxBE.Common.Consts;
 using bbxBE.Common.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using System;
@@ -44,6 +45,12 @@ namespace bbxBE.Application.Queries.qInvoice
         [Description("Teljesítés dátumig")]
         public DateTime? InvoiceDeliveryDateTo { get; set; }
 
+        [JsonIgnore]
+        [ColumnLabel("JWT")]
+        [Description("JWT")]
+        public string JWT;
+
+        [JsonIgnore]
         [ColumnLabel("Backend URL")]
         [Description("Backend URL")]
         public string baseURL;
@@ -111,7 +118,7 @@ namespace bbxBE.Application.Queries.qInvoice
                 reportSource.ReportDocument = rep;
             }
 
-            reportSource.Parameters.Add(new Telerik.Reporting.Parameter("JWT", ""));
+            reportSource.Parameters.Add(new Telerik.Reporting.Parameter(bbxBEConsts.JWT_REPPARAMETER, string.Format(bbxBEConsts.JWT_BEARER, request.JWT)));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("Incoming", request.Incoming));
             reportSource.Parameters.Add(new Telerik.Reporting.Parameter("InvoiceDeliveryDateFrom", request.InvoiceDeliveryDateFrom));

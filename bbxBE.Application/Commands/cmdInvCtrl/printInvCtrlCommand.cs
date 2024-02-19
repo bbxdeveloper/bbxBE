@@ -5,6 +5,7 @@ using bbxBE.Common;
 using bbxBE.Common.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Reflection;
 using System.Threading;
@@ -26,7 +27,12 @@ namespace bbxBE.Application.Commands.cmdInvCtrl
         [Description("Csak készleten lévőt?")]
         public bool IsInStock { get; set; }
 
+        [JsonIgnore]
+        [ColumnLabel("JWT")]
+        [Description("JWT")]
+        public string JWT;
 
+        [JsonIgnore]
         [ColumnLabel("Backend URL")]
         [Description("Backend URL")]
         public string baseURL;

@@ -6,6 +6,7 @@ using bbxBE.Common.Attributes;
 using bxBE.Application.Commands.cmdEmail;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using SendGrid.Helpers.Mail;
 using System;
 using System.ComponentModel;
@@ -41,6 +42,15 @@ namespace bbxBE.Application.Commands.cmdOffer
         [ColumnLabel("Árajánlat ID")]
         [Description("Árajánlat ID")]
         public long OfferID { get; set; }
+
+        [JsonIgnore]
+        [ColumnLabel("JWT")]
+        [Description("JWT")]
+        public string JWT;
+
+        [JsonIgnore]
+        [ColumnLabel("Backend URL")]
+        [Description("Backend URL")]
         public string baseURL;
 
     }
@@ -60,9 +70,7 @@ namespace bbxBE.Application.Commands.cmdOffer
         {
             try
             {
-
-
-                PrintOfferCommand po = new PrintOfferCommand() { ID = request.OfferID, baseURL = request.baseURL };
+                PrintOfferCommand po = new PrintOfferCommand() { ID = request.OfferID, baseURL = request.baseURL, JWT = request.JWT };
                 var reportTRDX = Utils.LoadEmbeddedResource("bbxBE.Application.Reports.Offer.trdx", Assembly.GetExecutingAssembly());
                 var res = await bllOffer.CreateOfferReportAsynch(_offerRepository, reportTRDX, po, cancellationToken);
 

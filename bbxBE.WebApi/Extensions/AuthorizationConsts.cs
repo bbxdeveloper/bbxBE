@@ -3,8 +3,8 @@ namespace bbxBE.WebApi.Extensions
 {
     public class AuthorizationConsts
     {
-        public const string HrAdminPolicy = "HrAdminPolicy";
-        public const string ManagerPolicy = "ManagerPolicy";
-        public const string EmployeePolicy = "EmployeePolicy";
+        public const string BBXAdminPolicy = "BBXAdminPolicy";
+        public const string BBXDeveloperPolicy = "BBXDeveloperPolicy";
+        public const string BBXClientPolicy = "BBXClientPolicy";
     }
 }

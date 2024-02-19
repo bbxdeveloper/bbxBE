@@ -52,7 +52,7 @@ namespace bbxBE.WebApi
 
             services.AddJWTAuthentication(_config);
 
-            services.AddAuthorizationPolicies_HAVETOCHANGE(_config);
+            services.AddAuthorizationPolicies(_config);
             // API version
             services.AddApiVersioningExtension();
             // API explorer

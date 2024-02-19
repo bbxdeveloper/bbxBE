@@ -13,6 +13,10 @@
         public const string CONF_JWTIssuer = "Issuer";
         public const string CONF_JWTAudience = "Audience";
         public const string CONF_JWTDurationInMinutes = "DurationInMinutes";
+        public const string JWT_REPPARAMETER = "JWT";
+        public const string JWT_BEARER = "Bearer {0}";
+
+
 
         public const string DEF_ENCODING = "ISO-8859-2";
         public const string DEF_CSVSEP = ";";

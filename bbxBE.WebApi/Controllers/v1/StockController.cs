@@ -1,5 +1,6 @@
 ﻿using bbxBE.Application.Queries.qStock;
 using bxBE.Application.Commands.cmdLocation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
-    //   [Authorize]
+    [Authorize]
     public class StockController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;

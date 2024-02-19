@@ -50,6 +50,7 @@ namespace bbxBE.Application.BLL
                 }
 
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("ID", request.ID));
+                reportSource.Parameters.Add(new Telerik.Reporting.Parameter(bbxBEConsts.JWT_REPPARAMETER, string.Format(bbxBEConsts.JWT_BEARER, request.JWT)));
                 reportSource.Parameters.Add(new Telerik.Reporting.Parameter("BaseURL", request.baseURL));
 
                 ReportProcessor reportProcessor = new ReportProcessor();

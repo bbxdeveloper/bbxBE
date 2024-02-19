@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" Zoom="1.5" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;InvoiceID&quot;:&quot;395&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;1234&quot;,&quot;DeliveryNoteInvoiceID&quot;:&quot;391&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoicedeliverynote" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;InvoiceID&quot;:&quot;395&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;Bearer xxxx&quot;,&quot;DeliveryNoteInvoiceID&quot;:&quot;391&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoicedeliverynote" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Query" Name="InvoiceID">
           <Value>
@@ -374,12 +374,12 @@
     </ReportParameter>
     <ReportParameter Name="BaseURL" Visible="True">
       <Value>
-        <String>https://bbxbe.azurewebsites.net/</String>
+        <String>https://bbxbe.azurewebsites.net</String>
       </Value>
     </ReportParameter>
-    <ReportParameter Name="JWT" AllowNull="True">
+    <ReportParameter Name="JWT" Visible="True" AllowNull="True">
       <Value>
-        <String>1234</String>
+        <String>Bearer xxxx</String>
       </Value>
     </ReportParameter>
   </ReportParameters>
