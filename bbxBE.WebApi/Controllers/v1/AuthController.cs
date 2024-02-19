@@ -27,13 +27,6 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(login));
         }
 
-        [Route("loginrep")]
-        [AllowAnonymous]
-        [HttpGet]
-        public async Task<IActionResult> LoginRep([FromQuery] LoginRepCommand login)
-        {
-            return Ok(await Mediator.Send(login));
-        }
 
 #if (!DEBUG)
         //       [Authorize]
