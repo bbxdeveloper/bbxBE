@@ -16,7 +16,11 @@ using System.Xml;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
+#if (!DEBUG)
     [Authorize]
+#else
+        [AllowAnonymous]
+#endif
     public class SystemController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;

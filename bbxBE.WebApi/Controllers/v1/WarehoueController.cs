@@ -10,7 +10,11 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
+#if (!DEBUG)
     [Authorize]
+#else
+        [AllowAnonymous]
+#endif
     public class WarehouseController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
@@ -38,7 +42,6 @@ namespace bbxBE.WebApi.Controllers.v1
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpGet("query")]
         public async Task<IActionResult> Query([FromQuery] QueryWarehouse filter)
         {
