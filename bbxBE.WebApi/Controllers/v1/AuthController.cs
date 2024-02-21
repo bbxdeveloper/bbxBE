@@ -29,7 +29,7 @@ namespace bbxBE.WebApi.Controllers.v1
 
 
 #if (!DEBUG)
-        //       [Authorize]
+        [Authorize]
 #else
         [AllowAnonymous]
 #endif

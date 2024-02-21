@@ -10,7 +10,12 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
+
+#if (!DEBUG)
     [Authorize]
+#else
+        [AllowAnonymous]
+#endif
     public class CounterController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
