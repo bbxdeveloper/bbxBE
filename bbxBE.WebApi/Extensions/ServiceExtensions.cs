@@ -90,11 +90,11 @@ namespace bbxBE.WebApi.Extensions
                 {
                     builder.AllowAnyOrigin()
                            .AllowAnyHeader()
-                           .AllowAnyMethod();
+                           .AllowAnyMethod()
+                           .WithExposedHeaders("Content-Disposition");      //https://stackoverflow.com/questions/42898162/how-to-read-content-disposition-headers-from-server-response-angular-2
                 });
             });
         }
-
 
         public static void AddVersionedApiExplorerExtension(this IServiceCollection services)
         {
