@@ -1,8 +1,5 @@
-﻿using bbxBE.Common.Consts;
-using IdentityModel;
-using IdentityServer4.AccessTokenValidation;
+﻿using IdentityModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -93,11 +90,11 @@ namespace bbxBE.WebApi.Extensions
                 {
                     builder.AllowAnyOrigin()
                            .AllowAnyHeader()
-                           .AllowAnyMethod();
+                           .AllowAnyMethod()
+                           .WithExposedHeaders("Content-Disposition");      //https://stackoverflow.com/questions/42898162/how-to-read-content-disposition-headers-from-server-response-angular-2
                 });
             });
         }
-
 
         public static void AddVersionedApiExplorerExtension(this IServiceCollection services)
         {
@@ -144,8 +141,8 @@ namespace bbxBE.WebApi.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTKey)),
                     TokenDecryptionKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTKey)),
                     ClockSkew = TimeSpan.Zero   //https://stackoverflow.com/questions/39728519/jwtsecuritytoken-doesnt-expire-when-it-should
-                        };
-                    });
+                };
+            });
             /* ori
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
             .AddIdentityServerAuthentication(options =>
@@ -157,21 +154,24 @@ namespace bbxBE.WebApi.Extensions
         }
 
 
-        public static void AddAuthorizationPolicies_HAVETOCHANGE(this IServiceCollection services, IConfiguration configuration)
+        //megtartjuk, hátha bevezetünk a végpontokra role-kat
+        //
+        public static void AddAuthorizationPolicies(this IServiceCollection services, IConfiguration configuration)
         {
-            string hradmin = configuration["ApiRoles:HRAdminRole"],
-                    manager = configuration["ApiRoles:ManagerRole"], employee = configuration["ApiRoles:EmployeeRole"];
+            string bbxAdmin = configuration["ApiRoles:BBXAdminRole"];
+            string bbxDeveloper = configuration["ApiRoles:BBXDeveloperRole"];
+            string bbxClient = configuration["ApiRoles:BBXClientRole"];
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(AuthorizationConsts.HrAdminPolicy, policy => policy.RequireAssertion(context => HasRole_ÁTALAKÍTANI(context.User, hradmin)));
-                options.AddPolicy(AuthorizationConsts.ManagerPolicy, policy => policy.RequireAssertion(context => HasRole_ÁTALAKÍTANI(context.User, manager) || HasRole_ÁTALAKÍTANI(context.User, hradmin)));
-                options.AddPolicy(AuthorizationConsts.EmployeePolicy, policy => policy.RequireAssertion(context => HasRole_ÁTALAKÍTANI(context.User, employee) || HasRole_ÁTALAKÍTANI(context.User, manager) || HasRole_ÁTALAKÍTANI(context.User, hradmin)));
+                options.AddPolicy(AuthorizationConsts.BBXAdminPolicy, policy => policy.RequireAssertion(context => HasRole(context.User, bbxAdmin)));
+                options.AddPolicy(AuthorizationConsts.BBXDeveloperPolicy, policy => policy.RequireAssertion(context => HasRole(context.User, bbxDeveloper) || HasRole(context.User, bbxAdmin)));
+                options.AddPolicy(AuthorizationConsts.BBXClientPolicy, policy => policy.RequireAssertion(context => HasRole(context.User, bbxClient) || HasRole(context.User, bbxDeveloper) || HasRole(context.User, bbxAdmin)));
             });
 
 
         }
-        public static bool HasRole_ÁTALAKÍTANI(ClaimsPrincipal user, string role)
+        public static bool HasRole(ClaimsPrincipal user, string role)
         {
             if (string.IsNullOrEmpty(role))
                 return false;

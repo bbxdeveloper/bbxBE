@@ -4,6 +4,7 @@ using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qZip;
 using bbxBE.Common.Enums;
 using bbxBE.Common.ExpiringData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,11 @@ using System.Xml;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
-    //   [Authorize]
+#if (!DEBUG)
+    [Authorize]
+#else
+        [AllowAnonymous]
+#endif
     public class SystemController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;

@@ -44,6 +44,7 @@ namespace bbxBE.WebApi
 
             // CORS
             services.AddCorsExtension();
+
             services.AddHealthChecks();
 
 
@@ -52,7 +53,7 @@ namespace bbxBE.WebApi
 
             services.AddJWTAuthentication(_config);
 
-            services.AddAuthorizationPolicies_HAVETOCHANGE(_config);
+            services.AddAuthorizationPolicies(_config);
             // API version
             services.AddApiVersioningExtension();
             // API explorer
@@ -122,12 +123,8 @@ namespace bbxBE.WebApi
 
 
             //Enable CORS
-            app.UseCors(x => x
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .WithExposedHeaders("Content-Disposition")      //https://stackoverflow.com/questions/42898162/how-to-read-content-disposition-headers-from-server-response-angular-2
-            );
+            app.UseCors("AllowAll");
+
 
             app.UseHttpsRedirection();
             app.UseAuthentication();

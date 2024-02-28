@@ -5,6 +5,7 @@ using bbxBE.Application.Queries.qEnum;
 using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdCustomer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,11 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
-    //   [Authorize]
+#if (!DEBUG)
+    [Authorize]
+#else
+        [AllowAnonymous]
+#endif
     public class CustomerController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;

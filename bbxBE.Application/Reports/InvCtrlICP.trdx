@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report DataSourceName="webServiceDataSource1" Width="19cm" UnitOfMeasure="Mm" Name="InvCtrlICPReportRE" SnapGridSize="0.1cm" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;123456&quot;,&quot;InvCtrlPeriodID&quot;:&quot;1&quot;,&quot;PageSize&quot;:&quot;99999&quot;,&quot;IsInStock&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Stock/queryinvctrlabsent" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;JWT&quot;:&quot;Bearer xxxx&quot;,&quot;InvCtrlPeriodID&quot;:&quot;1&quot;,&quot;PageSize&quot;:&quot;99999&quot;,&quot;IsInStock&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Stock/queryinvctrlabsent" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Inline" Name="@BaseURL">
           <Value>
@@ -262,7 +262,7 @@
     </ReportParameter>
     <ReportParameter Name="JWT" Visible="True">
       <Value>
-        <String>123456</String>
+        <String>Bearer xxxx</String>
       </Value>
     </ReportParameter>
     <ReportParameter Name="InvPeriodTitle" Visible="True">

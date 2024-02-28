@@ -4,6 +4,7 @@ using bbxBE.Application.Queries.qWhsTransfer;
 using bbxBE.Common;
 using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdWhsTransfer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,11 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
-    //   [Authorize]
+#if (!DEBUG)
+    [Authorize]
+#else
+        [AllowAnonymous]
+#endif
     public class WhsTransferController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
@@ -94,6 +99,7 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Print(PrintWhsTransferCommand command)
         {
 
+            command.JWT = Utils.getJWT(_context.HttpContext);
             command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
             var result = await Mediator.Send(command);
 

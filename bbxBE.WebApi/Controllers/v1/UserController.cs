@@ -1,12 +1,7 @@
 ﻿using bbxBE.Application.Commands.cmdUser;
-using bbxBE.Application.Interfaces.Queries;
 using bbxBE.Application.Queries.qUser;
-using bbxBE.Application.Wrappers;
-using bbxBE.Domain.Entities;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
@@ -14,12 +9,16 @@ using System.Threading.Tasks;
 namespace bbxBE.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
- //   [Authorize]
+#if (!DEBUG)
+    [Authorize]
+#else
+        [AllowAnonymous]
+#endif
     public class UserController : BaseApiController
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
-        public UserController( IWebHostEnvironment env, IConfiguration conf)
+        public UserController(IWebHostEnvironment env, IConfiguration conf)
         {
             _env = env;
             _conf = conf;
@@ -61,7 +60,7 @@ namespace bbxBE.WebApi.Controllers.v1
 
         // POST: USRController/Edit/5
         [HttpPut]
- //       [ValidateAntiForgeryToken]
+        //       [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UpdateUserCommand command)
         {
             return Ok(await Mediator.Send(command));
@@ -74,9 +73,9 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
-   
-        [HttpGet("loginnameandpwd")]
-        public async Task<IActionResult> GetUserByLoginNameAndPwd([FromQuery] GetUserByLoginNameAndPwd req)
+
+        [HttpPost("loginnameandpwd")]
+        public async Task<IActionResult> GetUserByLoginNameAndPwd([FromBody] GetUserByLoginNameAndPwd req)
         {
             return Ok(await Mediator.Send(req));
         }
