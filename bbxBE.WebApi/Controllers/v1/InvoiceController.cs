@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using SQLitePCL;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -32,14 +33,18 @@ namespace bbxBE.WebApi.Controllers.v1
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
         private readonly IHttpContextAccessor _context;
+        private readonly ILogger _logger;
+
         public InvoiceController(
            IWebHostEnvironment env,
            IConfiguration conf,
-           IHttpContextAccessor context)
+           IHttpContextAccessor context,
+           ILogger logger)
         {
             _env = env;
             _conf = conf;
             _context = context;
+            _logger = logger;
         }
 
         /// <summary>
@@ -199,6 +204,11 @@ namespace bbxBE.WebApi.Controllers.v1
                 baseUrl = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
             }
             command.baseURL = baseUrl;
+
+
+            _logger.Information($"BaseUrl:{baseUrl}");
+
+
             var result = await Mediator.Send(command);
 
             if (result == null)
