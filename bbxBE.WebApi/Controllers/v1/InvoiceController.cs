@@ -5,6 +5,7 @@ using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Common;
+using bbxBE.Common.Consts;
 using bbxBE.Common.NAV;
 using bxBE.Application.Commands.cmdInvoice;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using SQLitePCL;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -190,7 +192,13 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Print(PrintInvoiceCommand command)
         {
             command.JWT = Utils.getJWT(_context.HttpContext);
-            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            
+            var baseUrl = _conf[ bbxBEConsts.CONF_BASEURL];
+            if ( string.IsNullOrWhiteSpace( baseUrl))
+            {
+                baseUrl = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            }
+            command.baseURL = baseUrl;
             var result = await Mediator.Send(command);
 
             if (result == null)
@@ -228,7 +236,12 @@ namespace bbxBE.WebApi.Controllers.v1
         {
 
             command.JWT = Utils.getJWT(_context.HttpContext);
-            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var baseUrl = _conf[bbxBEConsts.CONF_BASEURL];
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                baseUrl = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            }
+            command.baseURL = baseUrl;
             var result = await Mediator.Send(command);
 
             if (result == null)
