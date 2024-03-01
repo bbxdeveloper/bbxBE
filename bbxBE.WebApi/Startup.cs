@@ -129,7 +129,7 @@ namespace bbxBE.WebApi
             .WithExposedHeaders("Content-Disposition")      //https://stackoverflow.com/questions/42898162/how-to-read-content-disposition-headers-from-server-response-angular-2
             );
 
-            app.UseHttpsRedirection();
+           //ne legyen automatikus https app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSwaggerExtension();
