@@ -379,6 +379,9 @@ namespace bbxBE.Application.Commands.cmdImport
 
         private Dictionary<string, CreateProductCommand> GetProductFromCSV(string currentLine, Dictionary<string, int> productMapper, string fieldSeparator)
         {
+            var currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("hu-HU");
+
             string regExpPattern = $"{fieldSeparator}(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
             Regex regexp = new Regex(regExpPattern);
             string[] currentFieldsArray = regexp.Split(currentLine);
@@ -394,16 +397,26 @@ namespace bbxBE.Application.Commands.cmdImport
                 createProductCommand.ProductCode = productMapper.ContainsKey(ProductCodeFieldName) ? currentFieldsArray[productMapper[ProductCodeFieldName]].Replace("\"", "").Trim() : null;
                 createProductCommand.OriginCode = productMapper.ContainsKey(OriginCodeFieldName) ? currentFieldsArray[productMapper[OriginCodeFieldName]].Replace("\"", "").Trim() : null;
                 createProductCommand.UnitOfMeasure = productMapper.ContainsKey(UnitOfMeasureFieldName) ? currentFieldsArray[productMapper[UnitOfMeasureFieldName]].Replace("\"", "").Trim() : null;
-                createProductCommand.UnitPrice1 = productMapper.ContainsKey(UnitPrice1FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice1FieldName]]) : 0;
-                createProductCommand.UnitPrice2 = productMapper.ContainsKey(UnitPrice2FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice2FieldName]]) : 0;
-                createProductCommand.IsStock = productMapper.ContainsKey(IsStockFieldName) ? bool.Parse(currentFieldsArray[productMapper[IsStockFieldName]]) : true;
+                createProductCommand.UnitPrice1 = productMapper.ContainsKey(UnitPrice1FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice1FieldName]].Replace(".", ",")) : 0;
+                createProductCommand.UnitPrice2 = productMapper.ContainsKey(UnitPrice2FieldName) ? decimal.Parse(currentFieldsArray[productMapper[UnitPrice2FieldName]].Replace(".", ",")) : 0;
+                createProductCommand.IsStock = productMapper.ContainsKey(IsStockFieldName) ?
+                         currentFieldsArray[productMapper[IsStockFieldName]].Trim() == "1" ||
+                         currentFieldsArray[productMapper[IsStockFieldName]].ToUpper().Trim() == "IGAZ" ||
+                         currentFieldsArray[productMapper[IsStockFieldName]].ToUpper().Trim() == "TRUE"
+                        : true;
+
+
                 createProductCommand.MinStock = productMapper.ContainsKey(MinStockFieldName) ?
                     string.IsNullOrEmpty(currentFieldsArray[productMapper[MinStockFieldName]]) ? 0 :
-                    decimal.Parse(currentFieldsArray[productMapper[MinStockFieldName]]) : 0;
-                createProductCommand.OrdUnit = productMapper.ContainsKey(OrdUnitFieldName) ? decimal.Parse(currentFieldsArray[productMapper[OrdUnitFieldName]]) : 0;
-                createProductCommand.ProductFee = productMapper.ContainsKey(ProductFeeFieldName) ? decimal.Parse(currentFieldsArray[productMapper[ProductFeeFieldName]]) : 0;
+                    decimal.Parse(currentFieldsArray[productMapper[MinStockFieldName]].Replace(".", ",")) : 0;
+
+                createProductCommand.OrdUnit = productMapper.ContainsKey(OrdUnitFieldName) ? decimal.Parse(currentFieldsArray[productMapper[OrdUnitFieldName]].Replace(".", ",")) : 0;
+                createProductCommand.ProductFee = productMapper.ContainsKey(ProductFeeFieldName) ? decimal.Parse(currentFieldsArray[productMapper[ProductFeeFieldName]].Replace(".", ",")) : 0;
                 createProductCommand.Active = productMapper.ContainsKey(ActiveFieldName) ?
-                    (currentFieldsArray[productMapper[ActiveFieldName]] == "1" || currentFieldsArray[productMapper[ActiveFieldName]] == "IGAZ" ?
+                    (currentFieldsArray[productMapper[ActiveFieldName]].Trim() == "1" ||
+                     currentFieldsArray[productMapper[ActiveFieldName]].ToUpper().Trim() == "IGAZ" ||
+                     currentFieldsArray[productMapper[ActiveFieldName]].ToUpper().Trim() == "TRUE"
+                     ?
                     true : false)
                     : false;
                 createProductCommand.EAN = productMapper.ContainsKey(EANFieldName) ? currentFieldsArray[productMapper[EANFieldName]].Replace("\"", "").Trim() : null;
@@ -415,7 +428,10 @@ namespace bbxBE.Application.Commands.cmdImport
                 }
 
                 var FAFA = productMapper.ContainsKey(FAFAFieldName) ?
-                    (currentFieldsArray[productMapper[FAFAFieldName]] == "1" || currentFieldsArray[productMapper[FAFAFieldName]] == "IGAZ" ?
+                    (currentFieldsArray[productMapper[FAFAFieldName]].Trim() == "1" ||
+                     currentFieldsArray[productMapper[FAFAFieldName]].ToUpper().Trim() == "IGAZ" ||
+                     currentFieldsArray[productMapper[FAFAFieldName]].ToUpper().Trim() == "TRUE"
+                     ?
                     true : false)
                     : false;
 
@@ -427,11 +443,16 @@ namespace bbxBE.Application.Commands.cmdImport
                 {
                     createProductCommand.VatRateCode = "27%";
                 }
-                //createPRoductCommand.LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]]) : 0;
-                createProductCommand.NoDiscount = (productMapper.ContainsKey(NODISCOUNTFieldName)) && (currentFieldsArray[productMapper[NODISCOUNTFieldName]].Equals("IGAZ"))
-                        ? true : false;
-                createProductCommand.LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]]) : 0;
-                createProductCommand.UnitWeight = productMapper.ContainsKey(SulyFieldName) ? decimal.Parse(currentFieldsArray[productMapper[SulyFieldName]]) : 0;
+                //createPRoductCommand.LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]].Replace(",",".")) : 0;
+                createProductCommand.NoDiscount = (productMapper.ContainsKey(NODISCOUNTFieldName)) &&
+                    (
+                    currentFieldsArray[productMapper[NODISCOUNTFieldName]].Trim().Equals("1") ||
+                    currentFieldsArray[productMapper[NODISCOUNTFieldName]].ToUpper().Trim().Equals("IGAZ") ||
+                    currentFieldsArray[productMapper[NODISCOUNTFieldName]].ToUpper().Trim().Equals("TRUE")
+
+                    ) ? true : false;
+                createProductCommand.LatestSupplyPrice = productMapper.ContainsKey(LatestSupplyPriceFieldName) ? decimal.Parse(currentFieldsArray[productMapper[LatestSupplyPriceFieldName]].Replace(".", ",")) : 0;
+                createProductCommand.UnitWeight = productMapper.ContainsKey(SulyFieldName) ? decimal.Parse(currentFieldsArray[productMapper[SulyFieldName]].Replace(".", ",")) : 0;
                 return new Dictionary<string, CreateProductCommand> {
                     {
                         productMapper.ContainsKey(ProductCodeFieldName) ? currentFieldsArray[productMapper[ProductCodeFieldName]] : null,
@@ -441,7 +462,11 @@ namespace bbxBE.Application.Commands.cmdImport
             }
             catch (System.Exception ex)
             {
-                throw new Exception($"{ex.Message} - ProductCode: {currentFieldsArray[productMapper[ProductCodeFieldName]]}");
+                throw new Exception($"{ex.Message} - ProductCode: {currentFieldsArray[productMapper[ProductCodeFieldName]]}\ncurrentLine:{currentLine}");
+            }
+            finally
+            {
+                System.Threading.Thread.CurrentThread.CurrentCulture = currentCulture;
             }
         }
     }
