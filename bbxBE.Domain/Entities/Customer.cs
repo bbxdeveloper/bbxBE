@@ -4,8 +4,6 @@ using bbxBE.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -71,5 +69,12 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Saját adat?")]
         [Description("Saját adat? (csak egy ilyen rekord lehet)")]
         public bool IsOwnData { get; set; }
+
+
+        //Relációk
+        [ColumnLabel("Ügyfélkedvezmények")]
+        [Description("Ügyfélkedvezmények")]
+        public virtual ICollection<CustDiscount> CustDiscounts { get; set; }
+
     }
 }

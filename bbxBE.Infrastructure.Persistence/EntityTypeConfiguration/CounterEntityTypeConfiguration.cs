@@ -2,9 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
 {
@@ -16,6 +14,12 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             builder.Property(e => e.CounterPool).HasConversion(
                 v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
                 v => JsonConvert.DeserializeObject<IList<CounterPoolItem>>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
+            builder.HasOne(cnt => cnt.Warehouse)
+                     .WithMany(whs => whs.Counters)
+                     .HasForeignKey(cnt => cnt.WarehouseID)
+                     .OnDelete(DeleteBehavior.NoAction);
+
         }
     }
 }
