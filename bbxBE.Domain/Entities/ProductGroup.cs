@@ -1,5 +1,6 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace bbxBE.Domain.Entities
@@ -17,5 +18,10 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Mimimum árrés")]
         [Description("Mimimum árrés")]
         public decimal? MinMargin { get; set; }
+
+        [ColumnLabel("Partnerkedvezmények")]
+        [Description("Partnerkedvezmények")]
+        public virtual IList<CustDiscount> CustDiscounts { get; set; }
+
     }
 }

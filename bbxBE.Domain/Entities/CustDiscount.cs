@@ -1,10 +1,7 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -33,5 +30,7 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Termékcsoport")]
         [Description("Termékcsoport")]
         public virtual ProductGroup ProductGroup { get; set; }
+
+
     }
 }

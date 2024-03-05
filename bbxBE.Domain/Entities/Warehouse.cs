@@ -20,5 +20,10 @@ namespace bbxBE.Domain.Entities
         [Description("Készletek")]
         public virtual ICollection<Stock> Stocks { get; set; }
 
+        [ColumnLabel("Bizonylati tömbök")]
+        [Description("Bizonylati tömbök")]
+        public virtual IList<Counter> Counters { get; set; }
+
+
     }
 }

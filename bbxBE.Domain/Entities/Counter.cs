@@ -1,10 +1,8 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -43,11 +41,13 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Raktár")]
         [Description("Raktár")]
         public Warehouse Warehouse { get; set; }
+
+
     }
 
     public class CounterPoolItem
     {
-        public string CounterValue { get; set; } 
+        public string CounterValue { get; set; }
         public long Ticks { get; set; }
     }
 }
