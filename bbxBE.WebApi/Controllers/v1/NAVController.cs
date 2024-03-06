@@ -14,7 +14,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class NAVController : BaseApiController
     {
@@ -83,6 +83,11 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(request));
         }
 
+        [HttpGet("queryxchange")]
+        public async Task<IActionResult> QueryXChange([FromQuery] QueryXChange request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
 
     }
 }

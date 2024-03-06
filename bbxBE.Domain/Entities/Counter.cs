@@ -1,5 +1,6 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -37,6 +38,7 @@ namespace bbxBE.Domain.Entities
 
 
         //relációk
+        [JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez
         [ForeignKey("WarehouseID")]
         [ColumnLabel("Raktár")]
         [Description("Raktár")]

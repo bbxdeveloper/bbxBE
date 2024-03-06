@@ -270,6 +270,13 @@ namespace bbxBE.Queries.Mappings
              .ForMember(dst => dst.CurrencyCodeX, opt => opt.MapFrom(src => CurrencyCodeResolver(src.CurrencyCode)))
              .ForMember(dst => dst.InvoiceGrossAmount, opt => opt.MapFrom(src => src.Invoice.InvoiceGrossAmount))
              .ForMember(dst => dst.InvoiceGrossAmountHUF, opt => opt.MapFrom(src => src.Invoice.InvoiceGrossAmountHUF));
+
+            CreateMap<NAVXChange, GetNAVXChangeViewModel>()
+             .ForMember(dst => dst.StatusX, opt => opt.MapFrom(src => NAVStatusResolver(src.Status)))
+             .ForMember(dst => dst.OperationX, opt => opt.MapFrom(src => NAVOperationResolver(src.Operation)));
+
+            CreateMap<NAVXResult, GetNAVXResultViewModel>();
+
         }
 
         private static string enStockCardTypeNameResolver(string ScType)
@@ -372,6 +379,25 @@ namespace bbxBE.Queries.Mappings
             return "";
         }
 
+        private static string NAVStatusResolver(string status)
+        {
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                var _status = (enNAVStatus)Enum.Parse(typeof(enNAVStatus), status);
+                return Common.Utils.GetEnumDescription(_status);
+            }
+            return "";
+        }
+
+        private static string NAVOperationResolver(string operation)
+        {
+            if (!string.IsNullOrWhiteSpace(operation))
+            {
+                var _operation = (enNAVOperation)Enum.Parse(typeof(enNAVOperation), operation);
+                return Common.Utils.GetEnumDescription(_operation);
+            }
+            return "";
+        }
 
     }
 }
