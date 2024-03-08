@@ -89,5 +89,17 @@ namespace bbxBE.WebApi.Controllers.v1
             return Ok(await Mediator.Send(request));
         }
 
+        //   [Authorize]
+        [HttpGet("getxchangexml")]
+        public async Task<IActionResult> GetXChangeXML([FromQuery] GetInvoiceXChangeXML request)
+        {
+            var result = await Mediator.Send(request);
+
+            if (result == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(result.FileStream, "application/octet-stream", result.FileDownloadName); // returns a FileStreamResult
+        }
+
     }
 }

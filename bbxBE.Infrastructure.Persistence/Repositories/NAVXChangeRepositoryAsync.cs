@@ -183,7 +183,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var orderBy = requestParameter.OrderBy;
             //      var fields = requestParameter.Fields;
-            var fields = _modelHelper.GetQueryableFields<GetNAVXChangeViewModel, Invoice>();
+            var fields = _modelHelper.GetQueryableFields<GetNAVXChangeViewModel, NAVXChange>();
 
 
             int recordsTotal, recordsFiltered;
@@ -199,10 +199,22 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             recordsTotal = await query.CountAsync();
 
             // filter data
-            FilterNAVXChange(ref query, requestParameter.CreateTimeFrom, requestParameter.CreateTimeTo, requestParameter.InvoiceNumber, requestParameter.ErrorView);
+            FilterNAVXChange(ref query, requestParameter.CreateTimeFrom, requestParameter.CreateTimeTo, requestParameter.InvoiceNumber,
+                        requestParameter.WarningView);
+
+            IQueryable<NAVXChange> qresut = query;
+            if (requestParameter.ErrorView)
+            {
+                //Hibanézet esetén a hibás tételek history-ja kell
+                qresut = qresut.Where(e => query.Any(q => (q.Status == enNAVStatus.ERROR.ToString()
+                                                 || q.Status == enNAVStatus.ABORTED.ToString()
+                                                 || q.Status == enNAVStatus.UNKNOWN.ToString())
+                                                 && q.InvoiceID == e.InvoiceID
+                                                 ));
+            }
 
             // Count records after filter
-            recordsFiltered = await query.CountAsync();
+            recordsFiltered = await qresut.CountAsync();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -214,21 +226,21 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             // set order by
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                query = query.OrderBy(orderBy);
+                qresut = qresut.OrderBy(orderBy);
             }
             else
             {
-                query = query.OrderBy(o => o.InvoiceNumber);
+                qresut = qresut.OrderBy(o => o.InvoiceNumber);
             }
 
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                query = query.Select<NAVXChange>("new(" + fields + ")");
+                qresut = qresut.Select<NAVXChange>("new(" + fields + ")");
             }
 
 
             // retrieve data to list
-            List<NAVXChange> resultData = await GetPagedData(query, requestParameter);
+            List<NAVXChange> resultData = await GetPagedData(qresut, requestParameter);
 
 
             //TODO: szebben megoldani
@@ -255,7 +267,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         }
 
         private void FilterNAVXChange(ref IQueryable<NAVXChange> p_items,
-            DateTime createTimeFrom, DateTime? createTimeTo, string invoiceNumber, bool errorView)
+            DateTime createTimeFrom, DateTime? createTimeTo, string invoiceNumber, bool warningView)
         {
             if (!p_items.Any())
                 return;
@@ -264,8 +276,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             predicate = predicate.And(c =>
                             (c.CreateTime >= createTimeFrom && (!createTimeTo.HasValue || c.CreateTime.Date <= createTimeTo.Value))
                             && (string.IsNullOrWhiteSpace(invoiceNumber) || c.InvoiceNumber.ToUpper().StartsWith(invoiceNumber.ToUpper()))
-                            && (!errorView || (c.NAVXResults.Any())));
-
+                            && (!warningView || (c.NAVXResults.Any())));
             p_items = p_items.Where(predicate);
         }
     }
