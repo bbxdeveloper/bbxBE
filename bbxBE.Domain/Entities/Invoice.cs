@@ -219,6 +219,10 @@ namespace bbxBE.Domain.Entities
         [Description("Munkaszám")]
         public string WorkNumber { get; set; }
 
+        [ColumnLabel("Importálva ?")]
+        [Description("Importálva ?")]
+        public bool Imported { get; set; }              //Vagy a NYIL-ből vagy a NAV-tól
+
         //relációk
         [ForeignKey("WarehouseID")]
         [ColumnLabel("Raktár")]

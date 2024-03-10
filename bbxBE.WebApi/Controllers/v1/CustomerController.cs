@@ -20,7 +20,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class CustomerController : BaseApiController
     {
@@ -36,23 +36,23 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetCustomer filter)
+        public async Task<IActionResult> Get([FromQuery] GetCustomer request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryCustomer filter)
+        public async Task<IActionResult> Query([FromQuery] QueryCustomer request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
@@ -99,9 +99,9 @@ namespace bbxBE.WebApi.Controllers.v1
         }
 
         [HttpGet("querytaxpayer")]
-        public async Task<IActionResult> QueryTaxpayer([FromQuery] QueryTaxPayer filter)
+        public async Task<IActionResult> QueryTaxpayer([FromQuery] QueryTaxPayer request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
 

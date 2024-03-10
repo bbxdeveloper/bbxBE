@@ -12,7 +12,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class StockController : BaseApiController
     {
@@ -28,12 +28,12 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetStock filter)
+        public async Task<IActionResult> Get([FromQuery] GetStock request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
 
@@ -58,18 +58,18 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryStock filter)
+        public async Task<IActionResult> Query([FromQuery] QueryStock request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         [HttpGet("queryinvctrlabsent")]
-        public async Task<IActionResult> QueryInvCtrlStockAbsent([FromQuery] QueryInvCtrlStockAbsent filter)
+        public async Task<IActionResult> QueryInvCtrlStockAbsent([FromQuery] QueryInvCtrlStockAbsent request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         [HttpPut("updatelocation")]
