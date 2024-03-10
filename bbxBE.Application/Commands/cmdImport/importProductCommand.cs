@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,6 +29,7 @@ namespace bbxBE.Application.Commands.cmdImport
         public bool OnlyInsert { get; set; } = false;
 
         [JsonIgnore]
+        [IgnoreDataMember]
         public string SessionID { get; set; }
 
     }

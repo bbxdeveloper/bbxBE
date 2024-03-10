@@ -5,6 +5,7 @@ using bbxBE.Common.ExpiringData;
 using MediatR;
 using System;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace bbxBE.Application.Commands.cmdCustomer
         public long ID { get; set; }
 
         [JsonIgnore]
+        [IgnoreDataMember]
         public string SessionID { get; set; }
 
     }

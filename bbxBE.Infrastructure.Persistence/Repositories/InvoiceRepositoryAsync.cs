@@ -19,6 +19,7 @@ using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -892,6 +893,50 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             p_items = p_items.Where(predicate);
         }
 
+        public async Task<List<Invoice>> GetUnsentInvoiceRecodsAsync()
+        {
+            var unsentInvoices = await getNAVInvoiceQuery()
+                    .Where(x => !x.Incoming && x.InvoiceType == enInvoiceType.INV.ToString() && !x.Imported
+                            && (x.NAVXChanges == null || !x.NAVXChanges.Any() ||
+                                 !x.NAVXChanges.Any(xc =>
+                                    xc.Status != enNAVStatus.CREATED.ToString() ||
+                                    xc.Status != enNAVStatus.TOKEN.ToString() ||
+                                    xc.Status != enNAVStatus.DATA_SENT.ToString() ||
+                                    xc.Status != enNAVStatus.DONE.ToString())))
+                    .ToListAsync();
+            return unsentInvoices;
+        }
+
+
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUnsentInvoiceAsync(QueryUnsentInvoices requestParameter)
+        {
+            var unsentInvoices = await GetUnsentInvoiceRecodsAsync();
+
+            var recordsCount = new RecordsCount
+            {
+                RecordsFiltered = unsentInvoices.Count,
+                RecordsTotal = unsentInvoices.Count
+            };
+
+
+            //TODO: szebben megoldani
+            var resultDataModel = new List<GetInvoiceViewModel>();
+            unsentInvoices.ForEach(i =>
+            {
+                var im = _mapper.Map<Invoice, GetInvoiceViewModel>(i);
+                im.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
+                im.SummaryByVatRates.Clear();         //itt már nem kellenek a sorok. 
+                im.InvPayments.Clear();         //itt már nem kellenek a sorok. 
+                resultDataModel.Add(im);  //nem full data esetén is szüség van az invoiceLines-re
+            }
+            );
+
+            var listFieldsModel = _modelHelper.GetModelFields<GetInvoiceViewModel>();
+
+            var shapedData = _dataShaperGetInvoiceViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
+
+            return (shapedData, recordsCount);
+        }
 
         public Task<bool> SeedDataAsync(int rowCount)
         {
@@ -1733,7 +1778,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     inv.InvoiceVatAmount = Math.Round(inv.CurrencyCode == enCurrencyCodes.HUF.ToString() ? AFAERT : CRCY_AFA, 1);
                     inv.InvoiceVatAmountHUF = Math.Round(AFAERT, 1);
                     inv.InvoiceGrossAmount = Math.Round(inv.CurrencyCode == enCurrencyCodes.HUF.ToString() ? BRUTTO : CRCY_BRT, 1);
-
+                    inv.Imported = true;
                     invList.Add(inv);
                 }
             });

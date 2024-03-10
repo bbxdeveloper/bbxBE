@@ -2,6 +2,7 @@
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qWhsTransfer;
 using bbxBE.Common;
+using bbxBE.Common.Consts;
 using bbxBE.Common.Enums;
 using bxBE.Application.Commands.cmdWhsTransfer;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +19,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class WhsTransferController : BaseApiController
     {
@@ -42,7 +43,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
         public async Task<IActionResult> Query([FromQuery] QueryWhsTransfer request)
@@ -100,7 +101,12 @@ namespace bbxBE.WebApi.Controllers.v1
         {
 
             command.JWT = Utils.getJWT(_context.HttpContext);
-            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var baseUrl = _conf[bbxBEConsts.CONF_BASEURL];
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                baseUrl = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            }
+            command.baseURL = baseUrl;
             var result = await Mediator.Send(command);
 
             if (result == null)

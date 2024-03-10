@@ -1,6 +1,7 @@
 ﻿using bbxBE.Application.Commands.cmdInvCtrl;
 using bbxBE.Application.Queries.qInvCtrl;
 using bbxBE.Common;
+using bbxBE.Common.Consts;
 using bxBE.Application.Commands.cmdInvCtrl;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +16,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class InvCtrlController : BaseApiController
     {
@@ -34,18 +35,18 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetInvCtrl filter)
+        public async Task<IActionResult> Get([FromQuery] GetInvCtrl request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("record")]
         public async Task<IActionResult> GetRecord([FromQuery] GetInvCtrlICPRecord req)
@@ -62,12 +63,12 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryInvCtrl filter)
+        public async Task<IActionResult> Query([FromQuery] QueryInvCtrl request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
@@ -96,7 +97,12 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Print(PrintInvCtrlCommand command)
         {
             command.JWT = Utils.getJWT(_context.HttpContext);
-            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var baseUrl = _conf[bbxBEConsts.CONF_BASEURL];
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                baseUrl = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            }
+            command.baseURL = baseUrl;
             var result = await Mediator.Send(command);
 
             if (result == null)

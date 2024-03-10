@@ -5,6 +5,7 @@ using bbxBE.Application.Queries.qCustomer;
 using bbxBE.Application.Queries.qEnum;
 using bbxBE.Application.Queries.qInvoice;
 using bbxBE.Common;
+using bbxBE.Common.Consts;
 using bbxBE.Common.NAV;
 using bxBE.Application.Commands.cmdInvoice;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -22,7 +24,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class InvoiceController : BaseApiController
     {
@@ -30,20 +32,24 @@ namespace bbxBE.WebApi.Controllers.v1
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _conf;
         private readonly IHttpContextAccessor _context;
+        private readonly ILogger _logger;
+
         public InvoiceController(
            IWebHostEnvironment env,
            IConfiguration conf,
-           IHttpContextAccessor context)
+           IHttpContextAccessor context,
+           ILogger logger)
         {
             _env = env;
             _conf = conf;
             _context = context;
+            _logger = logger;
         }
 
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] GetInvoice request)
@@ -61,7 +67,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("aggregateinvoice")]
         public async Task<IActionResult> GetAggregateInvoice([FromQuery] GetAggregateInvoice request)
@@ -72,7 +78,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("aggregateinvoicedeliverynote")]
         public async Task<IActionResult> GetAggregateInvoiceDeliveryNote([FromQuery] GetAggregateInvoiceDeliveryNote request)
@@ -140,29 +146,40 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryInvoice filter)
+        public async Task<IActionResult> Query([FromQuery] QueryInvoice request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("queryunpaid")]
-        public async Task<IActionResult> QueryUnpaid([FromQuery] QueryUnpaidInvoice filter)
+        public async Task<IActionResult> QueryUnpaid([FromQuery] QueryUnpaidInvoice request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpGet("queryunsent")]
+        public async Task<IActionResult> QueryUnsent([FromQuery] QueryUnsentInvoices request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
+
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("querycustomerinvoicesummary")]
         public async Task<IActionResult> QueryCustomerInvoiceSummary([FromQuery] QueryCustomerInvoiceSummary req)
@@ -190,7 +207,18 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Print(PrintInvoiceCommand command)
         {
             command.JWT = Utils.getJWT(_context.HttpContext);
-            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+
+            var baseUrl = _conf[bbxBEConsts.CONF_BASEURL];
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                baseUrl = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            }
+            command.baseURL = baseUrl;
+
+
+            _logger.Information($"BaseUrl:{baseUrl}");
+
+
             var result = await Mediator.Send(command);
 
             if (result == null)
@@ -228,7 +256,12 @@ namespace bbxBE.WebApi.Controllers.v1
         {
 
             command.JWT = Utils.getJWT(_context.HttpContext);
-            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var baseUrl = _conf[bbxBEConsts.CONF_BASEURL];
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                baseUrl = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            }
+            command.baseURL = baseUrl;
             var result = await Mediator.Send(command);
 
             if (result == null)

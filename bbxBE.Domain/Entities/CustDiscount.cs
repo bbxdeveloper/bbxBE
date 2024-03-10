@@ -1,10 +1,8 @@
 ﻿using bbxBE.Common.Attributes;
 using bbxBE.Domain.Common;
-using System;
-using System.Collections.Generic;
+using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace bbxBE.Domain.Entities
 {
@@ -24,14 +22,18 @@ namespace bbxBE.Domain.Entities
         public decimal Discount { get; set; }
 
         //relációk
+        [JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez
         [ForeignKey("CustomerID")]
         [ColumnLabel("Ügyfél")]
         [Description("Ügyfél")]
         public virtual Customer Customer { get; set; }
 
+        [JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez
         [ForeignKey("ProductGroupID")]
         [ColumnLabel("Termékcsoport")]
         [Description("Termékcsoport")]
         public virtual ProductGroup ProductGroup { get; set; }
+
+
     }
 }

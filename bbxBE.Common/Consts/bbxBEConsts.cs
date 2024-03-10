@@ -13,6 +13,8 @@
         public const string CONF_JWTIssuer = "Issuer";
         public const string CONF_JWTAudience = "Audience";
         public const string CONF_JWTDurationInMinutes = "DurationInMinutes";
+        public const string CONF_BASEURL = "BaseUrl";
+
         public const string JWT_REPPARAMETER = "JWT";
         public const string JWT_BEARER = "Bearer {0}";
 
@@ -200,6 +202,8 @@
         public const string ERR_NAVINV = "Csak kimenő számlabizonylat küldhető a NAV felé, bizonylatszám:{0}";
         public const string ERR_NAVINV_ANULMENT = "Csak kimenő számlabizonylat küldése vonható vissza a NAV-tól, bizonylatszám:{0}";
         public const string ERR_INVOICEALREADYSETSEND = "A számlabizonylat már küldésre kijelölve, bizonylatszám:{0}";
+        public const string ERR_XCHANGEFOUND = "NAV küldés nem található, ID:{0} ";
+
         public const string NAV_SENDINVOICETONAV_ERR = "NAV adatküldés hiba:{0}";
         public const string NAV_NOTIFICATIONEMAIL_SENT = "NAV hibaértesítő levél kiküldve, email:{0}, számla:{1}";
         public const string NAV_NOTIFICATIONEMAIL_SENT_ERR = "NAV hibaértesítő levél kiküldés hiba, email:{0}, számla:{1}, válasz:{2}";

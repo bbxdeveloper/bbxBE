@@ -47,5 +47,10 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Invoice> UpdatePricePreviewAsynch(UpdatePricePreviewCommand request, CancellationToken cancellationToken);
 
         public IList<string> Import(string CSVContent, string warehouseCode);
+        Task<List<Invoice>> GetUnsentInvoiceRecodsAsync();
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUnsentInvoiceAsync(QueryUnsentInvoices requestParameter);
+
+
+
     }
 }

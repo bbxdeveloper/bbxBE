@@ -84,7 +84,7 @@ namespace bxBE.Application.Commands.cmdInvCtrl
             var wh = await _warehouseRepository.GetWarehouseRecordAsync(request.Items.First().WarehouseID);
             if (wh == null)
             {
-                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND, request.Items.First().WarehouseID));
+                throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_WAREHOUSENOTFOUND2, request.Items.First().WarehouseID));
             }
 
             request.Items.ForEach(i =>

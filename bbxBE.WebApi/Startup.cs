@@ -126,7 +126,7 @@ namespace bbxBE.WebApi
             app.UseCors("AllowAll");
 
 
-            app.UseHttpsRedirection();
+           //ne legyen automatikus https app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSwaggerExtension();

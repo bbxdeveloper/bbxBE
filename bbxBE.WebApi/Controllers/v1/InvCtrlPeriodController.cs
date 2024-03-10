@@ -1,6 +1,7 @@
 ﻿using bbxBE.Application.Commands.cmdInvCtrlPeriod;
 using bbxBE.Application.Queries.qInvCtrlPeriod;
 using bbxBE.Common;
+using bbxBE.Common.Consts;
 using bxBE.Application.Commands.cmdInvCtrlPeriod;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +16,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class InvCtrlPeriodController : BaseApiController
     {
@@ -34,12 +35,12 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetInvCtrlPeriod filter)
+        public async Task<IActionResult> Get([FromQuery] GetInvCtrlPeriod request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
 
@@ -47,12 +48,12 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryInvCtrlPeriod filter)
+        public async Task<IActionResult> Query([FromQuery] QueryInvCtrlPeriod request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
@@ -93,7 +94,12 @@ namespace bbxBE.WebApi.Controllers.v1
         {
 
             command.JWT = Utils.getJWT(_context.HttpContext);
-            command.baseURL = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            var baseUrl = _conf[bbxBEConsts.CONF_BASEURL];
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                baseUrl = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
+            }
+            command.baseURL = baseUrl;
             var result = await Mediator.Send(command);
 
             if (result == null)
