@@ -31,7 +31,6 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get()

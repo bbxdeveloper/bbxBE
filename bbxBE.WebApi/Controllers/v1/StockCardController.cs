@@ -11,7 +11,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class StockCardController : BaseApiController
     {
@@ -27,12 +27,12 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetStockCard filter)
+        public async Task<IActionResult> Get([FromQuery] GetStockCard request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
 
@@ -40,12 +40,12 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryStockCard filter)
+        public async Task<IActionResult> Query([FromQuery] QueryStockCard request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
 

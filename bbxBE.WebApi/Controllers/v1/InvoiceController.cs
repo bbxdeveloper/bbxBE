@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using SQLitePCL;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class InvoiceController : BaseApiController
     {
@@ -50,7 +49,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] GetInvoice request)
@@ -68,7 +67,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("aggregateinvoice")]
         public async Task<IActionResult> GetAggregateInvoice([FromQuery] GetAggregateInvoice request)
@@ -79,7 +78,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("aggregateinvoicedeliverynote")]
         public async Task<IActionResult> GetAggregateInvoiceDeliveryNote([FromQuery] GetAggregateInvoiceDeliveryNote request)
@@ -147,29 +146,40 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryInvoice filter)
+        public async Task<IActionResult> Query([FromQuery] QueryInvoice request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("queryunpaid")]
-        public async Task<IActionResult> QueryUnpaid([FromQuery] QueryUnpaidInvoice filter)
+        public async Task<IActionResult> QueryUnpaid([FromQuery] QueryUnpaidInvoice request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpGet("queryunsent")]
+        public async Task<IActionResult> QueryUnsent([FromQuery] QueryUnsentInvoices request)
+        {
+            return Ok(await Mediator.Send(request));
+        }
+
+        /// <summary>
+        /// GET: api/controller
+        /// </summary>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("querycustomerinvoicesummary")]
         public async Task<IActionResult> QueryCustomerInvoiceSummary([FromQuery] QueryCustomerInvoiceSummary req)
@@ -197,9 +207,9 @@ namespace bbxBE.WebApi.Controllers.v1
         public async Task<IActionResult> Print(PrintInvoiceCommand command)
         {
             command.JWT = Utils.getJWT(_context.HttpContext);
-            
-            var baseUrl = _conf[ bbxBEConsts.CONF_BASEURL];
-            if ( string.IsNullOrWhiteSpace( baseUrl))
+
+            var baseUrl = _conf[bbxBEConsts.CONF_BASEURL];
+            if (string.IsNullOrWhiteSpace(baseUrl))
             {
                 baseUrl = $"{_context.HttpContext.Request.Scheme.ToString()}://{_context.HttpContext.Request.Host.ToString()}";
             }

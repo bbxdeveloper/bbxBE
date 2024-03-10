@@ -11,7 +11,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class VatRateController : BaseApiController
     {
@@ -27,35 +27,35 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetVatRate filter)
+        public async Task<IActionResult> Get([FromQuery] GetVatRate request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryVatRate filter)
+        public async Task<IActionResult> Query([FromQuery] QueryVatRate request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /*
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("VatRatebycode")]
-        public async Task<IActionResult> GetVatRateByVatRateCode([FromQuery] GetVatRateByVatRateCode filter)
+        public async Task<IActionResult> GetVatRateByVatRateCode([FromQuery] GetVatRateByVatRateCode request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
       

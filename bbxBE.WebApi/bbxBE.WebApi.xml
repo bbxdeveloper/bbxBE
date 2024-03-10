@@ -8,14 +8,14 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.CounterController.Query(bbxBE.Application.Queries.qCounter.QueryCounter)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.CounterController.Create(bxBE.Application.Commands.cmdCounter.CreateCounterCommand)">
@@ -29,14 +29,14 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.CustDiscountController.Query(bbxBE.Application.Queries.qCustDiscount.GetCustDiscountForCustomerList)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.CustDiscountController.Create(bxBE.Application.Commands.cmdCustDiscount.CreateCustDiscountCommand)">
@@ -50,14 +50,14 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.CustomerController.Query(bbxBE.Application.Queries.qCustomer.QueryCustomer)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.CustomerController.Create(bxBE.Application.Commands.cmdCustomer.CreateCustomerCommand)">
@@ -78,21 +78,21 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlController.GetRecord(bbxBE.Application.Queries.qInvCtrl.GetInvCtrlICPRecord)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlController.Query(bbxBE.Application.Queries.qInvCtrl.QueryInvCtrl)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlController.Create(bxBE.Application.Commands.cmdInvCtrl.createInvCtrlICPCommand)">
@@ -113,14 +113,14 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlPeriodController.Query(bbxBE.Application.Queries.qInvCtrlPeriod.QueryInvCtrlPeriod)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvCtrlPeriodController.Create(bxBE.Application.Commands.cmdInvCtrlPeriod.CreateInvCtrlPeriodCommand)">
@@ -134,21 +134,21 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.GetAggregateInvoice(bbxBE.Application.Queries.qInvoice.GetAggregateInvoice)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.GetAggregateInvoiceDeliveryNote(bbxBE.Application.Queries.qInvoice.GetAggregateInvoiceDeliveryNote)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.Create(bxBE.Application.Commands.cmdInvoice.CreateInvoiceCommand)">
@@ -162,21 +162,28 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.QueryUnpaid(bbxBE.Application.Queries.qInvoice.QueryUnpaidInvoice)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.QueryUnsent(bbxBE.Application.Queries.qInvoice.QueryUnsentInvoices)">
+            <summary>
+            GET: api/controller
+            </summary>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.QueryCustomerInvoiceSummary(bbxBE.Application.Queries.qInvoice.QueryCustomerInvoiceSummary)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.InvoiceController.ImportFromNAV(bbxBE.Application.Commands.cmdNAV.importFromNAVCommand)">
@@ -211,21 +218,21 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.LocationController.Get(bbxBE.Application.Queries.qLocation.GetLocation)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.LocationController.Query(bbxBE.Application.Queries.qLocation.QueryLocation)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.LocationController.Create(bxBE.Application.Commands.cmdLocation.CreateLocationCommand)">
@@ -253,7 +260,7 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.OfferController.Print(bbxBE.Application.Commands.cmdOffer.PrintOfferCommand)">
@@ -274,14 +281,14 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.OriginController.Query(bbxBE.Application.Queries.qOrigin.QueryOrigin)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.OriginController.Create(bxBE.Application.Commands.cmdOrigin.CreateOriginCommand)">
@@ -295,21 +302,21 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.ProductController.GetProductByProductCode(bbxBE.Application.Queries.qProduct.GetProductByProductCode)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.ProductController.Query(bbxBE.Application.Queries.qProduct.QueryProduct)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.ProductController.Create(bxBE.Application.Commands.cmdProduct.CreateProductCommand)">
@@ -323,14 +330,14 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.ProductGroupController.Query(bbxBE.Application.Queries.qProductGroup.QueryProductGroup)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.ProductGroupController.Create(bxBE.Application.Commands.cmdProductGroup.CreateProductGroupCommand)">
@@ -344,56 +351,55 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.StockCardController.Query(bbxBE.Application.Queries.qStockCard.QueryStockCard)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.StockController.Get(bbxBE.Application.Queries.qStock.GetStock)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.StockController.Query(bbxBE.Application.Queries.qStock.QueryStock)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.SystemController.RefreshCaches">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.TestController.Get">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.UserController.Get(bbxBE.Application.Queries.qUser.GetUser)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.UserController.Query(bbxBE.Application.Queries.qUser.QueryUser)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.UserController.Create(bbxBE.Application.Commands.cmdUser.createUserCommand)">
@@ -407,28 +413,28 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.VatRateController.Query(bbxBE.Application.Queries.qVatRate.QueryVatRate)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.WarehouseController.Get(bbxBE.Application.Queries.qWarehouse.GetWarehouse)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.WarehouseController.Query(bbxBE.Application.Queries.qWarehouse.QueryWarehouse)">
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.WarehouseController.Create(bxBE.Application.Commands.cmdWarehouse.CreateWarehouseCommand)">
@@ -442,7 +448,7 @@
             <summary>
             GET: api/controller
             </summary>
-            <param name="filter"></param>
+            <param name="request"></param>
             <returns></returns>
         </member>
         <member name="M:bbxBE.WebApi.Controllers.v1.WhsTransferController.Create(bxBE.Application.Commands.cmdWhsTransfer.CreateWhsTransferCommand)">

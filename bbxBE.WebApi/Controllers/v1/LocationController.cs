@@ -13,7 +13,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class LocationController : BaseApiController
     {
@@ -29,7 +29,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] GetLocation request)
@@ -40,7 +40,7 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
         public async Task<IActionResult> Query([FromQuery] QueryLocation request)

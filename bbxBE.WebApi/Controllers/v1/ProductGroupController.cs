@@ -14,7 +14,7 @@ namespace bbxBE.WebApi.Controllers.v1
 #if (!DEBUG)
     [Authorize]
 #else
-        [AllowAnonymous]
+    [AllowAnonymous]
 #endif
     public class ProductGroupController : BaseApiController
     {
@@ -32,23 +32,23 @@ namespace bbxBE.WebApi.Controllers.v1
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetProductGroup filter)
+        public async Task<IActionResult> Get([FromQuery] GetProductGroup request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
         /// GET: api/controller
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("query")]
-        public async Task<IActionResult> Query([FromQuery] QueryProductGroup filter)
+        public async Task<IActionResult> Query([FromQuery] QueryProductGroup request)
         {
-            return Ok(await Mediator.Send(filter));
+            return Ok(await Mediator.Send(request));
         }
 
         /// <summary>
