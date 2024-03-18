@@ -21,7 +21,13 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .HasForeignKey(s => s.ProductID)
             .IsRequired(false);
 
-
+            builder.Property(u => u.UnitWeight).HasPrecision(19, 4);
+            builder.Property(u => u.UnitPrice2).HasPrecision(19, 4);
+            builder.Property(u => u.UnitPrice1).HasPrecision(19, 4);
+            builder.Property(u => u.ProductFee).HasPrecision(19, 4);
+            builder.Property(u => u.OrdUnit).HasPrecision(19, 4);
+            builder.Property(u => u.MinStock).HasPrecision(19, 4);
+            builder.Property(u => u.LatestSupplyPrice).HasPrecision(19, 4);
         }
 
     }

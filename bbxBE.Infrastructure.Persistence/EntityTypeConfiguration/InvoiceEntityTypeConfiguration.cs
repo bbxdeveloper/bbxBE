@@ -36,7 +36,15 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .HasForeignKey(s => s.InvoiceID)
             .IsRequired(false);
 
-
+            builder.Property(u => u.InvoiceVatAmountHUF).HasPrecision(19, 4);
+            builder.Property(u => u.InvoiceVatAmount).HasPrecision(19, 4);
+            builder.Property(u => u.InvoiceNetAmount).HasPrecision(19, 4);
+            builder.Property(u => u.InvoiceGrossAmountHUF).HasPrecision(19, 4);
+            builder.Property(u => u.InvoiceGrossAmount).HasPrecision(19, 4);
+            builder.Property(u => u.InvoiceDiscountPercent).HasPrecision(19, 4);
+            builder.Property(u => u.InvoiceDiscountHUF).HasPrecision(19, 4);
+            builder.Property(u => u.InvoiceDiscount).HasPrecision(19, 4);
+            builder.Property(u => u.ExchangeRate).HasPrecision(19, 4);
         }
     }
 }

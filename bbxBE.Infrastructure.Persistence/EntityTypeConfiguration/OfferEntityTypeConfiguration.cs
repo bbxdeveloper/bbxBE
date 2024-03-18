@@ -14,6 +14,10 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .WithOne(c => c.Offer)
             .HasForeignKey(s => s.OfferID)
             .IsRequired(true);
+
+
+            builder.Property(u => u.ExchangeRate).HasPrecision(19, 4);
+
         }
     }
 }
