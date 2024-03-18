@@ -30,6 +30,10 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
                 .HasForeignKey(s => s.ProductID)
                 .IsRequired(true);
 
+            builder.Property(u => u.RealQty).HasPrecision(19, 4);
+            builder.Property(u => u.AvgCost).HasPrecision(19, 4);
+
+
         }
     }
 }

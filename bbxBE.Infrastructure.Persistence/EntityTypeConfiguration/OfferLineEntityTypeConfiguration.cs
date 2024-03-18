@@ -10,6 +10,14 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
         public void Configure(EntityTypeBuilder<OfferLine> builder)
         {
             //soon
+
+            builder.Property(u => u.VatPercentage).HasPrecision(19, 4);
+            builder.Property(u => u.UnitPrice).HasPrecision(19, 4);
+            builder.Property(u => u.UnitGross).HasPrecision(19, 4);
+            builder.Property(u => u.Quantity).HasPrecision(19, 4);
+            builder.Property(u => u.OriginalUnitPriceHUF).HasPrecision(19, 4);
+            builder.Property(u => u.OriginalUnitPrice).HasPrecision(19, 4);
+            builder.Property(u => u.Discount).HasPrecision(19, 4);
         }
     }
 }

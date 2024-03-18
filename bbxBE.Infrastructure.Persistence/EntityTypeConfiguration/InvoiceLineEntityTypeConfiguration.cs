@@ -32,6 +32,31 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             .HasForeignKey(s => s.InvoiceLineID)
             .IsRequired(false);
 
+            builder.Property(u => u.VatPercentage).HasPrecision(19, 4);
+            builder.Property(u => u.UnitWeight).HasPrecision(19, 4);
+            builder.Property(u => u.UnitPriceHUF).HasPrecision(19, 4);
+            builder.Property(u => u.UnitPrice).HasPrecision(19, 4);
+            builder.Property(u => u.TakeoverAmount).HasPrecision(19, 4);
+            builder.Property(u => u.Quantity).HasPrecision(19, 4);
+            builder.Property(u => u.ProductFeeRate).HasPrecision(19, 4);
+            builder.Property(u => u.ProductFeeQuantity).HasPrecision(19, 4);
+            builder.Property(u => u.ProductFeeAmount).HasPrecision(19, 4);
+            builder.Property(u => u.PendingDNQuantity).HasPrecision(19, 4);
+            builder.Property(u => u.LineVatDiscountedAmountHUF).HasPrecision(19, 4);
+            builder.Property(u => u.LineVatDiscountedAmount).HasPrecision(19, 4);
+            builder.Property(u => u.LineVatAmountHUF).HasPrecision(19, 4);
+            builder.Property(u => u.LineVatAmount).HasPrecision(19, 4);
+            builder.Property(u => u.LineNetDiscountedAmountHUF).HasPrecision(19, 4);
+            builder.Property(u => u.LineNetDiscountedAmount).HasPrecision(19, 4);
+            builder.Property(u => u.LineNetAmountHUF).HasPrecision(19, 4);
+            builder.Property(u => u.LineNetAmount).HasPrecision(19, 4);
+            builder.Property(u => u.LineGrossDiscountedAmountNormalHUF).HasPrecision(19, 4);
+            builder.Property(u => u.LineGrossDiscountedAmountNormal).HasPrecision(19, 4);
+            builder.Property(u => u.LineGrossAmountNormalHUF).HasPrecision(19, 4);
+            builder.Property(u => u.LineGrossAmountNormal).HasPrecision(19, 4);
+            builder.Property(u => u.LineExchangeRate).HasPrecision(19, 4);
+            builder.Property(u => u.LineDiscountPercent).HasPrecision(19, 4);
+
         }
     }
 }
