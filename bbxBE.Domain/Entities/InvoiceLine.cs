@@ -183,7 +183,17 @@ namespace bbxBE.Domain.Entities
 
         [ColumnLabel("Súly")]
         [Description("Súly")]
-        public Decimal UnitWeight { get; set; }
+        public decimal UnitWeight { get; set; }
+
+
+        [ColumnLabel("Kapcsolt megrendelés sor ID")]
+        [Description("Kapcsolt megrendelés sor ID")]
+        public long POrderLineID { get; set; }
+
+        [ColumnLabel("Kapcsolt megrendelés száma")]
+        [Description("Kapcsolt megrendelés száma")]
+        public string POrderNumber { get; set; }
+
 
         //Relációk, navigációs komponensek
         [JsonIgnore]                    //ignorálni kell, mert körkörös hivatkozást eredményez
@@ -207,6 +217,12 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Áfakulcs")]
         [Description("Áfakulcs")]
         public virtual VatRate VatRate { get; set; }
+
+        [ForeignKey("POrderLineID")]
+        [ColumnLabel("Megrendelés-sor")]
+        [Description("Megrendelés-sor")]
+        public virtual POrderLine POrderLine { get; set; }
+
 
         [ColumnLabel("Egyéb tételadat")]
         [Description("A bizonylattételre vonatkozó egyéb adat")]

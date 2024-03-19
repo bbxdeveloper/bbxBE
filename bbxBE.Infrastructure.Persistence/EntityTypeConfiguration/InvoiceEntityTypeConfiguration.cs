@@ -45,6 +45,7 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
             builder.Property(u => u.InvoiceDiscountHUF).HasPrecision(19, 4);
             builder.Property(u => u.InvoiceDiscount).HasPrecision(19, 4);
             builder.Property(u => u.ExchangeRate).HasPrecision(19, 4);
+            builder.Property(u => u.ExchangeRate).HasPrecision(19, 4);
         }
     }
 }
