@@ -18,6 +18,9 @@ namespace bbxBE.Infrastructure.Persistence.EntityTypeConfigurations
                      .WithMany(pg => pg.CustDiscounts)
                      .HasForeignKey(cd => cd.ProductGroupID)
                      .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Property(u => u.Discount).HasPrecision(19, 4);
+
         }
     }
 }

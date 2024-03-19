@@ -197,6 +197,7 @@ namespace bbxBE.Domain.Entities
         [ColumnLabel("Áfa")]
         [Description("A számla áfa összege a számla pénznemében")]
         public decimal InvoiceVatAmount { get; set; }
+
         [ColumnLabel("Áfa HUF")]
         [Description("A számla áfa összege forintban")]
         public decimal InvoiceVatAmountHUF { get; set; }
