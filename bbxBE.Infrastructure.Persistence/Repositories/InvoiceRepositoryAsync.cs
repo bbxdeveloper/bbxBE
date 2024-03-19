@@ -875,7 +875,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
         private void UnpaidFilterBy(ref IQueryable<Invoice> p_items, bool p_incoming,
             string p_invoiceNumber, string p_customerInvoiceNumber, long? p_customerID,
             DateTime? p_invoiceIssueDateFrom, DateTime? p_invoiceIssueDateTo,
-            DateTime p_invoiceDeliveryDateFrom, DateTime? p_invoiceDeliveryDateTo,
+            DateTime? p_invoiceDeliveryDateFrom, DateTime? p_invoiceDeliveryDateTo,
             DateTime? p_paymentDateFrom, DateTime? p_paymentDateTo,
             bool? p_expired)
         {
@@ -888,10 +888,10 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             predicate = predicate.And(p =>
                             //kötelező mezők, indexbe
                             p.Incoming == p_incoming && p.PaymentMethod == PaymentMethodType.TRANSFER.ToString() && p.InvPayments.Sum(s => s.InvPaymentAmountHUF) < p.InvoiceGrossAmountHUF
-                            && (p.InvoiceDeliveryDate >= p_invoiceDeliveryDateFrom)
                             && (!p_customerID.HasValue || (p.Incoming && p.SupplierID == p_customerID) || (!p.Incoming && p.CustomerID == p_customerID))
 
                             //nem kötelező mezők
+                            && (!p_invoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= p_invoiceDeliveryDateFrom)
                             && (string.IsNullOrWhiteSpace(p_invoiceNumber) || p.InvoiceNumber.Contains(p_invoiceNumber))
                             && (string.IsNullOrWhiteSpace(p_customerInvoiceNumber) || p.CustomerInvoiceNumber.ToUpper().Contains(p_customerInvoiceNumber.ToUpper()))
                             && (!p_invoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= p_invoiceIssueDateFrom.Value)

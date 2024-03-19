@@ -45,7 +45,7 @@ namespace bbxBE.Application.Queries.qInvoice
 
         [ColumnLabel("Keltezés től")]
         [Description("Kiállítás dátumától")]
-        public DateTime InvoiceIssueDateFrom { get; set; }
+        public DateTime? InvoiceIssueDateFrom { get; set; }
 
         [ColumnLabel("Keltezés ig")]
         [Description("Kiállítás dátumáig")]
