@@ -8,8 +8,11 @@ namespace bbxBE.Application.Wrappers
         public int PageSize { get; set; }
         public int RecordsFiltered { get; set; }
         public int RecordsTotal { get; set; }
+        public decimal SummaryNet { get; set; }
+        public decimal SummaryVat { get; set; }
+        public decimal SummaryGross { get; set; }
 
-        public PagedResponse(T data, int pageNumber, int pageSize, RecordsCount recordsCount)
+        public PagedResponse(T data, int pageNumber, int pageSize, RecordsCount recordsCount, decimal summaryNet = 0, decimal summaryVat = 0, decimal summaryGross = 0)
         {
             this.PageNumber = pageNumber;
             this.PageSize = pageSize;
@@ -19,6 +22,9 @@ namespace bbxBE.Application.Wrappers
             this.Message = null;
             this.Succeeded = true;
             this.Errors = null;
+            this.SummaryNet = summaryNet;
+            this.SummaryVat = summaryVat;
+            this.SummaryGross = summaryGross;
         }
     }
 }
