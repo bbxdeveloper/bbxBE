@@ -450,11 +450,11 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             decimal pendingAmount = await q1.SumAsync(s => s.SumNetAmountDiscountedHUF);
 
             //2. kiegyenlítettlen számlák
-            var customerFilter = new QueryUnpaidInvoice() { CustomerID = customerID, Incoming = false, Expired = false, PageSize = 999999 };
+            var customerFilter = new QueryUnpaidInvoice() { CustomerID = customerID, Incoming = false, Expired = false, PageSize = 99999999 };
             var unpaidInvoices = await GetPagedUnpaidInvoiceRecordsAsync(customerFilter);
-            if (unpaidInvoices.Count > 0)
+            if (unpaidInvoices.pagedItems.Count > 0)
             {
-                pendingAmount += unpaidInvoices.Sum(ui => ui.InvoiceGrossAmountHUF - ui.InvPayments.Sum(s => s.InvPaymentAmountHUF));
+                pendingAmount += unpaidInvoices.pagedItems.Sum(ui => ui.InvoiceGrossAmountHUF - ui.InvPayments.Sum(s => s.InvPaymentAmountHUF));
             }
             return pendingAmount;
         }
@@ -641,7 +641,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             return shapedData;
         }
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount, decimal sumInvoiceNetAmountHUF, decimal sumInvoiceGrossAmountHUF)> QueryPagedInvoiceAsync(QueryInvoice requestParameter)
         {
 
             var orderBy = requestParameter.OrderBy;
@@ -652,8 +652,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             int recordsTotal, recordsFiltered;
 
 
-            //var query = _dbContext.Invoice//.AsNoTracking().AsExpandable()
-            //        .Include(i => i.Warehouse).AsQueryable();
 
             IQueryable<Invoice> query;
             if (requestParameter.FullData)
@@ -693,6 +691,16 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 query = query.OrderBy(orderBy);
             }
 
+            //Summaries
+            var allItems = await query.ToListAsync();
+            var sumInvoiceNetAmountHUF = allItems.Sum(s => s.InvoiceNetAmountHUF);
+            var sumInvoiceGrossAmountHUF = allItems.Sum(s => s.InvoiceGrossAmountHUF);
+
+            // paging
+            var resultData = allItems.Skip((requestParameter.PageNumber - 1) * requestParameter.PageSize)
+                .Take(requestParameter.PageSize).ToList();
+
+
             // select columns
             /*
             if (!string.IsNullOrWhiteSpace(fields))
@@ -700,9 +708,6 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 result = result.Select<Invoice>("new(" + fields + ")");
             }
             */
-
-            // retrieve data to list
-            List<Invoice> resultData = await GetPagedData(query, requestParameter);
 
 
             //TODO: szebben megoldani
@@ -724,9 +729,9 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var shapedData = _dataShaperGetInvoiceViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapedData, recordsCount);
+            return (shapedData, recordsCount, sumInvoiceNetAmountHUF, sumInvoiceGrossAmountHUF);
         }
-        public async Task<List<Invoice>> GetPagedUnpaidInvoiceRecordsAsync(QueryUnpaidInvoice requestParameter)
+        public async Task<(List<Invoice> pagedItems, decimal sumInvoiceNetAmountHUF, decimal sumInvoiceGrossAmountHUF)> GetPagedUnpaidInvoiceRecordsAsync(QueryUnpaidInvoice requestParameter)
         {
 
             var orderBy = requestParameter.OrderBy;
@@ -760,25 +765,32 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 query = query.OrderBy(orderBy);
             }
 
-            // retrieve data to list
-            return await GetPagedData(query, requestParameter);
+            //Summaries
+            var allItems = await query.ToListAsync();
+            var sumInvoiceNetAmountHUF = allItems.Sum(s => s.InvoiceNetAmountHUF);
+            var sumInvoiceGrossAmountHUF = allItems.Sum(s => s.InvoiceGrossAmountHUF);
+
+            // paging
+            var pagedItems = allItems.Skip((requestParameter.PageNumber - 1) * requestParameter.PageSize)
+                .Take(requestParameter.PageSize).ToList();
+            return (pagedItems, sumInvoiceNetAmountHUF, sumInvoiceGrossAmountHUF);
         }
 
-        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUnpaidInvoiceAsync(QueryUnpaidInvoice requestParameter)
+        public async Task<(IEnumerable<Entity> data, RecordsCount recordsCount, decimal sumInvoiceNetAmountHUF, decimal sumInvoiceGrossAmountHUF)> QueryPagedUnpaidInvoiceAsync(QueryUnpaidInvoice requestParameter)
         {
 
             var resultData = await GetPagedUnpaidInvoiceRecordsAsync(requestParameter);
 
             var recordsCount = new RecordsCount
             {
-                RecordsFiltered = resultData.Count,
+                RecordsFiltered = resultData.pagedItems.Count,
                 RecordsTotal = 9999999          //egyelőre nem fontos..
             };
 
 
             //TODO: szebben megoldani
             var resultDataModel = new List<GetInvoiceViewModel>();
-            resultData.ForEach(i =>
+            resultData.pagedItems.ForEach(i =>
             {
                 var im = _mapper.Map<Invoice, GetInvoiceViewModel>(i);
                 im.InvoiceLines.Clear();         //itt már nem kellenek a sorok. 
@@ -792,7 +804,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
             var shapedData = _dataShaperGetInvoiceViewModel.ShapeData(resultDataModel, String.Join(",", listFieldsModel));
 
-            return (shapedData, recordsCount);
+            return (shapedData, recordsCount, resultData.sumInvoiceNetAmountHUF, resultData.sumInvoiceGrossAmountHUF);
         }
 
         public async Task<IList<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter)
@@ -943,7 +955,8 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
             throw new System.NotImplementedException();
         }
 
-        public async Task<(IList<GetCustomerInvoiceSummary> data, RecordsCount recordsCount)> QueryPagedCustomerInvoiceSummaryAsync(QueryCustomerInvoiceSummary requestParameters)
+        public async Task<(IList<GetCustomerInvoiceSummary> data, RecordsCount recordsCount, decimal sumInvoiceNetAmountHUF, decimal sumInvoiceGrossAmountHUF)>
+            QueryPagedCustomerInvoiceSummaryAsync(QueryCustomerInvoiceSummary requestParameters)
         {
             int recordsTotal, recordsFiltered;
 
@@ -1008,11 +1021,15 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 q2 = q2.OrderBy(requestParameters.OrderBy);
             }
 
-            // paging
-            q2 = q2.Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
-                .Take(requestParameters.PageSize);
-            List<GetCustomerInvoiceSummary> resultData = await q2.ToListAsync();
+            //Summaries
+            var allItems = await q2.ToListAsync();
+            var sumInvoiceNetAmountHUF = allItems.Sum(s => s.InvoiceNetAmountHUFSum);
+            var sumInvoiceGrossAmountHUF = allItems.Sum(s => s.InvoiceGrossAmountHUFSum);
 
+
+            // paging
+            List<GetCustomerInvoiceSummary> resultData = allItems.Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
+                .Take(requestParameters.PageSize).ToList();
 
             //set Record counts
             var recordsCount = new RecordsCount
@@ -1020,7 +1037,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 RecordsFiltered = recordsFiltered,
                 RecordsTotal = recordsTotal
             };
-            return (resultData, recordsCount);
+            return (resultData, recordsCount, sumInvoiceNetAmountHUF, sumInvoiceGrossAmountHUF);
         }
 
         private void FilterCustomerInvoiceSummary(ref IQueryable<Invoice> p_items,

@@ -36,11 +36,11 @@ namespace bbxBE.Application.Interfaces.Repositories
         Task<Dictionary<long, Invoice>> GetInvoiceRecordsByInvoiceLinesAsync(List<long> LstInvoiceLineID);
         Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceNumber(string invoiceNumber);
         Task<List<Invoice>> GetCorrectionInvoiceRecordsByInvoiceID(long invoiceID);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedInvoiceAsync(QueryInvoice requestParameters);
-        Task<(IEnumerable<Entity> data, RecordsCount recordsCount)> QueryPagedUnpaidInvoiceAsync(QueryUnpaidInvoice requestParameter);
-        Task<List<Invoice>> GetPagedUnpaidInvoiceRecordsAsync(QueryUnpaidInvoice requestParameter);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount, decimal sumInvoiceNetAmountHUF, decimal sumInvoiceGrossAmountHUF)> QueryPagedInvoiceAsync(QueryInvoice requestParameters);
+        Task<(IEnumerable<Entity> data, RecordsCount recordsCount, decimal sumInvoiceNetAmountHUF, decimal sumInvoiceGrossAmountHUF)> QueryPagedUnpaidInvoiceAsync(QueryUnpaidInvoice requestParameter);
+        Task<(List<Invoice> pagedItems, decimal sumInvoiceNetAmountHUF, decimal sumInvoiceGrossAmountHUF)> GetPagedUnpaidInvoiceRecordsAsync(QueryUnpaidInvoice requestParameter);
 
-        Task<(IList<GetCustomerInvoiceSummary> data, RecordsCount recordsCount)> QueryPagedCustomerInvoiceSummaryAsync(QueryCustomerInvoiceSummary requestParameters);
+        Task<(IList<GetCustomerInvoiceSummary> data, RecordsCount recordsCount, decimal sumInvoiceNetAmountHUF, decimal sumInvoiceGrossAmountHUF)> QueryPagedCustomerInvoiceSummaryAsync(QueryCustomerInvoiceSummary requestParameters);
         Task<IList<GetInvoiceViewModel>> QueryForCSVInvoiceAsync(CSVInvoice requestParameter);
 
         Task<Invoice> CreateInvoiceAsynch(CreateInvoiceCommand request, CancellationToken cancellationToken);
