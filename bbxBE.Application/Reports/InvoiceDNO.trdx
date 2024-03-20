@@ -95,7 +95,7 @@
                         <Items>
                           <TextBox Width="2.245cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.vtsz" Name="textBox16">
                             <Style VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="True" />
+                              <Font Name="Arial" Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                         </Items>
@@ -111,12 +111,12 @@
                         <Items>
                           <TextBox Width="4.775cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.productCode" Name="textBox33">
                             <Style VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="True" />
+                              <Font Name="Arial" Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                           <TextBox Width="1.788cm" Height="0.4cm" Left="2.987cm" Top="0.509cm" Value="= Fields.quantity" Format="{0:N2}" Name="textBox35">
                             <Style TextAlign="Right" VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="False" />
+                              <Font Name="Arial" Size="8pt" Bold="False" />
                             </Style>
                           </TextBox>
                         </Items>
@@ -350,7 +350,7 @@
         </Panel>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="5.701cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="6.101cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
@@ -627,7 +627,7 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="18.75cm" Height="0.484cm" Left="0.055cm" Top="4.633cm" Value="= &quot;A fordított adózás szabályai szerint az adót a vevő fizeti meg.&quot;" Name="textBox67">
+        <TextBox Width="18.852cm" Height="0.484cm" Left="0.055cm" Top="4.633cm" Value="= &quot;A fordított adózás szabályai szerint az adót a vevő fizeti meg.&quot;" Name="textBox67">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -640,7 +640,20 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="18.75cm" Height="0.484cm" Left="0.055cm" Top="5.117cm" Value="= &quot;Árfolyam: &quot; + Fields.exchangeRate + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox74">
+        <TextBox Width="18.994cm" Height="0.484cm" Left="0.001cm" Top="5.117cm" Value="= &quot;Árfolyam: &quot; + Format( &quot;{0:N2}&quot;, Fields.exchangeRate) + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox76">
+          <Style Visible="True" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.currencyCode" Operator="Equal" Value="= &quot;HUF&quot;" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
+        </TextBox>
+        <TextBox Width="18.962cm" Height="0.484cm" Left="0.012cm" Top="5.617cm" Value="= &quot;Nettó: &quot; + Format( &quot;{0:N2}&quot;, Round(Fields.invoiceNetAmountHUF,1)) + &quot; Ft, Áfa: &quot; + Format( &quot;{0:N2}&quot;, Round(Fields.invoiceVatAmountHUF,0)) + &quot; Ft, Bruttó: &quot; + Format( &quot;{0:N2}&quot;, Round(Fields.invoiceGrossAmountHUF,0)) + &quot; Ft&quot;" Name="textBox74">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
