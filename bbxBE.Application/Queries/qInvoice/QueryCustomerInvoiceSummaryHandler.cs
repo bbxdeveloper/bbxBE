@@ -56,9 +56,9 @@ namespace bbxBE.Application.Queries.qInvoice
             // query based on filter
             var result = await _invoiceRepository.QueryPagedCustomerInvoiceSummaryAsync(request);
             RecordsCount recordCount = result.recordsCount;
-
             // response wrapper
-            return new PagedResponse<IList<GetCustomerInvoiceSummary>>(result.data, request.PageNumber, request.PageSize, recordCount);
+            return new PagedResponse<IList<GetCustomerInvoiceSummary>>(result.data, request.PageNumber, request.PageSize, recordCount,
+                        result.sumInvoiceNetAmountHUF, result.sumInvoiceGrossAmountHUF - result.sumInvoiceNetAmountHUF, result.sumInvoiceGrossAmountHUF);
         }
     }
 }

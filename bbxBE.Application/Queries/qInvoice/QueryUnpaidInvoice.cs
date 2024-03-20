@@ -45,7 +45,7 @@ namespace bbxBE.Application.Queries.qInvoice
 
         [ColumnLabel("Keltezés től")]
         [Description("Kiállítás dátumától")]
-        public DateTime InvoiceIssueDateFrom { get; set; }
+        public DateTime? InvoiceIssueDateFrom { get; set; }
 
         [ColumnLabel("Keltezés ig")]
         [Description("Kiállítás dátumáig")]
@@ -82,17 +82,13 @@ namespace bbxBE.Application.Queries.qInvoice
         public async Task<PagedResponse<IEnumerable<Entity>>> Handle(QueryUnpaidInvoice request, CancellationToken cancellationToken)
         {
 
-
-            var validFilter = request;
-            var pagination = request;
-
-            // query based on filter
-            var entities = await _invoiceRepository.QueryPagedUnpaidInvoiceAsync(validFilter);
-            var data = entities.data.MapItemsFieldsByMapToAnnotation<GetInvoiceViewModel>();
-            RecordsCount recordCount = entities.recordsCount;
+            var result = await _invoiceRepository.QueryPagedUnpaidInvoiceAsync(request);
+            var data = result.data.MapItemsFieldsByMapToAnnotation<GetInvoiceViewModel>();
+            RecordsCount recordCount = result.recordsCount;
 
             // response wrapper
-            return new PagedResponse<IEnumerable<Entity>>(data, validFilter.PageNumber, validFilter.PageSize, recordCount);
+            return new PagedResponse<IEnumerable<Entity>>(data, request.PageNumber, request.PageSize, recordCount,
+                    result.sumInvoiceNetAmountHUF, result.sumInvoiceGrossAmountHUF - result.sumInvoiceNetAmountHUF, result.sumInvoiceGrossAmountHUF);
         }
     }
 }
