@@ -891,12 +891,12 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                             && (!p_customerID.HasValue || (p.Incoming && p.SupplierID == p_customerID) || (!p.Incoming && p.CustomerID == p_customerID))
 
                             //nem kötelező mezők
-                            && (!p_invoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= p_invoiceDeliveryDateFrom)
                             && (string.IsNullOrWhiteSpace(p_invoiceNumber) || p.InvoiceNumber.Contains(p_invoiceNumber))
                             && (string.IsNullOrWhiteSpace(p_customerInvoiceNumber) || p.CustomerInvoiceNumber.ToUpper().Contains(p_customerInvoiceNumber.ToUpper()))
+                            && (!p_invoiceDeliveryDateFrom.HasValue || p.InvoiceDeliveryDate >= p_invoiceDeliveryDateFrom.Value)
+                            && (!p_invoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= p_invoiceDeliveryDateTo.Value)
                             && (!p_invoiceIssueDateFrom.HasValue || p.InvoiceIssueDate >= p_invoiceIssueDateFrom.Value)
                             && (!p_invoiceIssueDateTo.HasValue || p.InvoiceIssueDate <= p_invoiceIssueDateTo.Value)
-                            && (!p_invoiceDeliveryDateTo.HasValue || p.InvoiceDeliveryDate <= p_invoiceDeliveryDateTo.Value)
                             && (!p_paymentDateFrom.HasValue || p.PaymentDate >= p_paymentDateFrom.Value)
                             && (!p_paymentDateTo.HasValue || p.PaymentDate <= p_paymentDateTo.Value)
                             && (!p_expired.HasValue || !p_expired.Value || p.PaymentDate < DateTime.UtcNow.Date)
