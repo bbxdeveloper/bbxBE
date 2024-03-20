@@ -53,7 +53,7 @@
                         <Items>
                           <TextBox Width="2.975cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.productCode" Name="textBox33">
                             <Style VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="True" />
+                              <Font Name="Courier New" Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                         </Items>
@@ -79,7 +79,7 @@
                           </TextBox>
                           <TextBox Width="13.409cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.lineDescription" Name="textBox35">
                             <Style VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="True" />
+                              <Font Name="Courier New" Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                           <TextBox Width="2.4cm" Height="0.4cm" Left="2.82cm" Top="0.5cm" Value="= Fields.unitPrice" Format="{0:N2}" Name="textBox38">
@@ -120,7 +120,7 @@
                         <Items>
                           <TextBox Width="2.545cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.vtsz" Name="textBox16">
                             <Style VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="True" />
+                              <Font Name="Courier New" Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                         </Items>

@@ -152,7 +152,7 @@
                               <Font Size="8pt" />
                             </Style>
                           </TextBox>
-                          <TextBox Width="2.376cm" Height="0.4cm" Left="6.977cm" Top="0.5cm" Value="= Fields.lineVatAmount" Format="{0:N2}" Name="textBox86">
+                          <TextBox Width="2.376cm" Height="0.4cm" Left="7.056cm" Top="0.5cm" Value="= Fields.lineVatAmount" Format="{0:N2}" Name="textBox86">
                             <Style TextAlign="Right" VerticalAlign="Middle">
                               <Font Size="8pt" />
                             </Style>

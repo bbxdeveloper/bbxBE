@@ -131,7 +131,7 @@
         </Table>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="6.355cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="6.755cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
@@ -416,23 +416,36 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="18.997cm" Height="0.484cm" Left="0.05cm" Top="5.74cm" Value="= &quot;Árfolyam: &quot; + Fields.exchangeRate + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox40">
+        <TextBox Width="18.992cm" Height="1.3cm" Left="0.055cm" Top="2.655cm" Value="= &quot;Köszönjük a vásárlást! Az áfa törvény 169. és 177. paragrafusa értelmében a számla pecsét és aláírás nélkül érvényes! A kiterjesztett gyártói felelősségi díj megfizetése az eladót terheli!&#xD;&#xA;Bizonylatot kiállította: &quot; + Fields.userName" Name="textBox59">
+          <Style VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" Bold="False" />
+          </Style>
+        </TextBox>
+        <TextBox Width="18.994cm" Height="0.484cm" Left="0.058cm" Top="5.739cm" Value="= &quot;Árfolyam: &quot; + Format( &quot;{0:N2}&quot;, Fields.exchangeRate) + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox41">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
           <ConditionalFormatting>
             <FormattingRule>
-              <Style Visible="True" />
+              <Style Visible="False" />
               <Filters>
                 <Filter Expression="= Fields.currencyCode" Operator="Equal" Value="= &quot;HUF&quot;" />
               </Filters>
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="18.992cm" Height="1.3cm" Left="0.055cm" Top="2.655cm" Value="= &quot;Köszönjük a vásárlást! Az áfa törvény 169. és 177. paragrafusa értelmében a számla pecsét és aláírás nélkül érvényes! A kiterjesztett gyártói felelősségi díj megfizetése az eladót terheli!&#xD;&#xA;Bizonylatot kiállította: &quot; + Fields.userName" Name="textBox59">
-          <Style VerticalAlign="Middle">
-            <Font Name="Courier New" Size="9pt" Bold="False" />
+        <TextBox Width="18.962cm" Height="0.484cm" Left="0.055cm" Top="6.223cm" Value="= &quot;Nettó: &quot; + Format( &quot;{0:N2}&quot;, Round(Fields.invoiceNetAmountHUF,1)) + &quot; Ft, Áfa: &quot; + Format( &quot;{0:N2}&quot;, Round(Fields.invoiceVatAmountHUF,0)) + &quot; Ft, Bruttó: &quot; + Format( &quot;{0:N2}&quot;, Round(Fields.invoiceGrossAmountHUF,0)) + &quot; Ft&quot;" Name="textBox40">
+          <Style Visible="True" VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
           </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.currencyCode" Operator="Equal" Value="= &quot;HUF&quot;" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
         </TextBox>
       </Items>
     </ReportFooterSection>
