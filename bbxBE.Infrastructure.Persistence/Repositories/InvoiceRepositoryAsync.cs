@@ -1795,6 +1795,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                     inv.InvoiceVatAmount = Math.Round(inv.CurrencyCode == enCurrencyCodes.HUF.ToString() ? AFAERT : CRCY_AFA, 1);
                     inv.InvoiceVatAmountHUF = Math.Round(AFAERT, 1);
                     inv.InvoiceGrossAmount = Math.Round(inv.CurrencyCode == enCurrencyCodes.HUF.ToString() ? BRUTTO : CRCY_BRT, 1);
+                    inv.InvoiceGrossAmountHUF = Math.Round(BRUTTO, 1);
                     inv.Imported = true;
                     invList.Add(inv);
                 }
