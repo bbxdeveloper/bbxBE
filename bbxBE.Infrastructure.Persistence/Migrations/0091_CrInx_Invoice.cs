@@ -9,13 +9,15 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
     {
         public override void Down()
         {
-            Delete.Index("INX_InvoiceIncomingPaymentMethodInvoiceDeliveryDateCustomerID")
+            Delete.Index("INX_InvoiceIncomingPaymentMethodCustomerID")
             .OnTable("Invoice");
         }
         public override void Up()
         {
-            Delete.Index("INX_InvoiceIncomingPaymentMethodInvoiceDeliveryDateCustomerID")
-            .OnTable("Invoice");
+
+            var sql = "IF  EXISTS (SELECT * FROM sys.indexes WHERE NAME = N'INX_InvoiceIncomingPaymentMethodInvoiceDeliveryDateCustomerID') " +
+                      " DROP INDEXINX_InvoiceIncomingPaymentMethodInvoiceDeliveryDateCustomerID ON Invoice";
+            Execute.Sql(sql);
 
             Create.Index("INX_InvoiceIncomingPaymentMethodCustomerID")
                          .OnTable("Invoice")
