@@ -16,7 +16,11 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
         {
 
             var sql = "IF  EXISTS (SELECT * FROM sys.indexes WHERE NAME = N'INX_InvoiceIncomingPaymentMethodInvoiceDeliveryDateCustomerID') " +
-                      " DROP INDEXINX_InvoiceIncomingPaymentMethodInvoiceDeliveryDateCustomerID ON Invoice";
+                      " DROP INDEX INX_InvoiceIncomingPaymentMethodInvoiceDeliveryDateCustomerID ON Invoice";
+            Execute.Sql(sql);
+
+            sql = "IF  EXISTS (SELECT * FROM sys.indexes WHERE NAME = N'INX_InvoiceIncomingPaymentMethodCustomerID') " +
+                      " DROP INDEX INX_InvoiceIncomingPaymentMethodCustomerID ON Invoice";
             Execute.Sql(sql);
 
             Create.Index("INX_InvoiceIncomingPaymentMethodCustomerID")
