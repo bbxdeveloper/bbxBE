@@ -3,9 +3,9 @@
 
 name: Build and deploy bbxBE to ONPREM!! TEST environment
 
-env:
-  AZURE_WEBAPP_NAME: bbxBE # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: "." # set this to the path to your web app project, defaults to the repository root
+#env:
+#  AZURE_WEBAPP_NAME: bbxBE # set this to your application's name
+#  AZURE_WEBAPP_PACKAGE_PATH: "." # set this to the path to your web app project, defaults to the repository root
 
 on:
   pull_request: 
