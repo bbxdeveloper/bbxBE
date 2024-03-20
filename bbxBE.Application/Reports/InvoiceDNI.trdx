@@ -95,7 +95,7 @@
                         <Items>
                           <TextBox Width="2.245cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.vtsz" Name="textBox14">
                             <Style VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="True" />
+                              <Font Name="Arial" Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                         </Items>
@@ -111,12 +111,12 @@
                         <Items>
                           <TextBox Width="4.775cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.productCode" Name="textBox67">
                             <Style VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="True" />
+                              <Font Name="Arial" Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                           <TextBox Width="1.788cm" Height="0.4cm" Left="2.987cm" Top="0.509cm" Value="= Fields.quantity" Format="{0:N2}" Name="textBox70">
                             <Style TextAlign="Right" VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="False" />
+                              <Font Name="Arial" Size="8pt" Bold="False" />
                             </Style>
                           </TextBox>
                         </Items>
