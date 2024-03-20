@@ -1,0 +1,45 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy bbxBE to ONPREM!! TEST environment
+
+#env:
+#  AZURE_WEBAPP_NAME: bbxBE # set this to your application's name
+#  AZURE_WEBAPP_PACKAGE_PATH: "." # set this to the path to your web app project, defaults to the repository root
+
+on:
+  pull_request: 
+    branches: [ stage ]
+#    types: [ closed ]
+  workflow_dispatch:
+
+jobs:
+  build:
+#    if: ${{ github.event.pull_request.merged }}
+    name: Build the BackEnd
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        dotnet-version: ["3.1.x"]
+
+    steps:
+      - name: Checkout from repository
+        uses: actions/checkout@v3
+        with:
+          ref: develop
+
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: | 
+            3.1.x
+
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+
+      - name: Run tests
+        run: dotnet test --framework netcoreapp3.1 --verbosity normal
+        # --no-build
+
+#      - name: dotnet publish
+#        run: dotnet publish -c Release
