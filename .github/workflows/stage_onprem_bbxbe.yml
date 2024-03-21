@@ -45,10 +45,10 @@ jobs:
 #        # --no-build
 
       - name: STOP BE Service
-        run: c:\windows\System32\inetsrv\appcmd stop apppool /apppool.name:"bbxBE_PROD"
+        run: c:\windows\System32\inetsrv\appcmd stop apppool /apppool.name:"bbxBECTGithub"
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o c:\inetpub\wwwroot\bbxBE_PROD
+        run: dotnet publish -c Release -o c:\inetpub\wwwroot\bbxBECTGithub
 
       - name: START BE Service
-        run: c:\windows\System32\inetsrv\appcmd start apppool /apppool.name:"bbxBE_PROD"
+        run: c:\windows\System32\inetsrv\appcmd start apppool /apppool.name:"bbxBECTGithub"
