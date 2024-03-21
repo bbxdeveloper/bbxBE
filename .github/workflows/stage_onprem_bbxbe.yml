@@ -45,7 +45,7 @@ jobs:
 #        # --no-build
 
       - name: STOP BE Service
-        run: cmd stop sites "bbxBECTGithub"
+        run: c:\windows\System32\inetsrv\appcmd stop apppool /apppool.name:"bbxBE_PROD"
 
 #      - name: dotnet publish
 #        run: dotnet publish -c Release
