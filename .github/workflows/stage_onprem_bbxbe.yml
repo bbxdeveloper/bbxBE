@@ -45,7 +45,7 @@ jobs:
 #        # --no-build
 
       - name: STOP BE Service
-        run: appcmd stop sites "bbxBECTGithub"
+        run: cmd stop sites "bbxBECTGithub"
 
 #      - name: dotnet publish
 #        run: dotnet publish -c Release
