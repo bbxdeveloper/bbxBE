@@ -47,5 +47,8 @@ jobs:
       - name: STOP BE Service
         run: c:\windows\System32\inetsrv\appcmd stop apppool /apppool.name:"bbxBE_PROD"
 
-#      - name: dotnet publish
-#        run: dotnet publish -c Release
+      - name: dotnet publish
+        run: dotnet publish -c Release -o c:\inetpub\wwwroot\bbxBE_PROD
+
+      - name: START BE Service
+        run: c:\windows\System32\inetsrv\appcmd start apppool /apppool.name:"bbxBE_PROD"
