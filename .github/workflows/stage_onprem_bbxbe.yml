@@ -47,6 +47,9 @@ jobs:
       - name: STOP BE Service
         run: c:\windows\System32\inetsrv\appcmd stop apppool /apppool.name:"bbxBECTGithub"
 
+      - name: delete everythings
+        run: del c:\inetpub\wwwroot\bbxBE_CT_github\*.*
+
       - name: dotnet publish
         run: dotnet publish -c Release -o c:\inetpub\wwwroot\bbxBE_CT_github
 
