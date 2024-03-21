@@ -28,6 +28,9 @@ jobs:
         with:
           ref: stage_onprem
 
+      - name: git fetch issue
+        run: git config --global --add safe.directory C:/actions-runner/_work/bbxBE/bbxBE
+
  #     - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
  #       uses: actions/setup-dotnet@v3
  #       with:
