@@ -23,13 +23,13 @@ jobs:
         dotnet-version: ["3.1.x"]
 
     steps:
+      - name: git fetch issue
+        run: git config --global --add safe.directory C:/actions-runner/_work/bbxBE/bbxBE
+        
       - name: Checkout from repository
         uses: actions/checkout@v3
         with:
           ref: stage_onprem
-
-      - name: git fetch issue
-        run: git config --global --add safe.directory C:/actions-runner/_work/bbxBE/bbxBE
 
  #     - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
  #       uses: actions/setup-dotnet@v3
