@@ -41,6 +41,8 @@ jobs:
 #        run: dotnet test --framework netcoreapp3.1 --verbosity normal
 #        # --no-build
 
+      - name: STOP BE Service
+        run: appcmd stop sites "bbxBECTGithub"
 
 #      - name: dotnet publish
 #        run: dotnet publish -c Release
