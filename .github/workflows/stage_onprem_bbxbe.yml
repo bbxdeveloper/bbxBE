@@ -50,5 +50,8 @@ jobs:
       - name: dotnet publish
         run: dotnet publish -c Release -o c:\inetpub\wwwroot\bbxBE_CT_github
 
+      - name: dotnet copy missing values
+        run: copy d:\d:\Install\bbxBECustomerTest\*.* c:\inetpub\wwwroot\bbxBE_CT_github        
+
       - name: START BE Service
         run: c:\windows\System32\inetsrv\appcmd start apppool /apppool.name:"bbxBECTGithub"
