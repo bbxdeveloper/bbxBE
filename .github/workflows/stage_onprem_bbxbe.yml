@@ -22,10 +22,7 @@ jobs:
       matrix:
         dotnet-version: ["3.1.x"]
 
-    steps:
-#      - name: git fetch issue
-#        run: git config --global --add safe.directory C:/actions-runner/_work/bbxBE/bbxBE
-        
+    steps:      
       - name: Checkout from repository
         uses: actions/checkout@v3
         with:
@@ -44,10 +41,15 @@ jobs:
 #        run: dotnet test --framework netcoreapp3.1 --verbosity normal
 #        # --no-build
 
-      - name: STOP BE Service
+  deploy:
+    name: deploy the builded BE to local folder
+    runs-on: self-hosted
+    
+    steps:
+      - name: STOP the BE Service
         run: c:\windows\System32\inetsrv\appcmd stop apppool /apppool.name:"bbxBECTGithub"
 
-      - name: delete everythings
+      - name: delete early deployed 
         run: del c:\inetpub\wwwroot\bbxBE_CT_github\*.*
 
       - name: dotnet publish
