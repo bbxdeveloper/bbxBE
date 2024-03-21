@@ -3,9 +3,9 @@
 
 name: Build and deploy bbxBE to ONPREM!! TEST environment
 
-#env:
-#  AZURE_WEBAPP_NAME: bbxBE # set this to your application's name
-#  AZURE_WEBAPP_PACKAGE_PATH: "." # set this to the path to your web app project, defaults to the repository root
+env:
+  APPPOOL_NAME: bbxBECTGithub
+  APP_DEPLOY_FOLDER: bbxBE_CT_github
 
 on:
   pull_request: 
@@ -47,7 +47,7 @@ jobs:
     
     steps:
       - name: STOP the BE Service
-        run: c:\windows\System32\inetsrv\appcmd stop apppool /apppool.name:"bbxBECTGithub"
+        run: c:\windows\System32\inetsrv\appcmd stop apppool /apppool.name:"${{ env.APPPOOL_NAME }}"
 
       - name: delete early deployed 
         run: del c:\inetpub\wwwroot\bbxBE_CT_github\*.*
