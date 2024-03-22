@@ -6,7 +6,13 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "SENDGRID_API_KEY": "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"
+        "SENDGRID_API_KEY": "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",
+        "PWDSALT": "NZsP6NnmfBuYeJrr",
+        "NAV_TAXNUM": "10301584",
+        "NAV_TECHUSER": "umfde8ghpmbsu2f",
+        "NAV_TECHUSER_PWD": "RelaxTest7654",
+        "NAV_SIGNKEY": "48-9907-d2637919d2c34GN8HJ1K5FBG",
+        "NAV_EXCHANGEKEY": "726b4GN8HJ1K7FQH"
       },
       "nativeDebugging": false,
       "sqlDebugging": false

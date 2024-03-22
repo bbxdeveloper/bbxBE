@@ -6,7 +6,6 @@
         public const int DescriptionLen = 80;
 
         public const string CNTRY_HU = "HU";
-        public const string CONF_PwdSalt = "PwdSalt";
 
         public const string CONF_JWTSettings = "JWTSettings";
         public const string CONF_JWTKey = "Key";
@@ -18,7 +17,13 @@
         public const string JWT_REPPARAMETER = "JWT";
         public const string JWT_BEARER = "Bearer {0}";
 
-
+        public const string ENV_SENDGRID_API_KEY = "SENDGRID_API_KEY";
+        public const string ENV_PWDSALT = "PWDSALT";
+        public const string ENV_NAV_TAXNUM = "NAV_TAXNUM";
+        public const string ENV_NAV_TECHUSER = "NAV_TECHUSER";
+        public const string ENV_NAV_TECHUSER_PWD = "NAV_TECHUSER_PWD";
+        public const string ENV_NAV_SIGNKEY = "NAV_SIGNKEY";
+        public const string ENV_NAV_EXCHANGEKEY = "NAV_EXCHANGEKEY";
 
         public const string DEF_ENCODING = "ISO-8859-2";
         public const string DEF_CSVSEP = ";";

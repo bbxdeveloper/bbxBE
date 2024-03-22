@@ -1,13 +1,16 @@
 ﻿
+using bbxBE.Common.Consts;
+using System;
+
 namespace bbxBE.Domain.Settings
 {
     public class NAVSettings
     {
-        public string Taxnum { get; set; }
-        public string TechUser { get; set; }
-        public string TechUserPwd { get; set; }
-        public string SignKey { get; set; }
-        public string ExchangeKey { get; set; }
+        public string Taxnum { get { return Environment.GetEnvironmentVariable(bbxBEConsts.ENV_NAV_TAXNUM); } }
+        public string TechUser { get { return Environment.GetEnvironmentVariable(bbxBEConsts.ENV_NAV_TECHUSER); } }
+        public string TechUserPwd { get { return Environment.GetEnvironmentVariable(bbxBEConsts.ENV_NAV_TECHUSER_PWD); } }
+        public string SignKey { get { return Environment.GetEnvironmentVariable(bbxBEConsts.ENV_NAV_SIGNKEY); } }
+        public string ExchangeKey { get { return Environment.GetEnvironmentVariable(bbxBEConsts.ENV_NAV_EXCHANGEKEY); } }
 
         public string TokenExchange { get; set; }
         public string ManageInvoice { get; set; }

@@ -1,4 +1,5 @@
 ﻿using bbxBE.Application.Wrappers;
+using bbxBE.Common.Consts;
 using bxBE.Application.Commands.cmdEmail;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -16,7 +17,7 @@ namespace bbxBE.Application.BLL
         {
             try
             {
-                var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+                var apiKey = Environment.GetEnvironmentVariable(bbxBEConsts.ENV_SENDGRID_API_KEY);
                 if (!string.IsNullOrWhiteSpace(apiKey))
                 {
                     var client = new SendGridClient(apiKey);
@@ -47,7 +48,7 @@ namespace bbxBE.Application.BLL
                 }
                 else
                 {
-                    return new Response<string>() { Succeeded = false, Message = "SENDGRID_API_KEY is not defined!" };
+                    return new Response<string>() { Succeeded = false, Message = $"{bbxBEConsts.ENV_SENDGRID_API_KEY} is not defined!" };
                 }
 
             }
