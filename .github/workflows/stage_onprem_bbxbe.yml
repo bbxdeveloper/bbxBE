@@ -4,8 +4,8 @@
 name: Build and deploy bbxBE to ONPREM!! TEST environment
 
 env:
-  APPPOOL_NAME: bbxBECTGithub
-  APP_DEPLOY_FOLDER: bbxBE_CT_github
+  APPPOOL_NAME: bbxBECustomerTest1
+  APP_DEPLOY_FOLDER: bbxBECustomerTest.1
 
 on:
   pull_request: 
