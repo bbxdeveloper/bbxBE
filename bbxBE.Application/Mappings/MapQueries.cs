@@ -273,7 +273,9 @@ namespace bbxBE.Queries.Mappings
 
             CreateMap<NAVXChange, GetNAVXChangeViewModel>()
              .ForMember(dst => dst.StatusX, opt => opt.MapFrom(src => NAVStatusResolver(src.Status)))
-             .ForMember(dst => dst.OperationX, opt => opt.MapFrom(src => NAVOperationResolver(src.Operation)));
+             .ForMember(dst => dst.OperationX, opt => opt.MapFrom(src => NAVOperationResolver(src.Operation)))
+             .ForMember(dst => dst.TokenTime, opt => opt.MapFrom(src => src.TokenTime.ToLocalTime()))
+             .ForMember(dst => dst.SendTime, opt => opt.MapFrom(src => src.SendTime.ToLocalTime()));
 
             CreateMap<NAVXResult, GetNAVXResultViewModel>();
 

@@ -49,32 +49,58 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
 
         public async Task<NAVXChange> AddNAVXChangeAsync(NAVXChange NAVXChange)
         {
-            _dbContext.Instance.Entry(NAVXChange).State = EntityState.Added;
-            if (NAVXChange.NAVXResults != null)
+
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
-                NAVXChange.NAVXResults.ToList().ForEach(
-                res =>
-                _dbContext.Instance.Entry(res).State = EntityState.Added
-                );
+                try
+                {
+                    _dbContext.Instance.Entry(NAVXChange).State = EntityState.Added;
+                    if (NAVXChange.NAVXResults != null)
+                    {
+                        NAVXChange.NAVXResults.ToList().ForEach(
+                        res =>
+                        _dbContext.Instance.Entry(res).State = EntityState.Added
+                        );
+                    }
+                    await AddAsync(NAVXChange);
+                    await dbContextTransaction.CommitAsync();
+                }
+                catch (Exception)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
+                return NAVXChange;
             }
-            await AddAsync(NAVXChange);
-            return NAVXChange;
         }
+
         public async Task<NAVXChange> UpdateNAVXChangeAsync(NAVXChange NAVXChange)
         {
-            _dbContext.Instance.Entry(NAVXChange).State = EntityState.Modified;
-            if (NAVXChange.NAVXResults != null)
+            using (var dbContextTransaction = await _dbContext.Instance.Database.BeginTransactionAsync())
             {
-                NAVXChange.NAVXResults.ToList().ForEach(
-                    res =>
+                try
+                {
+                    _dbContext.Instance.Entry(NAVXChange).State = EntityState.Modified;
+                    if (NAVXChange.NAVXResults != null)
                     {
-                        res.NAVXChangeID = NAVXChange.ID;
-                        _dbContext.Instance.Entry(res).State = res.ID > 0 ? EntityState.Modified : EntityState.Added;
+                        NAVXChange.NAVXResults.ToList().ForEach(
+                            res =>
+                            {
+                                res.NAVXChangeID = NAVXChange.ID;
+                                _dbContext.Instance.Entry(res).State = res.ID > 0 ? EntityState.Modified : EntityState.Added;
+                            }
+                            );
                     }
-                    );
+                    await UpdateAsync(NAVXChange);
+                    await dbContextTransaction.CommitAsync();
+                }
+                catch (Exception)
+                {
+                    await dbContextTransaction.RollbackAsync();
+                    throw;
+                }
+                return NAVXChange;
             }
-            await UpdateAsync(NAVXChange);
-            return NAVXChange;
         }
 
         public async Task<NAVXChange> DeleteNAVXChangeAsync(long ID)
