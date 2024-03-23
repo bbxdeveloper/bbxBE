@@ -56,7 +56,9 @@ namespace bxBE.Application.Commands.cmdAuth
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_USERNOTFOUND2, request.LoginName));
             }
 
-            var salt = _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt);
+            var apiKey = Environment.GetEnvironmentVariable(bbxBEConsts.ENV_SENDGRID_API_KEY);
+            var salt = Environment.GetEnvironmentVariable(bbxBEConsts.ENV_PWDSALT);
+
             if (BllAuth.GetPwdHash(request.Password, salt) != usr.PasswordHash)
             {
                 throw new UnauthorizedAccessException();

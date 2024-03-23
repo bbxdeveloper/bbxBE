@@ -1,18 +1,15 @@
 ﻿using bbxBE.Application.BLL;
 using bbxBE.Common.Consts;
-using bbxBE.Common.Enums;
-using bbxBE.Common.NAV;
-using bbxBE.Domain.Entities;
 using FluentMigrator;
 using Microsoft.Extensions.Configuration;
-using static bbxBE.Common.NAV.NAV_enums;
+using System;
 
 //https://code-maze.com/dapper-migrations-fluentmigrator-aspnetcore/
 
 namespace bbxBE.Infrastructure.Persistence.Migrations
 {
     [Migration(00027, "v00.01.64-add users")]
-    public class InitialTables_00027: Migration
+    public class InitialTables_00027 : Migration
     {
 
         private readonly IConfiguration _configuration;
@@ -26,19 +23,19 @@ namespace bbxBE.Infrastructure.Persistence.Migrations
         public override void Up()
         {
 
-            var salt = _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt);
+            var salt = Environment.GetEnvironmentVariable(bbxBEConsts.ENV_PWDSALT);
 
-            var pwdHash = BllAuth.GetPwdHash( "mj", salt);
-            
+            var pwdHash = BllAuth.GetPwdHash("mj", salt);
+
             Execute.Sql(string.Format(@"
                 if not exists (select 1 from Users where upper(LoginName) = 'MJ'  )
                 begin
                     INSERT INTO [dbo].[Users]  ([Name],[Email],[LoginName],[PasswordHash],[Comment],[Active])
                      VALUES
                         ('Mezei József', 'mezeirelaxvill@gmail.com','mj', '{0}', 'Automatikusan létrehozva',1)
-               end", 
+               end",
                 pwdHash));
-            
+
             pwdHash = BllAuth.GetPwdHash("ri", salt);
             Execute.Sql(string.Format(@"
                 if not exists (select 1 from Users where upper(LoginName) = 'RI'  )

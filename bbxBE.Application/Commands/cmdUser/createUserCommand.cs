@@ -7,6 +7,7 @@ using bbxBE.Common.Consts;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +62,8 @@ namespace bbxBE.Application.Commands.cmdUser
         public async Task<Response<Users>> Handle(createUserCommand request, CancellationToken cancellationToken)
         {
             var usr = _mapper.Map<Users>(request);
-            usr.PasswordHash = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt));
+            var salt = Environment.GetEnvironmentVariable(bbxBEConsts.ENV_PWDSALT);
+            usr.PasswordHash = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(salt));
 
             await _userRepository.AddAsync(usr);
             return new Response<Users>(usr);
