@@ -9,13 +9,13 @@ name: Build and deploy bbxBE to ONPREM!! TEST environment
 
 on:
   pull_request: 
-    branches: [ stage ]
-#    types: [ closed ]
+    branches: [ stage_onprem ]
+    types: [ closed ]
   workflow_dispatch:
 
 jobs:
   build:
-#    if: ${{ github.event.pull_request.merged }}
+    if: ${{ github.event.pull_request.merged }}
     name: Build the BackEnd
     runs-on: self-hosted
     strategy:
@@ -26,7 +26,7 @@ jobs:
       - name: Checkout from repository
         uses: actions/checkout@v3
         with:
-          ref: stage
+          ref: stage_onprem
 
  #     - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
  #       uses: actions/setup-dotnet@v3
@@ -40,6 +40,7 @@ jobs:
 #      - name: Run tests
 #        run: dotnet test --framework netcoreapp3.1 --verbosity normal
 #        # --no-build
+
 
 #      - name: dotnet publish
 #        run: dotnet publish -c Release

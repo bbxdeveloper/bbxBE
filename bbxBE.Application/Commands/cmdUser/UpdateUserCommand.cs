@@ -8,6 +8,7 @@ using bbxBE.Common.Exceptions;
 using bbxBE.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -70,7 +71,8 @@ namespace bbxBE.Application.Commands.cmdUser
             if (!string.IsNullOrWhiteSpace(request.Password))
             {
                 //Jelszóváltozás
-                usr.PasswordHash = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt));
+                var salt = Environment.GetEnvironmentVariable(bbxBEConsts.ENV_PWDSALT);
+                usr.PasswordHash = bllUser.GetPasswordHash(request.Password, _configuration.GetValue<string>(salt));
             }
             else
             {

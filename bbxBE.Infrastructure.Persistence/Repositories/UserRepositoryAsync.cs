@@ -179,7 +179,7 @@ namespace bbxBE.Infrastructure.Persistence.Repositories
                 throw new ResourceNotFoundException(string.Format(bbxBEConsts.ERR_USERNOTFOUND2, LoginName));
             }
 
-            var salt = _configuration.GetValue<string>(bbxBEConsts.CONF_PwdSalt);
+            var salt = Environment.GetEnvironmentVariable(bbxBEConsts.ENV_PWDSALT);
             if (BllAuth.GetPwdHash(Password, salt) != usr.PasswordHash)
             {
                 throw new UnauthorizedAccessException();

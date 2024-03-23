@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" Zoom="1.5" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
+<Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
     <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;12&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;Authorization&quot;:&quot;Bearer xxxx&quot;,&quot;FullData&quot;:&quot;true&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice" Name="webServiceDataSource1">
       <Parameters>
@@ -95,7 +95,7 @@
                         <Items>
                           <TextBox Width="2.245cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.vtsz" Name="textBox67">
                             <Style VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="True" />
+                              <Font Name="Arial" Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                         </Items>
@@ -111,12 +111,12 @@
                         <Items>
                           <TextBox Width="4.775cm" Height="0.5cm" Left="0cm" Top="0cm" Value="= Fields.productCode" Name="textBox70">
                             <Style VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="True" />
+                              <Font Name="Arial" Size="8pt" Bold="True" />
                             </Style>
                           </TextBox>
                           <TextBox Width="1.788cm" Height="0.4cm" Left="2.987cm" Top="0.509cm" Value="= Fields.quantity" Format="{0:N2}" Name="textBox76">
                             <Style TextAlign="Right" VerticalAlign="Middle">
-                              <Font Size="8pt" Bold="False" />
+                              <Font Name="Arial" Size="8pt" Bold="False" />
                             </Style>
                           </TextBox>
                         </Items>
@@ -350,7 +350,7 @@
         </Panel>
       </Items>
     </DetailSection>
-    <ReportFooterSection Height="5.199cm" Name="reportFooterSection1">
+    <ReportFooterSection Height="5.599cm" Name="reportFooterSection1">
       <Style>
         <BorderStyle Top="Solid" />
         <BorderColor Top="Black" />
@@ -622,7 +622,12 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="19.034cm" Height="0.484cm" Left="0cm" Top="4.584cm" Value="= &quot;Árfolyam: &quot; + Fields.exchangeRate + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox74">
+        <TextBox Width="18.992cm" Height="1.131cm" Left="0.055cm" Top="2.468cm" Value="= &quot;Köszönjük a vásárlást! Az áfa törvény 169. és 177. paragrafusa értelmében a számla pecsét és aláírás nélkül érvényes! A kiterjesztett gyártói felelősségi díj megfizetése az eladót terheli!&#xD;&#xA;Bizonylatot kiállította: &quot; + Fields.userName" Name="textBox59">
+          <Style VerticalAlign="Middle">
+            <Font Name="Courier New" Size="9pt" />
+          </Style>
+        </TextBox>
+        <TextBox Width="18.994cm" Height="0.484cm" Left="0cm" Top="4.583cm" Value="= &quot;Árfolyam: &quot; + Format( &quot;{0:N2}&quot;, Fields.exchangeRate) + &quot; Ft/&quot; + Fields.currencyCodeX " Name="textBox20">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
@@ -635,10 +640,18 @@
             </FormattingRule>
           </ConditionalFormatting>
         </TextBox>
-        <TextBox Width="18.992cm" Height="1.131cm" Left="0.055cm" Top="2.468cm" Value="= &quot;Köszönjük a vásárlást! Az áfa törvény 169. és 177. paragrafusa értelmében a számla pecsét és aláírás nélkül érvényes! A kiterjesztett gyártói felelősségi díj megfizetése az eladót terheli!&#xD;&#xA;Bizonylatot kiállította: &quot; + Fields.userName" Name="textBox59">
-          <Style VerticalAlign="Middle">
+        <TextBox Width="18.962cm" Height="0.484cm" Left="0cm" Top="5.067cm" Value="= &quot;Nettó: &quot; + Format( &quot;{0:N2}&quot;, Round(Fields.invoiceNetAmountHUF,1)) + &quot; Ft, Áfa: &quot; + Format( &quot;{0:N2}&quot;, Round(Fields.invoiceVatAmountHUF,0)) + &quot; Ft, Bruttó: &quot; + Format( &quot;{0:N2}&quot;, Round(Fields.invoiceGrossAmountHUF,0)) + &quot; Ft&quot;" Name="textBox22">
+          <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="9pt" />
           </Style>
+          <ConditionalFormatting>
+            <FormattingRule>
+              <Style Visible="False" />
+              <Filters>
+                <Filter Expression="= Fields.currencyCode" Operator="Equal" Value="= &quot;HUF&quot;" />
+              </Filters>
+            </FormattingRule>
+          </ConditionalFormatting>
         </TextBox>
       </Items>
     </ReportFooterSection>
