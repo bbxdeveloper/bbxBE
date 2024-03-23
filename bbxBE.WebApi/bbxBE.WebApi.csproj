@@ -8,7 +8,7 @@
     <RepositoryType>Public</RepositoryType>
     <PackageProjectUrl></PackageProjectUrl>
     <Version>0.1.71</Version>
-    <Configurations>Debug;Test;Release</Configurations>
+    <Configurations>Debug;Test;Release;TestRelax</Configurations>
 	  <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
 	  <UserSecretsId>82234b64-eacf-42af-b87c-5874a29c22ea</UserSecretsId>
   </PropertyGroup>
