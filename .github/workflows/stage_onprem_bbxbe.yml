@@ -54,7 +54,7 @@ jobs:
         run: del c:\inetpub\wwwroot\${{ env.APP_DEPLOY_FOLDER }}\*.*
 
       - name: Dotnet publish
-        run: dotnet publish -c RelaxTest -o c:\inetpub\wwwroot\${{ env.APP_DEPLOY_FOLDER }}
+        run: dotnet publish -c TestRelax -o c:\inetpub\wwwroot\${{ env.APP_DEPLOY_FOLDER }}
 
       - name: Copy the missed files
         run: copy d:\d:\Install\bbxBECustomerTest\*.* c:\inetpub\wwwroot\${{ env.APP_DEPLOY_FOLDER }}        
