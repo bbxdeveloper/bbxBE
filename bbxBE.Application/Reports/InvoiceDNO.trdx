@@ -828,6 +828,11 @@
             <Font Name="Courier New" Size="10pt" />
           </Style>
         </TextBox>
+        <Shape Width="7.53in" Height="0.052in" Left="-0.026in" Top="1.43in" Name="shape1">
+          <ShapeType>
+            <LineShape Direction="EW" />
+          </ShapeType>
+        </Shape>
       </Items>
     </ReportHeaderSection>
   </Items>

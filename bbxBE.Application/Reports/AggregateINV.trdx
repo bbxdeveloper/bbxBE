@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" Zoom="1.5" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
+<Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" Zoom="4" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
     <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;227&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;Authorization&quot;:&quot;Bearer xxxx&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoice" Name="webServiceDataSource1">
       <Parameters>
@@ -609,6 +609,11 @@
             </TextBox>
           </Items>
         </Panel>
+        <Shape Width="7.53in" Height="0.052in" Left="0in" Top="1.43in" Name="shape1">
+          <ShapeType>
+            <LineShape Direction="EW" />
+          </ShapeType>
+        </Shape>
       </Items>
     </ReportHeaderSection>
   </Items>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
+<Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" Zoom="2" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
-    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;395&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;Authorization&quot;:&quot;Bearer xxxx&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoice" Name="webServiceDataSource1">
+    <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;15407&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;Authorization&quot;:&quot;Bearer eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2Q0JDLUhTNTEyIiwidHlwIjoiSldUIiwiY3R5IjoiSldUIn0..Xi4scbE-TuxHhMOgbZATTA.QN9rA9ix7LvjtWpUiAtkPjgl4koHbKda6nt1HV3kIaBVOndpPJYATT5IwPo-fuOknD0qOwW7BbhPjraHIxfnvHo7GxRZFlEDhKJC-jVC3Uu8PPP6eHuBzzfeLxsEIexuX2W6l26YoWmU2WZ13IOUW044CzgbV1XIDPr6yhgIEUe5ery8biG4JzpeRyxkKVXd9ILHwwbO5R6svdgjWVXqRwrEf4k-bs5o5a2xbQwpQZTAXQdI39rs5kSbONSjFiDJ-amgH-cJzK3KNFXsdunn0pVpwOgpozX0qnLHBd1Rq6jQFKlu15z1gB9cdb5vKMIq0To40C-lwSVxEivTsO12ubHY5CnaXXE0mdyQi0UczcvmpNj5Zjpd2gHKzD5sAzoWGZAPPfkBSCn1GOZ-a6gqEMh7KvaWs1BVmM7FOAldRdQhli-ZpdSiu1EWa77YdJ0g.rmmkV71XSR8jnTnmxDj6HwH2imlu2ayAxhmEK2yHhoo&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoice" Name="webServiceDataSource1">
       <Parameters>
         <WebServiceParameter WebServiceParameterType="Query" Name="ID">
           <Value>
@@ -334,7 +334,7 @@
         </Panel>
       </Items>
     </ReportFooterSection>
-    <ReportHeaderSection Height="4.1cm" Name="reportHeaderSection1">
+    <ReportHeaderSection Height="4.2cm" Name="reportHeaderSection1">
       <Style>
         <BorderStyle Bottom="Solid" />
       </Style>
@@ -449,7 +449,7 @@
             </TextBox>
           </Items>
         </Panel>
-        <Panel Width="3.692cm" Height="3.5cm" Left="0.055cm" Top="0.6cm" Name="panel11">
+        <Panel Width="3.692cm" Height="3.1cm" Left="0.055cm" Top="0.6cm" Name="panel11">
           <Style Visible="True" VerticalAlign="Middle" />
           <Items>
             <TextBox Width="3.692cm" Height="0.4cm" Left="0cm" Top="2.3cm" Value="Adószám:" Name="textBox23">
@@ -484,16 +484,21 @@
             </TextBox>
           </Items>
         </Panel>
-        <TextBox Width="3.692cm" Height="0.4cm" Left="0.055cm" Top="3.7cm" Value="Egyéb adatok:" Name="textBox66">
+        <TextBox Width="3.692cm" Height="0.4cm" Left="0.055cm" Top="3.8cm" Value="Egyéb adatok:" Name="textBox66">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="10pt" Bold="True" />
           </Style>
         </TextBox>
-        <TextBox Width="15.16cm" Height="0.4cm" Left="3.747cm" Top="3.7cm" Value="= Fields.notice" Name="textBox64">
+        <TextBox Width="15.16cm" Height="0.4cm" Left="3.747cm" Top="3.8cm" Value="= Fields.notice" Name="textBox64">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="10pt" />
           </Style>
         </TextBox>
+        <Shape Width="7.53in" Height="0.052in" Left="0in" Top="1.457in" Name="shape1">
+          <ShapeType>
+            <LineShape Direction="EW" />
+          </ShapeType>
+        </Shape>
       </Items>
     </ReportHeaderSection>
   </Items>
