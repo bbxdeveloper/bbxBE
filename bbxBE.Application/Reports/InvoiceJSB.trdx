@@ -132,7 +132,7 @@
                               <Font Size="8pt" />
                             </Style>
                           </TextBox>
-                          <TextBox Width="11.978cm" Height="0.5cm" Left="0.028cm" Top="0cm" Value="= Fields.lineDescription" Name="textBox78">
+                          <TextBox Width="12.031cm" Height="0.5cm" Left="0.028cm" Top="0cm" Value="= Fields.lineDescription" Name="textBox78">
                             <Style VerticalAlign="Middle">
                               <Font Size="8pt" Bold="True" />
                             </Style>
@@ -157,7 +157,7 @@
                               <Font Size="8pt" />
                             </Style>
                           </TextBox>
-                          <TextBox Width="2.574cm" Height="0.4cm" Left="9.432cm" Top="0.486cm" Value="= Fields.lineGrossAmountNormal" Format="{0:N2}" Name="textBox87">
+                          <TextBox Width="2.626cm" Height="0.4cm" Left="9.432cm" Top="0.486cm" Value="= Fields.lineGrossAmountNormal" Format="{0:N2}" Name="textBox87">
                             <Style TextAlign="Right" VerticalAlign="Middle">
                               <Font Size="8pt" />
                             </Style>
@@ -176,7 +176,7 @@
                   <Column Width="2.409cm" />
                   <Column Width="0.927cm" />
                   <Column Width="2.411cm" />
-                  <Column Width="2.614cm" />
+                  <Column Width="2.613cm" />
                 </Columns>
                 <Rows>
                   <Row Height="0.909cm" />

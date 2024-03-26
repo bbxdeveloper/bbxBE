@@ -133,7 +133,7 @@
     </DetailSection>
     <ReportFooterSection Height="3.1cm" Name="reportFooterSection1">
       <Style>
-        <BorderStyle Top="Solid" />
+        <BorderStyle Top="None" />
         <BorderColor Top="Black" />
         <BorderWidth Top="1pt" />
       </Style>

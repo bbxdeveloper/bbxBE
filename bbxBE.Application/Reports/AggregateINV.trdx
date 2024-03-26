@@ -133,7 +133,7 @@
     </DetailSection>
     <ReportFooterSection Height="6.755cm" Name="reportFooterSection1">
       <Style>
-        <BorderStyle Top="Solid" />
+        <BorderStyle Top="None" />
         <BorderColor Top="Black" />
         <BorderWidth Top="1pt" />
       </Style>
@@ -739,12 +739,12 @@
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <Table DataSourceName="webServiceDataSource1" Width="19.117cm" Height="1.147cm" Left="0.058cm" Top="1.198cm" ColumnHeadersPrintOnEveryPage="True" FreezeRowHeaders="False" FreezeColumnHeaders="False" KeepTogether="False" Name="tableLines">
+            <Table DataSourceName="webServiceDataSource1" Width="19.046cm" Height="1.147cm" Left="0.058cm" Top="1.198cm" ColumnHeadersPrintOnEveryPage="True" FreezeRowHeaders="False" FreezeColumnHeaders="False" KeepTogether="False" Name="tableLines">
               <Body>
                 <Cells>
                   <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="9">
                     <ReportItem>
-                      <TextBox Width="19.117cm" Height="0.264cm" Left="-0.535in" Top="-3.307in" Value="textBox18" Name="textBox18" StyleName="">
+                      <TextBox Width="19.046cm" Height="0.264cm" Left="-0.535in" Top="-3.307in" Value="textBox18" Name="textBox18" StyleName="">
                         <Style Visible="False">
                           <Font Name="Courier New" />
                         </Style>
@@ -761,7 +761,7 @@
                   <Column Width="2.4cm" />
                   <Column Width="0.924cm" />
                   <Column Width="2.243cm" />
-                  <Column Width="2.794cm" />
+                  <Column Width="2.723cm" />
                 </Columns>
                 <Rows>
                   <Row Height="0.264cm" />
@@ -844,7 +844,7 @@
                 </TableGroup>
                 <TableGroup Name="group18">
                   <ReportItem>
-                    <TextBox Width="11.904cm" Height="0.447cm" Left="0cm" Top="0cm" Value="Terméknév" Name="textBox90" StyleName="">
+                    <TextBox Width="11.833cm" Height="0.447cm" Left="0cm" Top="0cm" Value="Terméknév" Name="textBox90" StyleName="">
                       <Style VerticalAlign="Middle">
                         <Font Name="Courier New" Size="8pt" Bold="True" />
                         <BorderStyle Top="Solid" />
@@ -914,7 +914,7 @@
                     </TableGroup>
                     <TableGroup Name="group16">
                       <ReportItem>
-                        <TextBox Width="2.794cm" Height="0.436cm" Left="0in" Top="0in" Value="Bruttó érték" Name="textBox62" StyleName="">
+                        <TextBox Width="2.723cm" Height="0.436cm" Left="0in" Top="0in" Value="Bruttó érték" Name="textBox62" StyleName="">
                           <Style TextAlign="Right" VerticalAlign="Middle">
                             <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
