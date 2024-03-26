@@ -818,17 +818,17 @@
             </TextBox>
           </Items>
         </Panel>
-        <TextBox Width="3.692cm" Height="0.4cm" Left="0.055cm" Top="3.764cm" Value="Egyéb adatok:" Name="textBox66">
+        <TextBox Width="3.692cm" Height="0.4cm" Left="0cm" Top="3.764cm" Value="Egyéb adatok:" Name="textBox66">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="10pt" Bold="True" />
           </Style>
         </TextBox>
-        <TextBox Width="15.215cm" Height="0.4cm" Left="3.779cm" Top="3.764cm" Value="= Fields.notice" Name="textBox64">
+        <TextBox Width="15.215cm" Height="0.4cm" Left="3.652cm" Top="3.764cm" Value="= Fields.notice" Name="textBox64">
           <Style Visible="True" VerticalAlign="Middle">
             <Font Name="Courier New" Size="10pt" />
           </Style>
         </TextBox>
-        <Shape Width="7.53in" Height="0.052in" Left="0in" Top="1.43in" Name="shape1">
+        <Shape Width="7.53in" Height="0.052in" Left="0in" Top="1.457in" Name="shape1">
           <ShapeType>
             <LineShape Direction="EW" />
           </ShapeType>
