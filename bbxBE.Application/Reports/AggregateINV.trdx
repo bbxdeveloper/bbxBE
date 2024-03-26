@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report DataSourceName="webServiceDataSource1" Width="19.127cm" Name="invoice" Zoom="4" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
+<Report DataSourceName="webServiceDataSource1" Width="19.184cm" Name="invoice" Zoom="1.5" SnapGridSize="0.1cm" ShowWatermarks="False" xmlns="http://schemas.telerik.com/reporting/2021/1.0">
   <DataSources>
     <WebServiceDataSource ParameterValues="{&quot;ID&quot;:&quot;227&quot;,&quot;@BaseURL&quot;:&quot;https://bbxbe.azurewebsites.net&quot;,&quot;Authorization&quot;:&quot;Bearer xxxx&quot;}" AuthParameterValues="null" ServiceUrl="@BaseURL/api/v1/Invoice/aggregateinvoice" Name="webServiceDataSource1">
       <Parameters>
@@ -449,7 +449,7 @@
         </TextBox>
       </Items>
     </ReportFooterSection>
-    <ReportHeaderSection Height="4.1cm" Name="reportHeaderSection1">
+    <ReportHeaderSection Height="4.3cm" Name="reportHeaderSection1">
       <Style>
         <BorderStyle Bottom="Solid" />
       </Style>
@@ -464,7 +464,7 @@
             <Font Name="Courier New" Size="16pt" Bold="True" />
           </Style>
         </TextBox>
-        <Panel Width="15.16cm" Height="3.5cm" Left="3.747cm" Top="0.6cm" Name="panel2">
+        <Panel Width="15.16cm" Height="3.7cm" Left="3.747cm" Top="0.6cm" Name="panel2">
           <Style Visible="True" VerticalAlign="Middle" />
           <Items>
             <TextBox Width="7.453cm" Height="0.5cm" Left="0cm" Top="1.3cm" Value="= Fields.supplierAdditionalAddressDetail" Name="textBox21">
@@ -512,7 +512,7 @@
                 <Font Name="Courier New" Size="10pt" />
               </Style>
             </TextBox>
-            <TextBox Width="15.16cm" Height="0.4cm" Left="0cm" Top="3.1cm" Value="= Fields.notice" Name="textBox64">
+            <TextBox Width="15.16cm" Height="0.535cm" Left="0cm" Top="3.164cm" Value="= Fields.notice" Name="textBox64">
               <Style Visible="True" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" />
               </Style>
@@ -569,7 +569,7 @@
             </TextBox>
           </Items>
         </Panel>
-        <Panel Width="3.692cm" Height="3.5cm" Left="0.055cm" Top="0.6cm" Name="panel11">
+        <Panel Width="19.129cm" Height="3.632cm" Left="0.055cm" Top="0.6cm" Name="panel11">
           <Style Visible="True" VerticalAlign="Middle" />
           <Items>
             <TextBox Width="3.692cm" Height="0.4cm" Left="0cm" Top="2.3cm" Value="Adószám:" Name="textBox23">
@@ -602,18 +602,18 @@
                 <Font Name="Courier New" Size="10pt" Bold="True" />
               </Style>
             </TextBox>
-            <TextBox Width="3.692cm" Height="0.4cm" Left="0cm" Top="3.1cm" Value="Egyéb adatok:" Name="textBox66">
+            <TextBox Width="3.692cm" Height="0.4cm" Left="0.003cm" Top="3.232cm" Value="Egyéb adatok:" Name="textBox66">
               <Style Visible="True" VerticalAlign="Middle">
                 <Font Name="Courier New" Size="10pt" Bold="True" />
               </Style>
             </TextBox>
+            <Shape Width="7.53in" Height="0.052in" Left="0.001in" Top="1.221in" Name="shape1">
+              <ShapeType>
+                <LineShape Direction="EW" />
+              </ShapeType>
+            </Shape>
           </Items>
         </Panel>
-        <Shape Width="7.53in" Height="0.052in" Left="0in" Top="1.43in" Name="shape1">
-          <ShapeType>
-            <LineShape Direction="EW" />
-          </ShapeType>
-        </Shape>
       </Items>
     </ReportHeaderSection>
   </Items>
@@ -739,12 +739,12 @@
                 <Font Name="Courier New" Size="9pt" />
               </Style>
             </TextBox>
-            <Table DataSourceName="webServiceDataSource1" Width="19.011cm" Height="1.147cm" Left="0.058cm" Top="1.198cm" ColumnHeadersPrintOnEveryPage="True" FreezeRowHeaders="False" FreezeColumnHeaders="False" KeepTogether="False" Name="tableLines">
+            <Table DataSourceName="webServiceDataSource1" Width="19.117cm" Height="1.147cm" Left="0.058cm" Top="1.198cm" ColumnHeadersPrintOnEveryPage="True" FreezeRowHeaders="False" FreezeColumnHeaders="False" KeepTogether="False" Name="tableLines">
               <Body>
                 <Cells>
                   <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="9">
                     <ReportItem>
-                      <TextBox Width="19.011cm" Height="0.265cm" Left="-0.535in" Top="-3.307in" Value="textBox18" Name="textBox18" StyleName="">
+                      <TextBox Width="19.117cm" Height="0.264cm" Left="-0.535in" Top="-3.307in" Value="textBox18" Name="textBox18" StyleName="">
                         <Style Visible="False">
                           <Font Name="Courier New" />
                         </Style>
@@ -761,7 +761,7 @@
                   <Column Width="2.4cm" />
                   <Column Width="0.924cm" />
                   <Column Width="2.243cm" />
-                  <Column Width="2.688cm" />
+                  <Column Width="2.794cm" />
                 </Columns>
                 <Rows>
                   <Row Height="0.264cm" />
@@ -844,7 +844,7 @@
                 </TableGroup>
                 <TableGroup Name="group18">
                   <ReportItem>
-                    <TextBox Width="11.798cm" Height="0.447cm" Left="0cm" Top="0cm" Value="Terméknév" Name="textBox90" StyleName="">
+                    <TextBox Width="11.904cm" Height="0.447cm" Left="0cm" Top="0cm" Value="Terméknév" Name="textBox90" StyleName="">
                       <Style VerticalAlign="Middle">
                         <Font Name="Courier New" Size="8pt" Bold="True" />
                         <BorderStyle Top="Solid" />
@@ -914,7 +914,7 @@
                     </TableGroup>
                     <TableGroup Name="group16">
                       <ReportItem>
-                        <TextBox Width="2.688cm" Height="0.436cm" Left="0in" Top="0in" Value="Bruttó érték" Name="textBox62" StyleName="">
+                        <TextBox Width="2.794cm" Height="0.436cm" Left="0in" Top="0in" Value="Bruttó érték" Name="textBox62" StyleName="">
                           <Style TextAlign="Right" VerticalAlign="Middle">
                             <Font Name="Courier New" Size="8pt" Bold="True" />
                             <BorderStyle Top="None" Bottom="Solid" Left="None" Right="None" />
