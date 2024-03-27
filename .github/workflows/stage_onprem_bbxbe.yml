@@ -35,7 +35,7 @@ jobs:
  #           3.1.x
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration TestRelax
 
 #      - name: Run tests
 #        run: dotnet test --framework netcoreapp3.1 --verbosity normal
@@ -59,8 +59,8 @@ jobs:
       - name: Copy the missed files
         run: copy d:\d:\Install\bbxBECustomerTest\*.* c:\inetpub\wwwroot\${{ env.APP_DEPLOY_FOLDER }}        
       
-      - name: Create environment valiables
-        run: set SENDGRID_API_KEY ${{ secrets.SENDGRID_API_KEY }}
+#      - name: Create environment valiables
+#        run: set SENDGRID_API_KEY ${{ secrets.SENDGRID_API_KEY }}
 
       - name: START the BE Service
         run: c:\windows\System32\inetsrv\appcmd start apppool /apppool.name:"${{ env.APPPOOL_NAME }}"
