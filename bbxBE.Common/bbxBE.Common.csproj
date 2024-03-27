@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Configurations>Debug;Release;Test</Configurations>
+    <Configurations>Debug;Release;Test;TestRelax;Prod</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
