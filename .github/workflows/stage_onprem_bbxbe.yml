@@ -10,12 +10,12 @@ env:
 on:
   pull_request: 
     branches: [ stage ]
-#    types: [ closed ]
+    types: [ closed ]
   workflow_dispatch:
 
 jobs:
   build:
-#    if: ${{ github.event.pull_request.merged }}
+    if: ${{ github.event.pull_request.merged }}
     name: Build the BackEnd
     runs-on: self-hosted
     strategy:
@@ -42,7 +42,7 @@ jobs:
 #        # --no-build
 
   deploy:
- #    if: ${{ github.event.pull_request.merged }}
+    if: ${{ github.event.pull_request.merged }}
     name: Deploy the builded BE to local folder
     runs-on: self-hosted
     
